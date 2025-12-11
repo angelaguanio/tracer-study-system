@@ -8,7 +8,19 @@ export default function CoordinatorDashboard() {
     <div>CoordinatorDashboard</div>
     <Button asChild variant="red">
     <Link href={route('coordinator.logout')}>Logout</Link>
-  </Button>
+
+    <div>
+      Sidebar
+    </div>
+
+    <div>
+      Nav Bar
+    </div>
+
+    <div>
+      Main Page
+    </div>
+    </Button>
   </>
   )
 }
