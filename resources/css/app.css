@@ -66,6 +66,10 @@
     --color-blue-text: oklch(0.2514 0.1177 264.18);
     --color-blue-btn: oklch(0.6179 0.1668 250.87);
     --color-bluehover-btn: oklch(0.483 0.1417 252.28);
+
+    --color-navbar: oklch(0.7733 0.124 244.97);
+    --color-navbar-text: oklch(0.2428 0.0912 258.33);
+    
     --font-inter: "Inter", sans-serif;
     --font-inria: "Inria Sans", sans-serif;
     

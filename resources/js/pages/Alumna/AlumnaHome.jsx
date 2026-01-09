@@ -3,17 +3,16 @@
 import React from 'react'
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
+import NavbarAlumni from '../../components/navbar-alumni';
 
 
 
 export default function AlumnaHome() {
   return (
     <>
-    <div>AlumnaHome</div>
-    <Button asChild variant="red">
-      <Link href={route('alumna.logout')}>Logout</Link>
-    </Button>
-
+      <NavbarAlumni>
+        {/* content */}
+      </NavbarAlumni>
   </>
   )
 }

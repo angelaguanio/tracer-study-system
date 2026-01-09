@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
 
 class AlumnaHomeController extends Controller
 {
@@ -14,4 +16,5 @@ class AlumnaHomeController extends Controller
     {
         return Inertia::render('Alumna/AlumnaHome');
     }
-}
+
+}   
