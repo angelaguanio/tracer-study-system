@@ -47,6 +47,13 @@ class User extends Authenticatable
         return $this->role === 'coordinator';
     }
 
+    //get initials for temp profile 
+    public function getInitialsAttribute()
+    {
+        return strtoupper(substr($this->first_name ?? '',0,1) . substr($this->last_name ?? '',0,1));
+    }
+
+
     /**
      * Get the attributes that should be cast.
      *
