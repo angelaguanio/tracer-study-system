@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 //render login to coord or student
-Route::get('/', function() {
- return Inertia::render('Auth/Login');
+Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Auth/Login');
+    })->name('role.select');
 });
 
 //=============ALUMNA ROUTES=======================
