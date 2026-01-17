@@ -8,50 +8,51 @@ use App\Http\Controllers\CoordinatorDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-//render login to coord or student
+// Render login selection page (guest)
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
         return Inertia::render('Auth/Login');
     })->name('role.select');
 });
 
-//=============ALUMNA ROUTES=======================
+//============= ALUMNA ROUTES =======================
 Route::prefix('alumna')->name('alumna.')->group(function () {
 
+    // Guest-only routes
     Route::middleware('guest')->group(function () {
-        //signup
+        // signup
         Route::get('/signup', [AlumnaAuthController::class, 'roles'])->name('signup');
         Route::post('/signup', [AlumnaAuthController::class, 'signupAlumna']);
-        //login
+
+        // login
         Route::get('/login', [AlumnaAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AlumnaAuthController::class, 'loginAlumna']);
     });
 
+    // Authenticated-only routes
     Route::middleware('auth')->group(function () {
-        //home page
+
+        // home page
         Route::get('/home', AlumnaHomeController::class)->name('home');
-        //logout
+
+        // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+
+        Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
     });
 });
 
-//==============COORD ROUTES============================
+//============== COORDINATOR ROUTES =========================
 Route::prefix('coordinator')->name('coordinator.')->group(function () {
-    
+    // Guest-only routes
     Route::middleware('guest')->group(function () {
-        //login
-        Route::get('/login',[CoordinatorAuthController::class, 'showLogin'])->name('login');
-        Route::post('/login',[CoordinatorAuthController::class, 'loginCoordinator']);
+        Route::get('/login', [CoordinatorAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [CoordinatorAuthController::class, 'loginCoordinator']);
     });
 
+    // Authenticated-only routes
     Route::middleware('auth')->group(function () {
-        //dashboard page
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
-        //logout
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
     });
 });
-
-
-
-

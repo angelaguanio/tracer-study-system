@@ -83,7 +83,7 @@ export default function NavbarAlumni() {
                     <DropdownMenuContent>
                         <DropdownMenuItem asChild>
                         {/* currently static, add navigation func in link */}
-                            <Link>Alumni Association</Link>
+                              <Link href={route('alumna.association')}>Alumni Association</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link>Alumni Office</Link>
