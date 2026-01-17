@@ -14,27 +14,27 @@ const navBtns = [
     {
         id: "home",
         name: "Home",
-        href:"/home"
+        href:"/alumna/home"
     },
     {
         id: "announcements",
         name: "Announcements",
-        href:"/announcements"
+        href: "/alumna/announcements"
     },
     {
         id: "questionnaire",
         name: "Questionnaire",
-        href:"/questionnaire"
+        href:"/alumna/questionnaire"
     },
     {
         id: "about",
         name: "About",
-        href:"/about"
+        href:"/alumna/about"
     },
     {
         id: "contact",
         name: "Contact us",
-        href:"/contact"
+        href:"/alumna/contact"
     }
 ]
 export default function NavbarAlumni() {
