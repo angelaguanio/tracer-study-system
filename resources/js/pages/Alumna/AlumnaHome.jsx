@@ -12,7 +12,7 @@ export default function AlumnaHome() {
   return (
     <>
       <AlumnaLayout>
-        
+        <div>fghjkgfdfgh</div>
       </AlumnaLayout>
     </>
   )
