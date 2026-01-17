@@ -40,6 +40,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
+        //association
+        Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
 
     });
 });
