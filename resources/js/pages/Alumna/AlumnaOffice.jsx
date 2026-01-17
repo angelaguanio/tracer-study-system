@@ -8,7 +8,7 @@ import alumniOffice from '../../assets/alumni_office.jpg';
 export default function AlumnaOffice() {
   return (
     <>
-      <NavbarAlumni>
+      <AlumnaLayout>
 
         {/* HEADER SECTION */}
         <div className="bg-white py-12 text-center">
@@ -30,7 +30,7 @@ export default function AlumnaOffice() {
           </h2>
         </div>
 
-      </NavbarAlumni>
+      </AlumnaLayout>
     </>
   )
 }
