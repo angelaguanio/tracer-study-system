@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 //render login to coord or student
-Route::get('/', function() {
- return Inertia::render('Auth/Login');
+Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Auth/Login');
+    })->name('role.select');
 });
 
 //=============ALUMNA ROUTES=======================
@@ -30,6 +32,10 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/home', AlumnaHomeController::class)->name('home');
         //logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        //announcement
+        Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
+
+
     });
 });
 
@@ -49,7 +55,3 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
     });
 });
-
-
-
-

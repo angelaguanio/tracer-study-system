@@ -46,7 +46,7 @@ class AlumnaAuthController extends Controller
         //logs the user after sign up
         Auth::login($user);
         
-        return redirect()->route('alumna.login')->with('success', 'Account created successfully!');
+        return redirect()->route('alumna.home')->with('success', 'Account created successfully!');
    }
 
    //render login page
