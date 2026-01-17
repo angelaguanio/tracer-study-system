@@ -39,12 +39,12 @@ class User extends Authenticatable
     //helper func
     public function isStudent()
     {
-        return $this->role === 'student';
+        return $this->user_role === 'student';
     }
 
     public function isCoordinator()
     {
-        return $this->role === 'coordinator';
+        return $this->user_role === 'coordinator';
     }
 
     //get initials for temp profile 

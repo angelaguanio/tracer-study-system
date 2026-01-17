@@ -37,8 +37,10 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        //announcement
+        Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
-        Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
+
     });
 });
 
