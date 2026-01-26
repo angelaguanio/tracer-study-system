@@ -76,22 +76,25 @@ export default function NavbarAlumni({ children }) {
                         )
                     })}
 
-                    {/* dropdown option */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="nav">Alumni Affairs</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem asChild>
-                                <Link>Alumni Association</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link>Alumni Office</Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </ul>
-            </nav>
+                
+                {/* dropdown option */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="nav">Alumni Affairs</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                        {/* currently static, add navigation func in link */}
+                              <Link href={route('alumna.association')}>Alumni Association</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link>Alumni Office</Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </ul>
+        </nav>
+
 
             {/* profile */}
             <DropdownMenu>
