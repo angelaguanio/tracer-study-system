@@ -88,7 +88,7 @@ export default function NavbarAlumni({ children }) {
                               <Link href={route('alumna.association')}>Alumni Association</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link>Alumni Office</Link>
+                            <Link href={route('alumna.office')}>Alumni Office</Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

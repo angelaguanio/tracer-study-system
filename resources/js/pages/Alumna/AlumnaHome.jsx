@@ -11,8 +11,9 @@ import AlumnaLayout from '../../layouts/alumna-layout';
 
 export default function AlumnaHome() {
   return (
-    <>
-    </>
+    <AlumnaLayout>
+      
+    </AlumnaLayout>
   )
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
 import NavbarAlumni from '../../components/navbar-alumni';
-
+import AlumnaLayout from '../../layouts/alumna-layout';
 import alumniOffice from '../../assets/alumni_office.jpg';
 
 export default function AlumnaOffice() {
