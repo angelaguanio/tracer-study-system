@@ -37,11 +37,15 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
         //association
         Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
+
+        //office
+        Route::get('/office', function () { return Inertia::render('Alumna/AlumnaOffice'); })->name('office');
 
     });
 });
