@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
+use App\Http\Controllers\QuestionnaireController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,8 +36,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         // home page
         Route::get('/home', AlumnaHomeController::class)->name('home');
 
-        // logout
-        Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        // questionnaire page
+        Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
 
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
@@ -46,6 +47,9 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //office
         Route::get('/office', function () { return Inertia::render('Alumna/AlumnaOffice'); })->name('office');
+
+        // logout
+        Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
 
     });
 });
