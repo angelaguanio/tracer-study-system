@@ -33,9 +33,12 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
 
+        //custom sizes
         login:"h-15 rounded-full px-6 has-[>svg]:px-4",
 
-        login2:"h-14 rounded-full w-full px-6 has-[>svg]:px-4"
+        login2:"h-14 rounded-full w-full px-6 has-[>svg]:px-4",
+
+        survey_btn:"h-13 sm:w-lg w-sm"
       },
     },
     defaultVariants: {

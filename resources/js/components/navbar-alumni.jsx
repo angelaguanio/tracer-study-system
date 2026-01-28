@@ -114,7 +114,7 @@ export default function NavbarAlumni({ children }) {
             </DropdownMenu>
         </header>
 
-        <main>{children}</main>
+        
         </>
     )
 }
