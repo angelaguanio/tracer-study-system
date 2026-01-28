@@ -2,7 +2,7 @@ import React from 'react'
 import PersonalInformationSurvey from '../../components/survey/personal-info'
 
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import AlumnaLayout from "@/Layouts/alumna-layout";
+import AlumnaLayout from "@/layouts/alumna-layout";
 import { CircleCheck, SparkleIcon } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
