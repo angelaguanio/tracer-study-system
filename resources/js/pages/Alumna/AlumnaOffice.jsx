@@ -7,6 +7,7 @@ export default function AlumnaOffice() {
     <>
 
       {/* HEADER SECTION */}
+      <div className='flex flex-col w-full'>
       <div className="bg-white py-12 text-center">
         <h1 className="text-4xl md:text-6xl font-bold text-blue-900">
           ALUMNI AFFAIRS
@@ -25,7 +26,7 @@ export default function AlumnaOffice() {
           ALUMNI OFFICE
         </h2>
       </div>
-
+    </div>
     </>
   )
 }
