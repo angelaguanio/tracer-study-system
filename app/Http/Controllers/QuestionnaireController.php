@@ -11,4 +11,10 @@ class QuestionnaireController extends Controller
     {
         return Inertia::render('Alumna/AlumnaQuestionnaire');
     }
+
+    public function btnStartSurvey() 
+    {
+        return Inertia::render('Alumna/Survey');
+    }
+
 }

@@ -38,7 +38,7 @@ const buttonVariants = cva(
 
         login2:"h-14 rounded-full w-full px-6 has-[>svg]:px-4",
 
-        survey_btn:"h-13 sm:w-lg w-sm"
+        survey_btn:"h-13 sm:w-lg w-sm hover:bg-bluehover-btn"
       },
     },
     defaultVariants: {

@@ -39,6 +39,9 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         // questionnaire page
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
 
+        // questionnaire btn
+        Route::get('/questionnaire/survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('survey');
+
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
