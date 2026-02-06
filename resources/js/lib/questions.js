@@ -1,4 +1,4 @@
-const personalInfo = {
+export const personalInfo = {
         "title" : "Personal Information",
         "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
         "questions" : [
@@ -74,4 +74,3 @@ const personalInfo = {
     }
 
 
-export default personalInfo;

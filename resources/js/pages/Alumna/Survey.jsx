@@ -1,13 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PersonalInformationSurvey from '../../components/survey/personal-info'
 import cect from '../../assets/wup_cect.png';
 import logo from '../../assets/logo final.png'
 import wuplogo from '../../assets/wup.png'
 import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 
 export default function Survey() {
+
+    const [step, setStep] = useState();
+
+    const {data, setData, post, errors, processing} = useForm({
+        answers: {}
+    });
+
+    const next = () => setStep(step + 1);
+    const prev = () => setStep(step - 1);
+
+    const handleChange = (key, value) => {
+    setData(prevData => ({
+        ...prevData,
+        answers: {
+            ...prevData.answers,
+            [key]: value
+        }
+    }));
+};
+
+    // const submit = () => { post(/survey/${survey.id}); };
+
+
   return (
     <div className='flex flex-col min-h-screen w-full items-center p-5 overflow-y-auto'>
         <header className='flex flex-col justify-center items-center p-8'>
@@ -22,7 +45,13 @@ export default function Survey() {
         </header>
 
         <main className='h-full w-1/2'>
-            <PersonalInformationSurvey/>
+            {step === 1 && (
+                <PersonalInformationSurvey
+                    data={data.answers}
+                    errors={errors}
+                    onChange={handleChange}
+                />
+            )}
         </main>
 
         <footer className='flex justify-between items-center w-full max-w-4xl py-5 px-3'>

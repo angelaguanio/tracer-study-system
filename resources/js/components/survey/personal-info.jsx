@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { User } from 'lucide-react';
-import personalInfo from '../../lib/questions';
+import { personalInfo } from "../../lib/questions";
 import TextInput from '../text-input';
 import { Label } from '../ui/label';
 import {
@@ -18,7 +18,7 @@ import { Button } from '@headlessui/react';
 
 
 
-export default function PersonalInformationSurvey() {
+export default function PersonalInformationSurvey({data, setData, errors, answers}) {
   return (
     
     <Card className='h-fit px-3 py-10 content-center '>
@@ -39,11 +39,11 @@ export default function PersonalInformationSurvey() {
               <form className='flex flex-col gap-10'>
                 {personalInfo.questions.map((q) => {
 
-                  //==================BACHELORS DEGREE QUESTION======================
+//==================BACHELORS DEGREE QUESTION======================
 
                   if(q.type === 'select') {
                     return(
-                      <div className='flex flex-col gap-y-5'>
+                      <div key={q.id} className='flex flex-col gap-y-5'>
                         <Label className='text-lg'>{q.label}</Label>
                         {/* <Select value={data[q.id]} onValueChange={value => setData(q.id, value)}> */}
                         <Select >
@@ -63,9 +63,36 @@ export default function PersonalInformationSurvey() {
                     )
                   }
                   
-                  // if (type === 'year_select') {
-                    
-                  // }
+//==================YEAR SELECT QUESTION======================
+
+                  if (q.type === 'year_select') {
+                    const years = Array.from(
+                      {length: q.max - q.min + 1},
+                      (_, i) => q.max - i //new first
+                    );
+
+                    return(
+                       <div key={q.id} className='flex flex-col gap-y-5'>
+                        <Label className='text-lg'>{q.label}</Label>
+                        {/* <Select value={data[q.id]} onValueChange={value => setData(q.id, value)}> */}
+                        <Select >
+                          <SelectTrigger className='w-full py-7'>
+                            <SelectValue placeholder={q.placeholder} />
+                          </SelectTrigger>
+
+                          <SelectContent className='max-h-56'>
+                            {years.map(year => (
+                              <SelectItem key={year} value={year}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )
+                  }
+
+//==================TEXT QUESTIONS======================
 
                   return (
                   <TextInput
@@ -75,6 +102,7 @@ export default function PersonalInformationSurvey() {
                     placeholder={q.placeholder}
                     type={q.type}
                     className='text-lg h-15'
+                    value={answers}
                   />
                   )
                 })}
