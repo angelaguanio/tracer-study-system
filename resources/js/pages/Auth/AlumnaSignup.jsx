@@ -29,7 +29,6 @@ export default function AlumnaSignup() {
     setData(name, value);
   }
   
-  
   //submit
   const handleSubmit = (e) => {
     e.preventDefault();

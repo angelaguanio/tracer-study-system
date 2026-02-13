@@ -11,7 +11,7 @@ import AuthLayout from '../../layouts/auth-layout'
 export default function Login() {
   return (
     <AuthLayout>
-      <Card className="py-10 w-xl">
+      <Card className="py-10 w-xl bg-white">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
         </CardHeader>

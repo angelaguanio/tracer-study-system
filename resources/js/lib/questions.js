@@ -1,6 +1,6 @@
-const surveySchema = {
-    "personal-info" : {
+export const personalInfo = {
         "title" : "Personal Information",
+        "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
         "questions" : [
             {
                 "id": "last_name",
@@ -13,14 +13,14 @@ const surveySchema = {
                 "id": "first_name",
                 "label": "Firstname",
                 "type": "text",
-                "placeholder": "Lastname",
+                "placeholder": "Firstname",
                 "validation": {min:18, max:99}
             },
             {
                 "id": "middle_name",
                 "label": "Middlename",
                 "type": "text",
-                "placeholder": "Lastname",
+                "placeholder": "Middlename",
                 "validation": {min:18, max:99}
             },
             ////////////////////////////////////
@@ -53,8 +53,8 @@ const surveySchema = {
             {
                 "id": "degree",
                 "label": "Bachelor's Degree obtained from Wesleyan University-Philippines",
-                "type": "text",
-                "placeholder": "Email Address",
+                "type": "select",
+                "placeholder": "Select your degree",
                 "options": [
                     { "label": "Bachelor of Science in Compuuter Engineering", "value": "bscpe" },
                     { "label": "Bachelor of Science in Electronics Computer Engineering", "value": "bsece" },
@@ -72,6 +72,5 @@ const surveySchema = {
             }
         ]
     }
-}
 
-export default surveySchema;
+
