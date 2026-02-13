@@ -18,7 +18,7 @@ import { Button } from '@headlessui/react';
 
 
 
-export default function PersonalInformationSurvey({data, setData, errors, answers}) {
+export default function PersonalInformationSurvey({data, onChange}) {
   return (
     
     <Card className='h-fit px-3 py-10 content-center '>
@@ -36,79 +36,74 @@ export default function PersonalInformationSurvey({data, setData, errors, answer
         </CardHeader>
 
         <CardContent>
-              <form className='flex flex-col gap-10'>
-                {personalInfo.questions.map((q) => {
+            {personalInfo.questions.map((q) => {
 
 //==================BACHELORS DEGREE QUESTION======================
 
-                  if(q.type === 'select') {
-                    return(
-                      <div key={q.id} className='flex flex-col gap-y-5'>
-                        <Label className='text-lg'>{q.label}</Label>
-                        {/* <Select value={data[q.id]} onValueChange={value => setData(q.id, value)}> */}
-                        <Select >
-                          <SelectTrigger className='w-full py-7'>
-                            <SelectValue placeholder={q.placeholder} />
-                          </SelectTrigger>
+              if(q.type === 'select') {
+                return(
+                  <div key={q.id} className='flex flex-col gap-y-5'>
+                    <Label className='text-lg'>{q.label}</Label>
+                    <Select value={data.answers[q.id] || ''} onChange={value => onChange(q.id, value)}>    
+                      <SelectTrigger className='w-full py-7'>
+                        <SelectValue placeholder={q.placeholder} />
+                      </SelectTrigger>
 
-                          <SelectContent className='max-h-56'>
-                            {q.options.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )
-                  }
-                  
+                      <SelectContent className='max-h-56'>
+                        {q.options.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )
+              }
+              
 //==================YEAR SELECT QUESTION======================
 
-                  if (q.type === 'year_select') {
-                    const years = Array.from(
-                      {length: q.max - q.min + 1},
-                      (_, i) => q.max - i //new first
-                    );
+              if (q.type === 'year_select') {
+                const years = Array.from(
+                  {length: q.max - q.min + 1},
+                  (_, i) => q.max - i //new first
+                );
 
-                    return(
-                       <div key={q.id} className='flex flex-col gap-y-5'>
-                        <Label className='text-lg'>{q.label}</Label>
-                        {/* <Select value={data[q.id]} onValueChange={value => setData(q.id, value)}> */}
-                        <Select >
-                          <SelectTrigger className='w-full py-7'>
-                            <SelectValue placeholder={q.placeholder} />
-                          </SelectTrigger>
+                return(
+                    <div key={q.id} className='flex flex-col gap-y-5'>
+                    <Label className='text-lg'>{q.label}</Label>
+                    <Select value={data.answers[q.id] || ''} onChange={value => onChange(q.id, value)} >
+                      <SelectTrigger className='w-full py-7'>
+                        <SelectValue placeholder={q.placeholder} />
+                      </SelectTrigger>
 
-                          <SelectContent className='max-h-56'>
-                            {years.map(year => (
-                              <SelectItem key={year} value={year}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )
-                  }
+                      <SelectContent className='max-h-56'>
+                        {years.map(year => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )
+              }
 
 //==================TEXT QUESTIONS======================
 
-                  return (
-                  <TextInput
-                    key={q.id}
-                    labelName={q.id}
-                    labelTitle={q.label}
-                    placeholder={q.placeholder}
-                    type={q.type}
-                    className='text-lg h-15'
-                    value={answers}
-                  />
-                  )
-                })}
-
-              
-              </form>
+              return (
+              <TextInput
+                key={q.id}
+                labelName={q.id}
+                labelTitle={q.label}
+                placeholder={q.placeholder}
+                type={q.type}
+                className='text-lg h-15'
+                value={data.answers[q.id] || ''} 
+                onChange={value => onChange(q.id, value)}
+              />
+              )
+            })}
         </CardContent>
     </Card>
   )
