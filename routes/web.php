@@ -8,11 +8,21 @@ use App\Http\Controllers\CoordinatorDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// TEMPORARY - Preview About page without login
+Route::get('/preview-about', function () {
+    return Inertia::render('Alumna/AlumnaAbout');
+});
+
 //render login to coord or student
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
         return Inertia::render('Auth/Login');
     })->name('role.select');
+    
+    // Add fallback login route
+    Route::get('/login', function () {
+        return redirect()->route('alumna.login');
+    })->name('login');
 });
 
 //=============ALUMNA ROUTES=======================
@@ -30,13 +40,15 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     Route::middleware('auth')->group(function () {
         //home page
         Route::get('/home', AlumnaHomeController::class)->name('home');
+        
         //logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
-        //announcement
-        Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
-
-
     });
+    
+    // About page - NO AUTH REQUIRED (temporarily for preview)
+    Route::get('/about', function () {
+        return Inertia::render('Alumna/AlumnaAbout');
+    })->name('about');
 });
 
 //==============COORD ROUTES============================
