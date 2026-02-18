@@ -1,5 +1,4 @@
 import React from 'react'
-import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/ui/wup';
@@ -43,7 +42,7 @@ export default function AlumnaLogin() {
   }
 
   return (
-       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl">
+       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl ">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
         </CardHeader>

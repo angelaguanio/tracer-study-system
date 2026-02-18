@@ -6,27 +6,32 @@ import wuplogo from '../../assets/wup.png'
 import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
 import { Link, useForm } from '@inertiajs/react';
+import { personalInfo } from '../../lib/questions';
 
 export default function Survey() {
 
     const [step, setStep] = useState();
 
     const {data, setData, post, errors, processing} = useForm({
-        answers: {}
+        answers: {
+            personalInfo: {}
+        }
     });
 
     const next = () => setStep(step + 1);
     const prev = () => setStep(step - 1);
 
-    const handleChange = (key, value) => {
-    setData(prevData => ({
-        ...prevData,
-        answers: {
-            ...prevData.answers,
-            [key]: value
-        }
-    }));
-};
+    const handleChange = (category, key, value) => {
+    setData('answers', {
+        ...data.answers,
+        [category]: {
+        ...data.answers[category],
+        [key]: value,
+        },
+    });
+    };
+
+
 
     // const submit = () => { post(/survey/${survey.id}); };
 
@@ -65,4 +70,5 @@ export default function Survey() {
         </footer>
     </div>
   )
+
 }
