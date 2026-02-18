@@ -1,4 +1,5 @@
 export const personalInfo = {
+        "slug": "personal-info",
         "title" : "Personal Information",
         "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
         "questions" : [
@@ -7,21 +8,33 @@ export const personalInfo = {
                 "label": "Lastname",
                 "type": "text",
                 "placeholder": "Lastname",
-                "validation": {min:18, max:99}
+                "validation": {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                }
             },
             {
                 "id": "first_name",
                 "label": "Firstname",
                 "type": "text",
                 "placeholder": "Firstname",
-                "validation": {min:18, max:99}
+                "validation": {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                }
             },
             {
                 "id": "middle_name",
                 "label": "Middlename",
                 "type": "text",
                 "placeholder": "Middlename",
-                "validation": {min:18, max:99}
+                "validation": {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                }
             },
             ////////////////////////////////////
             {
@@ -29,14 +42,22 @@ export const personalInfo = {
                 "label": "Home Address",
                 "type": "text",
                 "placeholder": "Home Address",
-                "validation": {min:18, max:99}
+                "validation": {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                }
             },
             {
                 "id": "email",
                 "label": "Email Address",
                 "type": "text",
                 "placeholder": "Email Address",
-                "validation": {min:18, max:99}
+                "validation": {
+                    required: true,
+                    minLength: 2,
+                    maxLength: 50,
+                }
             },
             {
                 "id": "contact",
@@ -45,7 +66,7 @@ export const personalInfo = {
                 "placeholder": "ex. 0912 345 6789",
                 "validation": {
                     "required": true,
-                    "pattern": "^[0-9]{11}$",
+                    "pattern": /^[0-9]{11}$/,
                     "message": "Please enter a valid 11-digit mobile number"
                     }
             },

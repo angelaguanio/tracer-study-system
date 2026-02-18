@@ -7,6 +7,7 @@ import TextInput from '../../components/text-input'
 import { useForm } from '@inertiajs/react'
 import { UserRound, Lock } from 'lucide-react';
 import TextLink from '../../components/text-link';
+import AuthLayout from "@/layouts/auth-layout";
 
 
 
@@ -42,7 +43,6 @@ export default function AlumnaLogin() {
   }
 
   return (
-    <AuthLayout>
        <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
@@ -87,6 +87,9 @@ export default function AlumnaLogin() {
           <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
         </CardFooter>
       </Card>
-    </AuthLayout>
+
   )
 }
+
+
+AlumnaLogin.layout = page => <AuthLayout>{page}</AuthLayout>
