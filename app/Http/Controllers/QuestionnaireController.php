@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use App\Models\SurveySubmission;
+use App\Models\SurveyCategory;
+use App\Models\SurveyAnswer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,19 +31,19 @@ class QuestionnaireController extends Controller
 
             //create submission
             $submission = SurveySubmission::create([
-                'user_id' => auth()->id(),
+                'user_id' => auth()->id,
                 'submitted_at' => now(),
             ]);
 
             //loop categories
             foreach ($validated['answers'] as $categorySlug => $questions) {
 
-                $category = Category::where('slug', $categorySlug)->firstOrFail();
+                $category = SurveyCategory::where('slug', $categorySlug)->firstOrFail();
 
                 //loop answers
                 foreach ($questions as $question => $value) {
 
-                    Answer::create([
+                    SurveyAnswer::create([
                         'survey_submission_id' => $submission->id,
                         'category_id' => $category->id,
                         'question_identifier' => $question,

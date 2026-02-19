@@ -10,17 +10,21 @@ import { personalInfo } from '../../lib/questions';
 
 export default function Survey() {
 
+    //usestate for changing pages
     const [step, setStep] = useState(0);
 
+    //kukuha ng data sa front end 
     const {data, setData, post, errors, processing} = useForm({
         answers: {
             personalInfo: {}
         }
     });
 
+    //pang change ng page
     const next = () => setStep(step + 1);
     const prev = () => setStep(step - 1);
 
+    //kumukuha ng mismong sagot sa survey
     const handleChange = (category, key, value) => {
     setData('answers', {
         ...data.answers,
@@ -31,6 +35,42 @@ export default function Survey() {
     });
     };
 
+    //bind helper function
+    const bindField = (category, key, type = "text", option = null) => {
+        const value = data.answers?.[category]?.[key];
+      
+        if (type === "radio") {
+          return {
+            checked: value === option,
+            onChange: () => onChange(category, key, option),
+          };
+        }
+      
+        if (type === "checkbox") {
+          return {
+            checked: value || false,
+            onChange: e =>
+              onChange(category, key, e.target.checked),
+          };
+        }
+      
+        return {
+          value: value || "",
+          onChange: e =>
+            onChange(category, key, e.target.value),
+        };
+      };
+
+      const steps = [
+        { component: PersonalInformationSurvey, category: 'personalInfo' },
+        // { component: EmploymentSurvey, category: 'employmentInfo' },
+        // { component: SkillsSurvey, category: 'skills' },
+      ];
+    
+      const CurrentStep = steps[step].component;
+      const currentCategory = steps[step].category;
+    
+      const isLastStep = step === steps.length - 1;
 
 
     // const submit = () => { post(/survey/${survey.id}); };
@@ -51,28 +91,24 @@ export default function Survey() {
 
         <main className='h-full w-1/2'>
             <form>
-                <CurrentStep
-                    data={data}
-                    errors={errors}
-                    onChange={handleChange}
-                />
+                <CurrentStep bindField={bindField} category={currentCategory} />
             </form>
         </main>
 
         <footer className='flex justify-between items-center w-full max-w-4xl py-5 px-3'>
             {step > 0 && (
-                <Button asChild size='lg' className='w-30'> 
-                    <Link onClick={prev}>Cancel</Link>
+                <Button onClick={prev} size='lg' className='w-30'> 
+                    Previous
                 </Button>
             )}
             
             {!isLastStep ? (
-                <Button asChild size='lg' className='w-30'>
-                    <Link onClick={next}>Next</Link>
+                <Button onClick={next} size='lg' className='w-30'>
+                    Next
                 </Button>
             ) : (
-                <Button asChild size='lg' className='w-30'>
-                    <Link onClick={submit}>Submit</Link>
+                <Button onClick={submit} size='lg' className='w-30'>
+                    Submit
                 </Button>
             )}
             

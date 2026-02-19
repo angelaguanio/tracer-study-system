@@ -18,7 +18,7 @@ import { Button } from '@headlessui/react';
 
 
 
-export default function PersonalInformationSurvey({data, onChange}) {
+export default function PersonalInformationSurvey({bindField, category}) {
   return (
     
     <Card className='h-fit px-3 py-10 content-center '>
@@ -38,13 +38,16 @@ export default function PersonalInformationSurvey({data, onChange}) {
         <CardContent>
             {personalInfo.questions.map((q) => {
 
+              //pangkuha data
+            const field = bindField(category, q.id, q.type, q.option);
+            
 //==================BACHELORS DEGREE QUESTION======================
 
               if(q.type === 'select') {
                 return(
                   <div key={q.id} className='flex flex-col gap-y-5'>
                     <Label className='text-lg'>{q.label}</Label>
-                    <Select value={data.answers[q.id] || ''} onChange={value => onChange(q.id, value)}>    
+                    <Select value={field.value} onValueChange={field.onChange}>    
                       <SelectTrigger className='w-full py-7'>
                         <SelectValue placeholder={q.placeholder} />
                       </SelectTrigger>
@@ -72,7 +75,7 @@ export default function PersonalInformationSurvey({data, onChange}) {
                 return(
                     <div key={q.id} className='flex flex-col gap-y-5'>
                     <Label className='text-lg'>{q.label}</Label>
-                    <Select value={data.answers[q.id] || ''} onChange={value => onChange(q.id, value)} >
+                    <Select value={field.value} onValueChange={field.onChange} >
                       <SelectTrigger className='w-full py-7'>
                         <SelectValue placeholder={q.placeholder} />
                       </SelectTrigger>
@@ -99,8 +102,7 @@ export default function PersonalInformationSurvey({data, onChange}) {
                 placeholder={q.placeholder}
                 type={q.type}
                 className='text-lg h-15'
-                value={data.answers[q.id] || ''} 
-                onChange={value => onChange(q.id, value)}
+                {...field}
               />
               )
             })}
