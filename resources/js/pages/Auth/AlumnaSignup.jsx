@@ -1,12 +1,12 @@
 import { useForm } from '@inertiajs/react'
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import AuthLayout from '../../layouts/auth-layout'
 import TextInput from '../../components/text-input'
 import { Button } from '../../components/ui/button'
 import Wup from '../../components/ui/wup';
-import { useState } from "react";
 import TextLink from '../../components/text-link';
+import AuthLayout from "@/layouts/auth-layout";
+
 
 
 export default function AlumnaSignup() {
@@ -46,7 +46,6 @@ export default function AlumnaSignup() {
   
 
   return (
-    <AuthLayout>
         <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl">
           <CardHeader className="flex flex-col items-center justify-center">
             <Wup/>
@@ -119,6 +118,8 @@ export default function AlumnaSignup() {
           </CardFooter>
 
       </Card>
-    </AuthLayout>
   )
 }
+
+
+AlumnaSignup.layout = page => <AuthLayout>{page}</AuthLayout>

@@ -5,12 +5,12 @@ import { Card, CardHeader,CardFooter } from "@/components/ui/card";
 import Wup from '../../components/ui/wup'
 import { Button } from '../../components/ui/button'
 import { Link } from '@inertiajs/react'
-import AuthLayout from '../../layouts/auth-layout'
+import AuthLayout from "@/layouts/auth-layout";
+
 
 
 export default function Login() {
   return (
-    <AuthLayout>
       <Card className="py-10 w-xl bg-white">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
@@ -25,6 +25,7 @@ export default function Login() {
         </Button>
         </CardFooter>
       </Card>
-    </AuthLayout>
   )
 }
+
+Login.layout = page => <AuthLayout>{page}</AuthLayout>

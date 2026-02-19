@@ -6,40 +6,35 @@ import wuplogo from '../../assets/wup.png'
 import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
 import { Link, useForm } from '@inertiajs/react';
+import { personalInfo } from '../../lib/questions';
 
 export default function Survey() {
 
     const [step, setStep] = useState(0);
 
     const {data, setData, post, errors, processing} = useForm({
-        answers: {}
+        answers: {
+            personalInfo: {}
+        }
     });
 
-    const steps = [
-        PersonalInformationSurvey,
-        EmploymentStatus,
-        EmploymentHistory,
-        SkillsDevelopment,
-        ReviewSubmit,
-      ];
+    const next = () => setStep(step + 1);
+    const prev = () => setStep(step - 1);
 
-    const totalSteps = steps.length;
-    const isLastStep = step === totalSteps - 1;
+    const handleChange = (category, key, value) => {
+    setData('answers', {
+        ...data.answers,
+        [category]: {
+        ...data.answers[category],
+        [key]: value,
+        },
+    });
+    };
 
-    const next = () => setStep(s => Math.min(s + 1, totalSteps - 1));
-    const prev = () => setStep(s => Math.max(s - 1, 0));
 
 
-    const handleChange = (key, value) => {
-        setData('answers', {
-          ...data.answers,
-          [key]: value,
-        });
-      };
+    // const submit = () => { post(/survey/${survey.id}); };
 
-    const submit = () =>  post(`/survey/${survey.id}`); 
-
-    const CurrentStep = steps[step];
 
   return (
     <div className='flex flex-col min-h-screen w-full items-center p-5 overflow-y-auto'>
@@ -84,4 +79,5 @@ export default function Survey() {
         </footer>
     </div>
   )
+
 }
