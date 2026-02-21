@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 
-export default function TextInput({ labelName, labelTitle,error, icon:Icon, type, ...props }) {
+export default function TextInput({ labelName, labelTitle, error, icon:Icon, type, ...props }) {
 
     const [show, setShow] = useState(false);
     const isPassword = type === "password";
