@@ -40,7 +40,9 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
 
         // questionnaire btn
-        Route::get('/questionnaire/survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('survey');
+        Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');
+
+        Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
 
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');

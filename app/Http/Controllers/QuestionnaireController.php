@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\SurveySubmission;
 use App\Models\SurveyCategory;
@@ -23,15 +24,34 @@ class QuestionnaireController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'answers' => 'required|array',
-        ]);
+        $jsonPath = resource_path('js/lib/questions.json');
+        $allCategories = json_decode(file_get_contents($jsonPath), true);
+
+        $rules = [];
+        $niceLabels = [];
+
+    // loop through every category
+    foreach ($allCategories as $categoryKey => $categoryData) {
+        
+        // loop through every question in that category
+        foreach ($categoryData['questions'] as $question) {
+            $id = $question['id'];
+            
+            // Generate the path
+            $path = "answers.{$categoryKey}.{$id}";
+            $rules[$path] = $question['validation'];
+            //get the labels
+            $niceLabels[$path] = $question['label'];
+        }
+    }
+
+    $validated = $request->validate($rules,[], $niceLabels);
 
         DB::transaction(function () use ($validated, $request) {
 
             //create submission
             $submission = SurveySubmission::create([
-                'user_id' => auth()->id,
+                'user_id' => Auth::id(),
                 'submitted_at' => now(),
             ]);
 

@@ -6,7 +6,8 @@ import wuplogo from '../../assets/wup.png'
 import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
 import { Link, useForm } from '@inertiajs/react';
-import { personalInfo } from '../../lib/questions';
+import questionsData from "../../lib/questions.json";
+
 
 export default function Survey() {
 
@@ -14,7 +15,7 @@ export default function Survey() {
     const [step, setStep] = useState(0);
 
     //kukuha ng data sa front end 
-    const {data, setData, post, errors, processing} = useForm({
+    const {data, setData, post, errors, processing} = useForm('SurveyForm', {
         answers: {
             personalInfo: {}
         }
@@ -36,44 +37,41 @@ export default function Survey() {
     };
 
     //bind helper function
-    const bindField = (category, key, type = "text", option = null) => {
-        const value = data.answers?.[category]?.[key];
-      
-        if (type === "radio") {
-          return {
-            checked: value === option,
-            onChange: () => onChange(category, key, option),
-          };
-        }
-      
-        if (type === "checkbox") {
-          return {
-            checked: value || false,
-            onChange: e =>
-              onChange(category, key, e.target.checked),
-          };
-        }
-      
-        return {
-          value: value || "",
-          onChange: e =>
-            onChange(category, key, e.target.value),
-        };
+    const bindField = (category, key) => {
+      // Matches Laravel's: "answers.personalInfo.last_name"
+      const errorKey = `answers.${category}.${key}`;
+  
+      return {
+          value: data.answers[category]?.[key] || "",
+          error: errors[errorKey], 
+          onChange: (val) => {
+              // Handle both HTML events and direct values from Shadcn UI Select
+              const value = val?.target ? val.target.value : val;
+              handleChange(category, key, value);
+          },
       };
+  };
 
+      //define niya kung anong part ng category
       const steps = [
         { component: PersonalInformationSurvey, category: 'personalInfo' },
         // { component: EmploymentSurvey, category: 'employmentInfo' },
         // { component: SkillsSurvey, category: 'skills' },
       ];
     
+      //para sa steps ng multipage
       const CurrentStep = steps[step].component;
       const currentCategory = steps[step].category;
-    
       const isLastStep = step === steps.length - 1;
 
+      //track category using steps func
+      const currentCategoryData = questionsData[steps[step].category];
 
-    // const submit = () => { post(/survey/${survey.id}); };
+      //submit func
+      const submit = (e) => {
+        e.preventDefault(); // prevent default form submission
+        post('/alumna/survey', data); // send the answers to your backend
+    };
 
 
   return (
@@ -91,7 +89,7 @@ export default function Survey() {
 
         <main className='h-full w-1/2'>
             <form>
-                <CurrentStep bindField={bindField} category={currentCategory} />
+                <CurrentStep bindField={bindField} category={currentCategory} config={currentCategoryData} />
             </form>
         </main>
 

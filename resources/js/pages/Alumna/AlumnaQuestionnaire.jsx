@@ -59,7 +59,7 @@ export default function AlumnaQuestionnaire() {
 
         <CardFooter className="flex flex-col justify-center p-5">
           <Button asChild className="flex bg-blue-btn text-[15px] font" size="survey_btn">
-            <Link href={route('alumna.survey')}>Start Survey</Link>
+            <Link href={route('alumna.start-survey')}>Start Survey</Link>
           </Button>
           <span className='text-sm text-gray-400 pt-7 pb-5'>Estimated completion time: 5-10 minutes.</span>
         </CardFooter>

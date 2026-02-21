@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { User } from 'lucide-react';
-import { personalInfo } from "../../lib/questions";
+import questionsData from "../../lib/questions.json";
 import TextInput from '../text-input';
 import { Label } from '../ui/label';
 import {
@@ -19,6 +19,8 @@ import { Button } from '@headlessui/react';
 
 
 export default function PersonalInformationSurvey({bindField, category}) {
+  const { personalInfo } = questionsData;
+
   return (
     
     <Card className='h-fit px-3 py-10 content-center '>
@@ -60,6 +62,7 @@ export default function PersonalInformationSurvey({bindField, category}) {
                         ))}
                       </SelectContent>
                     </Select>
+                    {field.error && <p className="text-red-500 text-sm">{field.error}</p>}
                   </div>
                 )
               }
@@ -88,6 +91,7 @@ export default function PersonalInformationSurvey({bindField, category}) {
                         ))}
                       </SelectContent>
                     </Select>
+                    {field.error && <p className="text-red-500 text-sm">{field.error}</p>}
                   </div>
                 )
               }
