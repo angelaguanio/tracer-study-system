@@ -1,9 +1,9 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
-import Wup from '../../components/ui/wup';
-import TextInput from '../../components/text-input'
-import { useForm } from '@inertiajs/react'
+import Wup from '../../components/wup';
+import TextInput from '../../components/text-input';
+import { useForm } from '@inertiajs/react';
 import { UserRound, Lock } from 'lucide-react';
 import TextLink from '../../components/text-link';
 import AuthLayout from "@/layouts/auth-layout";

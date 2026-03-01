@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Card, CardHeader,CardFooter } from "@/components/ui/card";
 
-import Wup from '../../components/ui/wup'
+import Wup from '../../components/wup'
 import { Button } from '../../components/ui/button'
 import { Link } from '@inertiajs/react'
 import AuthLayout from "@/layouts/auth-layout";

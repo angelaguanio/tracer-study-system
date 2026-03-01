@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../../assets/logotracer.png'
+import logo from '../assets/logotracer.png'
 
 export default function Wup ({...props}) {
   return (

@@ -1,26 +1,17 @@
 import React from 'react'
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
+import CoordinatorLayout from "@/layouts/coord-layout";
+
 
 export default function CoordinatorDashboard() {
   return (
-    <>
-    <div>CoordinatorDashboard</div>
-    <Button asChild variant="red">
-    <Link href={route('coordinator.logout')}>Logout</Link>
-
+    
     <div>
-      Sidebar
+      CoordinatorDashboard
     </div>
-
-    <div>
-      Nav Bar
-    </div>
-
-    <div>
-      Main Page
-    </div>
-    </Button>
-  </>
+  
   )
 }
+
+CoordinatorDashboard.layout = page => <CoordinatorLayout>{page}</CoordinatorLayout>
