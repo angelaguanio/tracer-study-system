@@ -5,7 +5,6 @@
 
 @plugin 'tailwindcss-animate';
 
-
 @source "../views";
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
@@ -72,10 +71,9 @@
 
     --color-app-bg: oklch(0.9791 0.0125 228.92)
 
-    
     --font-inter: "Inter", sans-serif;
     --font-inria: "Inria Sans", sans-serif;
-    
+
 }
 
 /*
@@ -329,7 +327,6 @@
     @apply bg-background text-foreground;
     }
 }
-
 
 .custom-scrollbar::-webkit-scrollbar {
     width: 8px; /* Customize scrollbar width */

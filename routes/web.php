@@ -42,6 +42,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         // questionnaire btn
         Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');
 
+        //store the survey answers
         Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
 
         //announcement
