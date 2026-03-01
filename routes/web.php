@@ -54,6 +54,9 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         //office
         Route::get('/office', function () { return Inertia::render('Alumna/AlumnaOffice'); })->name('office');
 
+        //contact us
+        Route::get('/contact', function () {return Inertia::render('Alumna/ContactUs'); })->name('contact');
+        
         // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
 
