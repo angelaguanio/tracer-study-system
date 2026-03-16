@@ -75,5 +75,11 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+    
+    //announcement
+      Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
+
+        
+        });
     });
-});
