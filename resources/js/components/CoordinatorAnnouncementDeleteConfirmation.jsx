@@ -1,22 +1,12 @@
-import { X } from "lucide-react";
-import { useEffect } from "react";
+import { X, Check } from "lucide-react";
 
 export default function CoordinatorAnnouncementDeleteConfirmation({ onClose }) {
-
-//   // auto close after 1.2s
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       onClose?.();
-//     }, 1200);
-
-//     return () => clearTimeout(timer);
-//   }, []);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
 
-      {/* Modal */}
-      <div className="relative bg-white w-full max-w-md rounded-xl shadow-xl p-6 flex flex-col items-center justify-center">
+      {/* Modal Box */}
+      <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center">
 
         {/* Close Button */}
         <button
@@ -26,9 +16,9 @@ export default function CoordinatorAnnouncementDeleteConfirmation({ onClose }) {
           <X size={20} />
         </button>
 
-        {/* Green Check */}
+        {/* Check Icon */}
         <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-          <span className="text-white text-2xl">✓</span>
+          <Check size={28} className="text-white stroke-[3]" />
         </div>
 
         {/* Text */}
