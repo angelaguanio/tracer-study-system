@@ -4,8 +4,12 @@ import CoordinatorAnnouncementViewCard from "@/Components/CoordinatorAnnouncemen
 
 function CoordinatorAnnouncementView() {
   return (
-    <div className="w-full px-10 py-6 bg-[#f0faff]">
-      <CoordinatorAnnouncementViewCard />
+    <div className="min-h-screen w-full bg-[#f0faff]">
+      
+      <div className="px-4 sm:px-6 md:px-10 py-4 sm:py-6 max-w-7xl mx-auto">
+        <CoordinatorAnnouncementViewCard />
+      </div>
+
     </div>
   );
 }
