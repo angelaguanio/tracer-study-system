@@ -9,11 +9,6 @@ use App\Http\Controllers\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// TEMPORARY - Preview About page without login
-Route::get('/preview-about', function () {
-    return Inertia::render('Alumna/AlumnaAbout');
-});
-
 // Render login selection page (guest)
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
@@ -45,18 +40,20 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         // home page
         Route::get('/home', AlumnaHomeController::class)->name('home');
-        //logout
+        
+        // about page 
+        Route::get('/about', function () {
+            return Inertia::render('Alumna/AlumnaAbout');
+        })->name('about');
+        
+        // announcements
+        Route::get('/announcements', function () {
+            return Inertia::render('Alumna/AlumnaAnnouncements');
+        })->name('announcements');
+        
+        // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
-        //announcement
-        Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
-
-
     });
-    
-    // About page - NO AUTH REQUIRED (temporarily for preview)
-    Route::get('/about', function () {
-        return Inertia::render('Alumna/AlumnaAbout');
-    })->name('about');
 });
 
 //============== COORDINATOR ROUTES =========================

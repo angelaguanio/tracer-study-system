@@ -1,6 +1,6 @@
 import React from 'react'
 import NavbarAlumni from '../../components/navbar-alumni'
-import { GraduationCap, Users, Target, BookOpen, Bell } from 'lucide-react'
+import graduationBg from '../../assets/graduation-bg.jpg'
 
 export default function AlumnaAbout() {
   return (
@@ -42,74 +42,53 @@ export default function AlumnaAbout() {
       </section>
 
       {/* Our Purpose Section */}
-      <section className="bg-gray-50 py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section 
+        className="py-16 px-4 relative bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${graduationBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <div className="flex justify-center mb-4">
-              <GraduationCap className="h-16 w-16 text-blue-600" />
-            </div>
-            <h2 className="text-4xl font-bold text-gray-800">Our Purpose</h2>
+            <h2 className="text-4xl font-bold text-white">Our Purpose</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Purpose Card 1 */}
             <div className="bg-blue-100 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="text-blue-600 flex-shrink-0">
-                  <Users className="h-8 w-8" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-2">Connect Alumni</h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Maintain an active connection between the college and its alumni community.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-bold text-gray-800 mb-2">Connect Alumni</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Maintain an active connection between the college and its alumni community.
+              </p>
             </div>
 
             {/* Purpose Card 2 */}
             <div className="bg-blue-100 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="text-blue-600 flex-shrink-0">
-                  <Target className="h-8 w-8" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-2">Track Career Growth</h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Gather relevant data on graduates' employment, educational, and industry experience.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-bold text-gray-800 mb-2">Track Career Growth</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Gather relevant data on graduates' employment, educational, and industry experience.
+              </p>
             </div>
 
             {/* Purpose Card 3 */}
             <div className="bg-blue-100 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="text-blue-600 flex-shrink-0">
-                  <BookOpen className="h-8 w-8" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-2">Curriculum Development</h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Support curriculum development by aligning academic outcomes with real-world demands.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-bold text-gray-800 mb-2">Curriculum Development</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Support curriculum development by aligning academic outcomes with real-world demands.
+              </p>
             </div>
 
             {/* Purpose Card 4 */}
             <div className="bg-blue-100 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="text-blue-600 flex-shrink-0">
-                  <Bell className="h-8 w-8" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-2">Alumni Engagement</h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Provide alumni with news, events, and opportunities for continued collaboration with the institution.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-bold text-gray-800 mb-2">Alumni Engagement</h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                Provide alumni with news, events, and opportunities for continued collaboration with the institution.
+              </p>
             </div>
           </div>
         </div>
@@ -133,7 +112,6 @@ export default function AlumnaAbout() {
           </p>
         </div>
       </section>
-
     </>
   )
 }
