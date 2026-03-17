@@ -2,7 +2,7 @@ import React from 'react'
 import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
-import Wup from '../../components/ui/wup';
+import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
 import { useForm } from '@inertiajs/react'
 import { UserRound, Lock } from 'lucide-react';

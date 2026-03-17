@@ -6,29 +6,72 @@ import wuplogo from '../../assets/wup.png'
 import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
 import { Link, useForm } from '@inertiajs/react';
+import questionsData from "../../lib/questions.json";
+
 
 export default function Survey() {
 
-    const [step, setStep] = useState();
+    //usestate for changing pages
+    const [step, setStep] = useState(0);
 
-    const {data, setData, post, errors, processing} = useForm({
-        answers: {}
+    //kukuha ng data sa front end 
+    const {data, setData, post, errors, processing} = useForm('SurveyForm', {
+        answers: {
+            personalInfo: {}
+        }
     });
 
+    //pang change ng page
     const next = () => setStep(step + 1);
     const prev = () => setStep(step - 1);
 
-    const handleChange = (key, value) => {
-    setData(prevData => ({
-        ...prevData,
-        answers: {
-            ...prevData.answers,
-            [key]: value
-        }
-    }));
-};
+    //kumukuha ng mismong sagot sa survey
+    const handleChange = (category, key, value) => {
+    setData('answers', {
+        ...data.answers,
+        [category]: {
+        ...data.answers[category],
+        [key]: value,
+        },
+    });
+    };
 
-    // const submit = () => { post(/survey/${survey.id}); };
+    //bind helper function
+    const bindField = (category, key) => {
+      // Matches Laravel's: "answers.personalInfo.last_name"
+      const errorKey = `answers.${category}.${key}`;
+  
+      return {
+          value: data.answers[category]?.[key] || "",
+          error: errors[errorKey], 
+          onChange: (val) => {
+              // Handle both HTML events and direct values from Shadcn UI Select
+              const value = val?.target ? val.target.value : val;
+              handleChange(category, key, value);
+          },
+      };
+  };
+
+      //define niya kung anong part ng category
+      const steps = [
+        { component: PersonalInformationSurvey, category: 'personalInfo' },
+        // { component: EmploymentSurvey, category: 'employmentInfo' },
+        // { component: SkillsSurvey, category: 'skills' },
+      ];
+    
+      //para sa steps ng multipage
+      const CurrentStep = steps[step].component;
+      const currentCategory = steps[step].category;
+      const isLastStep = step === steps.length - 1;
+
+      //track category using steps func
+      const currentCategoryData = questionsData[steps[step].category];
+
+      //submit func
+      const submit = (e) => {
+        e.preventDefault(); // prevent default form submission
+        post('/alumna/survey', data); // send the answers to your backend
+    };
 
 
   return (
@@ -45,24 +88,30 @@ export default function Survey() {
         </header>
 
         <main className='h-full w-1/2'>
-            {step === 1 && (
-                <PersonalInformationSurvey
-                    data={data.answers}
-                    errors={errors}
-                    onChange={handleChange}
-                />
-            )}
+            <form>
+                <CurrentStep bindField={bindField} category={currentCategory} config={currentCategoryData} />
+            </form>
         </main>
 
         <footer className='flex justify-between items-center w-full max-w-4xl py-5 px-3'>
-            <Button asChild size='lg' className='w-30'>
-                <Link>Cancel</Link>
-            </Button>
-
-            <Button asChild size='lg' className='w-30'>
-                <Link>Submit</Link>
-            </Button>
+            {step > 0 && (
+                <Button onClick={prev} size='lg' className='w-30'> 
+                    Previous
+                </Button>
+            )}
+            
+            {!isLastStep ? (
+                <Button onClick={next} size='lg' className='w-30'>
+                    Next
+                </Button>
+            ) : (
+                <Button onClick={submit} size='lg' className='w-30'>
+                    Submit
+                </Button>
+            )}
+            
         </footer>
     </div>
   )
+
 }
