@@ -22,7 +22,7 @@ export default function CoordinatorAnnouncementDeletePrompt({ children }) {
 
       {/* Modal */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+        <div className="fixed inset-0 bg-black/40  flex items-center justify-center z-50 px-4">
 
           {/* Modal Box */}
           <div className="bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6">
