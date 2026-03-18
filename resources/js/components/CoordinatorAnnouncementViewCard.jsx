@@ -3,31 +3,34 @@ import homecoming from "@/assets/homecoming.png";
 
 export default function CoordinatorAnnouncementViewCard() {
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4">
+    <div className="w-full space-y-6">
 
-      {/* TITLE */}
-      <h1 className="text-2xl sm:text-3xl md:text-[32px] font-bold text-[#1E4EA8]">
-        CECT ALUMNI HOMECOMING 2025
-      </h1>
+      {/* LEFT SIDE: TITLE + DATE ABOVE IMAGE */}
+      <div className="flex flex-col items-center md:items-start space-y-4">
 
-      {/* DATE + TIME */}
-      <div className="mt-2 text-gray-600 text-sm sm:text-base">
-        <p>February 20, 2025</p>
-        <p>8:11 PM</p>
+        {/* TITLE + DATE */}
+        <div className="text-center md:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-800 mb-1">
+            CECT ALUMNI HOMECOMING 2025
+          </h1>
+          <p className="text-gray-600">
+            February 20, 2025 • 8:11 PM
+          </p>
+        </div>
+
+        {/* IMAGE */}
+        <div className="flex justify-center w-full">
+          <img
+            src={homecoming}
+            alt="Homecoming"
+            className="w-full max-w-md sm:max-w-lg md:max-w-xl object-cover rounded-md shadow"
+          />
+        </div>
+
       </div>
 
-      {/* IMAGE */}
-      <div className="flex justify-center mt-6 sm:mt-10 mb-6 sm:mb-10">
-        <img
-          src={homecoming}
-          alt="Homecoming"
-          className="w-full max-w-md sm:max-w-lg lg:max-w-xl object-cover rounded-md shadow"
-        />
-      </div>
-
-      {/* DESCRIPTION */}
+      {/* DESCRIPTION (FULL WIDTH) */}
       <div className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base space-y-4">
-
         <p>
           The College of Engineering and Computer Technology (CECT) of
           Wesleyan University–Philippines is pleased to announce the upcoming
@@ -50,7 +53,6 @@ export default function CoordinatorAnnouncementViewCard() {
           gathering. We encourage everyone to join and celebrate the continued
           success and growth of the CECT alumni community.
         </p>
-
       </div>
 
     </div>
