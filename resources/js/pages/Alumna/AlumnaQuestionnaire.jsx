@@ -1,5 +1,10 @@
 import React from 'react'
 import PersonalInformationSurvey from '../../components/survey/personal-info'
+import EmploymentStatusSurvey from "../../components/survey/employment-status";
+import EmploymentHistorySurvey from "../../components/survey/employment-history";
+import SkillsDevelopmentSurvey from "../../components/survey/skills-development";
+import CurriculumComponentsSurvey from "../../components/survey/curriculum-components";
+import WupAttributesSurvey from "../../components/survey/wup-attributes";
 
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import AlumnaLayout from "@/layouts/alumna-layout";

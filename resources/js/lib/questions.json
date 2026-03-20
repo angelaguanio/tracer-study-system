@@ -1,48 +1,579 @@
 {
-    "personalInfo": {
-      "slug": "personal-info",
-      "title": "Personal Information",
-      "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
-      "questions": [
-        {
-          "id": "last_name",
-          "label": "Lastname",
-          "type": "text",
-          "placeholder": "Lastname",
-          "validation": "required|string|min:2|max:50"
-        },
-        {
-          "id": "first_name",
-          "label": "Firstname",
-          "type": "text",
-          "placeholder": "Firstname",
-          "validation": "required|string|min:2|max:50"
-        },
-        {
-          "id": "email",
-          "label": "Email Address",
-          "type": "text",
-          "placeholder": "Email Address",
-          "validation": "required|email"
-        },
-        {
-          "id": "contact",
-          "label": "Mobile Number",
-          "type": "tel",
-          "placeholder": "09123456789",
-          "validation": "required|digits:11"
-        },
-        {
-          "id": "degree",
-          "label": "Bachelor's Degree",
-          "type": "select",
-          "options": [
-            { "label": "Bachelor of Science in Computer Engineering", "value": "bscpe" },
-            { "label": "Bachelor of Science in Electronic Engineering", "value": "bsece" },
-            { "label": "Bachelor of Science in Information Technology", "value": "bsit" }
-          ],
-          "validation": "required"
-        }
-      ]
+  "personalInfo": {
+    "slug": "personal-info",
+    "title": "Personal Information",
+    "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
+    "questions": [
+      {
+        "group": "name",
+        "label": "Name:",
+        "fields": [
+          {
+            "id": "first_name",
+            "type": "text",
+            "placeholder": "Firstname",
+            "validation": "required|string|min:2|max:50"
+          },
+          {
+            "id": "middle_name",
+            "type": "text",
+            "placeholder": "Middlename",
+            "validation": "required|string|min:2|max:50"
+          },
+          {
+            "id": "last_name",
+            "type": "text",
+            "placeholder": "Lastname",
+            "validation": "required|string|min:2|max:50"
+          }
+        ]
+      },
+      {
+        "group": "contact",
+        "fields": [
+          {
+            "id": "address",
+            "label": "Home Address:",
+            "type": "text",
+            "placeholder": "Address",
+            "validation": "required|string|max:255"
+          },
+          {
+            "id": "email",
+            "label": "Email Address",
+            "type": "text",
+            "placeholder": "Email",
+            "validation": "required|email"
+          },
+          {
+            "id": "contact",
+            "label": "Mobile Number:",
+            "type": "tel",
+            "placeholder": "Mobile Number",
+            "validation": "required|digits:11"
+          }
+        ]
+      },
+      {
+        "group": "education",
+        "fields": [
+          {
+            "id": "degree",
+            "label": "Bachelors Degree Obtained from WUP:",
+            "type": "select",
+            "placeholder": "Choose from the following choices",
+            "options": [
+              {
+                "label": "Bachelor of Science in Computer Engineering",
+                "value": "bscpe"
+              },
+              {
+                "label": "Bachelor of Science in Electronic Engineering",
+                "value": "bsece"
+              },
+              {
+                "label": "Bachelor of Science in Information Technology",
+                "value": "bsit"
+              }
+            ],
+            "validation": "required"
+          },
+          {
+            "id": "year_graduated",
+            "label": "Year Graduated:",
+            "type": "year_select",
+            "placeholder": "YYYY",
+            "min": 1990,
+            "max": 2025,
+            "validation": "required|digits:4"
+          }
+        ]
+      }
+    ]
+  },
+  "employmentStatus": {
+    "slug": "employment-status",
+    "title": "Employment Status",
+    "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
+    "questions": [
+      {
+        "id": "continuing_education",
+        "label": "What continuing professional education were/are you engaged in:",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Graduate Study",
+            "value": "graduate_study"
+          },
+          {
+            "label": "Attending seminars/trainings",
+            "value": "seminars_trainings"
+          },
+          {
+            "label": "Others (please specify):",
+            "value": "others"
+          }
+        ],
+        "validation": "required"
+      },
+      {
+        "id": "is_employed",
+        "label": "Are you currently employed?",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
+        ],
+        "validation": "required"
+      },
+      {
+        "id": "employment_status",
+        "label": "Employment Status",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Permanent/Regular",
+            "value": "permanent"
+          },
+          {
+            "label": "Probationary",
+            "value": "probationary"
+          }
+        ],
+        "validation": "required_if:is_employed,yes"
+      },
+      {
+        "id": "company_name",
+        "label": "Name of Company/Institution of current employment:",
+        "type": "text",
+        "placeholder": "Company/Institution",
+        "validation": "required_if:is_employed,yes"
+      },
+      {
+        "id": "nature_of_company",
+        "label": "Nature of Company:",
+        "type": "text",
+        "placeholder": "e.g. Software Development, IT Support, Networking",
+        "validation": "required_if:is_employed,yes"
+      },
+      {
+        "id": "monthly_salary",
+        "label": "Monthly Salary (please specify):",
+        "type": "text",
+        "placeholder": "e.g. ₱20,000",
+        "validation": "required_if:is_employed,yes"
+      }
+    ]
+  },
+  "employmentHistory": {
+    "slug": "employment-history",
+    "title": "Employment History",
+    "desc": "Please select the option that applies to you or supply the needed information as completely as possible.",
+    "questions": [
+      {
+        "id": "company_name",
+        "label": "Name of Company:",
+        "type": "text",
+        "placeholder": "Company/Employer Name",
+        "validation": "required|string|max:255"
+      },
+      {
+        "id": "position",
+        "label": "Position:",
+        "type": "text",
+        "placeholder": "Position",
+        "validation": "required|string|max:100"
+      },
+      {
+        "id": "duration_of_stay",
+        "label": "Duration of stay:",
+        "type": "text",
+        "placeholder": "e.g. 6 months, 3 years",
+        "validation": "required|string|max:100"
+      },
+      {
+        "id": "first_job_source",
+        "label": "How did you find your first job?",
+        "type": "radio_grid",
+        "options": [
+          {
+            "label": "Response to advertisements",
+            "value": "advertisements"
+          },
+          {
+            "label": "Information from friends",
+            "value": "friends"
+          },
+          {
+            "label": "Recommended by someone",
+            "value": "recommended"
+          },
+          {
+            "label": "Job Fair",
+            "value": "job_fair"
+          },
+          {
+            "label": "Walk-in applicant",
+            "value": "walk_in"
+          },
+          {
+            "label": "University job placement",
+            "value": "university_placement"
+          },
+          {
+            "label": "Others (please specify):",
+            "value": "others"
+          }
+        ],
+        "validation": "required"
+      },
+      {
+        "id": "job_hunting_problems",
+        "label": "What problems did you encounter during your job hunting?",
+        "type": "text",
+        "placeholder": "e.g. No job openings",
+        "validation": "required|string|max:255"
+      },
+      {
+        "id": "suggestions",
+        "label": "What are your suggestions to enhance the competitiveness of WUP graduates? Feel free to specify some areas that you believe needs to be improved?",
+        "type": "text",
+        "placeholder": "e.g. More training on soft skills",
+        "validation": "required|string|max:500"
+      },
+      {
+        "id": "is_in_business",
+        "label": "If not employed, are you engaged in any business",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
+        ],
+        "validation": "required"
+      },
+      {
+        "id": "nature_of_business",
+        "label": "Nature of Business:",
+        "type": "text",
+        "placeholder": "e.g. BPO, Systems Integration,",
+        "validation": "nullable|string|max:255"
+      },
+      {
+        "id": "community_projects",
+        "label": "What community projects were/are you involved in?",
+        "type": "radio_grid",
+        "options": [
+          {
+            "label": "Medical/Dental mission",
+            "value": "medical_dental"
+          },
+          {
+            "label": "Conducting training",
+            "value": "conducting_training"
+          },
+          {
+            "label": "Livelihood projects",
+            "value": "livelihood"
+          },
+          {
+            "label": "Others (please specify)",
+            "value": "others"
+          }
+        ],
+        "validation": "required"
+      }
+    ]
+  },
+  "skillsDevelopment": {
+    "slug": "skills-development",
+    "title": "Skills Development",
+    "desc": "Please rate the extent at which the following skills were developed in you as a result of your education at WUP. Select the rating that corresponds to your answer. Please be guided by the following rating scale:",
+    "rating_scale": [
+      {
+        "label": "4 - Very Much",
+        "value": "4"
+      },
+      {
+        "label": "3 - Moderate",
+        "value": "3"
+      },
+      {
+        "label": "2 - Slight",
+        "value": "2"
+      },
+      {
+        "label": "1 - Very Little",
+        "value": "1"
+      }
+    ],
+    "questions": [
+      {
+        "id": "skill_apply_knowledge",
+        "label": "Ability to apply knowledge gained in school to work setting.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_written_communication",
+        "label": "Written communication skills.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_oral_communication",
+        "label": "Oral communication skills",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_interpersonal",
+        "label": "Interpersonal/Social Skills - the ability to relate with co-workers and work with a group.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_problem_solving",
+        "label": "Problem solving skills - the ability to analyze work problems and apply appropriate solutions.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_decision_making",
+        "label": "Decision making skills - ability to make sound decisions based on facts rather than emotion",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_min_supervision",
+        "label": "Ability to perform a task with minimum supervision.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_confidence",
+        "label": "Confidence in one's ability to perform a given task effectively.",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_technical",
+        "label": "Technical skills (use of computers and other technical gadgets in work setting)",
+        "type": "rating",
+        "validation": "required"
+      },
+      {
+        "id": "skill_continuous_learning",
+        "label": "Desire for continuous learning like attending trainings, seminars, graduate study",
+        "type": "rating",
+        "validation": "required"
+      }
+    ]
+  },
+  "curriculumComponents": {
+    "slug": "curriculum-components",
+    "title": "Curriculum Components",
+    "desc": "Please rate the usefulness of the following components of curriculum to your work. Select the rating that corresponds to your answer. Please be guided by the following rating scale:",
+    "rating_scale": [
+      {
+        "label": "4 - Very Useful",
+        "value": "4"
+      },
+      {
+        "label": "3 - Moderate Useful",
+        "value": "3"
+      },
+      {
+        "label": "2 - Slight Useful",
+        "value": "2"
+      },
+      {
+        "label": "1 - Not Useful",
+        "value": "1"
+      }
+    ],
+    "groups": [
+      {
+        "group": "Academic Programs",
+        "questions": [
+          {
+            "id": "curr_general_education",
+            "label": "General Education (Social Sciences, English, Math, Natural Sciences)",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_professional_subjects",
+            "label": "Professional Subjects (major subjects)",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_elective_subjects",
+            "label": "Elective Subjects",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      },
+      {
+        "group": "Academic Works",
+        "questions": [
+          {
+            "id": "curr_research",
+            "label": "Doing research, term papers",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_field_work",
+            "label": "Field work/ OJT/ Practicum",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_projects",
+            "label": "Doing projects",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      },
+      {
+        "group": "Extra-curricular",
+        "questions": [
+          {
+            "id": "curr_student_orgs",
+            "label": "Joining student organizations and societies",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_student_paper",
+            "label": "Writing in student paper",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "curr_competitions",
+            "label": "Joining competitions (Quiz bees, cultural and sports, etc.)",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      }
+    ],
+    "extra_question": {
+      "id": "curr_other_experiences",
+      "label": "What other experiences at WUP did you find useful in your work? Please specify:",
+      "type": "text",
+      "placeholder": "Enter Lastname",
+      "validation": "nullable|string|max:500"
     }
+  },
+  "wupAttributes": {
+    "slug": "wup-attributes",
+    "title": "WUP Attributes",
+    "desc": "Wesleyan University-Philippines stands for scholarship, service, and character. Please rate the attributes listed below that were visible to every Wesleyan graduates. Select what corresponds to your answer.",
+    "rating_scale": [
+      {
+        "label": "4 - Agree",
+        "value": "4"
+      },
+      {
+        "label": "3 - Moderate Agree",
+        "value": "3"
+      },
+      {
+        "label": "2 - Slight Agree",
+        "value": "2"
+      },
+      {
+        "label": "1 - Disagree",
+        "value": "1"
+      }
+    ],
+    "groups": [
+      {
+        "group": "Character",
+        "questions": [
+          {
+            "id": "char_integrity",
+            "label": "Weleyanians consistently demonstrate integrity in their actions and decisions.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "char_respect",
+            "label": "Weleyanians treat others with respect and empathy, regardless of their background or beliefs.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "char_responsibility",
+            "label": "Weleyanians take responsibility for their mistakes and learn from them.",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      },
+      {
+        "group": "Service",
+        "questions": [
+          {
+            "id": "serv_community",
+            "label": "Weleyanians are actively involved in serving the community.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "serv_impact",
+            "label": "Weleyanians are committed to using their skills and knowledge to make a positive impact on society.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "serv_help",
+            "label": "Weleyanians seek opportunities to help those in need.",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      },
+      {
+        "group": "Scholarship",
+        "questions": [
+          {
+            "id": "schol_lifelong",
+            "label": "Weleyanians are dedicated to lifelong learning and intellectual growth.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "schol_excellence",
+            "label": "Weleyanians strive for excellence in their academic pursuits.",
+            "type": "rating",
+            "validation": "required"
+          },
+          {
+            "id": "schol_knowledge",
+            "label": "Weleyanians actively seek out opportunities to expand their knowledge and skills.",
+            "type": "rating",
+            "validation": "required"
+          }
+        ]
+      }
+    ]
   }
+}

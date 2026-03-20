@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 import PersonalInformationSurvey from '../../components/survey/personal-info'
+import EmploymentStatusSurvey from '../../components/survey/employment-status'
+import EmploymentHistorySurvey from '../../components/survey/employment-history'
+import SkillsDevelopmentSurvey from '../../components/survey/skills-development'
+import CurriculumComponentsSurvey from "../../components/survey/curriculum-components";
+import WupAttributesSurvey from "../../components/survey/wup-attributes";
 import cect from '../../assets/wup_cect.png';
 import logo from '../../assets/logo final.png'
 import wuplogo from '../../assets/wup.png'
@@ -7,24 +12,24 @@ import cectlogo from '../../assets/wup_cect.png'
 import { Button } from '../../components/ui/button';
 import { Link, useForm } from '@inertiajs/react';
 import questionsData from "../../lib/questions.json";
-
-
+ 
 export default function Survey() {
-
+ 
     //usestate for changing pages
     const [step, setStep] = useState(0);
-
+ 
     //kukuha ng data sa front end 
     const {data, setData, post, errors, processing} = useForm('SurveyForm', {
         answers: {
-            personalInfo: {}
+            personalInfo: {},
+            employmentStatus: {},
         }
     });
-
+ 
     //pang change ng page
     const next = () => setStep(step + 1);
     const prev = () => setStep(step - 1);
-
+ 
     //kumukuha ng mismong sagot sa survey
     const handleChange = (category, key, value) => {
     setData('answers', {
@@ -35,7 +40,7 @@ export default function Survey() {
         },
     });
     };
-
+ 
     //bind helper function
     const bindField = (category, key) => {
       // Matches Laravel's: "answers.personalInfo.last_name"
@@ -51,29 +56,32 @@ export default function Survey() {
           },
       };
   };
-
+ 
       //define niya kung anong part ng category
       const steps = [
         { component: PersonalInformationSurvey, category: 'personalInfo' },
-        // { component: EmploymentSurvey, category: 'employmentInfo' },
-        // { component: SkillsSurvey, category: 'skills' },
+        { component: EmploymentStatusSurvey, category: 'employmentStatus' },
+        { component: EmploymentHistorySurvey, category: 'employmentHistory' },
+        { component: SkillsDevelopmentSurvey, category: 'skillsDevelopment' },
+        { component: CurriculumComponentsSurvey, category: 'curriculumComponents' },
+        { component: WupAttributesSurvey, category: 'wupAttributes' },
       ];
     
       //para sa steps ng multipage
       const CurrentStep = steps[step].component;
       const currentCategory = steps[step].category;
       const isLastStep = step === steps.length - 1;
-
+ 
       //track category using steps func
       const currentCategoryData = questionsData[steps[step].category];
-
+ 
       //submit func
       const submit = (e) => {
         e.preventDefault(); // prevent default form submission
         post('/alumna/survey', data); // send the answers to your backend
     };
-
-
+ 
+ 
   return (
     <div className='flex flex-col min-h-screen w-full items-center p-5 overflow-y-auto'>
         <header className='flex flex-col justify-center items-center p-8'>
@@ -82,17 +90,17 @@ export default function Survey() {
                 <img src={logo} className='aspect-square h-40'/>
                 <img src={cectlogo} className='aspect-square h-18'/>
             </div>
-
+ 
             <h1 className='font-inria text-2xl font-bold'>TRACER STUDY SYSTEM</h1>
             <p className='font-inria text-xl'>COLLEGE OF ENGINEERING AND COMPUTER TECHNOLOGY </p>
         </header>
-
+ 
         <main className='h-full w-1/2'>
             <form>
                 <CurrentStep bindField={bindField} category={currentCategory} config={currentCategoryData} />
             </form>
         </main>
-
+ 
         <footer className='flex justify-between items-center w-full max-w-4xl py-5 px-3'>
             {step > 0 && (
                 <Button onClick={prev} size='lg' className='w-30'> 
@@ -113,5 +121,4 @@ export default function Survey() {
         </footer>
     </div>
   )
-
 }
