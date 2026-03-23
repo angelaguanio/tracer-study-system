@@ -30,6 +30,67 @@ export default function AlumnaOffice() {
           </h2>
         </div>
 
+        {/* OFFICERS SECTION */}
+        <div className="bg-[#F3F7FA] py-16">
+
+          {/* WHITE CONTAINER */}
+          <div className="bg-white max-w-8xl mx-auto py-16 px-6 shadow-sm -mt-10 rounded-2xl">
+
+            <div className="max-w-2xl mx-auto flex flex-col gap-10">
+
+              {/* CARD 1 */}
+              <div className="bg-[#F3F7FA] rounded-2xl shadow-md p-8 text-center hover:shadow-xl transition duration-300">
+                <div className="w-20 h-20 mx-auto flex items-center justify-center bg-[#001D4A] text-white rounded-full text-xl font-bold">
+                  DIR.
+                </div>
+                <h3 className="mt-4 font-semibold text-[#45556C] uppercase">
+                  Director, Office for Alumni Affairs
+                </h3>
+                <p className="mt-2 text-sm text-[#45556C]">
+                  Mr. Joept G. Portana, Ph.D, LPT
+                </p>
+                <p className="text-sm text-gray-500">
+                  jgportana@wesleyan.edu.ph
+                </p>
+              </div>
+
+              {/* CARD 2 */}
+              <div className="bg-[#F3F7FA] rounded-2xl shadow-md p-8 text-center hover:shadow-xl transition duration-300">
+                <div className="w-20 h-20 mx-auto flex items-center justify-center bg-[#001D4A] text-white rounded-full text-xl font-bold">
+                  S
+                </div>
+                <h3 className="mt-4 font-semibold text-[#45556C] uppercase">
+                  Staff, Office for Alumni Affairs
+                </h3>
+                <p className="mt-2 text-sm text-[#45556C]">
+                  Ms. Quennie Rose P. Herrera, MPA, LPT
+                </p>
+                <p className="text-sm text-gray-500">
+                  alumni@wesleyan.edu.ph
+                </p>
+              </div>
+
+              {/* CARD 3 */}
+              <div className="bg-[#F3F7FA] rounded-2xl shadow-md p-8 text-center hover:shadow-xl transition duration-300">
+                <div className="w-20 h-20 mx-auto flex items-center justify-center bg-[#001D4A] text-white rounded-full text-xl font-bold">
+                  S
+                </div>
+                <h3 className="mt-4 font-semibold text-[#45556C] uppercase">
+                  Staff, Office for Alumni Affairs
+                </h3>
+                <p className="mt-2 text-sm text-[#45556C]">
+                  Mr. Mark Sam E. Antonio
+                </p>
+                <p className="text-sm text-gray-500">
+                  mseantonio@wesleyan.edu.ph
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
       </AlumnaLayout>
     </>
   )
