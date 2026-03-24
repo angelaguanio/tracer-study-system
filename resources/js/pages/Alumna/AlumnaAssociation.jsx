@@ -1,6 +1,6 @@
 import React from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
-import { departments } from "@/lib/alumnaassociation_datalist";
+import { departments } from "@/lib/AlumnaAssociation_Datalist";
 import { DepartmentSection } from "@/components/AlumnaAssociation_Components";
 
 function AlumnaAssociation() {
