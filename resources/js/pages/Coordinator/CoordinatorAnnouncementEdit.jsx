@@ -1,5 +1,5 @@
 import React from "react";
-import CoordinatorLayout from "@/Layouts/coord-layout";
+import CoordinatorLayout from "@/layouts/coord-layout";
 import { Head } from "@inertiajs/react";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
