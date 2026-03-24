@@ -2,11 +2,11 @@ import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import { Head } from "@inertiajs/react";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
-import { Button } from "@/Components/ui/button";
-import { Label } from "@/Components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function CoordinatorAnnouncementEdit() {
     return (
