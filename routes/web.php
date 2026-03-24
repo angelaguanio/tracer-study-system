@@ -56,6 +56,9 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //contact us
         Route::get('/contact', function () {return Inertia::render('Alumna/ContactUs'); })->name('contact');
+
+         // about page 
+        Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
         
         // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
@@ -77,5 +80,6 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
+        Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
     });
 });
