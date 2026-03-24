@@ -4,13 +4,13 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 
-export default function TextInput({ labelName, labelTitle,error, icon:Icon, type, ...props }) {
+export default function TextInput({ labelName, labelTitle, error, icon:Icon, type, ...props }) {
 
     const [show, setShow] = useState(false);
     const isPassword = type === "password";
 
     return (
-        <>
+        <div className="flex flex-col gap-2 w-full">
             {labelTitle && (
                 <Label {...props} htmlFor={labelName}>
                     {labelTitle}
@@ -38,6 +38,6 @@ export default function TextInput({ labelName, labelTitle,error, icon:Icon, type
             {error && (
                 <p className=" text-red-500 text-sm mt-1 p-1">{error}</p>
             )}
-        </>
+        </div>
     );
 }

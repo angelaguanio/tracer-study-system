@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
+use App\Http\Controllers\QuestionnaireController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,8 +36,14 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         // home page
         Route::get('/home', AlumnaHomeController::class)->name('home');
 
-        // logout
-        Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        // questionnaire page
+        Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
+
+        // questionnaire btn
+        Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');
+
+        //store the survey answers
+        Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
 
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
@@ -46,6 +53,15 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //office
         Route::get('/office', function () { return Inertia::render('Alumna/AlumnaOffice'); })->name('office');
+
+        //contact us
+        Route::get('/contact', function () {return Inertia::render('Alumna/ContactUs'); })->name('contact');
+
+         // about page 
+        Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
+        
+        // logout
+        Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
 
     });
 });
@@ -62,5 +78,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+        Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
+        Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
     });
 });
