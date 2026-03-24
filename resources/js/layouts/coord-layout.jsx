@@ -1,9 +1,8 @@
 import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
-import { SidebarProvider, SidebarTrigger } from "@/Components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
 import { LayoutDashboard, Bell,CircleUserRound, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
-import { SidebarInset } from '../components/ui/sidebar';
 
 export default function CoordinatorLayout({children}) {
   const navItems = [
