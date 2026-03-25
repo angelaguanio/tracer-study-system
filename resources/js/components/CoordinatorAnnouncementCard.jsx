@@ -1,25 +1,12 @@
 "use client";
 
 import { Eye, Pencil, Trash2 } from "lucide-react";
-
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation"; // import delete modal
 
 export default function CoordinatorAnnouncementCard({ announcements }) {
 
-  // ✅ COLUMNS
   const columns = [
     {
       accessorKey: "title",
@@ -58,10 +45,12 @@ export default function CoordinatorAnnouncementCard({ announcements }) {
               </button>
 
               {/* DELETE */}
-              <button className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 transition w-full sm:w-auto">
-                <Trash2 size={16} />
-                <span className="hidden sm:inline">Delete</span>
-              </button>
+              <CoordinatorAnnouncementDeletePrompt>
+                <button className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 transition w-full sm:w-auto">
+                  <Trash2 size={16} />
+                  <span className="hidden sm:inline">Delete</span>
+                </button>
+              </CoordinatorAnnouncementDeletePrompt>
 
             </div>
 
@@ -71,7 +60,6 @@ export default function CoordinatorAnnouncementCard({ announcements }) {
     },
   ];
 
-  // TABLE LOGIC
   const table = useReactTable({
     data: announcements,
     columns,
@@ -80,39 +68,26 @@ export default function CoordinatorAnnouncementCard({ announcements }) {
 
   return (
     <div className="rounded-md border bg-white shadow-sm overflow-x-auto">
-
       <Table>
-
-        {/* HEADER */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-sky-300">
               {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className="p-4 font-bold text-black text-sm sm:text-base cursor-default select-none"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                <TableHead key={header.id} className="p-4 font-bold text-black text-sm sm:text-base cursor-default select-none">
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
 
-        {/* BODY */}
         <TableBody>
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} className="border-t">
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="p-4">
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
@@ -125,9 +100,7 @@ export default function CoordinatorAnnouncementCard({ announcements }) {
             </TableRow>
           )}
         </TableBody>
-
       </Table>
-
     </div>
   );
 }
