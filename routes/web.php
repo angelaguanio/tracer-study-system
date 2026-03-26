@@ -81,5 +81,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
+    
+    //announcement
+      Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
+
+        
+        });
     });
-});
