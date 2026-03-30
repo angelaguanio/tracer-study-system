@@ -95,8 +95,11 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
+      //announcement
+        Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
+
 
         // Analytics index — list of surveys to pick from
         Route::get('/analytics', function () {
@@ -134,5 +137,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
         Route::put('/questions/{question}/move', [QuestionController::class, 'move'])->name('questions.move');
         Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+
+        
+        });
     });
-});
