@@ -93,9 +93,11 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
+        Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
       //announcement
+        Route::get('/announcement/create', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementCreate'); })->name('announcement/create');
         Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
