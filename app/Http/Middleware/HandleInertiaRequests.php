@@ -56,6 +56,20 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'flash' => [
+                'section' => $request->session()->get('section'),
+            ],
         ];
+    }
+
+    public function handle(Request $request, \Closure $next): \Symfony\Component\HttpFoundation\Response
+    {
+        $response = parent::handle($request, $next);
+
+        // Prevent browser from caching authenticated pages so the back button doesn't show stale content after logout
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+
+        return $response;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureAlumna;
+use App\Http\Middleware\EnsureCoordinator;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -15,10 +17,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance']);
-        $middleware->redirectGuestsTo(fn () => route('alumna.login'));
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if (str_starts_with($request->path(), 'coordinator')) {
+                return route('coordinator.login');
+            }
+            return route('alumna.login');
+        });
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ]);
+        $middleware->alias([
+            'coordinator' => EnsureCoordinator::class,
+            'alumna'      => EnsureAlumna::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -42,7 +42,7 @@ export default function AlumnaLogin() {
   }
 
   return (
-       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl ">
+       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl bg-white ">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
         </CardHeader>
@@ -63,7 +63,8 @@ export default function AlumnaLogin() {
             placeholder="Email Address" 
             onChange={handleChange}  
             icon={UserRound}
-            className="pl-10"
+            className="pl-10 text-black border-gray-400"
+            
           />
 
           <TextInput 
@@ -73,7 +74,7 @@ export default function AlumnaLogin() {
             placeholder="Password" 
             onChange={handleChange} 
             icon={Lock}
-            className="pl-10"
+            className="pl-10 text-black border-gray-400"
           />
             
 
@@ -81,7 +82,7 @@ export default function AlumnaLogin() {
           </form>
         </CardContent>
 
-        <CardFooter className="flex flex-row items-center justify-center gap-1 w-full">
+        <CardFooter className="flex flex-row items-center justify-center gap-1 w-full text-black ">
           <p>Don't have an account?</p> 
           <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
         </CardFooter>

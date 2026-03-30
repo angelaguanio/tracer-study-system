@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('survey_submissions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->timestamp('submitted_at')->nullable();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('year_graduated')->nullable()->after('user_role');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('survey_submissions');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('year_graduated');
+        });
     }
 };

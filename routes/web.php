@@ -5,16 +5,24 @@ use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
 use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\SurveyAnalyticsController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\SurveyResponseController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Render login selection page (guest)
-Route::middleware('guest')->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Auth/Login');
-    })->name('role.select');
-});
+Route::get('/', function () {
+    if (auth()->check()) {
+        $role = auth()->user()->user_role;
+        if ($role === 'coordinator') return redirect()->route('coordinator.dashboard');
+        if ($role === 'alumna') return redirect()->route('alumna.home');
+    }
+    return Inertia::render('Auth/Login');
+})->name('role.select');
 
 //============= ALUMNA ROUTES =======================
 Route::prefix('alumna')->name('alumna.')->group(function () {
@@ -56,10 +64,21 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //contact us
         Route::get('/contact', function () {return Inertia::render('Alumna/ContactUs'); })->name('contact');
+
+         // about page 
+        Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
         
         // logout
-        Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        Route::post('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
 
+    });
+
+    // Survey routes — auth + alumna middleware
+    Route::middleware(['auth', 'alumna'])->group(function () {
+        Route::get('/surveys', [SurveyResponseController::class, 'index'])->name('surveys.index');
+        Route::get('/surveys/{survey}', [SurveyResponseController::class, 'show'])->name('surveys.show');
+        Route::post('/surveys/{survey}/draft', [SurveyResponseController::class, 'saveSection'])->name('surveys.draft');
+        Route::post('/surveys/{survey}/submit', [SurveyResponseController::class, 'submit'])->name('surveys.submit');
     });
 });
 
@@ -75,8 +94,52 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+        Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
+      //announcement
         Route::get('/announcement/create', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementCreate'); })->name('announcement/create');
+        Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
+        Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
+        Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
 
+
+        // Analytics index — list of surveys to pick from
+        Route::get('/analytics', function () {
+            $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
+            return Inertia::render('Coordinator/AnalyticsIndex', ['surveys' => $surveys]);
+        })->name('analytics');
+
+        // Survey analytics (legacy route kept for compatibility)
+        Route::get('/surveys/{survey}/analytics', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics');
     });
-});
+
+    // Survey management routes — auth + coordinator middleware
+    Route::middleware(['auth', 'coordinator'])->group(function () {
+        // Survey CRUD
+        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+        Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+        Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+
+        // Survey Builder (Inertia page)
+        Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
+
+        // Analytics
+        Route::get('/surveys/{survey}/analytics/data', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics.data');
+
+        // Sections
+        Route::post('/surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
+        Route::put('/surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
+        Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
+        Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+
+        // Questions
+        Route::post('/sections/{section}/questions', [QuestionController::class, 'store'])->name('questions.store');
+        Route::put('/sections/{section}/questions/reorder', [QuestionController::class, 'reorder'])->name('questions.reorder');
+        Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+        Route::put('/questions/{question}/move', [QuestionController::class, 'move'])->name('questions.move');
+        Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+
+        
+        });
+    });
