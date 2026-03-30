@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react'
+import { Link, usePage, router } from '@inertiajs/react'
 import React from 'react'
 import { SidebarTrigger } from './ui/sidebar';
 import { Button } from './ui/button';
@@ -8,6 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "../components/ui/dropdown-menu"
+import ModeToggle from './mode-toggle';
   
 
 export default function HeaderCoord({ navItems = [] }) {
@@ -22,25 +23,27 @@ export default function HeaderCoord({ navItems = [] }) {
             <h1 className='text-2xl font-medium '>{activeItem ? activeItem.name : "Dashboard"}</h1>
         </div>
 
-         {/* profile */}
-         <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="nav" className="py-6">
-                        {/* <ProfileTemp/> */}
-                        Dropdown haha next time na ung user
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                        <Link>Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>                    
-                        <Button asChild variant="red">
-                            <Link href={route('coordinator.logout')}>Logout</Link>
+        <div className='flex flex-row items-center gap-2'>
+            <ModeToggle />
+
+            {/* profile */}
+            <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="nav" className="py-6">
+                            {/* <ProfileTemp/> */}
+                            Dropdown haha next time na ung user
                         </Button>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                            <Link>Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => router.post(route('coordinator.logout'))}>
+                            Logout
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+        </div>
     </header>
   )
 }

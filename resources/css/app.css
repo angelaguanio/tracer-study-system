@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap');
 
 @import 'tailwindcss';
 
@@ -69,10 +70,12 @@
     --color-navbar: oklch(0.7733 0.124 244.97);
     --color-navbar-text: oklch(0.2428 0.0912 258.33);
 
-    --color-app-bg: oklch(0.9791 0.0125 228.92)
+    --color-app-bg: oklch(0.9791 0.0125 228.92);
+    --color-survey-bg: oklch(0.9651 0.0165 259.42);
 
     --font-inter: "Inter", sans-serif;
     --font-inria: "Inria Sans", sans-serif;
+    --font-bruno: "Bruno Ace SC", sans-serif;
 
 }
 
@@ -145,7 +148,7 @@
     --radius:
         0.625rem;
     --sidebar:
-        oklch(0.985 0 0);
+        oklch(0.7733 0.124 244.97);
     --sidebar-foreground:
         oklch(0.145 0 0);
     --sidebar-primary:
@@ -153,9 +156,9 @@
     --sidebar-primary-foreground:
         oklch(0.985 0 0);
     --sidebar-accent:
-        oklch(0.97 0 0);
+        oklch(0.604 0.1668 250.29);
     --sidebar-accent-foreground:
-        oklch(0.205 0 0);
+        oklch(1 0 0);
     --sidebar-border:
         oklch(0.922 0 0);
     --sidebar-ring:
