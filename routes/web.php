@@ -11,6 +11,8 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 
+use App\Http\Controllers\AnnouncementController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -102,7 +104,22 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
 
-
+        //mga inadd ko (reygie)
+        // INDEX
+        Route::get('/announcement', [AnnouncementController::class, 'index']) ->name('announcement.index'); 
+        // CREATE 
+        Route::get('/announcement/create', [AnnouncementController::class, 'create']) ->name('announcement.create'); 
+        // STORE 
+        Route::post('/announcement', [AnnouncementController::class, 'store']) ->name('announcement.store'); 
+        // VIEW
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']) ->name('coordinator.announcement.show');
+        //EDIT
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit']) ->name('announcement.edit');
+        // UPDATE
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');        
+        // DELETE
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']) ->name('announcement.destroy');
+        
         // Analytics index — list of surveys to pick from
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();

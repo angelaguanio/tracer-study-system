@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Trash2, Check } from "lucide-react";
+import { router } from "@inertiajs/react";
 
-export default function CoordinatorAnnouncementDeletePromptandConfirmation({ children }) {
+export default function CoordinatorAnnouncementDeletePromptandConfirmation({ children, announcementId }) {
   const [open, setOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -9,9 +10,21 @@ export default function CoordinatorAnnouncementDeletePromptandConfirmation({ chi
   const closeModal = () => setOpen(false);
 
   const confirmDelete = () => {
-    console.log("Deleted!"); // dito mo puwede ilagay API call
-    setOpen(false);
-    setShowSuccess(true);
+    if (!announcementId) {
+      console.error("No announcementId provided!");
+      return;
+    }
+
+    // Call Laravel DELETE route via Inertia
+    router.delete(`/coordinator/announcement/${announcementId}`, {
+      onSuccess: () => {
+        setOpen(false);
+        setShowSuccess(true);
+      },
+      onError: (error) => {
+        console.error("Delete failed:", error);
+      },
+    });
   };
 
   useEffect(() => {
@@ -38,16 +51,22 @@ export default function CoordinatorAnnouncementDeletePromptandConfirmation({ chi
               </div>
               <h2 className="text-base sm:text-lg font-semibold">Are you sure?</h2>
             </div>
-            <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed">
+            <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed text-left">
               This will permanently delete this announcement.
               <br />
               This action cannot be undone.
             </p>
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
-              <button onClick={closeModal} className="w-full sm:w-auto px-4 py-2 rounded-md border bg-gray-100 hover:bg-gray-200">
+              <button 
+                onClick={closeModal} 
+                className="w-full sm:w-auto px-4 py-2 rounded-md border bg-gray-100 hover:bg-gray-200"
+              >
                 Cancel
               </button>
-              <button onClick={confirmDelete} className="w-full sm:w-auto px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700">
+              <button 
+                onClick={confirmDelete} 
+                className="w-full sm:w-auto px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              >
                 Delete
               </button>
             </div>

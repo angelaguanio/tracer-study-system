@@ -3,62 +3,105 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Models\Announcement;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $announcements = Announcement::latest()->get();
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncement', [
+            'announcements' => $announcements,
+            'flash' => session()->all(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title'   => 'required|string|max:255',
+            'details' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
+        ]);
+
+        $imagePath = $request->file('image')
+            ? $request->file('image')->store('announcements', 'public')
+            : null;
+
+        $fullImageUrl = $imagePath ? asset("storage/$imagePath") : null;
+
+        Announcement::create([
+            'title'   => $request->title,
+            'details' => $request->details,
+            'image'   => $fullImageUrl,
+        ]);
+
+        return redirect()
+            ->route('coordinator.announcement.index')
+            ->with('success', 'Announcement created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Announcement $announcement)
     {
-        //
+        return Inertia::render('Coordinator/CoordinatorAnnouncementView', [
+            'announcement' => $announcement,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Announcement $announcement)
     {
-        //
+        return Inertia::render('Coordinator/CoordinatorAnnouncementEdit', [
+            'announcement' => $announcement,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Announcement $announcement)
     {
-        //
+        // Validate input
+        $request->validate([
+            'title'   => 'required|string|max:255',
+            'details' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
+        ]);
+
+        // Keep old image if no new file uploaded
+        $imagePath = $announcement->image;
+
+        if ($request->hasFile('image')) {
+            // Optional: delete old image file
+            // Storage::disk('public')->delete(str_replace(asset('storage/'), '', $announcement->image));
+
+            $path = $request->file('image')->store('announcements', 'public');
+            $imagePath = asset("storage/$path");
+        }
+
+        // Update announcement
+        $announcement->update([
+            'title'   => $request->title,
+            'details' => $request->details,
+            'image'   => $imagePath,
+        ]);
+
+        // Redirect back to announcement page
+        return redirect('/coordinator/announcement')
+                            ->with('success', 'Updated successfully');
+        
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Announcement $announcement)
     {
-        //
+        $announcement->delete();
+
+        return redirect()
+            ->route('coordinator.announcement.index')
+            ->with('success', 'Announcement deleted successfully.');
     }
 }
