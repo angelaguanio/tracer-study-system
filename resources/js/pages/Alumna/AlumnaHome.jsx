@@ -44,7 +44,7 @@ export default function AlumnaHome() {
         </section>
 
         {/* WELCOME */}
-        <section className="border-t border-gray-200 py-10 px-6 text-center">
+        <section className="border-t border-gray-200 py-20 px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
               Welcome to Alumni Connect
