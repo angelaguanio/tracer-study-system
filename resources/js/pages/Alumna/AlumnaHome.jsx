@@ -2,9 +2,48 @@ import React from 'react';
 import AlumnaLayout from '../../layouts/alumna-layout';
 import alumniHomeImg from '../../assets/alumni_homepage.jpg';
 
-import { Zap, MessageSquare, CircleCheckBig, Users } from 'lucide-react';
+import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-react';
+
+// Card Component
+function AnnouncementCard({ date, title, description }) {
+  return (
+    <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col">
+      <div
+        className="w-full h-[150px] rounded-xl mb-6"
+        style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
+      />
+      <p className="text-[#0042A8] text-sm mb-4">{date}</p>
+      <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
+      <p className="text-gray-600 text-sm mb-6">{description}</p>
+      <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
+        Read More
+      </button>
+    </div>
+  );
+}
 
 export default function AlumnaHome() {
+  // Array of announcement data
+  const announcements = [
+    {
+      date: 'March 2025',
+      title: 'Annual Alumni Homecoming 2025',
+      description:
+        'Join us for our biggest alumni reunion event with networking and celebrations.',
+    },
+    {
+      date: 'April 2025',
+      title: 'Professional Development Webinar',
+      description:
+        'Learn from industry leaders on career growth and opportunities.',
+    },
+    {
+      date: 'May 2025',
+      title: 'Mentorship Program Launch',
+      description: 'Connect with experienced alumni and build your future.',
+    },
+  ];
+
   return (
     <AlumnaLayout>
       <div className="bg-white -mt-6 md:-mt-4">
@@ -29,13 +68,12 @@ export default function AlumnaHome() {
           ></div>
 
           {/* Text */}
-          <div className="relative z-20 px-6 md:px-12 max-w-[700px] text-left">
-            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
+          <div className="relative z-20 px-6 md:px-12 max-w-[700px]">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Stay Connected <br />
               With Your Alumni <br />
               Community
             </h1>
-
             <p className="text-white text-lg md:text-xl">
               Share experiences, discover opportunities, and build lasting
               relationships with fellow alumni from our institution.
@@ -61,8 +99,6 @@ export default function AlumnaHome() {
         {/* ANNOUNCEMENTS */}
         <section className="border-t border-gray-200 px-6 py-12">
           <div className="max-w-[1000px] mx-auto">
-
-            {/* Header */}
             <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-2">
               Latest Announcements
             </h2>
@@ -70,68 +106,20 @@ export default function AlumnaHome() {
               Stay updated with important news and events
             </p>
 
-            {/* Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-
-              {/* CARD 1 */}
-              <div className="border rounded-2xl p-6 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col">
-                <div
-                  className="w-full h-[150px] rounded-xl mb-6"
-                  style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
-                ></div>
-                <p className="text-[#0042A8] text-sm mb-4">March 2025</p>
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-4">
-                  Annual Alumni Homecoming 2025
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  Join us for our biggest alumni reunion event of the year with networking, keynotes, and celebrations.
-                </p>
-                <span className="text-[#014F86] font-medium cursor-pointer transition hover:underline hover:translate-x-1 text-center mt-auto">
-                  Read More →
-                </span>
-              </div>
-
-              {/* CARD 2 */}
-              <div className="border rounded-2xl p-6 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col">
-                <div
-                  className="w-full h-[150px] rounded-xl mb-6"
-                  style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
-                ></div>
-                <p className="text-[#0042A8] text-sm mb-4">April 2025</p>
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-4">
-                  Professional Development Webinar
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  Learn from industry leaders on emerging trends, career growth strategies, and navigating new opportunities.
-                </p>
-                <span className="text-[#014F86] font-medium cursor-pointer transition hover:underline hover:translate-x-1 text-center mt-auto">
-                  Read More →
-                </span>
-              </div>
-
-              {/* CARD 3 */}
-              <div className="border rounded-2xl p-6 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col">
-                <div
-                  className="w-full h-[150px] rounded-xl mb-6"
-                  style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
-                ></div>
-                <p className="text-[#0042A8] text-sm mb-4">May 2025</p>
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-4">
-                  Mentorship Program Launch
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  Participate in our new mentorship initiative connecting experienced alumni with current students and recent graduates.
-                </p>
-                <span className="text-[#014F86] font-medium cursor-pointer transition hover:underline hover:translate-x-1 text-center mt-auto">
-                  Read More →
-                </span>
-              </div>
-
+              {announcements.map((announcement, index) => (
+                <AnnouncementCard
+                  key={index}
+                  date={announcement.date}
+                  title={announcement.title}
+                  description={announcement.description}
+                />
+              ))}
             </div>
           </div>
         </section>
 
-        {/* WHY JOIN SECTION */}
+        {/* WHY JOIN */}
         <section className="border-t border-gray-200 px-6 py-12">
           <div className="max-w-[1000px] mx-auto">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
@@ -141,48 +129,57 @@ export default function AlumnaHome() {
               Unlock exclusive benefits and opportunities for personal and professional growth.
             </p>
 
-            {/* Boxes */}
             <div className="grid md:grid-cols-4 gap-6">
-              
-              {/* Box 1: Network */}
-              <div className="border rounded-2xl p-8 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col items-center">
-                <Zap className="text-5xl mb-4 text-[#0042A8]" />
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Network</h3>
-                <p className="text-gray-600 text-sm text-center">
-                  Connect with thousands of alumni worldwide
+              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <ReceiptText size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
+                <p className="text-gray-600 text-sm">
+                  Participate in tracer studies and update <br/> your academic and employment information
                 </p>
               </div>
 
-              {/* Box 2: Opportunities */}
-              <div className="border rounded-2xl p-8 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col items-center">
-                <MessageSquare className="text-5xl mb-4 text-[#0042A8]" />
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Opportunities</h3>
-                <p className="text-gray-600 text-sm text-center">
-                  Access exclusive job postings and partnerships
+              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <Megaphone size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Announcements</h3>
+                <p className="text-gray-600 text-sm">
+                  Stay informed with official updates, surveys, and university notices
                 </p>
               </div>
 
-              {/* Box 3: Engage */}
-              <div className="border rounded-2xl p-8 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col items-center">
-                <CircleCheckBig className="text-5xl mb-4 text-[#0042A8]" />
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Engage</h3>
-                <p className="text-gray-600 text-sm text-center">
-                  Participate in discussions and events
+              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <Brain size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Insights</h3>
+                <p className="text-gray-600 text-sm">
+                  Contribute data that helps improve programs and institutional planning
                 </p>
               </div>
 
-              {/* Box 4: Grow */}
-              <div className="border rounded-2xl p-8 shadow-sm hover:shadow-md transition transform hover:scale-105 flex flex-col items-center">
-                <Users className="text-5xl mb-4 text-[#0042A8]" />
-                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Grow</h3>
-                <p className="text-gray-600 text-sm text-center">
-                  Enhance your career and personal development
+              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <LibraryBig size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Records</h3>
+                <p className="text-gray-600 text-sm">
+                  Maintain accurate and up-to-date alumni profiles for future reference
                 </p>
               </div>
-
             </div>
           </div>
         </section>
+
+        {/* FOOTER */}
+        <div className="w-screen bg-[#013A63]">
+          <div className="max-w-4xl mx-auto text-center text-white py-20 px-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Connect?
+            </h2>
+            <p className="text-gray-200 text-lg mb-8">
+              Join thousands of alumni making meaningful connections and creating opportunities for success.
+            </p>
+            <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2">
+              Create Your Profile
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>   
 
       </div>
     </AlumnaLayout>
