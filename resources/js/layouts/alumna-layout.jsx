@@ -5,7 +5,7 @@ export default function AlumnaLayout({children}) {
   return (
      <div className="flex flex-col min-h-screen">
       <NavbarAlumni />
-      {<main className="flex-1 flex items-center justify-center p-4">
+      {<main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
         {children}
       </main>}
     </div>

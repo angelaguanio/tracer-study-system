@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../assets/logotracer.png';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -107,8 +107,8 @@ export default function NavbarAlumni({ children }) {
                     <DropdownMenuItem asChild>
                         <Link>Profile</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>                    
-                        <Link href={route('alumna.logout')}>Logout</Link>
+                    <DropdownMenuItem onSelect={() => router.post(route('alumna.logout'))}>
+                        Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

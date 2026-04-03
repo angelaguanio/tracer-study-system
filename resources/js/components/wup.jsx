@@ -5,7 +5,7 @@ export default function Wup ({...props}) {
   return (
     <div className='justify-center items-center flex flex-col'{...props}>
         <img src={logo} className='w-48 h-auto'/>
-        <h2 className='mt-2 text-2xl text-black'>Alumni Connect</h2>
+        <h2 className='mt-2 text-2xl text-black font-bruno'>Alumni Connect</h2>
     </div>
   )
 }

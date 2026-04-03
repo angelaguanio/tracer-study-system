@@ -31,6 +31,7 @@ class AlumnaAuthController extends Controller
             'middle_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'year_graduated' => 'nullable|integer|between:1990,' . date('Y'),
         ]);
 
         //pass hashing shi
@@ -92,7 +93,7 @@ class AlumnaAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('alumna.login');
+        return redirect()->route('role.select');
     }
 
 }
