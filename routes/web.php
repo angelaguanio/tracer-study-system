@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
 use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\CoordinatorAlumniController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -78,6 +79,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+        Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
 
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
