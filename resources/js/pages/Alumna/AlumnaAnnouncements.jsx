@@ -1,13 +1,11 @@
 import React from 'react';
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
-import NavbarAlumni from "../../components/navbar-alumni";
-import AlumnaLayout from '../../layouts/alumna-layout';
+import AlumnaLayout from "@/layouts/alumna-layout";
 
 export default function AlumnaAnnouncements() {
   return (
     <>
-      <AlumnaLayout>
          <div className="min-h-screen bg-sky-50 p-8">
       {/* Page Title */}
       <h2 className="text-[#7B7B7B] text-lg font-semibold mb-6">
@@ -40,7 +38,8 @@ export default function AlumnaAnnouncements() {
         </div>
       </div>
     </div>
-      </AlumnaLayout>
     </>
   );
 }
+
+AlumnaAssociation.layout = page => <AlumnaLayout>{page}</AlumnaLayout>;

@@ -59,7 +59,7 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
   };
 
   return (
-    <CoordinatorLayout>
+      <>
       <Head title="Edit Announcement" />
 
       <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
@@ -145,6 +145,10 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
           </Card>
         </div>
       </div>
-    </CoordinatorLayout>
+    </>
   );
 }
+
+CoordinatorAnnouncement.layout = (page) => (
+  <CoordinatorLayout>{page}</CoordinatorLayout>
+); 

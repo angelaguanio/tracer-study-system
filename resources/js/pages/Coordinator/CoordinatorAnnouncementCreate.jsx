@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
-import CoordinatorLayout from "@/Layouts/coord-layout";
+import CoordinatorLayout from "@/layouts/coord-layout";
 import { Head, useForm, router } from "@inertiajs/react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
-import { Button } from "@/Components/ui/button";
-import { Label } from "@/Components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function CoordinatorAnnouncementCreate() {
     const fileInputRef = useRef(null); // 👉 Reference para sa hidden file input
@@ -36,7 +36,7 @@ export default function CoordinatorAnnouncementCreate() {
     };
 
     return (
-        <CoordinatorLayout>
+            <>
             <Head title="Create Announcement" />
 
             {/* Full-screen background wrapper */}
@@ -140,6 +140,10 @@ export default function CoordinatorAnnouncementCreate() {
                     </Card>
                 </div>
             </div>
-        </CoordinatorLayout>
-    );
+            </>
+    )
 }
+
+CoordinatorAnnouncementCreate.layout = (page) => (
+  <CoordinatorLayout>{page}</CoordinatorLayout>
+); 
