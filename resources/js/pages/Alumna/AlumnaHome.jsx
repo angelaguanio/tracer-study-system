@@ -7,7 +7,7 @@ import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-re
 // Card Component
 function AnnouncementCard({ date, title, description }) {
   return (
-    <div className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col">
+    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
       <div
         className="w-full h-[150px] rounded-xl mb-6"
         style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
@@ -130,7 +130,7 @@ export default function AlumnaHome() {
             </p>
 
             <div className="grid md:grid-cols-4 gap-6">
-              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <ReceiptText size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
                 <p className="text-gray-600 text-sm">
@@ -138,7 +138,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <Megaphone size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Announcements</h3>
                 <p className="text-gray-600 text-sm">
@@ -146,7 +146,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <Brain size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Insights</h3>
                 <p className="text-gray-600 text-sm">
@@ -154,7 +154,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow-sm hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <LibraryBig size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Records</h3>
                 <p className="text-gray-600 text-sm">
@@ -169,13 +169,13 @@ export default function AlumnaHome() {
         <div className="w-screen bg-[#013A63]">
           <div className="max-w-4xl mx-auto text-center text-white py-20 px-6">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Connect?
+              Stay Connected as a Graduate
             </h2>
             <p className="text-gray-200 text-lg mb-8">
-              Join thousands of alumni making meaningful connections and creating opportunities for success.
+              Contribute to institutional development by updating your records and responding to tracer study surveys.
             </p>
             <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2">
-              Create Your Profile
+              Proceed to Profile
               <ArrowRight size={18} />
             </button>
           </div>
