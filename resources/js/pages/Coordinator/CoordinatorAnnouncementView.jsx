@@ -2,12 +2,12 @@ import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAnnouncementViewCard from "@/components/CoordinatorAnnouncementViewCard";
 
-function CoordinatorAnnouncementView() {
+function CoordinatorAnnouncementView({ announcement }) {
   return (
     <div className="min-h-screen w-full bg-[#f0faff]">
       
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6">
-        <CoordinatorAnnouncementViewCard />
+        <CoordinatorAnnouncementViewCard announcement={announcement} />
       </div>
 
     </div>

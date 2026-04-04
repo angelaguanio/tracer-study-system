@@ -5,23 +5,14 @@ import { Plus } from "lucide-react";
 import homecomingImg from "@/assets/homecoming.png";
 import assemblyImg from "@/assets/general-assembly.png";
 
-export default function CoordinatorAnnouncement() {
+import { Link } from "@inertiajs/react";
 
-  const announcements = [
-    {
-      id: 1,
-      title: "CECT ALUMNI HOMECOMING 2025",
-      image: homecomingImg,
-    },
-    {
-      id: 2,
-      title: "CECT ALUMNI GENERAL ASSEMBLY",
-      image: assemblyImg,
-    },
-  ];
+export default function CoordinatorAnnouncement({ announcements }) {
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+
+      
 
       {/* HEADER */}
       <div className="flex items-center justify-between">
@@ -43,10 +34,13 @@ export default function CoordinatorAnnouncement() {
           </p>
         </div>
 
-        <button className="flex items-center justify-center gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition">
+        <Link
+          href="/coordinator/announcement/create"
+          className="flex items-center justify-center gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+        >
           <Plus size={18} />
           Add Announcement
-        </button>
+        </Link>
 
       </div>
 
