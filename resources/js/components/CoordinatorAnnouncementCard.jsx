@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAnnouncementCard({ announcements }) {
+export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuccess }) {
   const columns = [
     {
       accessorKey: "title",
@@ -56,7 +56,10 @@ export default function CoordinatorAnnouncementCard({ announcements }) {
             </button>
 
             {/* DELETE */}
-            <CoordinatorAnnouncementDeletePrompt announcementId={data.id}>
+            <CoordinatorAnnouncementDeletePrompt
+              announcementId={data.id}
+              onSuccess={onDeleteSuccess}
+            >
               <button
                 className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 transition w-full sm:w-auto"
               >
