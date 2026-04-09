@@ -42,4 +42,4 @@ export default function AlumnaAnnouncements() {
   );
 }
 
-AlumnaAssociation.layout = page => <AlumnaLayout>{page}</AlumnaLayout>;
+AlumnaAnnouncements.layout = page => <AlumnaLayout>{page}</AlumnaLayout>;
