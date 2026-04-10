@@ -87,6 +87,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 // Public Alumna announcements
     Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
 
+    Route::get('/alumna/home', AlumnaHomeController::class)->name('alumna.home');
+
 //============== COORDINATOR ROUTES =========================
 Route::prefix('coordinator')->name('coordinator.')->group(function () {
     // Guest-only routes

@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
-
+use App\Models\Announcement;
 
 class AlumnaHomeController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(Request $request)
     {
-        return Inertia::render('Alumna/AlumnaHome');
-    }
+        // Kunin latest 3 announcements
+        $announcements = Announcement::latest()->take(3)->get();
 
-}   
+        return Inertia::render('Alumna/AlumnaHome', [
+            'announcements' => $announcements
+        ]);
+    }
+}
