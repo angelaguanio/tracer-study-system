@@ -29,5 +29,4 @@ export default function AlumnaAnnouncementView() {
   );
 }
 
-// Wrap in AlumnaLayout
 AlumnaAnnouncementView.layout = (page) => <AlumnaLayout>{page}</AlumnaLayout>;
