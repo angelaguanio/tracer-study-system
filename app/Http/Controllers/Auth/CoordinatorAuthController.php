@@ -15,12 +15,19 @@ class CoordinatorAuthController extends Controller
     public function loginCoordinator(Request $request) {
         $credentials = $request->only('email', 'password');
 
-        if(Auth::attempt($credentials) && Auth::user()->user_role === 'coordinator') {
-            $request->session()->regenerate();
-            return redirect()->intended(route('coordinator.dashboard'));
+        if (Auth::attempt($credentials)) {
+            if (Auth::user()->user_role === 'coordinator') {
+                $request->session()->regenerate();
+                return redirect()->intended(route('coordinator.dashboard'));
+            }
+
+            // Logged in but wrong role — log them back out
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials or role']);
+        return back()->withErrors(['email' => 'Invalid credentials']);
     }
 
     public function logoutCoordinator(Request $request) {
@@ -28,6 +35,6 @@ class CoordinatorAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('coordinator.login');
+        return redirect()->route('role.select');
     }
 }

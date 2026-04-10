@@ -1,12 +1,12 @@
 import React from 'react'
-import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
-import Wup from '../../components/ui/wup';
-import TextInput from '../../components/text-input'
-import { useForm } from '@inertiajs/react'
+import Wup from '../../components/wup';
+import TextInput from '../../components/text-input';
+import { useForm } from '@inertiajs/react';
 import { UserRound, Lock } from 'lucide-react';
 import TextLink from '../../components/text-link';
+import AuthLayout from "@/layouts/auth-layout";
 
 
 
@@ -42,8 +42,7 @@ export default function AlumnaLogin() {
   }
 
   return (
-    <AuthLayout>
-       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl">
+       <Card className="py-10 px-12 w-xl max-h-[90vh] rounded-2xl bg-white ">
         <CardHeader className="flex flex-col items-center justify-center">
           <Wup/>
         </CardHeader>
@@ -64,7 +63,8 @@ export default function AlumnaLogin() {
             placeholder="Email Address" 
             onChange={handleChange}  
             icon={UserRound}
-            className="pl-10"
+            className="pl-10 text-black border-gray-400"
+            
           />
 
           <TextInput 
@@ -74,7 +74,7 @@ export default function AlumnaLogin() {
             placeholder="Password" 
             onChange={handleChange} 
             icon={Lock}
-            className="pl-10"
+            className="pl-10 text-black border-gray-400"
           />
             
 
@@ -82,11 +82,14 @@ export default function AlumnaLogin() {
           </form>
         </CardContent>
 
-        <CardFooter className="flex flex-row items-center justify-center gap-1 w-full">
+        <CardFooter className="flex flex-row items-center justify-center gap-1 w-full text-black ">
           <p>Don't have an account?</p> 
           <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
         </CardFooter>
       </Card>
-    </AuthLayout>
+
   )
 }
+
+
+AlumnaLogin.layout = page => <AuthLayout>{page}</AuthLayout>

@@ -1,19 +1,187 @@
-
-
-import React from 'react'
-import { Button } from '../../components/ui/button';
-import { Link } from '@inertiajs/react';
-import NavbarAlumni from '../../components/navbar-alumni';
+import React from 'react';
 import AlumnaLayout from '../../layouts/alumna-layout';
+import alumniHomeImg from '../../assets/alumni_homepage.jpg';
 
+import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-react';
 
+// Card Component
+function AnnouncementCard({ date, title, description }) {
+  return (
+    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
+      <div
+        className="w-full h-[150px] rounded-xl mb-6"
+        style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
+      />
+      <p className="text-[#0042A8] text-sm mb-4">{date}</p>
+      <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
+      <p className="text-gray-600 text-sm mb-6">{description}</p>
+      <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
+        Read More
+      </button>
+    </div>
+  );
+}
 
 export default function AlumnaHome() {
+  // Array of announcement data
+  const announcements = [
+    {
+      date: 'March 2025',
+      title: 'Annual Alumni Homecoming 2025',
+      description:
+        'Join us for our biggest alumni reunion event with networking and celebrations.',
+    },
+    {
+      date: 'April 2025',
+      title: 'Professional Development Webinar',
+      description:
+        'Learn from industry leaders on career growth and opportunities.',
+    },
+    {
+      date: 'May 2025',
+      title: 'Mentorship Program Launch',
+      description: 'Connect with experienced alumni and build your future.',
+    },
+  ];
+
   return (
-    <>
-      <AlumnaLayout>
-        <div>fghjkgfdfgh</div>
-      </AlumnaLayout>
-    </>
-  )
+    <AlumnaLayout>
+      <div className="bg-white -mt-6 md:-mt-4">
+
+        {/* HERO SECTION */}
+        <section
+          className="relative w-screen h-[450px] flex items-center"
+          style={{
+            backgroundImage: `url(${alumniHomeImg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: '50% 34%',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
+          {/* Gradient Overlay */}
+          <div
+            className="absolute inset-0 z-10"
+            style={{
+              background:
+                'linear-gradient(to right, rgba(6,51,167,0.7) 0%, rgba(0,0,0,0.3) 70%)',
+            }}
+          ></div>
+
+          {/* Text */}
+          <div className="relative z-20 px-6 md:px-12 max-w-[700px]">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Stay Connected <br />
+              With Your Alumni <br />
+              Community
+            </h1>
+            <p className="text-white text-lg md:text-xl">
+              Share experiences, discover opportunities, and build lasting
+              relationships with fellow alumni from our institution.
+            </p>
+          </div>
+        </section>
+
+        {/* WELCOME */}
+        <section className="border-t border-gray-200 py-20 px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
+              Welcome to Alumni Connect
+            </h2>
+            <p className="text-gray-600 text-lg">
+              We're delighted to have you here. Our platform brings together
+              alumni, students, and faculty to foster meaningful connections
+              and unlock new opportunities for professional growth and
+              lifelong learning.
+            </p>
+          </div>
+        </section>
+
+        {/* ANNOUNCEMENTS */}
+        <section className="border-t border-gray-200 px-6 py-12">
+          <div className="max-w-[1000px] mx-auto">
+            <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-2">
+              Latest Announcements
+            </h2>
+            <p className="text-gray-500 mb-10">
+              Stay updated with important news and events
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {announcements.map((announcement, index) => (
+                <AnnouncementCard
+                  key={index}
+                  date={announcement.date}
+                  title={announcement.title}
+                  description={announcement.description}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* WHY JOIN */}
+        <section className="border-t border-gray-200 px-6 py-12">
+          <div className="max-w-[1000px] mx-auto">
+            <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
+              Why Join Alumni Connect?
+            </h2>
+            <p className="text-gray-600 mb-10">
+              Unlock exclusive benefits and opportunities for personal and professional growth.
+            </p>
+
+            <div className="grid md:grid-cols-4 gap-6">
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <ReceiptText size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
+                <p className="text-gray-600 text-sm">
+                  Participate in tracer studies and update <br/> your academic and employment information
+                </p>
+              </div>
+
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <Megaphone size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Announcements</h3>
+                <p className="text-gray-600 text-sm">
+                  Stay informed with official updates, surveys, and university notices
+                </p>
+              </div>
+
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <Brain size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Insights</h3>
+                <p className="text-gray-600 text-sm">
+                  Contribute data that helps improve programs and institutional planning
+                </p>
+              </div>
+
+              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+                <LibraryBig size={40} className="text-[#0042A8] mb-4" />
+                <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Records</h3>
+                <p className="text-gray-600 text-sm">
+                  Maintain accurate and up-to-date alumni profiles for future reference
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <div className="w-screen bg-[#013A63]">
+          <div className="max-w-4xl mx-auto text-center text-white py-20 px-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Stay Connected as a Graduate
+            </h2>
+            <p className="text-gray-200 text-lg mb-8">
+              Contribute to institutional development by updating your records and responding to tracer study surveys.
+            </p>
+            <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2">
+              Proceed to Profile
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>   
+
+      </div>
+    </AlumnaLayout>
+  );
 }

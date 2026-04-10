@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'user_role',
+        'year_graduated',
     ];
 
     /**
@@ -37,9 +39,9 @@ class User extends Authenticatable
     ];
 
     //helper func
-    public function isStudent()
+    public function isAlumna()
     {
-        return $this->user_role === 'student';
+        return $this->user_role === 'alumna';
     }
 
     public function isCoordinator()
@@ -65,5 +67,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function responses(): HasMany
+    {
+        return $this->hasMany(Response::class);
+    }
+
+    public function drafts(): HasMany
+    {
+        return $this->hasMany(SurveyDraft::class);
     }
 }

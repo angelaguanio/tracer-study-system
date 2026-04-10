@@ -18,7 +18,7 @@ class AlumnaSeeder extends Seeder
         User::create([
             'first_name' => 'Gaile',
             'last_name' => 'Guanio',
-            'email' => 'admin@gmail.com',
+            'email' => 'gg@gmail.com',
             'password' => Hash::make('admin123'),
             'user_role' => 'alumna',
         ]);

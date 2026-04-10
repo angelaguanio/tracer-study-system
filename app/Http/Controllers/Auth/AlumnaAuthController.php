@@ -31,6 +31,7 @@ class AlumnaAuthController extends Controller
             'middle_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'year_graduated' => 'nullable|integer|between:1990,' . date('Y'),
         ]);
 
         //pass hashing shi
@@ -64,10 +65,10 @@ class AlumnaAuthController extends Controller
         //check if user is trying to login
         if(Auth::attempt($credentials)) {
 
+            $request->session()->regenerate();
             //check role if u alumna
-            if(Auth::user()->user_role === 'alumna') {
-                $request->session()->regenerate();
-                return redirect()->route('alumna.home');
+            if(Auth::user()->user_role === 'alumna') { 
+                return redirect()->intended(route('alumna.home'));
             }
 
             //if not alumna, logout agad
@@ -86,13 +87,13 @@ class AlumnaAuthController extends Controller
         ]);
 
     }
+   
 
     public function logoutAlumna(Request $request) {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('alumna.login');
+        return redirect()->route('role.select');
     }
-
 
 }

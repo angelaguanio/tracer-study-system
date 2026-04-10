@@ -2,7 +2,7 @@ import React from 'react'
 import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
-import Wup from '../../components/ui/wup';
+import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
 import { useForm } from '@inertiajs/react'
 import { UserRound, Lock } from 'lucide-react';
@@ -23,16 +23,7 @@ export default function CoordinatorLogin() {
   //submit
   function handleSubmit(e) {
     e.preventDefault();
-
-    //alerts user to input all fields
-    if (!data.email || !data.password) {
-      alert("Please fill in all fields");
-      return;
-  }
-    post("/coordinator/login", {
-      onError: (err) => console.log("Errors:", err),
-      onSuccess: () => console.log("Login successful"),
-    });
+    post("/coordinator/login");
   }
 
   return (
@@ -45,9 +36,9 @@ export default function CoordinatorLogin() {
         <CardContent>
           <form className='space-y-3' onSubmit={handleSubmit}>
 
-          {errors.credentials && (
+          {errors.email && (
             <div className="bg-red-100 text-red-700 p-2 rounded mb-4">
-              {errors.credentials}
+              {errors.email}
             </div>
           )}
 
@@ -59,6 +50,7 @@ export default function CoordinatorLogin() {
             onChange={handleChange}  
             icon={UserRound}
             className="pl-10"
+            
           />
 
           <TextInput 
