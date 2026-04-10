@@ -1,6 +1,6 @@
 import React from "react";
-import AlumnaLayout from "@/Layouts/alumna-layout";
-import { Card, CardContent } from "@/Components/ui/card";
+import AlumnaLayout from "@/layouts/alumna-layout";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function AlumnaAnnouncementView() {
   return (
