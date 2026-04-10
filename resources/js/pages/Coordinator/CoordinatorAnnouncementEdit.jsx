@@ -149,6 +149,6 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
   );
 }
 
-CoordinatorAnnouncement.layout = (page) => (
+CoordinatorAnnouncementEdit.layout = (page) => (
   <CoordinatorLayout>{page}</CoordinatorLayout>
 ); 

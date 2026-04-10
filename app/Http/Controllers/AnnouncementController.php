@@ -104,4 +104,14 @@ class AnnouncementController extends Controller
             ->route('coordinator.announcement.index')
             ->with('success', 'Announcement deleted successfully.');
     }
+
+    // ALUMNA SIDE
+    public function alumna()
+    {
+        $announcements = Announcement::latest()->get();
+
+        return Inertia::render('Alumna/AlumnaAnnouncements', [
+            'announcements' => $announcements,
+        ]);
+    }
 }

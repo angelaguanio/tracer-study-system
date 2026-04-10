@@ -86,6 +86,11 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     });
 });
 
+// Public Alumna announcements
+    Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
+
+    Route::get('/alumna/home', AlumnaHomeController::class)->name('alumna.home');
+
 //============== COORDINATOR ROUTES =========================
 Route::prefix('coordinator')->name('coordinator.')->group(function () {
     // Guest-only routes
@@ -121,7 +126,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');        
         // DELETE
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']) ->name('announcement.destroy');
-        
+
         // Analytics index — list of surveys to pick from
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();

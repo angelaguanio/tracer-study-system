@@ -2,37 +2,23 @@ import { useState, useEffect } from "react";
 import { Trash2, Check } from "lucide-react";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAnnouncementDeletePromptandConfirmation({ children, announcementId }) {
+export default function CoordinatorAnnouncementDeletePromptandConfirmation({ children, announcementId, onSuccess }) {
   const [open, setOpen] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
 
   const confirmDelete = () => {
-    if (!announcementId) {
-      console.error("No announcementId provided!");
-      return;
-    }
+    if (!announcementId) return;
 
-    // Call Laravel DELETE route via Inertia
     router.delete(`/coordinator/announcement/${announcementId}`, {
       onSuccess: () => {
-        setOpen(false);
-        setShowSuccess(true);
+        setOpen(false); 
+        if (onSuccess) onSuccess(); 
       },
-      onError: (error) => {
-        console.error("Delete failed:", error);
-      },
+      onError: (error) => console.error("Delete failed:", error),
     });
   };
-
-  useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccess]);
 
   return (
     <>
@@ -70,20 +56,6 @@ export default function CoordinatorAnnouncementDeletePromptandConfirmation({ chi
                 Delete
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUCCESS MODAL */}
-      {showSuccess && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
-          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white stroke-[3]" />
-            </div>
-            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Deleted successfully
-            </p>
           </div>
         </div>
       )}

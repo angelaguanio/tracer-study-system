@@ -5,16 +5,26 @@ import alumniHomeImg from '../../assets/alumni_homepage.jpg';
 import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-react';
 
 // Card Component
-function AnnouncementCard({ date, title, description }) {
+function AnnouncementCard({ date, title, description, image }) {
   return (
     <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
-      <div
-        className="w-full h-[150px] rounded-xl mb-6"
-        style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
-      />
+      
+      {image ? (
+        <img
+          src={image}
+          className="w-full h-[150px] object-cover rounded-xl mb-6"
+        />
+      ) : (
+        <div
+          className="w-full h-[150px] rounded-xl mb-6"
+          style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
+        />
+      )}
+
       <p className="text-[#0042A8] text-sm mb-4">{date}</p>
       <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
       <p className="text-gray-600 text-sm mb-6">{description}</p>
+
       <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
         Read More
       </button>
@@ -22,28 +32,7 @@ function AnnouncementCard({ date, title, description }) {
   );
 }
 
-export default function AlumnaHome() {
-  // Array of announcement data
-  const announcements = [
-    {
-      date: 'March 2025',
-      title: 'Annual Alumni Homecoming 2025',
-      description:
-        'Join us for our biggest alumni reunion event with networking and celebrations.',
-    },
-    {
-      date: 'April 2025',
-      title: 'Professional Development Webinar',
-      description:
-        'Learn from industry leaders on career growth and opportunities.',
-    },
-    {
-      date: 'May 2025',
-      title: 'Mentorship Program Launch',
-      description: 'Connect with experienced alumni and build your future.',
-    },
-  ];
-
+export default function AlumnaHome({ announcements = [] }) {
   return (
     <AlumnaLayout>
       <div className="bg-white -mt-6 md:-mt-4">
@@ -58,7 +47,6 @@ export default function AlumnaHome() {
             backgroundRepeat: 'no-repeat',
           }}
         >
-          {/* Gradient Overlay */}
           <div
             className="absolute inset-0 z-10"
             style={{
@@ -67,7 +55,6 @@ export default function AlumnaHome() {
             }}
           ></div>
 
-          {/* Text */}
           <div className="relative z-20 px-6 md:px-12 max-w-[700px]">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Stay Connected <br />
@@ -107,14 +94,24 @@ export default function AlumnaHome() {
             </p>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {announcements.map((announcement, index) => (
-                <AnnouncementCard
-                  key={index}
-                  date={announcement.date}
-                  title={announcement.title}
-                  description={announcement.description}
-                />
-              ))}
+              {announcements.length > 0 ? (
+                announcements.map((announcement) => (
+                  <AnnouncementCard
+                    key={announcement.id}
+                    date={new Date(announcement.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                    })}
+                    title={announcement.title}
+                    description={announcement.details}
+                    image={announcement.image}
+                  />
+                ))
+              ) : (
+                <p className="col-span-3 text-center text-gray-500">
+                  No announcements available
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -130,7 +127,7 @@ export default function AlumnaHome() {
             </p>
 
             <div className="grid md:grid-cols-4 gap-6">
-              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <ReceiptText size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
                 <p className="text-gray-600 text-sm">
@@ -138,7 +135,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <Megaphone size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Announcements</h3>
                 <p className="text-gray-600 text-sm">
@@ -146,7 +143,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <Brain size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Insights</h3>
                 <p className="text-gray-600 text-sm">
@@ -154,7 +151,7 @@ export default function AlumnaHome() {
                 </p>
               </div>
 
-              <div className="bg-white border rounded-2xl p-8 shadow- hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
+              <div className="bg-white border rounded-2xl p-8 hover:shadow-md transition hover:scale-105 flex flex-col items-center text-center">
                 <LibraryBig size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Records</h3>
                 <p className="text-gray-600 text-sm">
