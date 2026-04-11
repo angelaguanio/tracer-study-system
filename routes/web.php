@@ -58,7 +58,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         //announcement
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
-        Route::get('/announcements/view', function () {return Inertia::render('Alumna/AlumnaAnnouncementView'); })->name('announcements/view');
+        //Route::get('/announcement/view', function () {return Inertia::render('Alumna/AlumnaAnnouncementView'); })->name('announcement/view');
+        Route::get('/announcement/{id}', [AnnouncementController::class, 'showAlumna']) ->name('alumna.announcement.view');
 
         //association
         Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
