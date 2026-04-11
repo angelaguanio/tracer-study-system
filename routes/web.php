@@ -73,14 +73,16 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [CoordinatorAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [CoordinatorAuthController::class, 'loginCoordinator']);
+        
+        //cooralumni
+        Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])
+        ->name('alumni.index');
     });
 
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
-
-        Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
 
         Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
         Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');

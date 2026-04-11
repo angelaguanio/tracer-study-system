@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAlumniFilters from "@/components/CoordinatorAlumniFilters";
@@ -9,28 +9,30 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   const [year, setYear] = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
 
-  // 🔥 SAMPLE DATA (PARA MAY OUTPUT AGAD)
-  const sampleAlumni = {
-    data: [
-      { id: 1, name: "Angela Marie P. Guanio", course: "BSIT", year: 2018 },
-      { id: 2, name: "Franzell M. Tatad", course: "BSCpE", year: 2021 },
-      { id: 3, name: "Jay Mharie D. Atayde", course: "BSECE", year: 2020 },
-      { id: 4, name: "Tiffany Joy G.Soria", course: "BSIT", year: 2019 },
-      { id: 5, name: "Reygie A. Allapitan", course: "BSCpE", year: 2018 },
-    ],
-    links: [],
-  };
-
   const applyFilters = (newFilters = {}) => {
-    router.get("/coordinator/alumni", {
-      search,
-      year,
-      course,
-      ...newFilters,
-    });
+    router.get(
+      "/coordinator/alumni",
+      {
+        search,
+        year,
+        course,
+        ...newFilters,
+      },
+      {
+        preserveState: true,
+        replace: true,
+      }
+    );
   };
 
-  const displayAlumni = alumni?.data?.length ? alumni : sampleAlumni;
+  //  AUTO SEARCH (debounce)
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      applyFilters();
+    }, 500);
+
+    return () => clearTimeout(delay);
+  }, [search]);
 
   return (
     <div className="min-h-screen w-full bg-[#C4EFFF]">
@@ -39,10 +41,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
 
           <CoordinatorAlumniFilters
             search={search}
-            setSearch={(val) => {
-              setSearch(val);
-              applyFilters({ search: val });
-            }}
+            setSearch={setSearch}
             year={year}
             setYear={(val) => {
               setYear(val);
@@ -55,7 +54,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
             }}
           />
 
-          <CoordinatorAlumniTable alumni={displayAlumni} />
+          <CoordinatorAlumniTable alumni={alumni} />
         </div>
       </div>
     </div>
