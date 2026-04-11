@@ -10,6 +10,7 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
+use App\Http\Controllers\CoordinatorAlumniController;
 
 use App\Http\Controllers\AnnouncementController;
 
@@ -97,11 +98,18 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [CoordinatorAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [CoordinatorAuthController::class, 'loginCoordinator']);
+
     });
 
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
+
+    //cooralumni
+    Route::get('/alumni', [CoordinatorAlumniController::class, 'index']) ->name('alumni.index');
+
+    Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show']) ->name('alumni.show');
+
         Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
