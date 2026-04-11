@@ -114,4 +114,13 @@ class AnnouncementController extends Controller
             'announcements' => $announcements,
         ]);
     }
+
+    public function showAlumna($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        return Inertia::render('Alumna/AlumnaAnnouncementView', [
+            'announcement' => $announcement
+        ]);
+    }
 }
