@@ -40,9 +40,9 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
         const onError = (e) => setError(e.title ?? "");
 
         if (isEdit) {
-            router.put(route("coordinator.sections.update", section.id), payload, { onError, onSuccess: onClose });
+            router.put(route("admin.sections.update", section.id), payload, { onError, onSuccess: onClose });
         } else {
-            router.post(route("coordinator.sections.store", surveyId), payload, { onError, onSuccess: onClose });
+            router.post(route("admin.sections.store", surveyId), payload, { onError, onSuccess: onClose });
         }
     };
 

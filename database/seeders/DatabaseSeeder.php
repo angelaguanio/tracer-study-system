@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(CoordUserSeeder::class);
+        $this->call(AdminSeeder::class);
     }
 }

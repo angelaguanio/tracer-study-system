@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureAlumna;
 use App\Http\Middleware\EnsureCoordinator;
 use App\Http\Middleware\HandleAppearance;
@@ -18,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance']);
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if (str_starts_with($request->path(), 'admin')) {
+                return route('admin.login');
+            }
             if (str_starts_with($request->path(), 'coordinator')) {
                 return route('coordinator.login');
             }
@@ -28,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
         $middleware->alias([
+            'admin'       => EnsureAdmin::class,
             'coordinator' => EnsureCoordinator::class,
             'alumna'      => EnsureAlumna::class,
         ]);

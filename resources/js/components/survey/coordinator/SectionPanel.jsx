@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function SectionPanel({ section, surveyId, isFirst, isLast, isActive, onClick, onReorder, onEdit }) {
     const handleDelete = () => {
-        router.delete(route("coordinator.sections.destroy", section.id));
+        router.delete(route("admin.sections.destroy", section.id));
     };
 
     return (
