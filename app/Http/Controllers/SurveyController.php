@@ -19,7 +19,7 @@ class SurveyController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('Coordinator/SurveyIndex', [
+        return Inertia::render('Admin/SurveyIndex', [
             'surveys' => $surveys,
         ]);
     }
@@ -34,7 +34,7 @@ class SurveyController extends Controller
             'status'      => $request->input('status', 'inactive'),
         ]);
 
-        return redirect()->route('coordinator.surveys.index');
+        return redirect()->route('admin.surveys.index');
     }
 
     public function update(UpdateSurveyRequest $request, Survey $survey)
@@ -56,7 +56,7 @@ class SurveyController extends Controller
 
         $survey->delete();
 
-        return redirect()->route('coordinator.surveys.index');
+        return redirect()->route('admin.surveys.index');
     }
 
     public function builder(Survey $survey)
@@ -73,7 +73,7 @@ class SurveyController extends Controller
             },
         ]);
 
-        return Inertia::render('Coordinator/SurveyBuilder', [
+        return Inertia::render('Admin/SurveyBuilder', [
             'survey' => $survey,
         ]);
     }
