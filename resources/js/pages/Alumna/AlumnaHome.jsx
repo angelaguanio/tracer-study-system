@@ -3,7 +3,7 @@ import AlumnaLayout from "@/layouts/alumna-layout";
 import alumniHomeImg from '../../assets/alumni_homepage.jpg';
 import { Link } from '@inertiajs/react';
 
-import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-react';
+import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 'lucide-react';
 
 // Card Component
 function AnnouncementCard({ id, date, title, description, image }) {
@@ -16,10 +16,10 @@ function AnnouncementCard({ id, date, title, description, image }) {
           className="w-full h-[150px] object-cover rounded-xl mb-6"
         />
       ) : (
-        <div
-          className="w-full h-[150px] rounded-xl mb-6"
-          style={{ background: 'linear-gradient(to bottom, #A8F0FF, #999999)' }}
-        />
+        // ADDED ICON
+        <div className="w-full h-[150px] rounded-xl mb-6 flex items-center justify-center">
+          <ImageOff size={80} className="text-[#2859C5]" />
+        </div>
       )}
 
       <p className="text-[#0042A8] text-sm mb-4">{date}</p>
@@ -184,7 +184,6 @@ export default function AlumnaHome({ announcements }) {
         </div>
 
       </div>
-
     </AlumnaLayout>
   );
 }
