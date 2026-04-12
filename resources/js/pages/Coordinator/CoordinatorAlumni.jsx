@@ -35,10 +35,8 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   }, [search]);
 
   return (
-    <div className="min-h-screen w-full bg-[#C4EFFF]">
-      <div className="p-4 md:p-6">
-        <div className="bg-white rounded-2xl p-3 md:p-4 shadow-sm">
-
+    
+        <div className="w-full bg-white rounded-2xl p-3 md:p-4 shadow-sm">
           <CoordinatorAlumniFilters
             search={search}
             setSearch={setSearch}
@@ -56,8 +54,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
 
           <CoordinatorAlumniTable alumni={alumni} />
         </div>
-      </div>
-    </div>
+     
   );
 }
 
