@@ -1,15 +1,45 @@
 import React from 'react'
-import PersonalInformationSurvey from '../../components/survey/personal-info'
-
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import AlumnaLayout from "@/layouts/alumna-layout";
-import { CircleCheck, SparkleIcon } from 'lucide-react';
+import { CircleCheck, SparkleIcon, PartyPopper } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from '@inertiajs/react';
 
 
-export default function AlumnaQuestionnaire() {
+export default function AlumnaQuestionnaire({ completed }) {
+  if (completed) {
+    return (
+      <div className='flex items-center justify-center w-full'>
+      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
+          <div className='space-y-4'>
+            <div className='flex flex-row gap-2'>
+              <PartyPopper />
+              <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
+            </div>
+            <div>
+              <h1 className='text-3xl'>Survey Completed!</h1>
+              <p>Your response has been recorded.</p>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+          <CircleCheck size={64} color='green' />
+          <div className='space-y-2'>
+            <p className='text-lg font-medium'>You've already submitted this survey.</p>
+            <p className='text-sm text-gray-500'>
+              Thank you for sharing your post-graduation experience. Your feedback helps us improve our programs for future students.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+      </div>
+    );
+  }
+
   return (
+    <div className='flex items-center justify-center w-full'>
       <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 p-8 text-white space-y-4">
             <div className='space-y-4'>
@@ -36,7 +66,6 @@ export default function AlumnaQuestionnaire() {
           </div>
 
           <div className='flex flex-row gap-5'>
-            {/* dalawang div */}
             <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-1/2'>
               <CircleCheck color='green'/>
               <div className='flex flex-col'>
@@ -53,8 +82,6 @@ export default function AlumnaQuestionnaire() {
               </div>
             </div>
           </div>
-
-          
         </CardContent>
 
         <CardFooter className="flex flex-col justify-center p-5">
@@ -64,7 +91,7 @@ export default function AlumnaQuestionnaire() {
           <span className='text-sm text-gray-400 pt-7 pb-5'>Estimated completion time: 5-10 minutes.</span>
         </CardFooter>
       </Card>
-
+      </div>
   )
 }
 

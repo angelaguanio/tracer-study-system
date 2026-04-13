@@ -10,8 +10,8 @@ export default function SidebarCoord({ navItems = [] }) {
     <Sidebar collapsible='icon' className='transition-all'>
     {/* header */}
       <SidebarHeader className='flex justify-center items-center py-5 transition-all duration-300'>
-        <img src={logo} className='aspect-square h-20 w-25 transition-all duration-300 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-15' />
-        <h1 className='font-bold mt-2 truncate group-data-[collapsible=icon]:hidden'> Alumni Connect </h1>
+        <img src={logo} className='aspect-square h-25 w-30 transition-all duration-300 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-15' />
+        <h1 className=' truncate group-data-[collapsible=icon]:hidden font-bruno'> Alumni Connect </h1>
       </SidebarHeader>
 
     {/* menu */}
@@ -21,7 +21,7 @@ export default function SidebarCoord({ navItems = [] }) {
             {navItems.map((item)=> (
               <SidebarMenuItem key={item.id}>
                 <SidebarMenuButton asChild isActive={url.startsWith(item.href)} className='[&>svg]:size-5 py-5 my-1'>
-                  <Link>
+                  <Link href={item.href}>
                     <item.icon/>
                     <span>{item.name}</span>
                   </Link>

@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../assets/logotracer.png';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,11 +38,13 @@ const navBtns = [
     }
 ]
 export default function NavbarAlumni({ children }) { 
-    const { auth, url } = usePage().props
+    const { auth } = usePage().props
+    const { url } = usePage()
     const user = auth?.user
-    const currentPath = new URL(url, window.location.origin).pathname
+    const currentPath = url.split('?')[0]
 
     function ProfileTemp() {
+        if (!user) return null;
         return (
             <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold">
@@ -107,8 +109,8 @@ export default function NavbarAlumni({ children }) {
                     <DropdownMenuItem asChild>
                          <Link href={route('alumna.profile')}>Profile</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>                    
-                        <Link href={route('alumna.logout')}>Logout</Link>
+                    <DropdownMenuItem onSelect={() => router.post(route('alumna.logout'))}>
+                        Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -1,13 +1,14 @@
 import React from 'react'
 import NavbarAlumni from '../components/navbar-alumni'
 
-export default function AlumnaLayout({children}) {
+export default function AlumnaLayout({ children }) {
   return (
-     <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <NavbarAlumni />
-      {<main className="flex-1 flex items-center justify-center p-4">
+
+      <main className="flex-1 flex bg-app-bg">
         {children}
-      </main>}
+      </main>
     </div>
-  ) 
+  )
 }
