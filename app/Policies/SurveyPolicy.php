@@ -10,14 +10,14 @@ class SurveyPolicy
 {
     public function viewAny(User $user): Response
     {
-        return $user->isCoordinator()
+        return ($user->isCoordinator() || $user->isAdmin())
             ? Response::allow()
             : Response::deny('Only coordinators can list surveys.');
     }
 
     public function view(User $user, Survey $survey): Response
     {
-        if ($user->isCoordinator()) {
+        if ($user->isCoordinator() || $user->isAdmin()) {
             return Response::allow();
         }
 
@@ -30,21 +30,21 @@ class SurveyPolicy
 
     public function create(User $user): Response
     {
-        return $user->isCoordinator()
+        return ($user->isCoordinator() || $user->isAdmin())
             ? Response::allow()
             : Response::deny('Only coordinators can create surveys.');
     }
 
     public function update(User $user, Survey $survey): Response
     {
-        return $user->isCoordinator()
+        return ($user->isCoordinator() || $user->isAdmin())
             ? Response::allow()
             : Response::deny('Only coordinators can update surveys.');
     }
 
     public function delete(User $user, Survey $survey): Response
     {
-        if (!$user->isCoordinator()) {
+        if (!$user->isCoordinator() && !$user->isAdmin()) {
             return Response::deny('Only coordinators can delete surveys.');
         }
 
@@ -57,7 +57,7 @@ class SurveyPolicy
 
     public function activate(User $user, Survey $survey): Response
     {
-        if (!$user->isCoordinator()) {
+        if (!$user->isCoordinator() && !$user->isAdmin()) {
             return Response::deny('Only coordinators can activate surveys.');
         }
 

@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
 
-export default function CoordinatorLogin() {
+export default function AdminLogin() {
   //form
   const { data, setData, post, processing, errors } = useForm({
     email: "",
@@ -26,7 +26,7 @@ export default function CoordinatorLogin() {
   //submit
   function handleSubmit(e) {
     e.preventDefault();
-    post("/coordinator/login");
+    post("/admin/login");
   }
 
 return (

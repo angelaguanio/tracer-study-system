@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->user_role === 'coordinator';
     }
 
+     public function isAdmin()
+    {
+        return $this->user_role === 'admin';
+    }
+
     //get initials for temp profile 
     public function getInitialsAttribute()
     {
