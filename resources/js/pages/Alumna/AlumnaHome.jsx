@@ -1,11 +1,12 @@
 import React from 'react';
-import AlumnaLayout from '../../layouts/alumna-layout';
+import AlumnaLayout from "@/layouts/alumna-layout";
 import alumniHomeImg from '../../assets/alumni_homepage.jpg';
+import { Link } from '@inertiajs/react';
 
 import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight } from 'lucide-react';
 
 // Card Component
-function AnnouncementCard({ date, title, description, image }) {
+function AnnouncementCard({ id, date, title, description, image }) {
   return (
     <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
       
@@ -25,14 +26,17 @@ function AnnouncementCard({ date, title, description, image }) {
       <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
       <p className="text-gray-600 text-sm mb-6">{description}</p>
 
-      <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
-        Read More
-      </button>
+      <Link href={`/alumna/announcement/${id}`}>
+        <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
+          Read More
+        </button>
+      </Link>
+
     </div>
   );
 }
 
-export default function AlumnaHome({ announcements = [] }) {
+export default function AlumnaHome({ announcements }) {
   return (
     <AlumnaLayout>
       <div className="bg-white -mt-6 md:-mt-4">
@@ -43,7 +47,7 @@ export default function AlumnaHome({ announcements = [] }) {
           style={{
             backgroundImage: `url(${alumniHomeImg})`,
             backgroundSize: 'cover',
-            backgroundPosition: '50% 34%',
+            backgroundPosition: '50% 30%',
             backgroundRepeat: 'no-repeat',
           }}
         >
@@ -98,6 +102,7 @@ export default function AlumnaHome({ announcements = [] }) {
                 announcements.map((announcement) => (
                   <AnnouncementCard
                     key={announcement.id}
+                    id={announcement.id}
                     date={new Date(announcement.created_at).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
@@ -131,7 +136,7 @@ export default function AlumnaHome({ announcements = [] }) {
                 <ReceiptText size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
                 <p className="text-gray-600 text-sm">
-                  Participate in tracer studies and update <br/> your academic and employment information
+                  Participate in tracer studies and update your academic and employment information
                 </p>
               </div>
 
@@ -163,7 +168,7 @@ export default function AlumnaHome({ announcements = [] }) {
         </section>
 
         {/* FOOTER */}
-        <div className="w-screen bg-[#013A63]">
+        <div className="w-full bg-[#013A63]">
           <div className="max-w-4xl mx-auto text-center text-white py-20 px-6">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Stay Connected as a Graduate
@@ -176,9 +181,10 @@ export default function AlumnaHome({ announcements = [] }) {
               <ArrowRight size={18} />
             </button>
           </div>
-        </div>   
+        </div>
 
       </div>
+
     </AlumnaLayout>
   );
 }

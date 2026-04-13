@@ -1,5 +1,6 @@
 import React from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
+import { Link } from '@inertiajs/react';
 
 export default function AlumnaAnnouncements({ announcements }) {
   return (
@@ -36,10 +37,14 @@ export default function AlumnaAnnouncements({ announcements }) {
                 {ann.details}
               </p>
 
-              <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition">
-                Read more
-              </button>
+              {/* READ MORE */}
+              <Link href={`/alumna/announcement/${ann.id}`}>
+                <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition">
+                  Read more
+                </button>
+              </Link>
             </div>
+
           </div>
         ))
       )}

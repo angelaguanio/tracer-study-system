@@ -3,10 +3,10 @@
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation";
+import CoordinatorAnnouncementDeletePrompt from "./AdminAnnouncementDeletePromptandConfirmation";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuccess }) {
+export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }) {
   const columns = [
     {
       accessorKey: "title",
@@ -39,7 +39,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
           <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end items-center w-full">
             {/* VIEW */}
             <button
-              onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
+              onClick={() => router.get(`/admin/announcement/${data.id}`)}
               className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition w-full sm:w-auto"
             >
               <Eye size={16} />
@@ -48,7 +48,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
 
             {/* EDIT */}
             <button
-              onClick={() => router.get(`/coordinator/announcement/${data.id}/edit`)}
+              onClick={() => router.get(`/admin/announcement/${data.id}/edit`)}
               className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#008236] bg-[#DBFCE7] text-[#008236] hover:bg-[#008236]/10 transition w-full sm:w-auto"
             >
               <Pencil size={16} />
