@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
 use App\Http\Controllers\QuestionnaireController;
-
+use App\Http\Controllers\StudentProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -59,6 +59,12 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
          // about page 
         Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
+
+         // student profile
+        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
+        Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
+ 
         
         // logout
         Route::get('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');

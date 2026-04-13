@@ -105,7 +105,7 @@ export default function NavbarAlumni({ children }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuItem asChild>
-                        <Link>Profile</Link>
+                         <Link href={route('alumna.profile')}>Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>                    
                         <Link href={route('alumna.logout')}>Logout</Link>
