@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
-import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAlumniFilters from "@/components/CoordinatorAlumniFilters";
-import CoordinatorAlumniTable from "@/components/CoordinatorAlumniTable";
+import AdminLayout from "@/layouts/admin-layout";
+import AdminAlumniFilters from "@/components/AdminAlumniFilters";
+import AdminAlumniTable from "@/components/AdminAlumniTable";
 
-export default function CoordinatorAlumni({ alumni, filters }) {
+export default function AdminAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");
   const [year, setYear] = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
 
   const applyFilters = (newFilters = {}) => {
     router.get(
-      "/coordinator/alumni",
+      "/admin/alumni",
       {
         search,
         year,
@@ -38,7 +38,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
     
         <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
 
-          <CoordinatorAlumniFilters
+          <AdminAlumniFilters
             search={search}
             setSearch={setSearch}
             year={year}
@@ -53,12 +53,12 @@ export default function CoordinatorAlumni({ alumni, filters }) {
             }}
           />
 
-          <CoordinatorAlumniTable alumni={alumni} />
+          <AdminAlumniTable alumni={alumni} />
         </div>
   
   );
 }
 
-CoordinatorAlumni.layout = (page) => (
-  <CoordinatorLayout>{page}</CoordinatorLayout>
+AdminAlumni.layout = (page) => (
+  <AdminLayout>{page}</AdminLayout>
 );

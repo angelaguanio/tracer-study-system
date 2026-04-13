@@ -12,7 +12,7 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
-use App\Http\Controllers\CoordinatorAlumniController;
+use App\Http\Controllers\AdminAlumniController;
 
 use App\Http\Controllers\AnnouncementController;
 
@@ -110,10 +110,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
 
-    //cooralumni
-    Route::get('/alumni', [CoordinatorAlumniController::class, 'index']) ->name('alumni.index');
+    //AdminAlumni
+    Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
 
-    Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show']) ->name('alumni.show');
+    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
         Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
