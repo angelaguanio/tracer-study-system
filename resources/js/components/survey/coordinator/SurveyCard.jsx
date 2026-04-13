@@ -17,7 +17,7 @@ import {
 
 export default function SurveyCard({ survey }) {
     const handleDelete = () => {
-        router.delete(route("coordinator.surveys.destroy", survey.id));
+        router.delete(route("admin.surveys.destroy", survey.id));
     };
 
     return (
@@ -46,7 +46,7 @@ export default function SurveyCard({ survey }) {
                         variant="outline"
                         size="sm"
                         className="border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
-                        onClick={() => router.get(route("coordinator.surveys.builder", survey.id))}
+                        onClick={() => router.get(route("admin.surveys.builder", survey.id))}
                     >
                         <Pencil size={14} />
                         Edit

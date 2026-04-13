@@ -13,10 +13,10 @@ class CoordUserSeeder extends Seeder
     public function run()
 {
     User::updateOrCreate(
-        ['email' => 'j@gmail.com'],
+        ['email' => 'k@gmail.com'],
         [
-            'last_name' => 'Portana',
-            'first_name' => 'Joephet',
+            'last_name' => 'Tugaff',
+            'first_name' => 'Catalina',
             'password' => Hash::make('admin123'),
             'user_role' => 'coordinator', // if you have role column
         ]

@@ -15,7 +15,7 @@ const TYPE_MAP = {
 
 export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast }) {
     const handleDelete = () => {
-        router.delete(route("coordinator.questions.destroy", question.id));
+        router.delete(route("admin.questions.destroy", question.id));
     };
 
     const typeInfo = TYPE_MAP[question.type] ?? { label: question.type, icon: Rows3 };
