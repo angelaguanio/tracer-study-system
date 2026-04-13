@@ -25,24 +25,6 @@ export default function CoordinatorLayout({children}) {
       name: "Alumni",
       href:"/coordinator/alumni",
       icon: CircleUserRound
-    },
-    {
-      id: "surveys",
-      name: "Surveys",
-      href:"/coordinator/surveys",
-      icon: NotebookPen
-    },
-    {
-      id: "survey-response",
-      name: "Survey Response",
-      href:"/coordinator/survey-response",
-      icon: FileChartColumn
-    },
-    {
-      id: "analytics",
-      name: "Analytics",
-      href:"/coordinator/analytics",
-      icon: ChartNoAxesCombined
     }
   ]
   return (
