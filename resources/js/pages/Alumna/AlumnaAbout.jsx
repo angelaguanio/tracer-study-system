@@ -5,7 +5,7 @@ import AlumnaLayout from '../../layouts/alumna-layout';
 
 export default function AlumnaAbout() {
   return (
-    <>
+    <div className="flex flex-col w-full">
      
       {/* Header */}
       <section className="bg-gradient-to-r from-blue-600 to-teal-500 text-white py-12 sm:py-16 md:py-20 px-4">
@@ -112,7 +112,7 @@ export default function AlumnaAbout() {
           </p>
         </div>
       </section>
-    </>
+    </div>
   )
 }
 
