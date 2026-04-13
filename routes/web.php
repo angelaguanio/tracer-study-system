@@ -7,6 +7,7 @@ use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SurveyAnalyticsController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
@@ -75,6 +76,12 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
          // about page 
         Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
+
+         // student profile
+        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
+        Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
+ 
         
         // logout
         Route::post('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
