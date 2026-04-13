@@ -1,12 +1,12 @@
 import React from 'react'
-import NavbarAlumni from '../../components/navbar-alumni'
 import graduationBg from '../../assets/graduation-bg.jpg'
+import AlumnaLayout from '../../layouts/alumna-layout';
+
 
 export default function AlumnaAbout() {
   return (
     <>
-      <NavbarAlumni />
-      
+     
       {/* Header */}
       <section className="bg-gradient-to-r from-blue-600 to-teal-500 text-white py-12 sm:py-16 md:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -115,3 +115,7 @@ export default function AlumnaAbout() {
     </>
   )
 }
+
+AlumnaAbout.layout = (page) => (
+  <AlumnaLayout>{page}</AlumnaLayout>
+);

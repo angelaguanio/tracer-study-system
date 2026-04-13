@@ -9,6 +9,7 @@ import { Link } from '@inertiajs/react';
 export default function AlumnaQuestionnaire({ completed }) {
   if (completed) {
     return (
+      <div className='flex items-center justify-center w-full'>
       <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
         <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
           <div className='space-y-4'>
@@ -33,10 +34,12 @@ export default function AlumnaQuestionnaire({ completed }) {
           </div>
         </CardContent>
       </Card>
+      </div>
     );
   }
 
   return (
+    <div className='flex items-center justify-center w-full'>
       <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 p-8 text-white space-y-4">
             <div className='space-y-4'>
@@ -88,6 +91,7 @@ export default function AlumnaQuestionnaire({ completed }) {
           <span className='text-sm text-gray-400 pt-7 pb-5'>Estimated completion time: 5-10 minutes.</span>
         </CardFooter>
       </Card>
+      </div>
   )
 }
 
