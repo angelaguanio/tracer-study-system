@@ -5,7 +5,7 @@ import { DepartmentSection } from "@/components/AlumnaAssociation_Components";
 
 function AlumnaAssociation() {
   return (
-    <div className="min-h-screen w-full bg-white mb-20">
+    <div className=" w-full bg-white mb-20">
 
       {/* ================= HERO (MATCH DepartmentSection STYLE) ================= */}
       <div className="w-screen relative left-1/2 -translate-x-1/2 mb-16">
