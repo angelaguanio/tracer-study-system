@@ -5,16 +5,38 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        //GET USERS NA ALUMNI
-        $users = User::where('user_role', 'alumna')->get();
+        $query = User::query()->where('user_role', 'alumna');
 
-        $alumni = $users->map(function ($user) {
+        // ✅ SEARCH (database level)
+        if ($request->search) {
+            $search = strtolower($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("LOWER(first_name) LIKE ?", ["%$search%"])
+                  ->orWhereRaw("LOWER(last_name) LIKE ?", ["%$search%"]);
+            });
+        }
+
+        // ✅ YEAR FILTER
+        if ($request->year && $request->year !== 'all') {
+            $query->where('year_graduated', $request->year);
+        }
+
+        // ✅ COURSE FILTER
+        if ($request->course && $request->course !== 'all') {
+            $query->where('courses', $request->course);
+        }
+
+        // ✅ PAGINATION (IMPORTANT FIX)
+        $users = $query->paginate(5)->withQueryString();
+
+        // ✅ FORMAT DATA AFTER PAGINATION
+        $users->getCollection()->transform(function ($user) {
             return [
                 'id' => $user->id,
                 'name' => $user->first_name . ' ' . $user->last_name,
@@ -24,40 +46,8 @@ class AdminAlumniController extends Controller
             ];
         });
 
-        //SEARCH FILTER
-        if ($request->search) {
-            $alumni = $alumni->filter(fn ($a) =>
-                str_contains(strtolower($a['name']), strtolower($request->search))
-            );
-        }
-
-        //YEAR FILTER
-        if ($request->year && $request->year !== 'all') {
-            $alumni = $alumni->where('year', $request->year);
-        }
-
-        //COURSE FILTER
-        if ($request->course && $request->course !== 'all') {
-            $alumni = $alumni->where('course', $request->course);
-        }
-
-        //PAGINATION
-        $perPage = 5;
-        $page = $request->get('page', 1);
-
-        $paginated = new LengthAwarePaginator(
-            $alumni->forPage($page, $perPage)->values(),
-            $alumni->count(),
-            $perPage,
-            $page,
-            [
-                'path' => request()->url(),
-                'query' => request()->query(),
-            ]
-        );
-
         return Inertia::render('Admin/AdminAlumni', [
-            'alumni' => $paginated,
+            'alumni' => $users,
             'filters' => $request->only(['search', 'year', 'course'])
         ]);
     }
