@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, ImageOff } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CoordinatorAnnouncementDeletePrompt from "./AdminAnnouncementDeletePromptandConfirmation";
@@ -13,30 +13,51 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       header: "Announcement",
       cell: ({ row }) => {
         const data = row.original;
+
         return (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
             {/* LEFT SIDE */}
             <div className="flex items-center gap-4">
-              <img
-                src={data.image}
-                alt={data.title}
-                className="w-20 h-20 object-cover rounded-md"
-              />
+
+              {/* IMAGE FIX HERE */}
+              <div className="w-20 h-20 flex-shrink-0 rounded-md flex items-center justify-center overflow-hidden">
+
+                {data.image ? (
+                  <img
+                    src={data.image}
+                    alt={data.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center text-[#2859C5]">
+                    <ImageOff size={40} />
+                    {/* <span className="text-[10px] mt-1">No Image</span> */}
+                  </div>
+                )}
+
+              </div>
+
+              {/* TITLE */}
               <h2 className="font-semibold text-gray-800 text-sm sm:text-base">
                 {data.title}
               </h2>
+
             </div>
           </div>
         );
       },
     },
+
     {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
         const data = row.original;
+
         return (
           <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end items-center w-full">
+
             {/* VIEW */}
             <button
               onClick={() => router.get(`/admin/announcement/${data.id}`)}
@@ -61,12 +82,13 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
               onSuccess={onDeleteSuccess}
             >
               <button
-                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 transition w-full sm:w-auto"
+                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 w-full sm:w-auto"
               >
                 <Trash2 size={16} />
                 <span className="hidden sm:inline">Delete</span>
               </button>
             </CoordinatorAnnouncementDeletePrompt>
+
           </div>
         );
       },
@@ -82,14 +104,15 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
   return (
     <div className="rounded-md border bg-white shadow-sm overflow-x-auto">
       <Table>
+
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-sky-300">
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`p-4 font-bold text-black text-sm sm:text-base cursor-default select-none ${
-                    header.id === "actions" ? "text-right pr-30 align-middle" : ""
+                  className={`p-4 font-bold text-black text-sm sm:text-base ${
+                    header.id === "actions" ? "text-right pr-30" : ""
                   }`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
@@ -102,11 +125,11 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
         <TableBody>
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="border-t">
+              <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={`p-4 ${cell.column.id === "actions" ? "text-right align-middle" : ""}`}
+                    className={`p-4 ${cell.column.id === "actions" ? "text-right" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -121,6 +144,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
             </TableRow>
           )}
         </TableBody>
+
       </Table>
     </div>
   );

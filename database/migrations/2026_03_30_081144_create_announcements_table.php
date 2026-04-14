@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');      // Announcement title
             $table->text('details');      // Announcement details
-            $table->string('image');      // Image path
+            $table->string('image')->nullable();      // Image path
             $table->timestamps();         // created_at & updated_at
         });
     }

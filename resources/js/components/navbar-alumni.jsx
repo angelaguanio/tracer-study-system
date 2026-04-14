@@ -95,8 +95,10 @@ export default function NavbarAlumni() {
             <DropdownMenuItem asChild>
               <Link>Profile</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => router.post(route('alumna.logout'))}>
-              Logout
+            <DropdownMenuItem asChild>
+              <Link href={route('alumna.logout')} method="post" as="button">
+                Logout
+            </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

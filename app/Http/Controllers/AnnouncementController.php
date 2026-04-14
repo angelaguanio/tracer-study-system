@@ -32,16 +32,17 @@ class AnnouncementController extends Controller
             'image'   => 'nullable|image|max:2048',
         ]);
 
-        $imagePath = $request->file('image')
-            ? $request->file('image')->store('announcements', 'public')
-            : null;
+        $imageUrl = '';
 
-        $fullImageUrl = $imagePath ? asset("storage/$imagePath") : null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('announcements', 'public');
+            $imageUrl = asset("storage/$path");
+        }
 
         Announcement::create([
             'title'   => $request->title,
             'details' => $request->details,
-            'image'   => $fullImageUrl,
+            'image'   => $imageUrl,
         ]);
 
         return redirect()
