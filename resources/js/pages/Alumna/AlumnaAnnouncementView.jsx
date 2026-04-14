@@ -30,13 +30,11 @@ export default function AlumnaAnnouncementView({ announcement }) {
 
         {/* IMAGE (ONLY IF AVAILABLE) */}
         {announcement?.image && (
-          <div className="w-full mb-6 overflow-hidden rounded-xl border">
             <img
               src={announcement.image}
               alt={announcement.title}
-              className="w-full max-h-[500px] object-cover"
+              className="w-full max-h-[500px] object-contain mb-6"
             />
-          </div>
         )}
 
         {/* CONTENT */}
