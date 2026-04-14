@@ -32,7 +32,7 @@ class AlumnaAuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'year_graduated' => 'nullable|integer|between:2000,' . date('Y'),
-            'courses' => 'nullable|string|in:BSCpE,BSCE,BSIT'
+            'courses' => 'nullable|string|in:BSCpE,BSECE,BSIT'
         ]);
 
         //pass hashing shi

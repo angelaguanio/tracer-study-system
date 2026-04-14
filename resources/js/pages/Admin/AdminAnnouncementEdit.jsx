@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
+import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdate";
+
 
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
@@ -153,6 +155,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
           </Card>
         </div>
       </div>
+      <AdminAnnouncementEditUpdate show={showModal} />
     </>
   );
 }
