@@ -7,70 +7,85 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+import CoordinatorAnnouncementEditUpdate from "@/components/CoordinatorAnnouncementEditUpdate";
+
 export default function CoordinatorAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
 
-  // Preview image
+  const [showModal, setShowModal] = useState(false);
   const [preview, setPreview] = useState(announcement?.image);
 
-  // Form data state
   const [formData, setFormData] = useState({
     title: announcement?.title || "",
     details: announcement?.details || "",
     image: null,
   });
 
-  // Handle text changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPreview(URL.createObjectURL(file)); // preview
+      setPreview(URL.createObjectURL(file));
       setFormData({ ...formData, image: file });
     }
   };
 
-  // Form submit
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!announcement?.id) return;
 
     const data = new FormData();
     data.append("title", formData.title);
     data.append("details", formData.details);
     if (formData.image) data.append("image", formData.image);
-
-    // POST with method override to PUT
     data.append("_method", "PUT");
 
     router.post(`/coordinator/announcement/${announcement.id}`, data, {
       forceFormData: true,
+
       onSuccess: () => {
-        router.visit("/coordinator/announcement");
-      },
-      onError: (errors) => {
-        console.log("Validation errors:", errors);
+        setShowModal(true);
+
+        setTimeout(() => {
+          setShowModal(false);
+          router.visit("/coordinator/announcement");
+        }, 3000);
       },
     });
   };
 
   return (
+    <CoordinatorLayout>
       <>
-      <Head title="Edit Announcement" />
+        <Head title="Edit Announcement" />
 
-      <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
-        <div className="w-full max-w-6xl">
-          <Card className="w-full flex flex-col min-h-[700px] max-h-[900px]">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-semibold ml-3">
-                Edit Announcement
-              </CardTitle>
+        {/* PAGE WRAPPER */}
+        <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 px-4 sm:py-10">
 
-              <div>
+          {/* RESPONSIVE CONTAINER */}
+          <div className="w-full max-w-5xl">
+
+            {/* CARD */}
+            <Card className="w-full min-h-[600px] sm:min-h-[700px] flex flex-col">
+
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <CardTitle className="text-lg font-semibold">
+                  Edit Announcement
+                </CardTitle>
+
+                <Button
+                  type="button"
+                  onClick={() => fileInputRef.current.click()}
+                  className="bg-[#2859C5] text-white hover:bg-[#1f47a0] w-full sm:w-auto"
+                >
+                  Upload Image
+                </Button>
+
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -78,77 +93,71 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-                <Button
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
-                >
-                  Upload Image
-                </Button>
-              </div>
-            </CardHeader>
+              </CardHeader>
 
-            {/* 🔹 Image Preview: same behavior as Create page */}
-            {preview && (
-              <div className="mb-2 flex justify-start pl-6">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-40 max-h-64 rounded border object-contain"
-                />
-              </div>
-            )}
-
-            <CardContent className="flex flex-col flex-grow">
-              <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
-                {/* TITLE */}
-                <div className="space-y-2 -mt-4">
-                  <Label htmlFor="title" className="text-[#6E6C6C] font-bold">
-                    Announcement Title
-                  </Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    placeholder="Title"
-                    className="h-15 max-h-30 overflow-y-auto"
+              {preview && (
+                <div className="mb-2 flex justify-center sm:justify-start px-4">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-32 sm:w-40 max-h-64 rounded border object-contain"
                   />
                 </div>
+              )}
 
-                {/* DETAILS */}
-                <div className="space-y-2 mt-4">
-                  <Label htmlFor="details" className="text-[#6E6C6C] font-bold">
-                    Details
-                  </Label>
-                  <Textarea
-                    id="details"
-                    name="details"
-                    value={formData.details}
-                    onChange={handleChange}
-                    placeholder="Details"
-                    className="h-90 max-h-100 overflow-y-auto"
-                  />
-                </div>
+              <CardContent className="flex flex-col flex-grow px-4 sm:px-6">
 
-                {/* UPDATE BUTTON */}
-                <div className="mt-auto pt-4">
-                  <Button
-                    type="submit"
-                    className="w-full bg-[#2859C5] hover:bg-[#1f47a0]"
-                  >
-                    Update
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+                <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
+
+                  {/* TITLE */}
+                  <div className="space-y-2">
+                    <Label className="text-[#6E6C6C] font-bold">
+                      Announcement Title
+                    </Label>
+
+                    <Input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      placeholder="Title"
+                    />
+                  </div>
+
+                  {/* DETAILS */}
+                  <div className="space-y-2">
+                    <Label className="text-[#6E6C6C] font-bold">
+                      Details
+                    </Label>
+
+                    <Textarea
+                      name="details"
+                      value={formData.details}
+                      onChange={handleChange}
+                      placeholder="Details"
+                      className="h-[250px] sm:h-[400px] lg:h-[500px] overflow-y-auto resize-none"
+                    />
+                  </div>
+
+                  {/* BUTTON */}
+                  <div className="mt-auto pt-4">
+                    <Button
+                      type="submit"
+                      className="w-full bg-[#2859C5] hover:bg-[#1f47a0]"
+                    >
+                      Update
+                    </Button>
+                  </div>
+
+                </form>
+              </CardContent>
+            </Card>
+
+          </div>
         </div>
-      </div>
-    </>
+
+        {/* MODAL */}
+        <CoordinatorAnnouncementEditUpdate show={showModal} />
+      </>
+    </CoordinatorLayout>
   );
 }
-
-CoordinatorAnnouncementEdit.layout = (page) => (
-  <CoordinatorLayout>{page}</CoordinatorLayout>
-); 
