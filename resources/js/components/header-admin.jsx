@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
 import ModeToggle from './mode-toggle'
-import ProfileTemp from './profile-temp' 
+import ProfileTemp from './profile-temp'
 
-export default function HeaderCoord({ navItems = [] }) {
+export default function HeaderAdmin({ navItems = [] }) {
   const { url, props } = usePage()
-  const user = props.auth?.user 
+  const user = props.auth?.user // ✅ get user
   const activeItem = navItems.find((item) => url.startsWith(item.href))
 
   return (
@@ -32,7 +32,7 @@ export default function HeaderCoord({ navItems = [] }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="nav" className="py-6">
-              <ProfileTemp user={user} /> 
+              <ProfileTemp user={user} />
             </Button>
           </DropdownMenuTrigger>
 
@@ -44,7 +44,7 @@ export default function HeaderCoord({ navItems = [] }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onSelect={() => router.post(route('coordinator.logout'))}
+              onSelect={() => router.post(route('admin.logout'))}
             >
               Logout
             </DropdownMenuItem>

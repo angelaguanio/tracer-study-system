@@ -1,30 +1,48 @@
 import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
-import HeaderCoord from '../components/header-coord'
+import HeaderAdmin from '../components/header-admin'
 import { LayoutDashboard, Bell, NotebookPen, CircleUserRound, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 
-export default function CoordinatorLayout({children}) {
+export default function AdminLayout({children}) {
   const navItems = [
     {
       id: "dashboard",
       name: "Dashboard",
-      href:"/coordinator/dashboard",
+      href:"/admin/dashboard",
       icon: LayoutDashboard
     },
     {
       id: "announcement",
       name: "Announcement",
-      href:"/coordinator/announcement",
+      href:"/admin/announcement",
       icon: Bell
     },
     {
       id: "alumni",
       name: "Alumni",
-      href:"/coordinator/alumni",
+      href:"/admin/alumni",
       icon: CircleUserRound
+    },
+    {
+      id: "surveys",
+      name: "Surveys",
+      href:"/admin/surveys",
+      icon: NotebookPen
+    },
+    {
+      id: "survey-response",
+      name: "Survey Response",
+      href:"/admin/survey-response",
+      icon: FileChartColumn
+    },
+    {
+      id: "analytics",
+      name: "Analytics",
+      href:"/admin/analytics",
+      icon: ChartNoAxesCombined
     }
   ]
   return (
@@ -32,7 +50,7 @@ export default function CoordinatorLayout({children}) {
       <SidebarProvider>
         <SidebarCoord navItems={navItems}/>
           <SidebarInset>
-            <HeaderCoord navItems={navItems}/>
+            <HeaderAdmin navItems={navItems}/>
               <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
                   {children}
                 </main>

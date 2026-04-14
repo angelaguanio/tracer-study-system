@@ -25,7 +25,11 @@ export default function Login() {
         <Button asChild variant="blue" size="login" className="w-full">
           <Link href={route('coordinator.login')}>COORDINATOR</Link>
         </Button>
-      </CardFooter>
+
+        <Button asChild variant="blue" size="login" className="w-full">
+          <Link href={route('admin.login')}>ADMINISTRATOR</Link>
+        </Button>
+      </CardFooter>                                                                                                 
 
     </Card>
   );

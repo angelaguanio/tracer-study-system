@@ -172,7 +172,7 @@ export default function AlumnaSignup() {
           <SelectContent className="max-h-48">
             <SelectGroup>
               <SelectItem value="BSCpE">Bachelor of Science in Computer Engineering</SelectItem>
-              <SelectItem value="BSECE">Bachelor of Science in Electronics Engineering</SelectItem>
+              <SelectItem value="BSECE">Bachelor of Science in Electronic Engineering</SelectItem>
               <SelectItem value="BSIT">Bachelor of Science in Information Technology</SelectItem>
             </SelectGroup>
           </SelectContent>

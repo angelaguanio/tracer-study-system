@@ -1,13 +1,13 @@
 import { router } from "@inertiajs/react";
 import { BarChart2 } from "lucide-react";
-import CoordinatorLayout from "@/layouts/coord-layout";
+import AdminLayout from "@/layouts/admin-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export default function AnalyticsIndex({ surveys }) {
     return (
-        <div className="w-full max-w-4xl px-4 flex flex-col gap-4">
+        <div className="w-full max-w-4xl px-4 py-6 flex flex-col gap-4 self-start">
             <h1 className="text-xl font-bold text-gray-800">Analytics</h1>
             <p className="text-sm text-gray-500">Select a survey to view its response analytics.</p>
 
@@ -29,7 +29,7 @@ export default function AnalyticsIndex({ surveys }) {
                             <Button
                                 size="sm"
                                 className="bg-purple-600 hover:bg-purple-700 text-white"
-                                onClick={() => router.get(route("coordinator.surveys.analytics", survey.id))}
+                                onClick={() => router.get(route("admin.surveys.analytics", survey.id))}
                             >
                                 <BarChart2 size={14} />
                                 View Analytics
@@ -42,4 +42,4 @@ export default function AnalyticsIndex({ surveys }) {
     );
 }
 
-AnalyticsIndex.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
+AnalyticsIndex.layout = (page) => <AdminLayout>{page}</AdminLayout>;

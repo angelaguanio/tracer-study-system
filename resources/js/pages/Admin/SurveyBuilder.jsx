@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { router, usePage, Link } from "@inertiajs/react";
 import { Plus, ArrowLeft } from "lucide-react";
-import CoordinatorLayout from "@/layouts/coord-layout";
+import AdminLayout from "@/layouts/admin-layout";
 import SectionPanel from "@/components/survey/coordinator/SectionPanel";
 import QuestionItem from "@/components/survey/coordinator/QuestionItem";
 import SectionFormModal from "@/components/survey/coordinator/SectionFormModal";
@@ -53,7 +53,7 @@ export default function SurveyBuilder({ survey }) {
         [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
         setLocalSections(reordered);
 
-        router.put(route("coordinator.sections.reorder", survey.id), {
+        router.put(route("admin.sections.reorder", survey.id), {
             sections: reordered.map((s, idx) => ({ id: s.id, display_order: idx + 1 })),
         }, {
             preserveScroll: true,
@@ -61,7 +61,7 @@ export default function SurveyBuilder({ survey }) {
     };
 
     const handleStatusToggle = (checked) => {
-        router.put(route("coordinator.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
+        router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
     };
 
     const handleQuestionReorder = (questionId, direction) => {
@@ -78,7 +78,7 @@ export default function SurveyBuilder({ survey }) {
             s.id === activeSectionId ? { ...s, questions: reordered } : s
         ));
 
-        router.put(route("coordinator.questions.reorder", activeSectionId), {
+        router.put(route("admin.questions.reorder", activeSectionId), {
             questions: reordered.map((q, i) => ({ id: q.id, display_order: i + 1 })),
         }, { preserveScroll: true });
     };
@@ -88,7 +88,7 @@ export default function SurveyBuilder({ survey }) {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <Link href={route("coordinator.surveys.index")}>
+                    <Link href={route("admin.surveys.index")}>
                         <Button variant="ghost" size="sm" className="text-gray-500 hover:bg-gray-300 px-2">
                             <ArrowLeft size={16} />
                         </Button>
@@ -196,4 +196,4 @@ export default function SurveyBuilder({ survey }) {
     );
 }
 
-SurveyBuilder.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
+SurveyBuilder.layout = (page) => <AdminLayout>{page}</AdminLayout>;

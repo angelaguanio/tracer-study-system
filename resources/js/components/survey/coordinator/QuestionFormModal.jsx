@@ -68,9 +68,9 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
         const onError = (e) => setErrors(e);
 
         if (isEdit) {
-            router.put(route("coordinator.questions.update", question.id), payload, { onError, onSuccess: onClose });
+            router.put(route("admin.questions.update", question.id), payload, { onError, onSuccess: onClose });
         } else {
-            router.post(route("coordinator.questions.store", sectionId), payload, { onError, onSuccess: onClose });
+            router.post(route("admin.questions.store", sectionId), payload, { onError, onSuccess: onClose });
         }
     };
 

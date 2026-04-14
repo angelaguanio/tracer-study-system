@@ -1,18 +1,18 @@
 <?php
-
+ 
 namespace App\Models;
-
+ 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+ 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-
+ 
     /**
      * The attributes that are mass assignable.
      *
@@ -28,7 +28,7 @@ class User extends Authenticatable
         'year_graduated',
         'courses'
     ];
-
+ 
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -38,25 +38,29 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
+ 
     //helper func
     public function isAlumna()
     {
         return $this->user_role === 'alumna';
     }
-
+ 
     public function isCoordinator()
     {
         return $this->user_role === 'coordinator';
     }
 
+     public function isAdmin()
+    {
+        return $this->user_role === 'admin';
+    }
+
     //get initials for temp profile 
     public function getInitialsAttribute()
     {
-        return strtoupper(substr($this->first_name ?? '',0,1) . substr($this->last_name ?? '',0,1));
+        return strtoupper(substr($this->first_name ?? '', 0, 1) . substr($this->last_name ?? '', 0, 1));
     }
-
-
+ 
     /**
      * Get the attributes that should be cast.
      *
@@ -66,7 +70,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
