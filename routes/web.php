@@ -60,7 +60,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
 
         //announcement
-        Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
+        Route::get('/announcements', [AnnouncementController::class, 'alumna'])->name('announcements');
 
         //Route::get('/announcement/view', function () {return Inertia::render('Alumna/AlumnaAnnouncementView'); })->name('announcement/view');
         Route::get('/announcement/{id}', [AnnouncementController::class, 'showAlumna']) ->name('announcement.view');
@@ -98,7 +98,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 });
 
 // Public Alumna announcements
-    Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
+    // Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
 
 
 
