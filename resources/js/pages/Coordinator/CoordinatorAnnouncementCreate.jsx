@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 export default function CoordinatorAnnouncementCreate() {
-    const fileInputRef = useRef(null); // 👉 Reference para sa hidden file input
-    const [preview, setPreview] = useState(null); // 👉 Preview ng image bago i-upload
+    const fileInputRef = useRef(null); // Reference para sa hidden file input
+    const [preview, setPreview] = useState(null); // Preview ng image bago i-upload
 
     // INERTIA FORM DATA
     const { data, setData, post, processing, errors } = useForm({
