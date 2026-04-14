@@ -43,10 +43,10 @@ export default function HeaderCoord({ navItems = [] }) {
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onSelect={() => router.post(route('coordinator.logout'))}
-            >
-              Logout
+            <DropdownMenuItem asChild>
+                <Link href={route('coordinator.logout')} method="post" as="button">
+                  Logout
+                </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

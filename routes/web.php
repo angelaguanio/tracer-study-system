@@ -63,7 +63,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/announcements', function () {return Inertia::render('Alumna/AlumnaAnnouncements'); })->name('announcements');
 
         //Route::get('/announcement/view', function () {return Inertia::render('Alumna/AlumnaAnnouncementView'); })->name('announcement/view');
-        Route::get('/announcement/{id}', [AnnouncementController::class, 'showAlumna']) ->name('alumna.announcement.view');
+        Route::get('/announcement/{id}', [AnnouncementController::class, 'showAlumna']) ->name('announcement.view');
 
         //association
         Route::get('/association', function () { return Inertia::render('Alumna/AlumnaAssociation'); })->name('association');
@@ -100,8 +100,6 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 // Public Alumna announcements
     Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
 
-    Route::get('/alumna/home', AlumnaHomeController::class)->name('alumna.home');
-
 
 
 //============== ADMIN ROUTES =========================
@@ -115,7 +113,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
       //announcement
@@ -188,7 +186,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
-        Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+        // Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
     });
