@@ -1,11 +1,19 @@
-import React from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
+import { Link } from "@inertiajs/react";
+import { ArrowLeft } from "lucide-react";
 
 export default function AlumnaAnnouncementView({ announcement }) {
   return (
     <div className="min-h-screen w-full">
-
       <div className="px-4 sm:px-6 md:px-10 py-6 max-w-4xl mx-auto">
+
+        {/* BACK BUTTON */}
+        <Link
+          href="/alumna/announcements"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-4"
+        >
+          <ArrowLeft size={16} /> Back to Announcements
+        </Link>
 
         {/* TITLE */}
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-800 mb-2">

@@ -5,12 +5,12 @@ import { ImageOff } from "lucide-react";
 
 export default function AlumnaAnnouncements({ announcements }) {
   return (
-    <div className="min-h-screen bg-sky-50 w-full">
+    <div className="min-h-screen w-screen bg-sky-50 ">
+      
+      {/* CENTER CONTAINER */}
+      <div className="w-full max-w-5xl mx-auto px-6 py-10">
 
-      {/* CARD FULL WIDTH */}
-      <div className="w-full px-8 py-8">
-
-        <h2 className="text-[#7B7B7B] text-lg font-semibold mb-6">
+        <h2 className="text-[#7B7B7B] text-lg font-semibold mb-6 text-center">
           Recent Announcements
         </h2>
 
@@ -19,12 +19,12 @@ export default function AlumnaAnnouncements({ announcements }) {
             No announcements available
           </p>
         ) : (
-          <div className="w-full space-y-6">
+          <div className="space-y-8 flex flex-col items-center">
 
             {announcements.map((ann) => (
               <div
                 key={ann.id}
-                className="w-full bg-white rounded-xl shadow-md overflow-hidden"
+                className="w-full max-w-5xl bg-white rounded-xl shadow-md overflow-hidden"
               >
                 
                 {/* IMAGE */}
@@ -42,11 +42,11 @@ export default function AlumnaAnnouncements({ announcements }) {
 
                 {/* CONTENT */}
                 <div className="p-6">
-                  <h3 className="text-[#0042A8] text-xl font-bold mb-3">
+                  <h3 className="text-[#0042A8] text-xl font-bold mb-3 text-center">
                     {ann.title}
                   </h3>
 
-                  <p className="text-[#000000] text-lg leading-relaxed mb-6">
+                  <p className="text-[#000000] text-lg leading-relaxed mb-6 text-center">
                     {ann.details}
                   </p>
 
