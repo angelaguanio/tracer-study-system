@@ -26,7 +26,10 @@ class User extends Authenticatable
         'password',
         'user_role',
         'year_graduated',
-        'courses'
+        'courses',
+        'username',        // ✅ added
+        'address',         // ✅ added
+        'contact_number',  // ✅ added
     ];
  
     /**
@@ -39,7 +42,7 @@ class User extends Authenticatable
         'remember_token',
     ];
  
-    //helper func
+    // helper func
     public function isAlumna()
     {
         return $this->user_role === 'alumna';
@@ -49,13 +52,13 @@ class User extends Authenticatable
     {
         return $this->user_role === 'coordinator';
     }
-
-     public function isAdmin()
+ 
+    public function isAdmin()
     {
         return $this->user_role === 'admin';
     }
-
-    //get initials for temp profile 
+ 
+    // get initials for temp profile
     public function getInitialsAttribute()
     {
         return strtoupper(substr($this->first_name ?? '', 0, 1) . substr($this->last_name ?? '', 0, 1));
@@ -73,14 +76,20 @@ class User extends Authenticatable
             'password'          => 'hashed',
         ];
     }
-
+ 
     public function responses(): HasMany
     {
         return $this->hasMany(Response::class);
     }
-
+ 
     public function drafts(): HasMany
     {
         return $this->hasMany(SurveyDraft::class);
     }
+ 
+    public function employment()
+    {
+        return $this->hasOne(Employment::class);
+    }
 }
+ 

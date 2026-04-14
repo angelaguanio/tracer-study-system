@@ -8,11 +8,19 @@ const IconPhone     = () => <svg viewBox="0 0 24 24" fill="none" stroke="current
 const IconPin       = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>;
 const IconUser2     = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
 const IconBriefcase = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>;
+const IconBuilding  = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 9h1m5 0h1M9 13h1m5 0h1M9 17h1m5 0h1"/></svg>;
 const IconHistory   = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M3 12a9 9 0 109-9 9 9 0 00-9 9z"/><path d="M12 7v5l3 3"/></svg>;
 const IconEdit      = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
  
+const statusColor = (status) => {
+    if (status === 'yes') return 'bg-green-600';
+    if (status === 'no')  return 'bg-red-600';
+    return 'bg-gray-400';
+};
+ 
 export default function StudentProfile() {
     const { profile, flash } = usePage().props;
+    const emp = profile.employment;
  
     return (
         <div className="min-h-screen bg-[#e8f4fd]">
@@ -38,7 +46,7 @@ export default function StudentProfile() {
                     </Link>
                 </div>
  
-                {/* Personal Information */}
+                {/* ══ Personal Information ══ */}
                 <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-7">
                     <div className="flex items-center gap-3 mb-4 sm:mb-5 text-gray-700">
                         <IconUser />
@@ -61,7 +69,6 @@ export default function StudentProfile() {
  
                     <hr className="border-gray-200 mb-4 sm:mb-5" />
  
-                    {/* Info Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-x-6 sm:gap-y-5">
                         <div className="flex items-start gap-3 text-gray-500">
                             <IconMail />
@@ -94,18 +101,72 @@ export default function StudentProfile() {
                     </div>
                 </section>
  
-                {/* Employment Status */}
+                {/* ══ Employment Status ══ */}
                 <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-7">
                     <div className="flex items-center gap-3 mb-4 text-gray-700">
                         <IconBriefcase />
                         <h2 className="text-sm sm:text-base font-bold flex-1">Employment Status</h2>
+                        {emp && (
+                            <span className={`${statusColor(emp.is_employed)} text-white text-xs font-semibold px-3 py-1 rounded-full`}>
+                                {emp.is_employed === 'yes' ? 'Employed' : 'Unemployed'}
+                            </span>
+                        )}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-400 text-center py-4">
-                        No employment data on record.
-                    </p>
+ 
+                    {emp ? (
+                        emp.is_employed === 'yes' ? (
+                            <div className="flex flex-col gap-3 pl-1">
+                                {emp.company && (
+                                    <div className="flex items-center gap-3 font-bold text-gray-800">
+                                        <IconBuilding />
+                                        {emp.company}
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {emp.employment_type && (
+                                        <div>
+                                            <p className="text-xs text-gray-400">Employment Type</p>
+                                            <p className="text-sm font-semibold text-gray-800">{emp.employment_type}</p>
+                                        </div>
+                                    )}
+                                    {emp.position && (
+                                        <div>
+                                            <p className="text-xs text-gray-400">Position</p>
+                                            <p className="text-sm font-semibold text-gray-800">{emp.position}</p>
+                                        </div>
+                                    )}
+                                    {emp.location && (
+                                        <div>
+                                            <p className="text-xs text-gray-400">Location</p>
+                                            <p className="text-sm font-semibold text-gray-800">{emp.location}</p>
+                                        </div>
+                                    )}
+                                    {emp.monthly_salary && (
+                                        <div>
+                                            <p className="text-xs text-gray-400">Monthly Salary</p>
+                                            <p className="text-sm font-semibold text-gray-800">₱{Number(emp.monthly_salary).toLocaleString('en-PH')}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="pl-1">
+                                {emp.reason_unemployed && (
+                                    <div>
+                                        <p className="text-xs text-gray-400">Reason</p>
+                                        <p className="text-sm font-semibold text-gray-800">{emp.reason_unemployed}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    ) : (
+                        <p className="text-xs sm:text-sm text-gray-400 text-center py-4">
+                            No employment data on record.
+                        </p>
+                    )}
                 </section>
  
-                {/* Employment History */}
+                {/* ══ Employment History ══ */}
                 <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-7">
                     <div className="flex items-center gap-3 mb-4 text-gray-700">
                         <IconHistory />
