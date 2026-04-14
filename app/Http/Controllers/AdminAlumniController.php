@@ -35,7 +35,7 @@ class AdminAlumniController extends Controller
 
         // ✅ PAGINATION FIX - APPENDS CURRENT QUERY PARAMETERS TO PAGINATION LINKS
         $users = $query
-            ->paginate(5)
+            ->paginate(6)
             ->appends($request->query()); //THIS FIXES PAGE RESET ISSUE
 
         // ✅ FORMAT PAGINATED DATA

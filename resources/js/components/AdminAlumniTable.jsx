@@ -99,7 +99,7 @@ export default function CoordinatorAlumniTable({ alumni }) {
                     size="sm"
                     variant="outline"
                     className="rounded-full border-[1px] border-[#9ECEFF] bg-white text-[#155DFC] hover:bg-[#F0F8FF]"
-                    onClick={() => router.visit(`/alumni/${item.id}`)}
+                    onClick={() => router.visit(route('profile'))}
                   >
                     View Profile
                   </Button>
