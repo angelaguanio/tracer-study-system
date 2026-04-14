@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CoordinatorAnnouncementEditUpdate({ show }) {
+export default function AdminAnnouncementEditUpdate({ show }) {
   if (!show) return null;
 
   return (
