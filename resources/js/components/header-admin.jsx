@@ -43,10 +43,10 @@ export default function HeaderAdmin({ navItems = [] }) {
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onSelect={() => router.post(route('admin.logout'))}
-            >
-              Logout
+            <DropdownMenuItem asChild>
+              <Link href={route('admin.logout')} method="post" as="button">
+                Logout
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
