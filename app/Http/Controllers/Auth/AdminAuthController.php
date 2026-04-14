@@ -1,24 +1,26 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CoordinatorAuthController extends Controller
+
+class AdminAuthController extends Controller
 {
-     public function showLogin() {
-        return Inertia::render('Auth/CoordinatorLogin');
+    public function showLogin() {
+        return Inertia::render('Auth/AdminLogin');
     }
 
-    public function loginCoordinator(Request $request) {
+    public function loginAdmin(Request $request) {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            if (Auth::user()->user_role === 'coordinator') {
+            if (Auth::user()->user_role === 'admin') {
                 $request->session()->regenerate();
-                return redirect()->intended(route('coordinator.dashboard'));
+                return redirect()->intended(route('admin.dashboard'));
             }
 
             // Logged in but wrong role — log them back out
@@ -30,7 +32,7 @@ class CoordinatorAuthController extends Controller
         return back()->withErrors(['email' => 'Invalid credentials']);
     }
 
-    public function logoutCoordinator(Request $request) {
+    public function logoutAdmin(Request $request) {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

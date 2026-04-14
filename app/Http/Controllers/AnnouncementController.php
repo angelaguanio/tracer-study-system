@@ -13,7 +13,7 @@ class AnnouncementController extends Controller
     {
         $announcements = Announcement::latest()->get();
 
-        return Inertia::render('Coordinator/CoordinatorAnnouncement', [
+        return Inertia::render('Admin/AdminAnnouncement', [
             'announcements' => $announcements,
             'flash' => session()->all(),
         ]);
@@ -21,7 +21,7 @@ class AnnouncementController extends Controller
 
     public function create()
     {
-        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
+        return Inertia::render('Admin/AdminAnnouncementCreate');
     }
 
     public function store(Request $request)
@@ -46,20 +46,20 @@ class AnnouncementController extends Controller
         ]);
 
         return redirect()
-            ->route('coordinator.announcement.index')
+            ->route('admin.announcement.index')
             ->with('success', 'Announcement created successfully.');
     }
 
     public function show(Announcement $announcement)
     {
-        return Inertia::render('Coordinator/CoordinatorAnnouncementView', [
+        return Inertia::render('Admin/AdminAnnouncementView', [
             'announcement' => $announcement,
         ]);
     }
 
     public function edit(Announcement $announcement)
     {
-        return Inertia::render('Coordinator/CoordinatorAnnouncementEdit', [
+        return Inertia::render('Admin/AdminAnnouncementEdit', [
             'announcement' => $announcement,
         ]);
     }
@@ -92,7 +92,7 @@ class AnnouncementController extends Controller
         ]);
 
         // Redirect back to announcement page
-        return redirect('/coordinator/announcement')
+        return redirect('/admin/announcement')
                             ->with('success', 'Updated successfully');
         
     }
@@ -102,7 +102,7 @@ class AnnouncementController extends Controller
         $announcement->delete();
 
         return redirect()
-            ->route('coordinator.announcement.index')
+            ->route('admin.announcement.index')
             ->with('success', 'Announcement deleted successfully.');
     }
 

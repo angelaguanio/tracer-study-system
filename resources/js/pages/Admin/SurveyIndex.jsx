@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import { Plus } from "lucide-react";
-import CoordinatorLayout from "@/layouts/coord-layout";
+import AdminLayout from "@/layouts/admin-layout";
 import SurveyCard from "@/components/survey/coordinator/SurveyCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ export default function SurveyIndex({ surveys = [] }) {
     const [errors, setErrors] = useState({});
 
     const handleCreate = () => {
-        router.post(route("coordinator.surveys.store"), form, {
+        router.post(route("admin.surveys.store"), form, {
             onError: (e) => setErrors(e),
             onSuccess: () => { setOpen(false); setForm({ title: "", description: "" }); },
         });
@@ -66,4 +66,4 @@ export default function SurveyIndex({ surveys = [] }) {
     );
 }
 
-SurveyIndex.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
+SurveyIndex.layout = (page) => <AdminLayout>{page}</AdminLayout>;

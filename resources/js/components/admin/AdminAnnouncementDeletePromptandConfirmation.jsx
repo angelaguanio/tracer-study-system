@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Trash2, Check } from "lucide-react";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAnnouncementDeletePromptandConfirmation({ children, announcementId, onSuccess }) {
+export default function AdminAnnouncementDeletePromptandConfirmation({ children, announcementId, onSuccess }) {
   const [open, setOpen] = useState(false);
 
   const openModal = () => setOpen(true);
@@ -11,7 +11,7 @@ export default function CoordinatorAnnouncementDeletePromptandConfirmation({ chi
   const confirmDelete = () => {
     if (!announcementId) return;
 
-    router.delete(`/coordinator/announcement/${announcementId}`, {
+    router.delete(`/admin/announcement/${announcementId}`, {
       onSuccess: () => {
         setOpen(false); 
         if (onSuccess) onSuccess(); 

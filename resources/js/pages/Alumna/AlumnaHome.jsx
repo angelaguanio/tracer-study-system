@@ -38,7 +38,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
 
 export default function AlumnaHome({ announcements }) {
   return (
-    <AlumnaLayout>
+    
       <div className="bg-white -mt-6 md:-mt-4">
 
         {/* HERO SECTION */}
@@ -184,6 +184,10 @@ export default function AlumnaHome({ announcements }) {
         </div>
 
       </div>
-    </AlumnaLayout>
+    
   );
 }
+
+AlumnaHome.layout = (page) => (
+  <AlumnaLayout>{page}</AlumnaLayout>
+);

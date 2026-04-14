@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
+use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SurveyAnalyticsController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
@@ -20,6 +23,7 @@ use Inertia\Inertia;
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->user_role;
+        if ($role === 'admin') return redirect()->route('admin.dashboard');
         if ($role === 'coordinator') return redirect()->route('coordinator.dashboard');
         if ($role === 'alumna') return redirect()->route('alumna.home');
     }
@@ -72,6 +76,12 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
          // about page 
         Route::get('/about', function () { return Inertia::render('Alumna/AlumnaAbout'); })->name('about');
+
+         // student profile
+        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
+        Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
+ 
         
         // logout
         Route::post('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
@@ -92,26 +102,23 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
     Route::get('/alumna/home', AlumnaHomeController::class)->name('alumna.home');
 
-//============== COORDINATOR ROUTES =========================
-Route::prefix('coordinator')->name('coordinator.')->group(function () {
-    // Guest-only routes
+
+
+//============== ADMIN ROUTES =========================
+Route::prefix('admin')->name('admin.')->group(function () {
+      // Guest-only routes
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [CoordinatorAuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [CoordinatorAuthController::class, 'loginCoordinator']);
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
     });
 
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
-        Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
-        Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+        Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
       //announcement
-        Route::get('/announcement/create', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementCreate'); })->name('announcement/create');
-        Route::get('/announcement/view', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementView'); })->name('announcement/view');
-        Route::get('announcement/edit', function () { return Inertia::render('Coordinator/CoordinatorAnnouncementEdit'); })->name('announcement/edit');
-        Route::get('/announcement', function () { return Inertia::render('Coordinator/CoordinatorAnnouncement'); })->name('announcement');
-
         //mga inadd ko (reygie)
         // INDEX
         Route::get('/announcement', [AnnouncementController::class, 'index']) ->name('announcement.index'); 
@@ -120,7 +127,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // STORE 
         Route::post('/announcement', [AnnouncementController::class, 'store']) ->name('announcement.store'); 
         // VIEW
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']) ->name('coordinator.announcement.show');
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']) ->name('admin.announcement.show');
         //EDIT
         Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit']) ->name('announcement.edit');
         // UPDATE
@@ -131,7 +138,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // Analytics index — list of surveys to pick from
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
-            return Inertia::render('Coordinator/AnalyticsIndex', ['surveys' => $surveys]);
+            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys]);
         })->name('analytics');
 
         // Survey analytics (legacy route kept for compatibility)
@@ -139,7 +146,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     });
 
     // Survey management routes — auth + coordinator middleware
-    Route::middleware(['auth', 'coordinator'])->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
         // Survey CRUD
         Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
         Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
@@ -167,4 +174,23 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
         
         });
+});
+
+
+//============== COORDINATOR ROUTES =========================
+Route::prefix('coordinator')->name('coordinator.')->group(function () {
+    // Guest-only routes
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [CoordinatorAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [CoordinatorAuthController::class, 'loginCoordinator']);
     });
+
+    // Authenticated-only routes
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
+        Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+        Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+    });
+
+});

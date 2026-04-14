@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CoordinatorAnnouncementViewCard({ announcement }) {
+export default function AdminAnnouncementViewCard({ announcement }) {
   if (!announcement) return null;
 
   const { title, details, image, created_at } = announcement;

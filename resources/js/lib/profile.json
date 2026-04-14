@@ -1,0 +1,143 @@
+{
+  "personalFields": [
+    {
+      "key": "email",
+      "label": "Email:",
+      "type": "email",
+      "placeholder": "Email Address"
+    },
+    {
+      "key": "username",
+      "label": "Username:",
+      "type": "text",
+      "placeholder": "Username"
+    },
+    {
+      "key": "address",
+      "label": "Address:",
+      "type": "text",
+      "placeholder": "Address"
+    },
+    {
+      "key": "contact_number",
+      "label": "Contact Number:",
+      "type": "text",
+      "placeholder": "Contact Number"
+    }
+  ],
+  "employmentQuestions": [
+    {
+      "key": "is_employed",
+      "label": "Are you currently employed?",
+      "type": "radio",
+      "options": [
+        {
+          "label": "Yes",
+          "value": "yes"
+        },
+        {
+          "label": "No",
+          "value": "no"
+        }
+      ]
+    },
+    {
+      "key": "employment_type",
+      "label": "Employment Status",
+      "type": "radio",
+      "showIf": {
+        "key": "is_employed",
+        "value": "yes"
+      },
+      "options": [
+        {
+          "label": "Permanent/Regular",
+          "value": "Permanent/Regular"
+        },
+        {
+          "label": "Probationary",
+          "value": "Probationary"
+        },
+        {
+          "label": "Contractual",
+          "value": "Contractual"
+        },
+        {
+          "label": "Part-time",
+          "value": "Part-time"
+        }
+      ]
+    },
+    {
+      "key": "company",
+      "label": "Name of Company/Institution of current employment:",
+      "type": "text",
+      "placeholder": "Name of Company",
+      "showIf": {
+        "key": "is_employed",
+        "value": "yes"
+      }
+    },
+    {
+      "key": "position",
+      "label": "Position:",
+      "type": "text",
+      "placeholder": "Position in the company",
+      "showIf": {
+        "key": "is_employed",
+        "value": "yes"
+      }
+    },
+    {
+      "key": "location",
+      "label": "Location:",
+      "type": "text",
+      "placeholder": "Location of Company",
+      "showIf": {
+        "key": "is_employed",
+        "value": "yes"
+      }
+    },
+    {
+      "key": "monthly_salary",
+      "label": "Monthly Salary:",
+      "type": "text",
+      "placeholder": "e.g. 25000",
+      "showIf": {
+        "key": "is_employed",
+        "value": "yes"
+      }
+    },
+    {
+      "key": "reason_unemployed",
+      "label": "Reason for unemployment:",
+      "type": "radio",
+      "showIf": {
+        "key": "is_employed",
+        "value": "no"
+      },
+      "options": [
+        {
+          "label": "Further studies",
+          "value": "Further studies"
+        },
+        {
+          "label": "Looking for a job",
+          "value": "Looking for a job"
+        },
+        {
+          "label": "Family concerns",
+          "value": "Family concerns"
+        },
+        {
+          "label": "Health reasons",
+          "value": "Health reasons"
+        },
+        {
+          "label": "Others",
+          "value": "Others"
+        }
+      ]
+    }
+  ]
+}
