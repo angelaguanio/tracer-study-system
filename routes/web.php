@@ -13,6 +13,7 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
+use App\Http\Controllers\AdminAlumniController;
 
 use App\Http\Controllers\AnnouncementController;
 
@@ -113,6 +114,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+
+    //AdminAlumni
+    Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
+
+    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
+
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
