@@ -7,7 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 
 export default function CoordinatorLayout({children}) {
-  const navItems = [
+  const navItemsCoord = [
     {
       id: "dashboard",
       name: "Dashboard",
@@ -27,12 +27,13 @@ export default function CoordinatorLayout({children}) {
       icon: CircleUserRound
     }
   ]
+  console.log('passing:', navItemsCoord.length, navItemsCoord)
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarCoord navItems={navItems}/>
+        <SidebarCoord navItemsCoord={navItemsCoord}/>
           <SidebarInset>
-            <HeaderCoord navItems={navItems}/>
+            <HeaderCoord navItemsCoord={navItemsCoord}/>
               <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
                   {children}
                 </main>
