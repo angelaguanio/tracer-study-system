@@ -20,12 +20,10 @@ export default function CoordinatorAlumniTable({ alumni }) {
   return (
     <div className="bg-white rounded-xl shadow flex flex-col h-[500px] overflow-hidden">
 
-      {/* SCROLL AREA */}
       <div className="flex-1 overflow-y-auto overflow-x-auto">
 
         <Table className="min-w-[700px] w-full">
 
-          {/* HEADER */}
           <TableHeader className="sticky top-0 bg-[#EAF5FF] z-10">
             <TableRow>
               <TableHead className="text-center px-6">Alumni</TableHead>
@@ -35,24 +33,17 @@ export default function CoordinatorAlumniTable({ alumni }) {
             </TableRow>
           </TableHeader>
 
-          {/* BODY */}
           <TableBody>
             {alumni?.data?.map((item) => (
-              <TableRow
-                key={item.id}
-                className="hover:bg-gray-50 h-[64px]"
-              >
+              <TableRow key={item.id} className="hover:bg-gray-50 h-[64px]">
 
-                {/* ✅ ALUMNI FIXED */}
                 <TableCell className="px-6">
                   <div className="flex items-center w-full relative">
 
-                    {/* AVATAR (LEFT) */}
                     <div className="absolute left-0">
                       {item.avatar ? (
                         <img
                           src={item.avatar}
-                          alt={item.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
@@ -67,9 +58,8 @@ export default function CoordinatorAlumniTable({ alumni }) {
                       )}
                     </div>
 
-                    {/* NAME (CENTERED) */}
                     <div className="w-full text-center">
-                      <span className="font-medium text-gray-800 leading-tight">
+                      <span className="font-medium text-gray-800">
                         {item.name}
                       </span>
                     </div>
@@ -77,32 +67,38 @@ export default function CoordinatorAlumniTable({ alumni }) {
                   </div>
                 </TableCell>
 
-                {/* COURSE */}
-                <TableCell className="px-6 text-center">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium ${badgeColor(
-                      item.course
-                    )}`}
-                  >
+                <TableCell className="text-center">
+                  <span className={`px-3 py-1 text-xs rounded-full ${badgeColor(item.course)}`}>
                     {item.course}
                   </span>
                 </TableCell>
 
-                {/* YEAR */}
-                <TableCell className="px-6 text-center text-gray-600">
+                <TableCell className="text-center text-gray-600">
                   {item.year}
                 </TableCell>
 
-                {/* ACTION */}
-                <TableCell className="px-6 text-center">
+                <TableCell className="text-center space-x-2">
+
+                  {/* VIEW PROFILE */}
                   <Button
                     size="sm"
                     variant="outline"
-                    className="rounded-full border-[1px] border-[#9ECEFF] bg-white text-[#155DFC] hover:bg-[#F0F8FF]"
-                    onClick={() => router.visit(route('profile'))}
+                    className="rounded-full border border-[#9ECEFF] text-[#155DFC]"
+                    onClick={() => router.visit(route('admin.alumni.show', item.id))}
                   >
                     View Profile
                   </Button>
+
+                  {/* SEND EMAIL */}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full border border-green-500 text-green-600 hover:bg-green-50"
+                    onClick={() => router.visit(route('admin.alumni.email.form', item.id))}
+                  >
+                    Send Email
+                  </Button>
+
                 </TableCell>
 
               </TableRow>
@@ -110,20 +106,6 @@ export default function CoordinatorAlumniTable({ alumni }) {
           </TableBody>
 
         </Table>
-      </div>
-
-      {/* PAGINATION */}
-      <div className="flex justify-end gap-2 p-4 border-t bg-white">
-        {alumni?.links?.map((link, i) => (
-          <Button
-            key={i}
-            size="sm"
-            variant={link.active ? "default" : "outline"}
-            disabled={!link.url}
-            onClick={() => link.url && router.visit(link.url)}
-            dangerouslySetInnerHTML={{ __html: link.label }}
-          />
-        ))}
       </div>
 
     </div>

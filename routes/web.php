@@ -120,6 +120,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
+     // VIEW PROFILE
+    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
+    ->name('alumni.show');
+
+    //Send email form
+    Route::get('/alumni/{id}/email', [AdminAlumniController::class, 'emailForm'])
+    ->name('alumni.email.form');
+
+    Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+    ->name('alumni.email.send');
+
         Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
