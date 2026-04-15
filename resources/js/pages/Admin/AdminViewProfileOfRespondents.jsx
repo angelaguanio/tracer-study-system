@@ -5,26 +5,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function AdminViewProfileOfRespondents({ user }) {
+
+  const isEmployed = user?.employment?.status === "Employed";
+
   return (
     <>
       <Head title="Alumni Profile" />
 
       <div className="w-full p-4">
-
         <div className="max-w-6xl mx-auto space-y-6">
 
-          {/* PERSONAL INFO */}
+          {/* PERSONAL INFORMATION */}
           <Card>
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
             </CardHeader>
 
             <CardContent>
-
               <div className="flex gap-6 items-center">
+
                 <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden">
                   {user.avatar && (
-                    <img src={user.avatar} className="w-full h-full object-cover" />
+                    <img
+                      src={user.avatar}
+                      className="w-full h-full object-cover"
+                      alt="avatar"
+                    />
                   )}
                 </div>
 
@@ -32,6 +38,7 @@ export default function AdminViewProfileOfRespondents({ user }) {
                   <h2 className="text-xl font-bold">{user.name}</h2>
                   <p className="text-gray-600">{user.course}</p>
                 </div>
+
               </div>
 
               <hr className="my-4" />
@@ -59,17 +66,17 @@ export default function AdminViewProfileOfRespondents({ user }) {
                 </div>
 
               </div>
-
             </CardContent>
           </Card>
 
-          {/* EMPLOYMENT */}
+          {/* EMPLOYMENT STATUS */}
           <Card>
             <CardHeader>
               <CardTitle>Employment Status</CardTitle>
             </CardHeader>
 
-            <CardContent className="flex justify-between">
+            <CardContent className="flex justify-between items-start">
+
               <div>
                 <p className="font-semibold">{user.employment.company}</p>
                 <p className="text-sm text-gray-600">
@@ -80,15 +87,23 @@ export default function AdminViewProfileOfRespondents({ user }) {
                 </p>
               </div>
 
-              <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full h-fit">
+              {/* STATUS BADGE */}
+              <span
+                className={`px-4 py-1 rounded-full h-fit text-sm font-semibold ${
+                  isEmployed
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
                 {user.employment.status}
               </span>
+
             </CardContent>
           </Card>
 
-          {/* BACK */}
+          {/* BACK BUTTON */}
           <Button
-            onClick={() => router.visit(route('admin.alumni.index'))}
+            onClick={() => router.visit(route("admin.alumni.index"))}
             className="bg-blue-600"
           >
             Back
