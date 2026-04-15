@@ -11,7 +11,7 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcements = Announcement::latest()->get();
+        $announcements = Announcement::latest()->paginate(10);
 
         return Inertia::render('Admin/AdminAnnouncement', [
             'announcements' => $announcements,

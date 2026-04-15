@@ -197,6 +197,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
+        //mga inadd ko (reygie)
+        // Route::get('/announcement', [AnnouncementController::class, 'index'])
+        // ->name('announcement.index');
+
     });
 
 });
