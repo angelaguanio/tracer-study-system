@@ -46,7 +46,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                     {ann.title}
                   </h3>
 
-                  <p className="text-[#000000] text-lg leading-relaxed mb-6 text-center">
+                  <p className="text-[#000000] text-lg leading-relaxed mb-6 text-center line-clamp-3">
                     {ann.details}
                   </p>
 

@@ -8,8 +8,7 @@ import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 
 // Card Component
 function AnnouncementCard({ id, date, title, description, image }) {
   return (
-    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
-      
+    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col h-[420px]">      
       {image ? (
         <img
           src={image}
@@ -24,7 +23,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
 
       <p className="text-[#0042A8] text-sm mb-4">{date}</p>
       <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
-      <p className="text-gray-600 text-sm mb-6">{description}</p>
+      <p className="text-gray-600 text-sm mb-4 h-[50px] overflow-hidden">{description}</p>
 
       <Link href={`/alumna/announcement/${id}`}>
         <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">

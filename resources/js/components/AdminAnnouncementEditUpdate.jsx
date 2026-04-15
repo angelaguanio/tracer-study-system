@@ -1,23 +1,30 @@
 import React from "react";
+import { X, Check } from "lucide-react";
 
-export default function AdminAnnouncementEditUpdate({ show }) {
+export default function AdminAnnouncementEditUpdate({ show, onClose }) {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 px-4">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
+      <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
 
-      <div className="bg-white w-full max-w-sm sm:max-w-md min-h-[220px] sm:min-h-[250px] rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-lg">
+        {/* CLOSE BUTTON */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+        >
+          <X size={20} />
+        </button>
 
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 flex items-center justify-center text-white text-2xl sm:text-3xl mb-4">
-          ✓
+        {/* GREEN CIRCLE WITH CHECK */}
+        <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
+          <Check size={28} className="text-white stroke-[3]" />
         </div>
 
-        <p className="text-gray-700 font-semibold text-base sm:text-lg">
+        <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
           Updated successfully
         </p>
-
       </div>
-
     </div>
   );
 }

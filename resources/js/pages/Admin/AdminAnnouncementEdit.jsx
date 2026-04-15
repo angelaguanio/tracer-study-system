@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdate";
 
-
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
+
+  const [showModal, setShowModal] = useState(false);
 
   // Preview image
   const [preview, setPreview] = useState(announcement?.image);
@@ -52,9 +53,19 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
     router.post(`/admin/announcement/${announcement.id}`, data, {
       forceFormData: true,
+
       onSuccess: () => {
-        router.visit("/admin/announcement");
-      },
+      setShowModal(true);
+
+      setTimeout(() => {
+        router.visit("/admin/announcement", {
+          replace: true,
+          preserveState: false,
+          preserveScroll: true,
+        });
+      }, 1000);
+    },
+
       onError: (errors) => {
         console.log("Validation errors:", errors);
       },
@@ -62,12 +73,13 @@ export default function AdminAnnouncementEdit({ announcement }) {
   };
 
   return (
-      <>
+    <>
       <Head title="Edit Announcement" />
 
       <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
         <div className="w-full max-w-6xl">
           <Card className="w-full flex flex-col min-h-[700px] max-h-[900px]">
+
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex items-center gap-2">
                 <Link href="/admin/announcement">
@@ -75,6 +87,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                     <ArrowLeft size={18} />
                   </Button>
                 </Link>
+
                 <CardTitle className="text-lg font-semibold">
                   Edit Announcement
                 </CardTitle>
@@ -88,6 +101,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                   accept="image/*"
                   onChange={handleFileChange}
                 />
+
                 <Button
                   type="button"
                   onClick={() => fileInputRef.current.click()}
@@ -98,7 +112,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
               </div>
             </CardHeader>
 
-            {/* 🔹 Image Preview: same behavior as Create page */}
+            {/* Image Preview: same behavior as Create page */}
             {preview && (
               <div className="mb-2 flex justify-start pl-6">
                 <img
@@ -111,11 +125,13 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
             <CardContent className="flex flex-col flex-grow">
               <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
+
                 {/* TITLE */}
                 <div className="space-y-2 -mt-4">
                   <Label htmlFor="title" className="text-[#6E6C6C] font-bold">
                     Announcement Title
                   </Label>
+
                   <Input
                     id="title"
                     name="title"
@@ -131,6 +147,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                   <Label htmlFor="details" className="text-[#6E6C6C] font-bold">
                     Details
                   </Label>
+
                   <Textarea
                     id="details"
                     name="details"
@@ -150,11 +167,13 @@ export default function AdminAnnouncementEdit({ announcement }) {
                     Update
                   </Button>
                 </div>
+
               </form>
             </CardContent>
           </Card>
         </div>
       </div>
+
       <AdminAnnouncementEditUpdate show={showModal} />
     </>
   );

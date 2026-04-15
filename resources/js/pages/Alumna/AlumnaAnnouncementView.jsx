@@ -46,7 +46,7 @@ export default function AlumnaAnnouncementView({ announcement }) {
         )}
 
         {/* CONTENT */}
-        <div className="text-gray-700 text-base sm:text-lg leading-relaxed">
+        <div className="text-gray-700 text-base sm:text-lg leading-relaxed whitespace-pre-line">
           {announcement?.details}
         </div>
 

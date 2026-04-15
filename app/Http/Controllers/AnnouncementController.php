@@ -91,10 +91,9 @@ class AnnouncementController extends Controller
             'image'   => $imagePath,
         ]);
 
-        // Redirect back to announcement page
-        return redirect('/admin/announcement')
-                            ->with('success', 'Updated successfully');
-        
+        return redirect()
+        ->route('admin.announcement.edit', $announcement->id)
+        ->with('success', 'updated');
     }
 
     public function destroy(Announcement $announcement)

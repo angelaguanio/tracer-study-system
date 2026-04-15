@@ -32,7 +32,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                 ) : (
                   <div className="flex flex-col items-center text-[#2859C5]">
                     <ImageOff size={40} />
-                    {/* <span className="text-[10px] mt-1">No Image</span> */}
                   </div>
                 )}
 
@@ -44,6 +43,66 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
               </h2>
 
             </div>
+          </div>
+        );
+      },
+    },
+
+    /* CREATED ON */
+    {
+      accessorKey: "created_at",
+      header: "Created On",
+      cell: ({ row }) => {
+        const date = new Date(row.original.created_at);
+
+        return (
+          <div className="flex flex-col items-center justify-center text-center leading-tight">
+
+            <div className="text-sm text-gray-800 font-medium">
+              {date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
+
+            <div className="text-xs text-gray-500">
+              {date.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+
+          </div>
+        );
+      },
+    },
+
+    /* UPDATED AT */
+    {
+      accessorKey: "updated_at",
+      header: "Updated At",
+      cell: ({ row }) => {
+        const date = new Date(row.original.updated_at);
+
+        return (
+          <div className="flex flex-col items-center justify-center text-center leading-tight">
+
+            <div className="text-sm text-gray-800 font-medium">
+              {date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
+
+            <div className="text-xs text-gray-500">
+              {date.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+
           </div>
         );
       },
@@ -112,7 +171,12 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                 <TableHead
                   key={header.id}
                   className={`p-4 font-bold text-black text-sm sm:text-base ${
-                    header.id === "actions" ? "text-right pr-30" : ""
+                    header.id === "actions" ? "text-right pr-30"
+                    : header.id === "created_at"
+                    ? "text-center px-20"
+                    : header.id === "updated_at"
+                    ? "text-center px-20"
+                    : ""
                   }`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
