@@ -3,9 +3,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, Side
 import { Link, usePage } from '@inertiajs/react'
 import logo from '../assets/logotracer.png'
 
-export default function SidebarCoord({ navItemsCoord = [] }) {
-  console.log('navItemsCoord:', navItemsCoord)
-  console.log('received:', navItemsCoord.length, navItemsCoord) 
+export default function SidebarAdmin({ navItems = [] }) {
   const {url} = usePage();
 
   return (
@@ -20,7 +18,7 @@ export default function SidebarCoord({ navItemsCoord = [] }) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {navItemsCoord.map((item)=> (
+            {navItems.map((item)=> (
               <SidebarMenuItem key={item.id}>
                 <SidebarMenuButton asChild isActive={url.startsWith(item.href)} className='[&>svg]:size-5 py-5 my-1'>
                   <Link href={item.href}>
