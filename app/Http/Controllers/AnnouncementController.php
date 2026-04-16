@@ -31,7 +31,7 @@ class AnnouncementController extends Controller
                 });
             })
 
-            // SORT
+            // SORT            
             ->when($sort === 'oldest', function ($q) {
                 $q->orderBy('created_at', 'asc');
             }, function ($q) {
@@ -49,6 +49,45 @@ class AnnouncementController extends Controller
                 'sort' => $sort,
             ],
         ]);
+    }
+
+    /* ================= CREATE FORM ================= */
+    public function create()
+    {
+        if (auth()->user()->user_role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementCreate');
+        }
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
+    }
+
+    /* ================= STORE (FIXED - IMPORTANT) ================= */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title'   => 'required|string|max:255',
+            'details' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
+        ]);
+
+        $imageUrl = null;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('announcements', 'public');
+            $imageUrl = asset("storage/$path");
+        }
+
+        Announcement::create([
+            'title'   => $request->title,
+            'details' => $request->details,
+            'image'   => $imageUrl,
+            'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route(auth()->user()->user_role . '.announcement.index')
+            ->with('success', 'Announcement created successfully!');
     }
 
     /* ================= APPROVE / REJECT ================= */
@@ -93,6 +132,7 @@ class AnnouncementController extends Controller
     /* ================= EDIT ================= */
     public function edit(Announcement $announcement)
     {
+
         // role-based page ulit
         if (auth()->user()->user_role === 'admin') {
             return Inertia::render('Admin/AdminAnnouncementEdit', [
@@ -127,15 +167,8 @@ class AnnouncementController extends Controller
             'image'   => $imagePath,
         ]);
 
-        // REDIRECT BASED ON ROLE
-        if (auth()->user()->user_role === 'admin') {
-            return redirect()
-                ->route('admin.announcement.index')
-                ->with('success', 'Updated');
-        }
-
         return redirect()
-            ->route('coordinator.announcement.index')
+            ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Updated');
     }
 
@@ -144,21 +177,15 @@ class AnnouncementController extends Controller
     {
         $announcement->delete();
 
-        // REDIRECT BASED ON ROLE
-        if (auth()->user()->user_role === 'admin') {
-            return redirect()
-                ->route('admin.announcement.index')
-                ->with('success', 'Deleted');
-        }
-
         return redirect()
-            ->route('coordinator.announcement.index')
+            ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Deleted');
     }
 
     /* ================= ALUMNA ================= */
     public function alumna()
     {
+
         // ONLY APPROVED SHOWN
         $announcements = Announcement::where('status', 'approved')
             ->latest()
@@ -171,10 +198,8 @@ class AnnouncementController extends Controller
 
     public function showAlumna($id)
     {
-        $announcement = Announcement::findOrFail($id);
-
         return Inertia::render('Alumna/AlumnaAnnouncementView', [
-            'announcement' => $announcement
+            'announcement' => Announcement::findOrFail($id)
         ]);
     }
 
