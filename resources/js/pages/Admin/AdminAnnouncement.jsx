@@ -19,28 +19,29 @@ export default function AdminAnnouncement({ announcements }) {
     }
   }, [showSuccess]);
 
+  // GLOBAL SEARCH
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      router.get(
+        "/admin/announcement",
+        {
+          search,
+          status: activeTab,
+          sort: sortOrder,
+        },
+        {
+          preserveState: true,
+          replace: true,
+        }
+      );
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [search, activeTab, sortOrder]);
+
   const list = announcements?.data ?? [];
 
-  // FILTER + SEARCH + SORT
-  const filteredAnnouncements = list
-    .filter((item) => {
-      if (activeTab !== "All") {
-        const tabStatus = activeTab.toLowerCase();
-        if (item.status !== tabStatus) return false;
-      }
-
-      const searchText = search.toLowerCase();
-      return (
-        item.title?.toLowerCase().includes(searchText) ||
-        item.details?.toLowerCase().includes(searchText)
-      );
-    })
-    .sort((a, b) => {
-      if (sortOrder === "newest") {
-        return new Date(b.created_at) - new Date(a.created_at);
-      }
-      return new Date(a.created_at) - new Date(b.created_at);
-    });
+  const filteredAnnouncements = list;
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">

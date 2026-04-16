@@ -20,28 +20,30 @@ export default function CoordinatorAnnouncement({ announcements }) {
     }
   }, [showSuccess]);
 
+  // GLOBAL SEARCH
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      router.get(
+        "/coordinator/announcement",
+        {
+          search,
+          status: activeTab,
+          sort: sortOrder,
+        },
+        {
+          preserveState: true,
+          replace: true,
+        }
+      );
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [search, activeTab, sortOrder]);
+
   // HANDLE DATA (pagination safe)
   const list = announcements?.data ?? [];
 
-  // FILTER + SEARCH + SORT
-  const filteredAnnouncements = list
-    .filter((item) => {
-      if (activeTab !== "All" && item.status !== activeTab.toLowerCase()) {
-        return false;
-      }
-
-      const searchText = search.toLowerCase();
-      return (
-        item.title?.toLowerCase().includes(searchText) ||
-        item.details?.toLowerCase().includes(searchText)
-      );
-    })
-    .sort((a, b) => {
-      if (sortOrder === "newest") {
-        return new Date(b.created_at) - new Date(a.created_at);
-      }
-      return new Date(a.created_at) - new Date(b.created_at);
-    });
+  const filteredAnnouncements = list;
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
@@ -178,7 +180,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
       {showSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
-            
+
             {/* CLOSE BUTTON */}
             <button
               onClick={() => setShowSuccess(false)}

@@ -1,10 +1,11 @@
 "use client";
 
-import { Eye, Pencil, Trash2, ImageOff } from "lucide-react";
+import { Eye, Pencil, Trash2, ImageOff, Ellipsis } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CoordinatorAnnouncementDeletePrompt from "./AdminAnnouncementDeletePromptandConfirmation";
 import { router } from "@inertiajs/react";
+import { useState, useEffect, useRef } from "react";
 
 export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }) {
 
@@ -78,7 +79,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
         );
       },
     },
-
+    
     /* UPDATED AT */
     {
       accessorKey: "updated_at",
@@ -117,42 +118,88 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
         const isPending = data.status === "pending";
 
+        const [open, setOpen] = useState(false);
+        const ref = useRef(null);
+
+        useEffect(() => {
+          function handleClickOutside(e) {
+            if (ref.current && !ref.current.contains(e.target)) {
+              setOpen(false);
+            }
+          }
+          document.addEventListener("mousedown", handleClickOutside);
+          return () => document.removeEventListener("mousedown", handleClickOutside);
+        }, []);
+
         return (
-          <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end items-center w-full">
+          <div className="flex items-center justify-end w-full relative" ref={ref}>
 
-            {/* VIEW (ALWAYS VISIBLE) */}
-            <button
-              onClick={() => router.get(`/admin/announcement/${data.id}`)}
-              className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition w-full sm:w-auto"
-            >
-              <Eye size={16} />
-              <span className="hidden sm:inline">View</span>
-            </button>
+            {/* VIEW / PREVIEW */}
+            <div className="flex items-center">
+              <button
+                onClick={() => router.get(`/admin/announcement/${data.id}`)}
+                className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl border transition
+                  ${isPending
+                    ? "border-yellow-400 text-yellow-600 hover:bg-yellow-100"
+                    : "border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
+                  }`}
+              >
+                <Eye size={16} />
+                <span className="hidden sm:inline">
+                  {isPending ? "Review" : "View"}
+                </span>
+              </button>
+            </div>
 
-            {/* EDIT + DELETE ONLY IF NOT PENDING */}
-            {!isPending && (
-              <>
-                <button
-                  onClick={() => router.get(`/admin/announcement/${data.id}/edit`)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#008236] bg-[#DBFCE7] text-[#008236] hover:bg-[#008236]/10 transition w-full sm:w-auto"
-                >
-                  <Pencil size={16} />
-                  <span className="hidden sm:inline">Edit</span>
-                </button>
+            {/* RIGHT SIDE: MENU */}
+            <div className="flex items-center ml-2">
 
-                <CoordinatorAnnouncementDeletePrompt
-                  announcementId={data.id}
-                  onSuccess={onDeleteSuccess}
-                >
+              {!isPending && (
+                <>
+                  {/* DOTS */}
                   <button
-                    className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 w-full sm:w-auto"
+                    onClick={() => setOpen(!open)}
+                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
                   >
-                    <Trash2 size={16} />
-                    <span className="hidden sm:inline">Delete</span>
+                    <Ellipsis size={18} />
                   </button>
-                </CoordinatorAnnouncementDeletePrompt>
-              </>
-            )}
+
+                  {/* DROPDOWN */}
+                  {open && (
+                    <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
+
+                      <button
+                        onClick={() => {
+                          setOpen(false);
+                          router.get(`/admin/announcement/${data.id}/edit`);
+                        }}
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
+                      >
+                        <Pencil size={14} />
+                        Edit
+                      </button>
+
+                      <CoordinatorAnnouncementDeletePrompt
+                        announcementId={data.id}
+                        onSuccess={() => {
+                          setOpen(false);
+                          onDeleteSuccess && onDeleteSuccess();
+                        }}
+                      >
+                        <button
+                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      </CoordinatorAnnouncementDeletePrompt>
+
+                    </div>
+                  )}
+                </>
+              )}
+
+            </div>
 
           </div>
         );
@@ -178,7 +225,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                   key={header.id}
                   className={`p-4 font-bold text-black text-sm sm:text-base ${
                     header.id === "actions"
-                      ? "text-right pr-30"
+                      ? "text-right pr-12"
                       : header.id === "created_at"
                       ? "text-center px-20"
                       : header.id === "updated_at"

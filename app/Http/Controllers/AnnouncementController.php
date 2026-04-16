@@ -10,62 +10,45 @@ use Illuminate\Support\Facades\Storage;
 class AnnouncementController extends Controller
 {
     /* ================= ADMIN LIST ================= */
-    public function index()
-{
-    $announcements = Announcement::latest()->paginate(10);
-
-    return Inertia::render('Admin/AdminAnnouncement', [
-        'announcements' => $announcements,
-        'flash' => session()->all(),
-    ]);
-}
-
-    /* ================= CREATE FORM ================= */
-    public function create()
+    public function index(Request $request)
     {
-        // detect role para tama yung page
-        if (auth()->user()->user_role === 'admin') {
-            return Inertia::render('Admin/AdminAnnouncementCreate');
-        }
+        $search = $request->query('search');
+        $status = $request->query('status');
+        $sort   = $request->query('sort', 'newest');
 
-        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
-    }
+        $announcements = Announcement::query()
 
-    /* ================= STORE ================= */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title'   => 'required|string|max:255',
-            'details' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            // STATUS FILTER
+            ->when($status && $status !== 'All', function ($q) use ($status) {
+                $q->where('status', strtolower($status));
+            })
+
+            // SEARCH (IMPORTANT FIX)
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('title', 'like', "%{$search}%")
+                        ->orWhere('details', 'like', "%{$search}%");
+                });
+            })
+
+            // SORT
+            ->when($sort === 'oldest', function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }, function ($q) {
+                $q->orderBy('created_at', 'desc');
+            })
+
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Admin/AdminAnnouncement', [
+            'announcements' => $announcements,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+                'sort' => $sort,
+            ],
         ]);
-
-        $imageUrl = '';
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('announcements', 'public');
-            $imageUrl = asset("storage/$path");
-        }
-
-        $status = auth()->user()->user_role === 'admin'
-            ? 'approved'
-            : 'pending';
-
-        Announcement::create([
-            'title'   => $request->title,
-            'details' => $request->details,
-            'image'   => $imageUrl,
-            'status'  => $status,
-            'user_id' => auth()->id(),
-        ]);
-
-        if (auth()->user()->user_role === 'admin') {
-            return redirect()->route('admin.announcement.index')
-                ->with('success', 'Announcement posted!');
-        }
-
-        return redirect()->route('coordinator.announcement.index')
-            ->with('success', 'Submitted for approval!');
     }
 
     /* ================= APPROVE / REJECT ================= */
@@ -197,18 +180,43 @@ class AnnouncementController extends Controller
 
     /* ================= COORDINATOR LIST ================= */
     public function coordinatorIndex(Request $request)
-{
-    $status = $request->query('status');
+    {
+        $status = $request->query('status');
+        $search = $request->query('search');
+        $sort   = $request->query('sort', 'newest');
 
-    $announcements = Announcement::query()
-        ->when($status, fn($q) => $q->where('status', $status))
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
+        $announcements = Announcement::query()
 
-    return Inertia::render('Coordinator/CoordinatorAnnouncement', [
-        'announcements' => $announcements,
-        'filter' => $status,
-    ]);
-}
+            // STATUS FILTER
+            ->when($status && $status !== 'All', function ($q) use ($status) {
+                $q->where('status', strtolower($status));
+            })
+
+            // SEARCH (GLOBAL)
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('title', 'like', "%{$search}%")
+                        ->orWhere('details', 'like', "%{$search}%");
+                });
+            })
+
+            // SORT
+            ->when($sort === 'oldest', function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }, function ($q) {
+                $q->orderBy('created_at', 'desc');
+            })
+
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncement', [
+            'announcements' => $announcements,
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+                'sort' => $sort,
+            ],
+        ]);
+    }
 }

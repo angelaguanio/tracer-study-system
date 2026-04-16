@@ -55,16 +55,20 @@ export default function AdminAnnouncementEdit({ announcement }) {
       forceFormData: true,
 
       onSuccess: () => {
-      setShowModal(true);
+        // STEP 1: show modal
+        setShowModal(true);
 
-      setTimeout(() => {
-        router.visit("/admin/announcement", {
-          replace: true,
-          preserveState: false,
-          preserveScroll: true,
-        });
-      }, 1000);
-    },
+        // STEP 2: delay redirect so modal is visible
+        setTimeout(() => {
+          setShowModal(false);
+
+          router.visit("/admin/announcement", {
+            replace: true,
+            preserveState: false,
+            preserveScroll: true,
+          });
+        }, 2500); // IMPORTANT: 2.5 seconds
+      },
 
       onError: (errors) => {
         console.log("Validation errors:", errors);
@@ -112,7 +116,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
               </div>
             </CardHeader>
 
-            {/* Image Preview: same behavior as Create page */}
+            {/* Image Preview */}
             {preview && (
               <div className="mb-2 flex justify-start pl-6">
                 <img
@@ -154,7 +158,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                     value={formData.details}
                     onChange={handleChange}
                     placeholder="Details"
-                    className="h-90 max-h-100 overflow-y-auto"
+                    className="h-[250px] sm:h-[400px] lg:h-[500px] overflow-y-auto resize-none"
                   />
                 </div>
 
@@ -174,7 +178,11 @@ export default function AdminAnnouncementEdit({ announcement }) {
         </div>
       </div>
 
-      <AdminAnnouncementEditUpdate show={showModal} />
+      {/* FIXED MODAL */}
+      <AdminAnnouncementEditUpdate
+        show={showModal}
+        onClose={() => setShowModal(false)}
+      />
     </>
   );
 }

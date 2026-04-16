@@ -1,10 +1,11 @@
 "use client";
 
-import { Eye, Pencil, Trash2, ImageOff } from "lucide-react";
+import { Eye, Pencil, Trash2, ImageOff, Ellipsis } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation";
 import { router } from "@inertiajs/react";
+import { useState, useEffect, useRef } from "react";
 
 export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuccess }) {
 
@@ -12,10 +13,8 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     ? announcements
     : announcements?.data ?? [];
 
-  // BASE ROUTE (KEEP CONSISTENT)
   const baseUrl = "/coordinator/announcement";
 
-  // FIXED NAVIGATION ONLY
   const handleView = (id) => {
     router.get(`${baseUrl}/${id}`, {}, {
       preserveState: false,
@@ -32,10 +31,98 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     });
   };
 
+  const ActionCell = ({ data }) => {
+    const isPending = data.status === "pending";
+    const isApproved = data.status === "approved";
+    const isRejected = data.status === "rejected";
+    const isAdmin = data.user_role === "admin";
+
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (e) => {
+        if (ref.current && !ref.current.contains(e.target)) {
+          setOpen(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    return (
+      <div className="flex items-center justify-end w-full relative" ref={ref}>
+
+        <button
+          onClick={() => handleView(data.id)}
+          className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl border transition
+            ${isPending
+              ? "border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
+              : isApproved
+                ? "border-green-400 text-green-600 hover:bg-green-100"
+                : "border-red-400 text-red-600 hover:bg-red-100"
+            }`}
+        >
+          <Eye size={16} />
+          <span className="hidden sm:inline">
+            {isPending ? "View" : "Preview"}
+          </span>
+        </button>
+
+        {isPending && !isAdmin && (
+          <div className="ml-2 relative">
+
+            <button
+              onClick={() => setOpen(!open)}
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+            >
+              <Ellipsis size={18} />
+            </button>
+
+            {open && (
+              <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
+
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    handleEdit(data.id);
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
+                >
+                  <Pencil size={14} />
+                  Edit
+                </button>
+
+                <CoordinatorAnnouncementDeletePrompt
+                  announcementId={data.id}
+                  onSuccess={() => {
+                    setOpen(false);
+                    onDeleteSuccess && onDeleteSuccess();
+                  }}
+                >
+                  <button className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
+                    <Trash2 size={14} />
+                    Delete
+                  </button>
+                </CoordinatorAnnouncementDeletePrompt>
+
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const columns = [
     {
       accessorKey: "title",
-      header: "Announcement",
+      header: () => (
+        <div className="text-left w-full">
+          Announcement
+        </div>
+      ),
       cell: ({ row }) => {
         const data = row.original;
 
@@ -72,7 +159,11 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
 
     {
       accessorKey: "created_at",
-      header: "Created On",
+      header: () => (
+        <div className="text-center w-full">
+          Created On
+        </div>
+      ),
       cell: ({ row }) => {
         const date = new Date(row.original.created_at);
 
@@ -85,7 +176,6 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
                 day: "numeric",
               })}
             </div>
-
             <div className="text-xs text-gray-500">
               {date.toLocaleTimeString([], {
                 hour: "2-digit",
@@ -99,7 +189,11 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
 
     {
       accessorKey: "updated_at",
-      header: "Updated At",
+      header: () => (
+        <div className="text-center w-full">
+          Updated At
+        </div>
+      ),
       cell: ({ row }) => {
         const date = new Date(row.original.updated_at);
 
@@ -112,7 +206,6 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
                 day: "numeric",
               })}
             </div>
-
             <div className="text-xs text-gray-500">
               {date.toLocaleTimeString([], {
                 hour: "2-digit",
@@ -126,54 +219,12 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
 
     {
       id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const data = row.original;
-
-        const isApproved = data.status === "approved";
-        const isRejected = data.status === "rejected";
-        const isAdmin = data.user_role === "admin";
-
-        return (
-          <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end items-center w-full">
-
-            {/* VIEW ALWAYS */}
-            <button
-              onClick={() => handleView(data.id)}
-              className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition w-full sm:w-auto"
-            >
-              <Eye size={16} />
-              <span className="hidden sm:inline">View</span>
-            </button>
-
-            {/* EDIT + DELETE RULES */}
-            {(!isApproved && !isRejected && !isAdmin) && (
-              <>
-                <button
-                  onClick={() => handleEdit(data.id)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#008236] bg-[#DBFCE7] text-[#008236] hover:bg-[#008236]/10 transition w-full sm:w-auto"
-                >
-                  <Pencil size={16} />
-                  <span className="hidden sm:inline">Edit</span>
-                </button>
-
-                <CoordinatorAnnouncementDeletePrompt
-                  announcementId={data.id}
-                  onSuccess={onDeleteSuccess}
-                >
-                  <button
-                    className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#E70813] bg-[#FF9E9E] text-[#E70813] hover:bg-[#E70813]/10 w-full sm:w-auto"
-                  >
-                    <Trash2 size={16} />
-                    <span className="hidden sm:inline">Delete</span>
-                  </button>
-                </CoordinatorAnnouncementDeletePrompt>
-              </>
-            )}
-
-          </div>
-        );
-      },
+      header: () => (
+        <div className="text-right pr-12 w-full">
+          Actions
+        </div>
+      ),
+      cell: ({ row }) => <ActionCell data={row.original} />,
     },
   ];
 
@@ -193,15 +244,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={`p-4 font-bold text-black text-sm sm:text-base ${
-                    header.id === "actions"
-                      ? "text-right pr-30"
-                      : header.id === "created_at"
-                      ? "text-center px-20"
-                      : header.id === "updated_at"
-                      ? "text-center px-20"
-                      : ""
-                  }`}
+                  className="p-4 font-bold text-black text-sm sm:text-base"
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
@@ -215,10 +258,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={`p-4 ${cell.column.id === "actions" ? "text-right" : ""}`}
-                  >
+                  <TableCell key={cell.id} className="p-4">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

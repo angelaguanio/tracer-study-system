@@ -43,6 +43,8 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
     data.append("title", formData.title);
     data.append("details", formData.details);
     if (formData.image) data.append("image", formData.image);
+
+    // POST with method override to PUT
     data.append("_method", "PUT");
 
     router.post(`/coordinator/announcement/${announcement.id}`, data, {
