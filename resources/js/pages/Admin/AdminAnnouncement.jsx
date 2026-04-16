@@ -24,8 +24,10 @@ export default function AdminAnnouncement({ announcements }) {
   // FILTER + SEARCH + SORT
   const filteredAnnouncements = list
     .filter((item) => {
-      if (activeTab === "Pending" && item.status !== "pending") return false;
-      if (activeTab === "Published" && item.status !== "published") return false;
+      if (activeTab !== "All") {
+        const tabStatus = activeTab.toLowerCase();
+        if (item.status !== tabStatus) return false;
+      }
 
       const searchText = search.toLowerCase();
       return (
@@ -71,7 +73,7 @@ export default function AdminAnnouncement({ announcements }) {
 
         {/* TABS */}
         <div className="flex gap-2">
-          {["All", "Pending", "Published"].map((tab) => (
+          {["All", "Pending", "Approved"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -178,6 +180,7 @@ export default function AdminAnnouncement({ announcements }) {
       {showSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
+
             {/* CLOSE BUTTON */}
             <button
               onClick={() => setShowSuccess(false)}

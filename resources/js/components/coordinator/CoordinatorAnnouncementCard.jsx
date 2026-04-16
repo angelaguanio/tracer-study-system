@@ -3,10 +3,34 @@
 import { Eye, Pencil, Trash2, ImageOff } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import CoordinatorAnnouncementDeletePrompt from "./AdminAnnouncementDeletePromptandConfirmation";
+import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation";
 import { router } from "@inertiajs/react";
 
-export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }) {
+export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuccess }) {
+
+  const tableData = Array.isArray(announcements)
+    ? announcements
+    : announcements?.data ?? [];
+
+  // BASE ROUTE (KEEP CONSISTENT)
+  const baseUrl = "/coordinator/announcement";
+
+  // FIXED NAVIGATION ONLY
+  const handleView = (id) => {
+    router.get(`${baseUrl}/${id}`, {}, {
+      preserveState: false,
+      preserveScroll: true,
+      replace: true,
+    });
+  };
+
+  const handleEdit = (id) => {
+    router.get(`${baseUrl}/${id}/edit`, {}, {
+      preserveState: false,
+      preserveScroll: true,
+      replace: true,
+    });
+  };
 
   const columns = [
     {
@@ -18,10 +42,8 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
         return (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
-            {/* LEFT SIDE */}
             <div className="flex items-center gap-4">
 
-              {/* IMAGE FIX HERE */}
               <div className="w-20 h-20 flex-shrink-0 rounded-md flex items-center justify-center overflow-hidden">
 
                 {data.image ? (
@@ -38,7 +60,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
               </div>
 
-              {/* TITLE */}
               <h2 className="font-semibold text-gray-800 text-sm sm:text-base">
                 {data.title}
               </h2>
@@ -49,7 +70,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       },
     },
 
-    /* CREATED ON */
     {
       accessorKey: "created_at",
       header: "Created On",
@@ -58,7 +78,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
         return (
           <div className="flex flex-col items-center justify-center text-center leading-tight">
-
             <div className="text-sm text-gray-800 font-medium">
               {date.toLocaleDateString(undefined, {
                 year: "numeric",
@@ -73,13 +92,11 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                 minute: "2-digit",
               })}
             </div>
-
           </div>
         );
       },
     },
 
-    /* UPDATED AT */
     {
       accessorKey: "updated_at",
       header: "Updated At",
@@ -88,7 +105,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
         return (
           <div className="flex flex-col items-center justify-center text-center leading-tight">
-
             <div className="text-sm text-gray-800 font-medium">
               {date.toLocaleDateString(undefined, {
                 year: "numeric",
@@ -103,7 +119,6 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                 minute: "2-digit",
               })}
             </div>
-
           </div>
         );
       },
@@ -115,25 +130,27 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       cell: ({ row }) => {
         const data = row.original;
 
-        const isPending = data.status === "pending";
+        const isApproved = data.status === "approved";
+        const isRejected = data.status === "rejected";
+        const isAdmin = data.user_role === "admin";
 
         return (
           <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end items-center w-full">
 
-            {/* VIEW (ALWAYS VISIBLE) */}
+            {/* VIEW ALWAYS */}
             <button
-              onClick={() => router.get(`/admin/announcement/${data.id}`)}
+              onClick={() => handleView(data.id)}
               className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition w-full sm:w-auto"
             >
               <Eye size={16} />
               <span className="hidden sm:inline">View</span>
             </button>
 
-            {/* EDIT + DELETE ONLY IF NOT PENDING */}
-            {!isPending && (
+            {/* EDIT + DELETE RULES */}
+            {(!isApproved && !isRejected && !isAdmin) && (
               <>
                 <button
-                  onClick={() => router.get(`/admin/announcement/${data.id}/edit`)}
+                  onClick={() => handleEdit(data.id)}
                   className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#008236] bg-[#DBFCE7] text-[#008236] hover:bg-[#008236]/10 transition w-full sm:w-auto"
                 >
                   <Pencil size={16} />
@@ -161,7 +178,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
   ];
 
   const table = useReactTable({
-    data: announcements,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

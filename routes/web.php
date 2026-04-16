@@ -111,6 +111,45 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
     });
 
+    // AUTH ADMIN
+    Route::middleware('auth')->group(function () {
+
+        Route::get('/dashboard', AdminDashboardController::class)
+            ->name('dashboard');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
+            ->name('logout');
+
+        // ANNOUNCEMENT CRUD
+        Route::get('/announcement', [AnnouncementController::class, 'index'])
+            ->name('announcement.index');
+
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
+
+        // APPROVAL SYSTEM
+        Route::put('/announcement/{announcement}/approve', [AnnouncementController::class, 'approve'])
+            ->name('announcement.approve');
+
+        Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
+            ->name('announcement.reject');
+    });
+
     // Authenticated-only routes
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
@@ -124,22 +163,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
-      //announcement
-        //mga inadd ko (reygie)
-        // INDEX
-        Route::get('/announcement', [AnnouncementController::class, 'index']) ->name('announcement.index'); 
-        // CREATE 
-        Route::get('/announcement/create', [AnnouncementController::class, 'create']) ->name('announcement.create'); 
-        // STORE 
-        Route::post('/announcement', [AnnouncementController::class, 'store']) ->name('announcement.store'); 
-        // VIEW
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']) ->name('admin.announcement.show');
-        //EDIT
-        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit']) ->name('announcement.edit');
-        // UPDATE
-        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');        
-        // DELETE
-        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']) ->name('announcement.destroy');
+    //   //announcement
+    //     //mga inadd ko (reygie)
+    //     // INDEX
+    //     Route::get('/announcement', [AnnouncementController::class, 'index']) ->name('announcement.index'); 
+    //     // CREATE 
+    //     Route::get('/announcement/create', [AnnouncementController::class, 'create']) ->name('announcement.create'); 
+    //     // STORE 
+    //     Route::post('/announcement', [AnnouncementController::class, 'store']) ->name('announcement.store'); 
+    //     // VIEW
+    //     Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']) ->name('admin.announcement.show');
+    //     //EDIT
+    //     Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit']) ->name('announcement.edit');
+    //     // UPDATE
+    //     Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');        
+    //     // DELETE
+    //     Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']) ->name('announcement.destroy');
 
         // Analytics index — list of surveys to pick from
         Route::get('/analytics', function () {
@@ -197,10 +236,33 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // Route::get('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
-        //mga inadd ko (reygie)
-        // Route::get('/announcement', [AnnouncementController::class, 'index'])
-        // ->name('announcement.index');
+        // ANNOUNCEMENT CRUD ONLY
+        // LIST
+        Route::get('/announcement', [AnnouncementController::class, 'coordinatorIndex'])
+            ->name('announcement.index');
 
+        // CREATE
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        // STORE (pending)
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        //  VIEW SINGLE ANNOUNCEMENT
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        // EDIT
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        // UPDATE
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        // DELETE
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
     });
-
 });

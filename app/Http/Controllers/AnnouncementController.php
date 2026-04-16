@@ -9,21 +9,29 @@ use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
+    /* ================= ADMIN LIST ================= */
     public function index()
-    {
-        $announcements = Announcement::latest()->paginate(10);
+{
+    $announcements = Announcement::latest()->paginate(10);
 
-        return Inertia::render('Admin/AdminAnnouncement', [
-            'announcements' => $announcements,
-            'flash' => session()->all(),
-        ]);
-    }
+    return Inertia::render('Admin/AdminAnnouncement', [
+        'announcements' => $announcements,
+        'flash' => session()->all(),
+    ]);
+}
 
+    /* ================= CREATE FORM ================= */
     public function create()
     {
-        return Inertia::render('Admin/AdminAnnouncementCreate');
+        // detect role para tama yung page
+        if (auth()->user()->user_role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementCreate');
+        }
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
     }
 
+    /* ================= STORE ================= */
     public function store(Request $request)
     {
         $request->validate([
@@ -39,76 +47,139 @@ class AnnouncementController extends Controller
             $imageUrl = asset("storage/$path");
         }
 
+        $status = auth()->user()->user_role === 'admin'
+            ? 'approved'
+            : 'pending';
+
         Announcement::create([
             'title'   => $request->title,
             'details' => $request->details,
             'image'   => $imageUrl,
+            'status'  => $status,
+            'user_id' => auth()->id(),
         ]);
 
-        return redirect()
-            ->route('admin.announcement.index')
-            ->with('success', 'Announcement created successfully.');
+        if (auth()->user()->user_role === 'admin') {
+            return redirect()->route('admin.announcement.index')
+                ->with('success', 'Announcement posted!');
+        }
+
+        return redirect()->route('coordinator.announcement.index')
+            ->with('success', 'Submitted for approval!');
     }
 
+    /* ================= APPROVE / REJECT ================= */
+    public function approve(Announcement $announcement)
+    {
+        $announcement->update([
+            'status' => 'approved'
+        ]);
+
+        return back()->with('success', 'Announcement approved successfully!');
+    }
+
+    public function reject(Announcement $announcement)
+    {
+        $announcement->update([
+            'status' => 'rejected'
+        ]);
+
+        return back()->with('success', 'Announcement rejected successfully!');
+    }
+
+    /* ================= VIEW ================= */
     public function show(Announcement $announcement)
     {
-        return Inertia::render('Admin/AdminAnnouncementView', [
-            'announcement' => $announcement,
-        ]);
+        $role = auth()->user()->user_role;
+
+        if ($role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementView', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        if ($role === 'coordinator') {
+            return Inertia::render('Coordinator/CoordinatorAnnouncementView', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        return abort(403);
     }
 
+    /* ================= EDIT ================= */
     public function edit(Announcement $announcement)
     {
-        return Inertia::render('Admin/AdminAnnouncementEdit', [
+        // role-based page ulit
+        if (auth()->user()->user_role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementEdit', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncementEdit', [
             'announcement' => $announcement,
         ]);
     }
 
+    /* ================= UPDATE ================= */
     public function update(Request $request, Announcement $announcement)
     {
-        // Validate input
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
             'image'   => 'nullable|image|max:2048',
         ]);
 
-        // Keep old image if no new file uploaded
         $imagePath = $announcement->image;
 
         if ($request->hasFile('image')) {
-            // Optional: delete old image file
-            // Storage::disk('public')->delete(str_replace(asset('storage/'), '', $announcement->image));
-
             $path = $request->file('image')->store('announcements', 'public');
             $imagePath = asset("storage/$path");
         }
 
-        // Update announcement
         $announcement->update([
             'title'   => $request->title,
             'details' => $request->details,
             'image'   => $imagePath,
         ]);
 
+        // REDIRECT BASED ON ROLE
+        if (auth()->user()->user_role === 'admin') {
+            return redirect()
+                ->route('admin.announcement.index')
+                ->with('success', 'Updated');
+        }
+
         return redirect()
-        ->route('admin.announcement.edit', $announcement->id)
-        ->with('success', 'updated');
+            ->route('coordinator.announcement.index')
+            ->with('success', 'Updated');
     }
 
+    /* ================= DELETE ================= */
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
 
+        // REDIRECT BASED ON ROLE
+        if (auth()->user()->user_role === 'admin') {
+            return redirect()
+                ->route('admin.announcement.index')
+                ->with('success', 'Deleted');
+        }
+
         return redirect()
-            ->route('admin.announcement.index')
-            ->with('success', 'Announcement deleted successfully.');
+            ->route('coordinator.announcement.index')
+            ->with('success', 'Deleted');
     }
 
-    // ALUMNA SIDE
+    /* ================= ALUMNA ================= */
     public function alumna()
     {
-        $announcements = Announcement::latest()->get();
+        // ONLY APPROVED SHOWN
+        $announcements = Announcement::where('status', 'approved')
+            ->latest()
+            ->get();
 
         return Inertia::render('Alumna/AlumnaAnnouncements', [
             'announcements' => $announcements,
@@ -123,4 +194,21 @@ class AnnouncementController extends Controller
             'announcement' => $announcement
         ]);
     }
+
+    /* ================= COORDINATOR LIST ================= */
+    public function coordinatorIndex(Request $request)
+{
+    $status = $request->query('status');
+
+    $announcements = Announcement::query()
+        ->when($status, fn($q) => $q->where('status', $status))
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return Inertia::render('Coordinator/CoordinatorAnnouncement', [
+        'announcements' => $announcements,
+        'filter' => $status,
+    ]);
+}
 }

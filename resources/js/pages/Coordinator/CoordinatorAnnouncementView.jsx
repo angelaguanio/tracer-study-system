@@ -1,6 +1,6 @@
 import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAnnouncementViewCard from "@/components/CoordinatorAnnouncementViewCard";
+import CoordinatorAnnouncementViewCard from "@/components/Coordinator/CoordinatorAnnouncementViewCard";
 
 function CoordinatorAnnouncementView({ announcement }) {
   return (
