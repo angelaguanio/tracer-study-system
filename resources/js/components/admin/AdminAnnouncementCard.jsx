@@ -7,6 +7,102 @@ import CoordinatorAnnouncementDeletePrompt from "./AdminAnnouncementDeletePrompt
 import { router } from "@inertiajs/react";
 import { useState, useEffect, useRef } from "react";
 
+function AnnouncementActionsCell({ data, onDeleteSuccess }) {
+
+  const isPending = data?.status === "pending";
+
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!data) return null; 
+
+  return (
+    <div className="flex items-center justify-end w-full relative gap-2 min-h-[40px]" ref={ref}>
+
+      <div className="flex items-center justify-end gap-2 w-full">
+
+        {/* REVIEW */}
+        {isPending ? (
+          <>
+            <div className="w-9 h-9 invisible" />
+
+            <button
+              onClick={() => router.get(`/admin/announcement/${data.id}`)}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl border border-yellow-400 text-yellow-600 hover:bg-yellow-100 transition mr-10"
+            >
+              <Eye size={16} />
+              <span className="hidden sm:inline">Review</span>
+            </button>
+          </>
+        ) : (
+          <>
+            {/* VIEW */}
+            <button
+              onClick={() => router.get(`/admin/announcement/${data.id}`)}
+              className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition"
+            >
+              <Eye size={16} />
+              <span className="hidden sm:inline">View</span>
+            </button>
+
+            {/* 3 DOTS */}
+            <div className="relative">
+              <button
+                onClick={() => setOpen(!open)}
+                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+              >
+                <Ellipsis size={18} />
+              </button>
+
+              {open && (
+                <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
+
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      router.get(`/admin/announcement/${data.id}/edit`);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
+                  >
+                    <Pencil size={14} />
+                    Edit
+                  </button>
+
+                  <CoordinatorAnnouncementDeletePrompt
+                    announcementId={data.id}
+                    onSuccess={() => {
+                      setOpen(false);
+                      onDeleteSuccess?.();
+                    }}
+                  >
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
+                      <Trash2 size={14} />
+                      Delete
+                    </button>
+                  </CoordinatorAnnouncementDeletePrompt>
+
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }) {
 
   const columns = [
@@ -79,7 +175,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
         );
       },
     },
-    
+
     /* UPDATED AT */
     {
       accessorKey: "updated_at",
@@ -110,98 +206,16 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       },
     },
 
+    /* ACTIONS */
     {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const data = row.original;
-
-        const isPending = data.status === "pending";
-
-        const [open, setOpen] = useState(false);
-        const ref = useRef(null);
-
-        useEffect(() => {
-          function handleClickOutside(e) {
-            if (ref.current && !ref.current.contains(e.target)) {
-              setOpen(false);
-            }
-          }
-          document.addEventListener("mousedown", handleClickOutside);
-          return () => document.removeEventListener("mousedown", handleClickOutside);
-        }, []);
-
         return (
-          <div className="flex items-center justify-end w-full relative" ref={ref}>
-
-            {/* VIEW / PREVIEW */}
-            <div className="flex items-center">
-              <button
-                onClick={() => router.get(`/admin/announcement/${data.id}`)}
-                className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl border transition
-                  ${isPending
-                    ? "border-yellow-400 text-yellow-600 hover:bg-yellow-100"
-                    : "border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
-                  }`}
-              >
-                <Eye size={16} />
-                <span className="hidden sm:inline">
-                  {isPending ? "Review" : "View"}
-                </span>
-              </button>
-            </div>
-
-            {/* RIGHT SIDE: MENU */}
-            <div className="flex items-center ml-2">
-
-              {!isPending && (
-                <>
-                  {/* DOTS */}
-                  <button
-                    onClick={() => setOpen(!open)}
-                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                  >
-                    <Ellipsis size={18} />
-                  </button>
-
-                  {/* DROPDOWN */}
-                  {open && (
-                    <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
-
-                      <button
-                        onClick={() => {
-                          setOpen(false);
-                          router.get(`/admin/announcement/${data.id}/edit`);
-                        }}
-                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
-                      >
-                        <Pencil size={14} />
-                        Edit
-                      </button>
-
-                      <CoordinatorAnnouncementDeletePrompt
-                        announcementId={data.id}
-                        onSuccess={() => {
-                          setOpen(false);
-                          onDeleteSuccess && onDeleteSuccess();
-                        }}
-                      >
-                        <button
-                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full"
-                        >
-                          <Trash2 size={14} />
-                          Delete
-                        </button>
-                      </CoordinatorAnnouncementDeletePrompt>
-
-                    </div>
-                  )}
-                </>
-              )}
-
-            </div>
-
-          </div>
+          <AnnouncementActionsCell
+            data={row.original}
+            onDeleteSuccess={onDeleteSuccess}
+          />
         );
       },
     },
@@ -225,7 +239,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
                   key={header.id}
                   className={`p-4 font-bold text-black text-sm sm:text-base ${
                     header.id === "actions"
-                      ? "text-right pr-12"
+                      ? "text-right pr-18"
                       : header.id === "created_at"
                       ? "text-center px-20"
                       : header.id === "updated_at"

@@ -38,15 +38,15 @@ function AnnouncementCard({ id, date, title, description, image }) {
 export default function AlumnaHome({ announcements }) {
   return (
     
-      <div className="bg-white -mt-6 md:-mt-4">
+      <div className="bg-white -mt-6 md:-mt-4 overflow-x-hidden w-full">
 
         {/* HERO SECTION */}
         <section
-          className="relative w-screen h-[450px] flex items-center"
+          className="relative w-screen h-[450px] flex items-center overflow-hidden"
           style={{
             backgroundImage: `url(${alumniHomeImg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '50% 30%',
+            backgroundSize: '115%',
+            backgroundPosition: '10% 42%',
             backgroundRepeat: 'no-repeat',
           }}
         >

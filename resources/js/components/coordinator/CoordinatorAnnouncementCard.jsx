@@ -52,68 +52,86 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     }, []);
 
     return (
-      <div className="flex items-center justify-end w-full relative" ref={ref}>
+        <div className="flex items-center justify-end w-full relative gap-2 min-h-[40px]" ref={ref}>
+    
+          <div className="flex items-center justify-end gap-2 w-full">
 
-        <button
-          onClick={() => handleView(data.id)}
-          className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl border transition
-            ${isPending
-              ? "border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
-              : isApproved
-                ? "border-green-400 text-green-600 hover:bg-green-100"
-                : "border-red-400 text-red-600 hover:bg-red-100"
-            }`}
-        >
-          <Eye size={16} />
-          <span className="hidden sm:inline">
-            {isPending ? "View" : "Preview"}
-          </span>
-        </button>
-
-        {isPending && !isAdmin && (
-          <div className="ml-2 relative">
-
-            <button
-              onClick={() => setOpen(!open)}
-              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-            >
-              <Ellipsis size={18} />
-            </button>
-
-            {open && (
-              <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
-
+            {/* PREVIEW */}
+            {(isApproved || isRejected) ? (
+              <>
+    
+                <div className="w-9 h-9 invisible" />
+    
                 <button
-                  onClick={() => {
-                    setOpen(false);
-                    handleEdit(data.id);
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
-                >
-                  <Pencil size={14} />
-                  Edit
+                  onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-xl border transition mr-10
+                    ${
+                    isApproved
+                      ? "border-green-400 text-green-600 hover:bg-green-100"
+                      : "border-red-400 text-red-600 hover:bg-red-100"
+                  }`}
+              >
+                  <Eye size={16} />
+                  <span className="hidden sm:inline">Preview</span>
                 </button>
-
-                <CoordinatorAnnouncementDeletePrompt
-                  announcementId={data.id}
-                  onSuccess={() => {
-                    setOpen(false);
-                    onDeleteSuccess && onDeleteSuccess();
-                  }}
+              </>
+            ) : (
+              <>
+                {/* VIEW */}
+                <button
+                  onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
+                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition"
                 >
-                  <button className="flex items-center justify-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
-                    <Trash2 size={14} />
-                    Delete
+                  <Eye size={16} />
+                  <span className="hidden sm:inline">View</span>
+                </button>
+    
+                {/* 3 DOTS */}
+                <div className="relative">
+                  <button
+                    onClick={() => setOpen(!open)}
+                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+                  >
+                    <Ellipsis size={18} />
                   </button>
-                </CoordinatorAnnouncementDeletePrompt>
-
-              </div>
+    
+                  {open && (
+                    <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
+    
+                      <button
+                        onClick={() => {
+                          setOpen(false);
+                          router.get(`/admin/announcement/${data.id}/edit`);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
+                      >
+                        <Pencil size={14} />
+                        Edit
+                      </button>
+    
+                      <CoordinatorAnnouncementDeletePrompt
+                        announcementId={data.id}
+                        onSuccess={() => {
+                          setOpen(false);
+                          onDeleteSuccess?.();
+                        }}
+                      >
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      </CoordinatorAnnouncementDeletePrompt>
+    
+                    </div>
+                  )}
+                </div>
+              </>
             )}
+    
           </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      );
+    }
 
   const columns = [
     {
@@ -244,7 +262,15 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="p-4 font-bold text-black text-sm sm:text-base"
+                  className={`p-4 font-bold text-black text-sm sm:text-base ${
+                    header.id === "actions"
+                      ? "text-right pr-6"
+                      : header.id === "created_at"
+                      ? "text-center px-20"
+                      : header.id === "updated_at"
+                      ? "text-center px-20"
+                      : ""
+                  }`}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
