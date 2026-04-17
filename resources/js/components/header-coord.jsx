@@ -11,10 +11,10 @@ import {
 import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp' 
 
-export default function HeaderCoord({ navItems = [] }) {
+export default function HeaderCoord({ navItemsCoord = [] }) {
   const { url, props } = usePage()
   const user = props.auth?.user 
-  const activeItem = navItems.find((item) => url.startsWith(item.href))
+  const activeItem = navItemsCoord.find((item) => url.startsWith(item.href))
 
   return (
     <header className='flex w-full justify-between py-3 px-2'>

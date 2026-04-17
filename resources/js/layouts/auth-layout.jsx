@@ -1,10 +1,12 @@
 import { ThemeProvider } from '@/components/theme-provider';
+import LightModeWrapper from '@/components/light-mode-wrapper';
 import { Toaster } from 'sonner';
 import bg from '../assets/bg.png';
 
 export default function AuthLayout({ children }) {
     return (
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <LightModeWrapper>
             <div
                 className="min-h-screen w-full bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: `url(${bg})` }}
@@ -38,6 +40,7 @@ export default function AuthLayout({ children }) {
             </div>
 
             <Toaster position="top-right" />
+        </LightModeWrapper>
         </ThemeProvider>
     );
 }

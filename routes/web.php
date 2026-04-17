@@ -98,10 +98,6 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     });
 });
 
-// Public Alumna announcements
-    // Route::get('/alumna/announcements', [AnnouncementController::class, 'alumna']) ->name('alumna.announcements');
-
-
 
 //============== ADMIN ROUTES =========================
 Route::prefix('admin')->name('admin.')->group(function () {

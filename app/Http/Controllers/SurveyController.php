@@ -28,13 +28,13 @@ class SurveyController extends Controller
     {
         $this->authorize('create', Survey::class);
 
-        Survey::create([
+        $survey = Survey::create([
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => $request->input('status', 'inactive'),
         ]);
 
-        return redirect()->route('admin.surveys.index');
+        return redirect()->route('admin.surveys.builder', $survey);
     }
 
     public function update(UpdateSurveyRequest $request, Survey $survey)
@@ -43,6 +43,10 @@ class SurveyController extends Controller
 
         if ($request->input('status') === 'active') {
             $this->authorize('activate', $survey);
+            // Deactivate all other surveys
+            Survey::where('id', '!=', $survey->id)
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
         }
 
         $survey->update($request->validated());

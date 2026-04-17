@@ -1,5 +1,5 @@
 import React from 'react'
-import SidebarCoord from '../components/sidebar-coord'
+import SidebarAdmin from '../components/sidebar-admin'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderAdmin from '../components/header-admin'
 import { LayoutDashboard, Bell, NotebookPen, CircleUserRound, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
@@ -48,7 +48,7 @@ export default function AdminLayout({children}) {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarCoord navItems={navItems}/>
+        <SidebarAdmin navItems={navItems}/>
           <SidebarInset>
             <HeaderAdmin navItems={navItems}/>
               <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
