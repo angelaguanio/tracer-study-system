@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import { Head, useForm, router } from "@inertiajs/react";
+import { Head, useForm, router, Link } from "@inertiajs/react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
 
 export default function CoordinatorAnnouncementCreate() {
     const fileInputRef = useRef(null); // Reference para sa hidden file input
@@ -47,9 +48,16 @@ export default function CoordinatorAnnouncementCreate() {
 
                         {/* Card Header */}
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle className="text-lg font-semibold ml-3">
-                                Create new announcement
-                            </CardTitle>
+                            <div className="flex items-center gap-2">
+                                <Link href="/coordinator/announcement">
+                                    <Button type="button" variant="ghost" className="p-2">
+                                        <ArrowLeft size={18} />
+                                    </Button>
+                                </Link>
+                                <CardTitle className="text-lg font-semibold ml-3">
+                                    Create new announcement
+                                </CardTitle>
+                            </div>
 
                             {/* Upload Image Button */}
                             <Button
@@ -59,7 +67,7 @@ export default function CoordinatorAnnouncementCreate() {
                             >
                                 Upload Image
                             </Button>
-                        </CardHeader>
+                    </CardHeader>
 
                         {/* Card Content */}
                         <CardContent className="flex flex-col flex-grow">

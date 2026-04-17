@@ -11,6 +11,8 @@ export default function AdminAnnouncement({ announcements }) {
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
 
+  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
+
   // auto-hide modal after 3 seconds
   useEffect(() => {
     if (showSuccess) {
@@ -18,6 +20,25 @@ export default function AdminAnnouncement({ announcements }) {
       return () => clearTimeout(timer);
     }
   }, [showSuccess]);
+
+  // detect update modal
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const updated = url.searchParams.get("updated");
+
+    if (updated === "1") {
+      setShowUpdatedSuccess(true);
+
+      setTimeout(() => {
+        setShowUpdatedSuccess(false);
+
+        router.replace("/admin/announcement", {
+          preserveState: true,
+          preserveScroll: true,
+        });
+      }, 2500);
+    }
+  }, []);
 
   // GLOBAL SEARCH
   useEffect(() => {
@@ -40,7 +61,6 @@ export default function AdminAnnouncement({ announcements }) {
   }, [search, activeTab, sortOrder]);
 
   const list = announcements?.data ?? [];
-
   const filteredAnnouncements = list;
 
   return (
@@ -118,7 +138,6 @@ export default function AdminAnnouncement({ announcements }) {
 
             {sortOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-32">
-
                 <button
                   onClick={() => {
                     setSortOrder("newest");
@@ -138,7 +157,6 @@ export default function AdminAnnouncement({ announcements }) {
                 >
                   Oldest
                 </button>
-
               </div>
             )}
           </div>
@@ -155,7 +173,6 @@ export default function AdminAnnouncement({ announcements }) {
       {/* PAGINATION */}
       {announcements?.links && (
         <div className="border-t border-gray-200 px-4 py-3 flex justify-end gap-2">
-
           <div className="flex gap-2">
             {announcements.links.map((link, index) => (
               <button
@@ -173,11 +190,10 @@ export default function AdminAnnouncement({ announcements }) {
               />
             ))}
           </div>
-
         </div>
       )}
 
-      {/* SUCCESS MODAL */}
+      {/* DELETE SUCCESS MODAL */}
       {showSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
@@ -197,13 +213,39 @@ export default function AdminAnnouncement({ announcements }) {
 
             {/* TEXT */}
             <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Deleted successfully
+              Deleted successfully!
             </p>
 
           </div>
         </div>
       )}
 
+      {/* UPDATE SUCCESS MODAL */}
+      {showUpdatedSuccess && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
+          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
+
+            {/* CLOSE BUTTON */}
+            <button
+              onClick={() => setShowUpdatedSuccess(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+            >
+              <X size={20} />
+            </button>
+
+            {/* GREEN ICON */}
+            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
+              <Check size={28} className="text-white stroke-[3]" />
+            </div>
+
+            {/* TEXT */}
+            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
+              Updated successfully!
+            </p>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

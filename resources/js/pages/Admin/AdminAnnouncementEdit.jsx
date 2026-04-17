@@ -12,8 +12,6 @@ import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdat
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
 
-  const [showModal, setShowModal] = useState(false);
-
   // Preview image
   const [preview, setPreview] = useState(announcement?.image);
 
@@ -55,20 +53,11 @@ export default function AdminAnnouncementEdit({ announcement }) {
       forceFormData: true,
 
       onSuccess: () => {
-        // STEP 1: show modal
-        setShowModal(true);
-
-        // STEP 2: delay redirect so modal is visible
-        setTimeout(() => {
-          setShowModal(false);
-
-          router.visit("/admin/announcement", {
-            replace: true,
-            preserveState: false,
-            preserveScroll: true,
-          });
-        }, 2500); // IMPORTANT: 2.5 seconds
-      },
+      router.visit("/admin/announcement?updated=1", {
+        replace: true,
+        preserveScroll: true,
+    });
+},
 
       onError: (errors) => {
         console.log("Validation errors:", errors);
@@ -177,12 +166,6 @@ export default function AdminAnnouncementEdit({ announcement }) {
           </Card>
         </div>
       </div>
-
-      {/* FIXED MODAL */}
-      <AdminAnnouncementEditUpdate
-        show={showModal}
-        onClose={() => setShowModal(false)}
-      />
     </>
   );
 }

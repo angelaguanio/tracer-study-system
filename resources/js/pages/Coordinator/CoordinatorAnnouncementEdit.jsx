@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, Link } from "@inertiajs/react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
 
 import CoordinatorAnnouncementEditUpdate from "@/components/CoordinatorAnnouncementEditUpdate";
 
@@ -51,13 +52,11 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
       forceFormData: true,
 
       onSuccess: () => {
-        setShowModal(true);
-
-        setTimeout(() => {
-          setShowModal(false);
-          router.visit("/coordinator/announcement");
-        }, 3000);
-      },
+      router.visit("/coordinator/announcement?updated=1", {
+        replace: true,
+        preserveState: false,
+      });
+    },
     });
   };
 
@@ -75,11 +74,25 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
             {/* CARD */}
             <Card className="w-full min-h-[600px] sm:min-h-[700px] flex flex-col">
 
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-lg font-semibold">
-                  Edit Announcement
-                </CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
 
+                <div className="flex items-center gap-2">
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => router.visit("/coordinator/announcement")}
+                    className="p-2"
+                  >
+                    <ArrowLeft size={18} />
+                  </Button>
+
+                  <CardTitle className="text-lg font-semibold">
+                    Edit Announcement
+                  </CardTitle>
+                </div>
+
+                {/* RIGHT SIDE */}
                 <Button
                   type="button"
                   onClick={() => fileInputRef.current.click()}
@@ -95,7 +108,7 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-              </CardHeader>
+            </CardHeader>
 
               {preview && (
                 <div className="mb-2 flex justify-center sm:justify-start px-4">

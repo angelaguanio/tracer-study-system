@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 export default function CoordinatorAnnouncement({ announcements }) {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
 
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
@@ -19,6 +20,26 @@ export default function CoordinatorAnnouncement({ announcements }) {
       return () => clearTimeout(timer);
     }
   }, [showSuccess]);
+
+  // detect update modal
+  useEffect(() => {
+    const updated = new URLSearchParams(window.location.search).get("updated");
+
+    if (updated === "1") {
+      setShowUpdatedSuccess(true);
+
+      const timer = setTimeout(() => {
+        setShowUpdatedSuccess(false);
+
+        router.replace("/coordinator/announcement", {
+          preserveState: true,
+          preserveScroll: true,
+        });
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // GLOBAL SEARCH
   useEffect(() => {
@@ -42,7 +63,6 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
   // HANDLE DATA (pagination safe)
   const list = announcements?.data ?? [];
-
   const filteredAnnouncements = list;
 
   return (
@@ -154,36 +174,56 @@ export default function CoordinatorAnnouncement({ announcements }) {
       {/* PAGINATION */}
       {announcements?.links && (
         <div className="border-t border-gray-200 px-4 py-3 flex justify-end gap-2">
-
-          <div className="flex gap-2 flex-wrap">
-            {announcements.links.map((link, index) => (
-              <button
-                key={index}
-                disabled={!link.url}
-                onClick={() =>
-                  router.get(link.url, {}, { preserveState: true, preserveScroll: true })
-                }
-                dangerouslySetInnerHTML={{ __html: link.label }}
-                className={`px-3 py-1 border rounded-md text-sm ${
-                  link.active
-                    ? "bg-[#008236] text-white"
-                    : "bg-transparent text-gray-700 hover:bg-gray-100"
-                } ${!link.url ? "opacity-50 cursor-not-allowed" : ""}`}
-              />
-            ))}
-          </div>
-
+          {announcements.links.map((link, index) => (
+            <button
+              key={index}
+              disabled={!link.url}
+              onClick={() =>
+                router.get(link.url, {}, { preserveState: true, preserveScroll: true })
+              }
+              dangerouslySetInnerHTML={{ __html: link.label }}
+              className={`px-3 py-1 border rounded-md text-sm ${
+                link.active
+                  ? "bg-[#008236] text-white"
+                  : "bg-transparent text-gray-700 hover:bg-gray-100"
+              } ${!link.url ? "opacity-50 cursor-not-allowed" : ""}`}
+            />
+          ))}
         </div>
       )}
 
-      {/* SUCCESS MODAL */}
+      {/* DELETE SUCCESS MODAL */}
       {showSuccess && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
+          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
+
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="absolute top-3 right-3 text-gray-500"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
+              <Check size={28} className="text-white" />
+            </div>
+
+            <p className="text-gray-700 font-medium">
+              Deleted successfully!
+            </p>
+
+          </div>
+        </div>
+      )}
+
+      {/* UPDATED SUCCESS MODAL */}
+      {showUpdatedSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
 
             {/* CLOSE BUTTON */}
             <button
-              onClick={() => setShowSuccess(false)}
+              onClick={() => setShowUpdatedSuccess(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
             >
               <X size={20} />
@@ -195,7 +235,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
             </div>
 
             <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Deleted successfully
+              Updated successfully!
             </p>
 
           </div>

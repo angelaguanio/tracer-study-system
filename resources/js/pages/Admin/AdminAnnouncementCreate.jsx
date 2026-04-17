@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 
 export default function AdminAnnouncementCreate() {
-    const fileInputRef = useRef(null); // 👉 Reference para sa hidden file input
-    const [preview, setPreview] = useState(null); // 👉 Preview ng image bago i-upload
+    const fileInputRef = useRef(null); // Reference para sa hidden file input
+    const [preview, setPreview] = useState(null); // Preview ng image bago i-upload
 
     // INERTIA FORM DATA
     const { data, setData, post, processing, errors } = useForm({
@@ -54,7 +54,7 @@ export default function AdminAnnouncementCreate() {
                                         <ArrowLeft size={18} />
                                     </Button>
                                 </Link>
-                                <CardTitle className="text-lg font-semibold">
+                                <CardTitle className="text-lg font-semibold ml-3">
                                     Create new announcement
                                 </CardTitle>
                             </div>
