@@ -1,14 +1,13 @@
-import React from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { AlumnaOfficeSection } from "@/components/ui/AlumnaOfficeComponents";
 import { officeData } from "../../lib/AlumnaOfficeDatalist";
 
 function AlumnaOffice() {
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen w-full flex flex-col pt-20">
 
       {/* PAGE TITLE */}
-      <div className="text-center pb-20">
+      <div className="text-center px-4 pb-20">
         <h1 className="text-4xl md:text-7xl font-bold text-blue-800 font-inria">
           ALUMNI AFFAIRS
         </h1>
@@ -17,7 +16,7 @@ function AlumnaOffice() {
         </p>
       </div>
 
-      {/* OFFICE SECTION */}
+      {/* OFFICE SECTION — full-width image, centered cards */}
       <AlumnaOfficeSection {...officeData} />
 
     </div>

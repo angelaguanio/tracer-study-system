@@ -1,13 +1,11 @@
-import React from "react";
-
 /* ===================== COMPONENT ===================== */
 
 export function AlumnaOfficeSection({ title, bg, staff }) {
   return (
-    <div className="mb-20">
+    <div className="w-full flex flex-col">
 
-      {/* HERO IMAGE */}
-      <div className="relative w-full h-[260px] md:h-[650px]">
+      {/* FULL-WIDTH HERO IMAGE with centered text overlay */}
+      <div className="relative w-full h-[260px] md:h-[500px]">
         
         <img
           src={bg}
@@ -20,15 +18,15 @@ export function AlumnaOfficeSection({ title, bg, staff }) {
 
         {/* TEXT */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
-          <h2 className="text-xl md:text-4xl font-bold tracking-wide">
+          <h2 className="text-2xl md:text-5xl font-bold tracking-wide drop-shadow-lg">
             {title}
           </h2>
         </div>
 
       </div>
 
-      {/* STAFF SECTION */}
-      <div className="max-w-6xl mx-auto mt-10 px-4 pb-20">
+      {/* STAFF CARDS — centered, constrained width */}
+      <div className="w-full max-w-2xl mx-auto mt-10 px-4 pb-20">
         <div className="bg-white rounded-xl shadow-lg p-6">
 
           <div className="flex flex-col gap-8">
