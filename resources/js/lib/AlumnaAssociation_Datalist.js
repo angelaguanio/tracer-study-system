@@ -6,10 +6,11 @@ import lawBg from "@/assets/law-bg.jpg";
 import nursingBg from "@/assets/nursing-bg.jpg";
 import cbaBg from "@/assets/cba-bg.jpg";
 import cectBg from "@/assets/cect-bg.jpg";
+import wesleyBg from "@/assets/wesley-bg.jpg";
 import educationBg from "@/assets/education-bg.jpg";
 import criminaljusticeBg from "@/assets/criminal-justice-bg.jpg";
 
-/* ✅ helper */
+/* helper */
 const o = (role, name) => ({ role, name });
 
 export const departments = [
@@ -48,7 +49,7 @@ export const departments = [
   {
     title: "WESLEY DIVINITY SCHOOL",
     subtitle: "Located on the SHS building.",
-    bg: graduateBg,
+    bg: wesleyBg,
     officers: [
       o("President", "Rev. Efren Reyes"),
       o("Vice President", "Rev. Dr. Francis Fajardo"),
@@ -111,7 +112,7 @@ export const departments = [
       o("President", "Ms. Karen S. Gumabon"),
       o("Vice President", "Ms. Jullana Mae S. Magtalas"),
       o("Secretary", "Ms. Jennifer O. Garcia"),
-      o("Secretary", "Mr. John Michael S. Casison"),
+      o("Assistant Secretary", "Mr. John Michael S. Casison"), // fixed duplicate role
       o("Treasurer", "Ms. Renalou B. Cordova"),
       o("Auditor", "Mr. Kevin Patrick M. Santos"),
       o("PRO", "Mr. Paolo Hans P. Oanes"),
@@ -130,7 +131,7 @@ export const departments = [
       o("Treasurer", "Mrs. Joan Marie S. Tuazon"),
       o("Auditor", "Mr. Jelwin Bautista"),
       o("PRO", "Mrs. Arlynn T. Martinez"),
-      o("PRO", "Mr. Siraj Murad"),
+      o("PRO", "Mr. Sirajy Murad"),
     ],
   },
 
@@ -171,7 +172,7 @@ export const departments = [
     officers: [
       o("President", "Mr. King Patrick R. Gavino"),
       o("Vice President", "Ms. Ezra Mae Dimapawi"),
-      o("Secretary", "Mr. Emmanuael John R. Pangan"),
+      o("Secretary", "Mr. Emmanuel John R. Pangan"), // typo fixed
       o("Treasurer", "Ms. Mildred G. Abiva"),
       o("Auditor", "Mr. Levy Richard B. Isidro"),
       o("PRO", "Mr. Melchor Tolentino"),
@@ -203,7 +204,7 @@ export const departments = [
       o("Vice President", "PCPT Orlando M. Garcia Jr."),
       o("Secretary", "Prof. Maricel C. Coleco"),
       o("Treasurer", "Mr. Genesis M. Tinio"),
-      o("Auditor", "Heherson M. Bedron"),
+      o("Auditor", "Mr. Heherson M. Bedron"),
       o("PRO", "PCPL Mark Christian P. Morales"),
       o("PRO", "Mr. Allen Caguiat"),
     ],
