@@ -13,27 +13,7 @@ class SubmitSurveyRequest extends FormRequest
 
     public function rules(): array
     {
-        $section = $this->route('survey')
-            ->sections()
-            ->with('questions')
-            ->findOrFail($this->input('section_id'));
-
-        $rules = [];
-
-        foreach ($section->questions as $question) {
-            $key = "answers.{$question->id}";
-            $presence = $question->is_required ? 'required' : 'nullable';
-
-            $rules[$key] = match ($question->type) {
-                'text', 'textarea' => [$presence, 'string', 'max:1000'],
-                'number'           => [$presence, 'numeric'],
-                'select', 'radio', 'likert' => [$presence, 'string'],
-                'checkbox'         => [$presence, 'array', 'min:1'],
-                default            => [$presence],
-            };
-        }
-
-        return $rules;
+        return [];
     }
 
     public function messages(): array

@@ -239,6 +239,12 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Prevent white-on-white text when system dark mode bleeds in.
+       Only applies when .dark is on <html> AND a component uses bg-white. */
+    .dark .bg-white {
+        color: oklch(0.145 0 0);
+    }
 }
 
 /*
