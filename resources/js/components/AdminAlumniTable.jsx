@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAlumniTable({ alumni }) {
+export default function AdminAlumniTable({ alumni }) {
   const badgeColor = (course) => {
     if (course === "BSIT") return "bg-blue-100 text-blue-600";
     if (course === "BSCpE") return "bg-yellow-100 text-yellow-600";
@@ -20,8 +20,8 @@ export default function CoordinatorAlumniTable({ alumni }) {
   return (
     <div className="bg-white rounded-xl shadow flex flex-col h-[500px] overflow-hidden">
 
+      {/* TABLE */}
       <div className="flex-1 overflow-y-auto overflow-x-auto">
-
         <Table className="min-w-[700px] w-full">
 
           <TableHeader className="sticky top-0 bg-[#EAF5FF] z-10">
@@ -78,8 +78,6 @@ export default function CoordinatorAlumniTable({ alumni }) {
                 </TableCell>
 
                 <TableCell className="text-center space-x-2">
-
-                  {/* VIEW PROFILE */}
                   <Button
                     size="sm"
                     variant="outline"
@@ -89,7 +87,6 @@ export default function CoordinatorAlumniTable({ alumni }) {
                     View Profile
                   </Button>
 
-                  {/* SEND EMAIL */}
                   <Button
                     size="sm"
                     variant="outline"
@@ -98,7 +95,6 @@ export default function CoordinatorAlumniTable({ alumni }) {
                   >
                     Send Email
                   </Button>
-
                 </TableCell>
 
               </TableRow>
@@ -106,6 +102,31 @@ export default function CoordinatorAlumniTable({ alumni }) {
           </TableBody>
 
         </Table>
+      </div>
+
+      {/* PAGINATION (RIGHT SIDE) */}
+      <div className="p-3 border-t flex justify-end pr-4 bg-white">
+        <div className="flex flex-wrap gap-1">
+          {alumni?.links?.map((link, index) => (
+            <button
+              key={index}
+              dangerouslySetInnerHTML={{ __html: link.label }}
+              disabled={!link.url}
+              onClick={() =>
+                link.url &&
+                router.visit(link.url, {
+                  preserveState: true,
+                  preserveScroll: true,
+                })
+              }
+              className={`px-3 py-1 text-sm rounded-md border ${
+                link.active
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-600 hover:bg-gray-100"
+              } ${!link.url && "opacity-50 cursor-not-allowed"}`}
+            />
+          ))}
+        </div>
       </div>
 
     </div>

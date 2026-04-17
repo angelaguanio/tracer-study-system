@@ -10,7 +10,7 @@ export default function AdminAlumni({ alumni, filters }) {
   const [course, setCourse] = useState(filters.course || "all");
   const isFirstRender = useRef(true);
 
-  const applyFilters = (newFilters = {}) => {
+  const applyFilters = (params = {}) => {
     router.get(
       "/admin/alumni",
       {
@@ -18,7 +18,7 @@ export default function AdminAlumni({ alumni, filters }) {
         year,
         course,
         page: 1,
-        ...newFilters,
+        ...params,
       },
       {
         preserveState: true,
@@ -34,11 +34,17 @@ export default function AdminAlumni({ alumni, filters }) {
     }
 
     const delay = setTimeout(() => {
-      applyFilters({ page: 1 });
+      applyFilters();
     }, 500);
 
     return () => clearTimeout(delay);
   }, [search]);
+
+  useEffect(() => {
+    if (!isFirstRender.current) {
+      applyFilters();
+    }
+  }, [year, course]);
 
   return (
     <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
@@ -46,39 +52,9 @@ export default function AdminAlumni({ alumni, filters }) {
         search={search}
         setSearch={setSearch}
         year={year}
-        setYear={(val) => {
-          setYear(val);
-          router.get(
-            "/admin/alumni",
-            {
-              search,
-              year: val,
-              course,
-              page: 1,
-            },
-            {
-              preserveState: true,
-              replace: true,
-            }
-          );
-        }}
+        setYear={setYear}
         course={course}
-        setCourse={(val) => {
-          setCourse(val);
-          router.get(
-            "/admin/alumni",
-            {
-              search,
-              year,
-              course: val,
-              page: 1,
-            },
-            {
-              preserveState: true,
-              replace: true,
-            }
-          );
-        }}
+        setCourse={setCourse}
       />
 
       <AdminAlumniTable alumni={alumni} />

@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function CoordinatorAlumniFilters({
+export default function AdminAlumniFilters({
   search,
   setSearch,
   year,
@@ -18,7 +18,6 @@ export default function CoordinatorAlumniFilters({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow mb-4">
       
-      {/* SEARCH */}
       <Input
         placeholder="Search"
         className="w-full md:w-[250px]"
@@ -26,7 +25,6 @@ export default function CoordinatorAlumniFilters({
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* FILTERS */}
       <div className="flex gap-2 w-full md:w-auto">
         <Select onValueChange={setYear} value={year}>
           <SelectTrigger className="w-full md:w-[140px]">
