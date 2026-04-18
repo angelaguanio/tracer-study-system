@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class AdminOfSurveyResponseController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = User::query();
+
+        // SEARCH
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->search}%")
+                  ->orWhere('last_name', 'like', "%{$request->search}%");
+            });
+        }
+
+        // FILTER COURSE
+        if ($request->filled('course') && $request->course !== 'all') {
+            $query->where('courses', $request->course);
+        }
+
+        // FILTER YEAR
+        if ($request->filled('year') && $request->year !== 'all') {
+            $query->where('year_graduated', $request->year);
+        }
+
+        $users = $query->latest()->paginate(10);
+
+        $users->getCollection()->transform(function ($user) {
+
+            $hasResponse = $user->responses()->exists();
+
+            return [
+                'id' => $user->id,
+                'name' => trim($user->first_name . ' ' . $user->last_name),
+                'status' => $hasResponse ? 'completed' : 'incomplete',
+                'course' => $user->courses ?? '-',
+                'year' => $user->year_graduated ?? '-',
+            ];
+        });
+
+        return Inertia::render('Admin/AdminSurveyResponse', [
+            'responses' => $users,
+            'filters' => $request->only(['search', 'course', 'year']),
+        ]);
+    }
+
+    public function show($id)
+    {
+        $user = User::with('responses')->findOrFail($id);
+
+        $isCompleted = $user->responses()->exists();
+
+        return Inertia::render('Admin/AdminSurveyResponseView', [
+            'response' => [
+                'id' => $user->id,
+                'name' => trim($user->first_name . ' ' . $user->last_name),
+                'email' => $user->email,
+                'status' => $isCompleted ? 'completed' : 'incomplete',
+                'course' => $user->courses ?? '-',
+                'year' => $user->year_graduated ?? '-',
+                'mobile' => $user->contact_number ?? '-',
+                'address' => $user->address ?? '-',
+            ],
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        User::findOrFail($id)->delete();
+
+        return redirect()->back()->with('success', 'Deleted successfully');
+    }
+}
