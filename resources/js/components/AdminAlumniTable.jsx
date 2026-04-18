@@ -104,8 +104,8 @@ export default function AdminAlumniTable({ alumni }) {
         </Table>
       </div>
 
-      {/* PAGINATION (RIGHT SIDE) */}
-      <div className="p-3 border-t flex justify-end pr-4 bg-white">
+      {/* CLEAN PAGINATION (NO BORDER) */}
+      <div className="p-3 flex justify-end pr-4 bg-white">
         <div className="flex flex-wrap gap-1">
           {alumni?.links?.map((link, index) => (
             <button
@@ -119,10 +119,10 @@ export default function AdminAlumniTable({ alumni }) {
                   preserveScroll: true,
                 })
               }
-              className={`px-3 py-1 text-sm rounded-md border ${
+              className={`px-3 py-1 text-sm rounded-md transition ${
                 link.active
                   ? "bg-blue-500 text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100"
+                  : "text-gray-600 hover:bg-gray-100"
               } ${!link.url && "opacity-50 cursor-not-allowed"}`}
             />
           ))}
