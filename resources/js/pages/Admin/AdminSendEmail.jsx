@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
 
 export default function AdminSendEmail({ user }) {
   const { data, setData, post, processing, errors } = useForm({
@@ -22,10 +23,8 @@ export default function AdminSendEmail({ user }) {
     <>
       <Head title="Send Email" />
 
-      {/* WRAPPER */}
       <div className="bg-[#f0faff] w-full min-h-screen flex justify-center items-start py-10">
 
-        {/* WIDTH ONLY CHANGED HERE */}
         <div className="w-full max-w-6xl flex flex-col gap-3">
 
           {/* CARD */}
@@ -92,8 +91,9 @@ export default function AdminSendEmail({ user }) {
           <div className="flex justify-start">
             <Button
               onClick={() => router.visit(route("admin.alumni.index"))}
-              className="bg-blue-600"
+              className="bg-blue-600 flex items-center gap-2"
             >
+              <ArrowLeft size={16} />
               Back
             </Button>
           </div>

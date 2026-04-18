@@ -54,30 +54,38 @@ class AdminAlumniController extends Controller
         ]);
     }
 
-    //Show alumni details
+    // SHOW PROFILE
     public function show($id)
-{
-    $user = User::findOrFail($id);
+    {
+        $user = User::with('employment')->findOrFail($id);
 
-    return Inertia::render('Admin/AdminViewProfileOfRespondents', [
-        'user' => [
-            'id' => $user->id,
-            'name' => $user->first_name . ' ' . $user->last_name,
-            'email' => $user->email,
-            'course' => $user->courses,
-            'year' => $user->year_graduated,
-            'avatar' => $user->avatar,
-            'address' => $user->address ?? 'N/A',
-            'contact' => $user->contact_number ?? 'N/A',
-            'employment' => [
-                'status' => $user->employment_status ?? 'Unemployed',
-                'company' => $user->company ?? 'N/A',
-                'nature' => $user->company_nature ?? 'N/A',
-                'salary' => $user->salary ?? 'N/A',
-            ],
-        ]
-    ]);
-}
+        return Inertia::render('Admin/AdminViewProfileOfRespondents', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->first_name . ' ' . $user->last_name,
+                'email' => $user->email,
+                'course' => $user->courses,
+                'year' => $user->year_graduated,
+                'avatar' => $user->avatar,
+                'address' => $user->address ?? 'N/A',
+                'contact' => $user->contact_number ?? 'N/A',
+
+                // ✅ EMPLOYMENT FROM RELATIONSHIP
+                'employment' => [
+                    'status' => $user->employment
+                        ? ($user->employment->currently_employed ? 'Employed' : 'Unemployed')
+                        : 'No record',
+
+                    'type' => $user->employment->employment_type ?? 'N/A',
+                    'company' => $user->employment->company_name ?? 'N/A',
+                    'position' => $user->employment->position ?? 'N/A',
+                    'location' => $user->employment->location ?? 'N/A',
+                    'salary' => $user->employment->monthly_salary ?? 'N/A',
+                    'reason' => $user->employment->unemployment_reason ?? 'N/A',
+                ],
+            ]
+        ]);
+    }
 
     // EMAIL FORM
     public function emailForm($id)

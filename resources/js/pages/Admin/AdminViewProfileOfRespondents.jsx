@@ -3,6 +3,7 @@ import AdminLayout from "@/layouts/admin-layout";
 import { Head, router } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function AdminViewProfileOfRespondents({ user }) {
 
@@ -78,10 +79,14 @@ export default function AdminViewProfileOfRespondents({ user }) {
             <CardContent className="flex justify-between items-start">
 
               <div>
-                <p className="font-semibold">{user.employment.company}</p>
+                <p className="font-semibold">
+                  {user.employment.company}
+                </p>
+
                 <p className="text-sm text-gray-600">
                   {user.employment.nature}
                 </p>
+
                 <p className="text-sm">
                   Salary: {user.employment.salary}
                 </p>
@@ -104,8 +109,9 @@ export default function AdminViewProfileOfRespondents({ user }) {
           {/* BACK BUTTON */}
           <Button
             onClick={() => router.visit(route("admin.alumni.index"))}
-            className="bg-blue-600"
+            className="bg-blue-600 flex items-center gap-2"
           >
+            <ArrowLeft size={16} />
             Back
           </Button>
 

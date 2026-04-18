@@ -47,7 +47,9 @@ export default function AdminAlumni({ alumni, filters }) {
   }, [year, course]);
 
   return (
-    <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
+    <div className="w-full p-4">
+
+      {/* FILTER */}
       <AdminAlumniFilters
         search={search}
         setSearch={setSearch}
@@ -57,7 +59,11 @@ export default function AdminAlumni({ alumni, filters }) {
         setCourse={setCourse}
       />
 
-      <AdminAlumniTable alumni={alumni} />
+      {/* TABLE */}
+      <div className="mt-4">
+        <AdminAlumniTable alumni={alumni} />
+      </div>
+
     </div>
   );
 }
