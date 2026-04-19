@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employment', function (Blueprint $table) {
+        Schema::create('employment_histories', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('currently_employed', ['Yes', 'No']);
-            $table->enum('employment_type', ['Permanent/Regular', 'Probationary'])->nullable();
+            
+            // Employment Details
+            $table->string('currently_employed'); 
             $table->string('company_name')->nullable();
             $table->string('position')->nullable();
+            $table->string('employment_type')->nullable();
             $table->string('location')->nullable();
-            $table->decimal('monthly_salary', 10, 2)->nullable();
+            $table->string('monthly_salary')->nullable();
+            $table->text('unemployment_reason')->nullable();
+            
+            $table->timestamps();
         });
-
-        
     }
 
     /**
@@ -29,9 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employment', function (Blueprint $table) {
-            $table->dropColumn(['user_id', 'currently_employed', 'employment_type',
-            'company_name', 'position', 'location', 'monthly_salary']);
-        });
+        Schema::dropIfExists('employment_histories');
     }
 };
