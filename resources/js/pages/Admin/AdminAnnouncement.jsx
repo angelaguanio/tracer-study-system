@@ -98,10 +98,10 @@ export default function AdminAnnouncement({ announcements }) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md text-sm font-medium border transition ${
+              className={`px-6 py-2 rounded-md text-sm font-medium border hover:cursor-pointer transition ${
                 activeTab === tab
-                  ? "bg-[#008236] text-white"
-                  : "text-gray-600 border-gray-300 hover:border-gray-400"
+                  ? "bg-[#008236] text-white hover:bg-green-800"
+                  : "bg-blue-500 text-white  hover:bg-blue-800"
               }`}
             >
               {tab}
@@ -110,10 +110,10 @@ export default function AdminAnnouncement({ announcements }) {
         </div>
 
         {/* SEARCH + SORT */}
-        <div className="flex gap-2 items-center bg-white">
+        <div className="flex gap-2 items-center">
 
           {/* SEARCH */}
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-64 bg-white">
             <Search
               size={16}
               className="absolute left-3 top-2.5 text-gray-400"
@@ -130,7 +130,7 @@ export default function AdminAnnouncement({ announcements }) {
           <div className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
-              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2"
+              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
             >
               Sort: {sortOrder === "newest" ? "Newest" : "Oldest"}
               <ChevronDown size={16} />
