@@ -120,6 +120,6 @@ class SurveyResponseController extends Controller
             $draft->delete();
         });
 
-        return redirect()->route('alumna.questionnaire')->with('success', 'Survey submitted successfully!');
+        return redirect()->route('alumna.questionnaire')->with('justCompleted', true);
     }
 }

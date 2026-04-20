@@ -1,48 +1,82 @@
 import React from 'react'
-import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { CircleCheck, SparkleIcon, PartyPopper } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 
 export default function AlumnaQuestionnaire({ completed }) {
+  const { props } = usePage();
+  const justCompleted = props.flash?.justCompleted;
+
+  // Just finished this session → show success modal
+  if (justCompleted) {
+    return (
+      <div className='flex items-center justify-center w-full py-10'>
+        <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+          <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
+            <div className='space-y-4'>
+              <div className='flex flex-row gap-2'>
+                <PartyPopper />
+                <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
+              </div>
+              <div>
+                <h1 className='text-3xl'>Survey Completed!</h1>
+                <p>Your response has been recorded.</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+            <CircleCheck size={64} color='green' />
+            <div className='space-y-2'>
+              <p className='text-lg font-medium'>Thank you for completing the survey!</p>
+              <p className='text-sm text-gray-500'>
+                Your feedback helps us improve our programs for future students.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Revisiting after already submitted → show already submitted notice
   if (completed) {
     return (
-      <div className='flex items-center justify-center w-full'>
-      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
-          <div className='space-y-4'>
-            <div className='flex flex-row gap-2'>
-              <PartyPopper />
-              <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
+      <div className='flex items-center justify-center w-full py-10'>
+        <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+          <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
+            <div className='space-y-4'>
+              <div className='flex flex-row gap-2'>
+                <PartyPopper />
+                <span className='text-sm'>SURVEY ALREADY SUBMITTED</span>
+              </div>
+              <div>
+                <h1 className='text-3xl'>Already Submitted</h1>
+                <p>You have already completed this survey.</p>
+              </div>
             </div>
-            <div>
-              <h1 className='text-3xl'>Survey Completed!</h1>
-              <p>Your response has been recorded.</p>
+          </CardHeader>
+          <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+            <CircleCheck size={64} color='green' />
+            <div className='space-y-2'>
+              <p className='text-lg font-medium'>You've already submitted this survey.</p>
+              <p className='text-sm text-gray-500'>
+                Thank you for sharing your post-graduation experience. Your feedback helps us improve our programs for future students.
+              </p>
             </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
-          <CircleCheck size={64} color='green' />
-          <div className='space-y-2'>
-            <p className='text-lg font-medium'>You've already submitted this survey.</p>
-            <p className='text-sm text-gray-500'>
-              Thank you for sharing your post-graduation experience. Your feedback helps us improve our programs for future students.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className='flex items-center justify-center w-full'>
-      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 p-8 text-white space-y-4">
-            <div className='space-y-4'>
+      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-1 bg-white text-gray-800">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 px-8 py-6 text-white space-y-4">
+            <div className='space-y-2'>
               <div className='flex flex-row gap-2'>
                 <SparkleIcon/>
                 <span className='text-sm'>HELP SHAPE OUR FUTURE</span>
@@ -55,8 +89,8 @@ export default function AlumnaQuestionnaire({ completed }) {
             </div>
         </CardHeader>
 
-        <CardContent className="flex flex-col px-10 py-5 gap-5">
-          <div className='space-y-3'>
+        <CardContent className="flex flex-col px-10 py-3 gap-5">
+          <div className='space-y-4'>
             <p>Help us improve our programs by sharing your post-graduation experience. 
               Your feedback is invaluable for future students and curriculum development.
             </p>
@@ -69,7 +103,7 @@ export default function AlumnaQuestionnaire({ completed }) {
             <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-1/2'>
               <CircleCheck color='green'/>
               <div className='flex flex-col'>
-                <p className='text-[15px]'>5-10 minutes</p>
+                <p className='text-[15px] text-gray-800'>5-10 minutes</p>
                 <span className='text-[12px] text-gray-500'>Quick and easy</span>
               </div>
             </div>
@@ -77,18 +111,18 @@ export default function AlumnaQuestionnaire({ completed }) {
             <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-1/2'>
               <CircleCheck color='green'/>
               <div className='flex flex-col'>
-                <p className='text-[15px]'>Confidential</p>
+                <p className='text-[15px] text-gray-800'>Confidential</p>
                 <span className='text-[12px] text-gray-500'>Your privacy matters</span>
               </div>
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col justify-center p-5">
+        <CardFooter className="flex flex-col justify-center p-3">
           <Button asChild className="flex bg-blue-btn text-[15px] font" size="survey_btn">
             <Link href={route('alumna.start-survey')}>Start Survey</Link>
           </Button>
-          <span className='text-sm text-gray-400 pt-7 pb-5'>Estimated completion time: 5-10 minutes.</span>
+          <span className='text-sm text-gray-400 pt-7 pb-2'>Estimated completion time: 5-10 minutes.</span>
         </CardFooter>
       </Card>
       </div>

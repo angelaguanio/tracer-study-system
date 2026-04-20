@@ -31,7 +31,17 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
     };
 
     const handleSubmit = () => {
-        router.post(route("alumna.surveys.submit", survey.id), { section_id: currentSection.id, answers });
+        // Save last section to draft first, then submit
+        router.post(
+            route("alumna.surveys.draft", survey.id),
+            { section_id: currentSection.id, answers },
+            {
+                onSuccess: () => {
+                    router.post(route("alumna.surveys.submit", survey.id), { section_id: currentSection.id, answers });
+                },
+                preserveScroll: true,
+            }
+        );
     };
 
     const handleBack = () => setStepIndex((i) => i - 1);
