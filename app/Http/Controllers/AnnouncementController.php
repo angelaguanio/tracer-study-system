@@ -40,7 +40,7 @@ class AnnouncementController extends Controller
                 $q->orderBy('created_at', 'desc');
             })
 
-            ->paginate(10)
+            ->paginate(5)
             ->withQueryString();
 
         return Inertia::render('Admin/AdminAnnouncement', [
