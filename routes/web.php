@@ -19,16 +19,10 @@ use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
-// FIXED: Always render the login selection page at the root URL
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 })->name('role.select');
+
 
 //============= ALUMNA ROUTES =======================
 Route::prefix('alumna')->name('alumna.')->group(function () {

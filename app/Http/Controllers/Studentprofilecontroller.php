@@ -39,7 +39,7 @@ class StudentProfileController extends Controller
     public function update(Request $request) {
         $user = Auth::user();
 
-        // 1. Profile picture upload logic
+        // Profile picture upload logic
         if ($request->hasFile('profile_picture')) {
             $picture = $request->file('profile_picture');
             if ($picture->isValid()) {
@@ -52,7 +52,7 @@ class StudentProfileController extends Controller
             }
         }
 
-        // 2. Personal Information
+        // Personal Information
         $user->fill([
             'first_name'     => $request->first_name,
             'middle_name'    => $request->middle_name ?? '',
@@ -63,17 +63,17 @@ class StudentProfileController extends Controller
         ]);
         $user->save();
 
-        // 3. Salary formatting
+        // Salary formatting
         $salaryValue = $request->monthly_salary;
         if ($salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
         }
 
-        // 4. Employment Logic
+        // Employment Logic
         $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
         $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
 
-        // 5. Update Employment Record
+        // Update Employment Record
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -87,7 +87,7 @@ class StudentProfileController extends Controller
             ]
         );
 
-        // 6. Save to History
+        // Save to History
         $user->employmentHistory()->create([
             'currently_employed' => $isEmployed,
             'employment_type'    => $request->employment_type,

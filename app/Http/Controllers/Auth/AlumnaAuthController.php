@@ -41,7 +41,7 @@ class AlumnaAuthController extends Controller
             'year_graduated' => 'nullable|integer|between:2010,2030',
             'courses' => 'nullable|string',
             
-            // FIX: Added Address and Contact Number to validation
+            // Address and Contact Number to validation
             'address' => 'nullable|string|max:500',
             'contact_number' => 'nullable|string|max:20',
 
@@ -56,7 +56,7 @@ class AlumnaAuthController extends Controller
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
         ]);
 
-// Enhanced salary cleaning + LOGGING for testing
+
         $rawSalary = $validation['monthly_salary'] ?? null;
         $salary = $rawSalary;
         if ($salary !== null && $salary !== '') {
@@ -71,7 +71,7 @@ class AlumnaAuthController extends Controller
             }
         }
 
-        // 1. Create User
+        //Create User
         $user = User::create([
             'last_name' => $validation['last_name'],
             'first_name' => $validation['first_name'],
@@ -86,7 +86,7 @@ class AlumnaAuthController extends Controller
             'contact_number' => $validation['contact_number'] ?? null,
         ]);
 
-        // 2. Create Employment Record
+        // Create Employment Record
         Employment::create([
             'user_id' => $user->id,
             'currently_employed' => $validation['currently_employed'],
