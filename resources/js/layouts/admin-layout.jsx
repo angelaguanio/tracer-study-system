@@ -21,6 +21,12 @@ export default function AdminLayout({children}) {
       icon: Bell
     },
     {
+    id: "alumni-coordinator",
+    name: "Alumni Coordinator",
+    href: "/admin/alumni-coordinator",
+    icon: UsersRound
+    },
+    {
       id: "alumni",
       name: "Alumni",
       href:"/admin/alumni",

@@ -70,7 +70,7 @@ class AdminAlumniController extends Controller
                 'address' => $user->address ?? 'N/A',
                 'contact' => $user->contact_number ?? 'N/A',
 
-                // ✅ EMPLOYMENT FROM RELATIONSHIP
+                //  EMPLOYMENT FROM RELATIONSHIP
                 'employment' => [
                     'status' => $user->employment
                         ? ($user->employment->currently_employed ? 'Employed' : 'Unemployed')
