@@ -55,98 +55,100 @@ export default function StudentProfileEdit() {
     const handleUploadClick = () => fileInputRef.current?.click();
 
     return (
-        <div className="w-full max-w-[800px] mx-auto mt-8 px-4 flex flex-col gap-5 pb-12">
-            <div className="flex justify-between items-center">
-                <Link href={route('alumna.profile')} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium transition">
-                    <IconArrow /> Back to Profile
-                </Link>
-                <button 
-                    form="profile-form"
-                    type="submit" 
-                    disabled={processing} 
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-6 py-2.5 rounded shadow-sm uppercase tracking-wide transition-all"
-                >
-                    <IconSave /> {processing ? 'Saving...' : 'Save Changes'}
-                </button>
-            </div>
+        /* FIXED: Wrapped in min-h-screen and added background color #e8f4fd */
+        <div className="min-h-screen bg-[#e8f4fd]">
+            <div className="w-full max-w-[800px] mx-auto py-8 px-4 flex flex-col gap-5 pb-12">
+                <div className="flex justify-between items-center">
+                    <Link href={route('alumna.profile')} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium transition">
+                        <IconArrow /> Back to Profile
+                    </Link>
+                    <button 
+                        form="profile-form"
+                        type="submit" 
+                        disabled={processing} 
+                        className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-6 py-2.5 rounded shadow-sm uppercase tracking-wide transition-all"
+                    >
+                        <IconSave /> {processing ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
 
-            <form id="profile-form" className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-6">
-                    <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconUser /> Personal Information
-                    </div>
-                    <div className="flex items-center gap-5 mb-4">
-                        <div className="relative group">
-                            <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 group-hover:border-[#008542] transition-all">
-                                {avatarPreview ? (
-                                    <img src={avatarPreview} alt="Profile" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">
-                                        {profile?.initials || 'U'}
-                                    </div>
-                                )}
-                            </div>
-                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                            <button type="button" onClick={handleUploadClick} className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all">
-                                <IconImage className="w-4 h-4 text-[#008542]" />
-                            </button>
+                <form id="profile-form" className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                    <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-6">
+                        <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                            <IconUser /> Personal Information
                         </div>
-                        <div>
-                            <p className={labelClass}>Profile Photo</p>
-                        </div>
-                    </div>
-
-                    <div><label className={labelClass}>Last Name</label><input type="text" required value={data.last_name} onChange={e => setData('last_name', e.target.value)} className={inputClass} /></div>
-                    <div><label className={labelClass}>First Name</label><input type="text" required value={data.first_name} onChange={e => setData('first_name', e.target.value)} className={inputClass} /></div>
-                    <div><label className={labelClass}>Middle Name</label><input type="text" value={data.middle_name} onChange={e => setData('middle_name', e.target.value)} className={inputClass} /></div>
-                    <div><label className={labelClass}>Address</label><input type="text" required value={data.address} onChange={e => setData('address', e.target.value)} className={inputClass} /></div>
-                    <div><label className={labelClass}>Contact Number</label><input type="text" required value={data.contact_number} onChange={e => setData('contact_number', e.target.value)} className={inputClass} /></div>
-                    <div><label className={labelClass}>Email Address</label><input type="email" required value={data.email} onChange={e => setData('email', e.target.value)} className={inputClass} /></div>
-                </section>
-
-                <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-8">
-                    <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconBriefcase /> Employment Status
-                    </div>
-                    <div className="space-y-6">
-                        <div className="flex flex-col gap-2">
-                            <label className={labelClass}>Currently Employed</label>
-                            <div className="flex gap-4">
-                                <label className="flex items-center gap-2 text-sm">
-                                    <input type="radio" required name="is_employed" value="yes" checked={data.is_employed === 'yes'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
-                                    Yes
-                                </label>
-                                <label className="flex items-center gap-2 text-sm">
-                                    <input type="radio" required name="is_employed" value="no" checked={data.is_employed === 'no'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
-                                    No
-                                </label>
-                            </div>
-                        </div>
-
-                        {data.is_employed === 'yes' ? (
-                            <>
-                                <div className="flex flex-col gap-2">
-                                    <label className={labelClass}>Employment Type</label>
-                                    <select required value={data.employment_type} onChange={e => setData('employment_type', e.target.value)} className={inputClass}>
-                                        <option value="Permanent/Regular">Permanent/Regular</option>
-                                        <option value="Probationary">Probationary</option>
-                                        <option value="Contractual">Contractual</option>
-                                        <option value="Part-time">Part-time</option>
-                                    </select>
+                        <div className="flex items-center gap-5 mb-4">
+                            <div className="relative group">
+                                <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 group-hover:border-[#008542] transition-all">
+                                    {avatarPreview ? (
+                                        <img src={avatarPreview} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">
+                                            {profile?.initials || 'U'}
+                                        </div>
+                                    )}
                                 </div>
-                                <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={data => setData('company', data.target.value)} className={inputClass} placeholder="Company Name" /></div>
-                                <div><label className={labelClass}>Position</label><input type="text" required value={data.position} onChange={data => setData('position', data.target.value)} className={inputClass} placeholder="Position" /></div>
-                                <div><label className={labelClass}>Location</label><input type="text" required value={data.location} onChange={data => setData('location', data.target.value)} className={inputClass} placeholder="Location" /></div>
-                                <div><label className={labelClass}>Monthly Salary (Optional)</label><input type="number" value={data.monthly_salary} onChange={data => setData('monthly_salary', data.target.value)} className={inputClass} placeholder="Monthly Salary" /></div>
-                            </>
-                        ) : data.is_employed === 'no' ? (
-                            <div><label className={labelClass}>Reason for Unemployment</label><input type="text" required value={data.reason_unemployed} onChange={e => setData('reason_unemployed', e.target.value)} className={inputClass} placeholder="State reason" /></div>
-                        ) : null}
-                    </div>
-                </section>
-            </form>
+                                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                                <button type="button" onClick={handleUploadClick} className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all">
+                                    <IconImage className="w-4 h-4 text-[#008542]" />
+                                </button>
+                            </div>
+                            <div>
+                                <p className={labelClass}>Profile Photo</p>
+                            </div>
+                        </div>
+
+                        <div><label className={labelClass}>Last Name</label><input type="text" required value={data.last_name} onChange={e => setData('last_name', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>First Name</label><input type="text" required value={data.first_name} onChange={e => setData('first_name', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Middle Name</label><input type="text" value={data.middle_name} onChange={e => setData('middle_name', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Address</label><input type="text" required value={data.address} onChange={e => setData('address', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Contact Number</label><input type="text" required value={data.contact_number} onChange={e => setData('contact_number', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Email Address</label><input type="email" required value={data.email} onChange={e => setData('email', e.target.value)} className={inputClass} /></div>
+                    </section>
+
+                    <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-8">
+                        <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                            <IconBriefcase /> Employment Status
+                        </div>
+                        <div className="space-y-6">
+                            <div className="flex flex-col gap-2">
+                                <label className={labelClass}>Currently Employed</label>
+                                <div className="flex gap-4">
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input type="radio" required name="is_employed" value="yes" checked={data.is_employed === 'yes'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
+                                        Yes
+                                    </label>
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input type="radio" required name="is_employed" value="no" checked={data.is_employed === 'no'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+
+                            {data.is_employed === 'yes' ? (
+                                <>
+                                    <div className="flex flex-col gap-2">
+                                        <label className={labelClass}>Employment Type</label>
+                                        <select required value={data.employment_type} onChange={e => setData('employment_type', e.target.value)} className={inputClass}>
+                                            <option value="Permanent/Regular">Permanent/Regular</option>
+                                            <option value="Probationary">Probationary</option>
+                                            <option value="Contractual">Contractual</option>
+                                            <option value="Part-time">Part-time</option>
+                                        </select>
+                                    </div>
+                                    <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={data => setData('company', data.target.value)} className={inputClass} placeholder="Company Name" /></div>
+                                    <div><label className={labelClass}>Position</label><input type="text" required value={data.position} onChange={data => setData('position', data.target.value)} className={inputClass} placeholder="Position" /></div>
+                                    <div><label className={labelClass}>Location</label><input type="text" required value={data.location} onChange={data => setData('location', data.target.value)} className={inputClass} placeholder="Location" /></div>
+                                    <div><label className={labelClass}>Monthly Salary (Optional)</label><input type="number" value={data.monthly_salary} onChange={data => setData('monthly_salary', data.target.value)} className={inputClass} placeholder="Monthly Salary" /></div>
+                                </>
+                            ) : data.is_employed === 'no' ? (
+                                <div><label className={labelClass}>Reason for Unemployment</label><input type="text" required value={data.reason_unemployed} onChange={e => setData('reason_unemployed', e.target.value)} className={inputClass} placeholder="State reason" /></div>
+                            ) : null}
+                        </div>
+                    </section>
+                </form>
+            </div>
         </div>
     );
 }
 
-StudentProfileEdit.layout = (page) => <NavbarAlumni children={page} />;

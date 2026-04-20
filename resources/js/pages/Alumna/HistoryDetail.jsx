@@ -51,7 +51,13 @@ export default function HistoryDetail({ history, profile }) {
                                 <DetailItem label="Email Address" value={profile.email} />
                                 <DetailItem label="Contact Number" value={profile.contact_number} />
                                 <DetailItem label="Address" value={profile.address} />
-                                <DetailItem label="Course & Year" value={`${profile.courses} (${profile.year_graduated})`} />
+                                <DetailItem 
+                                    label="Course & Year" 
+                                    value={profile.courses && profile.year_graduated 
+                                        ? `${profile.courses} (${profile.year_graduated})` 
+                                        : null
+                                    } 
+                                />
                             </div>
                         </div>
 
@@ -95,11 +101,13 @@ export default function HistoryDetail({ history, profile }) {
 }
 
 function DetailItem({ label, value, isStatus = false }) {
+    const finalValue = (value === null || value === undefined || value === "null" || value === "null (null)") ? " — " : value;
+
     return (
         <div className="flex flex-col gap-1.5">
             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
-            <span className={`text-[14px] font-bold ${isStatus && value === 'Employed' ? 'text-green-600' : 'text-gray-800'}`}>
-                {value || 'Not provided'}
+            <span className={`text-[14px] font-bold ${isStatus && finalValue === 'Employed' ? 'text-green-600' : 'text-gray-800'}`}>
+                {finalValue}
             </span>
         </div>
     );

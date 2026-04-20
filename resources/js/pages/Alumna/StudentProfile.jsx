@@ -8,7 +8,7 @@ const IconPhone = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 const IconPin = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>;
 const IconBriefcase = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>;
 const IconBuilding = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12M9 9h6"/></svg>;
-const IconGrad = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>;
+const IconGrad = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="16" height="16"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>;
 const IconEdit = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" className="mr-2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
 const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 
@@ -70,7 +70,14 @@ export default function StudentProfile() {
                         <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
                         <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
                         <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
-                        <InfoItem icon={<IconGrad />} label="Course & Year" value={`${profile.courses} (${profile.year_graduated})`} />
+                        <InfoItem 
+                            icon={<IconGrad />} 
+                            label="Course & Year" 
+                            value={profile.courses && profile.year_graduated 
+                                ? `${profile.courses} (${profile.year_graduated})` 
+                                : null
+                            } 
+                        />
                     </div>
                 </section>
 
@@ -113,7 +120,6 @@ export default function StudentProfile() {
                     )}
                 </section>
 
-                {/* EMPLOYMENT HISTORY TABLE */}
                 <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                     <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
                         <IconHistory /> Employment History
