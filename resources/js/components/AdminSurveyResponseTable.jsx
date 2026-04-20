@@ -17,7 +17,6 @@ export default function AdminSurveyResponseTable({
   setPage,
   onDelete,
 }) {
-
   const handleView = (res) => {
     router.visit(`/admin/survey-response/${res.id}`);
   };
@@ -55,10 +54,9 @@ export default function AdminSurveyResponseTable({
             {responses?.data?.map((res) => (
               <TableRow key={res.id} className="h-[60px] hover:bg-gray-50">
 
-                {/* ALUMNI: AVATAR LEFT, NAME CENTER */}
+                {/* ALUMNI */}
                 <TableCell className="relative text-center px-6">
 
-                  {/* AVATAR (ABSOLUTE LEFT) */}
                   <div className="absolute left-6 top-1/2 -translate-y-1/2">
                     {res.avatar ? (
                       <img
@@ -78,7 +76,6 @@ export default function AdminSurveyResponseTable({
                     )}
                   </div>
 
-                  {/* NAME CENTERED */}
                   <span className="font-medium text-gray-800">
                     {res.name}
                   </span>
@@ -114,21 +111,23 @@ export default function AdminSurveyResponseTable({
                 <TableCell className="text-center">
                   <div className="flex justify-center gap-2">
 
+                    {/* VIEW BUTTON */}
                     <Button
                       size="sm"
                       onClick={() => handleView(res)}
-                      className="flex items-center gap-1 bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 text-xs"
+                      className="flex items-center gap-1 bg-transparent border border-[#9ECEFF] text-[#155DFC] hover:bg-[#eef5ff] px-3 py-1.5 text-xs"
                     >
-                      <Eye size={16} />
+                      <Eye size={16} className="text-[#155DFC]" />
                       View
                     </Button>
 
+                    {/* DELETE BUTTON */}
                     <Button
                       size="sm"
                       onClick={() => onDelete(res)}
-                      className="flex items-center gap-1 bg-red-100 text-red-600 hover:bg-red-200 px-3 py-1.5 text-xs"
+                      className="flex items-center gap-1 bg-[#FF9E9E] border border-[#FF9E9E] text-[#E70813] hover:bg-red-200 px-3 py-1.5 text-xs"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={16} className="text-[#E70813]" />
                       Delete
                     </Button>
 

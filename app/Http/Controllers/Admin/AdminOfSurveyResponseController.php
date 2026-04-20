@@ -11,7 +11,8 @@ class AdminOfSurveyResponseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::query()
+            ->where('user_role', 'alumna'); // ✅ ONLY ALUMNA
 
         // SEARCH
         if ($request->filled('search')) {
@@ -54,7 +55,10 @@ class AdminOfSurveyResponseController extends Controller
 
     public function show($id)
     {
-        $user = User::with('responses')->findOrFail($id);
+        // ✅ ONLY ALUMNA CAN BE VIEWED
+        $user = User::where('user_role', 'alumna')
+            ->with('responses')
+            ->findOrFail($id);
 
         $isCompleted = $user->responses()->exists();
 
@@ -74,7 +78,9 @@ class AdminOfSurveyResponseController extends Controller
 
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        // optional safety: prevent deleting non-alumna anyway
+        $user = User::where('user_role', 'alumna')->findOrFail($id);
+        $user->delete();
 
         return redirect()->back()->with('success', 'Deleted successfully');
     }
