@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,11 +11,45 @@ import {
 import { router } from "@inertiajs/react";
 
 export default function AdminAlumniTable({ alumni }) {
+const currentPage = alumni?.current_page || 1;
+const lastPage = alumni?.last_page || 1;
+
+const getPaginationItems = () => {
+  if (lastPage <= 4) {
+    return Array.from({ length: lastPage }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 3) {
+    return [1, 2, 3, "...", lastPage];
+  }
+
+  if (currentPage >= lastPage - 2) {
+    return [1, "...", lastPage - 2, lastPage - 1, lastPage];
+  }
+
+  return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", lastPage];
+};
+
+const paginationItems = getPaginationItems();
+
+const goToPage = (page) => {
+  const params = new URLSearchParams(window.location.search);
+  params.set("page", page);
+
+  router.visit(`${window.location.pathname}?${params.toString()}`, {
+    preserveState: true,
+    preserveScroll: true,
+  });
+};
+
+
   const badgeColor = (course) => {
     if (course === "BSIT") return "bg-blue-100 text-blue-600";
     if (course === "BSCpE") return "bg-yellow-100 text-yellow-600";
     if (course === "BSECE") return "bg-purple-100 text-purple-600";
     return "bg-gray-100 text-gray-600";
+
+    
   };
 
   return (
@@ -104,30 +139,55 @@ export default function AdminAlumniTable({ alumni }) {
         </Table>
       </div>
 
-      {/* CLEAN PAGINATION (NO BORDER) */}
-      <div className="p-3 flex justify-end pr-4 bg-white">
-        <div className="flex flex-wrap gap-1">
-          {alumni?.links?.map((link, index) => (
-            <button
-              key={index}
-              dangerouslySetInnerHTML={{ __html: link.label }}
-              disabled={!link.url}
-              onClick={() =>
-                link.url &&
-                router.visit(link.url, {
-                  preserveState: true,
-                  preserveScroll: true,
-                })
-              }
-              className={`px-3 py-1 text-sm rounded-md transition ${
-                link.active
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              } ${!link.url && "opacity-50 cursor-not-allowed"}`}
-            />
-          ))}
-        </div>
-      </div>
+      {/* CLEAN PAGINATION */}
+     <div className="p-3 flex justify-end pr-4 bg-white">
+  <div className="flex flex-wrap gap-1 items-center">
+    <button
+      disabled={currentPage === 1}
+      onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+      className={`px-3 py-1 text-sm border shadow-sm rounded-md transition ${
+        currentPage === 1
+          ? "opacity-50 cursor-not-allowed text-gray-400 shadow-md"
+          : "text-gray-600 hover:bg-gray-100 hover:shadow-md"
+      }`}
+    >
+      <ChevronLeft className="w-4 h-5" />
+    </button>
+
+    {paginationItems.map((item, index) =>
+      item === "..." ? (
+        <span key={`dots-${index}`} className="px-2 text-gray-500">
+          ...
+        </span>
+      ) : (
+        <button
+          key={item}
+          onClick={() => goToPage(item)}
+          className={`px-3 py-1 text-sm border rounded-md shadow-sm transition ${
+            currentPage === item
+              ? "bg-blue-500 text-white border-blue-500 shadow-md"
+              : "text-gray-600 hover:bg-gray-100 hover:shadow-md"
+          }`}
+        >
+          {item}
+        </button>
+      )
+    )}
+
+    <button
+      disabled={currentPage === lastPage}
+      onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
+      className={`px-3 py-1 text-sm border rounded-md shadow-sm transition ${
+        currentPage === lastPage
+          ? "opacity-50 cursor-not-allowed text-gray-400 shadow-md"
+          : "text-gray-600 hover:bg-gray-100 hover:shadow-md"
+      }`}
+    >
+      <ChevronRight className="w-4 h-5" />
+      
+    </button>
+  </div>
+</div>
 
     </div>
   );
