@@ -18,12 +18,14 @@ class AnnouncementController extends Controller
 
         $announcements = Announcement::query()
 
+            ->where('status', '!=', 'rejected')
+
             // STATUS FILTER
             ->when($status && $status !== 'All', function ($q) use ($status) {
                 $q->where('status', strtolower($status));
             })
 
-            // SEARCH (IMPORTANT FIX)
+            // SEARCH
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('title', 'like', "%{$search}%")
@@ -61,7 +63,7 @@ class AnnouncementController extends Controller
         return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
     }
 
-    /* ================= STORE (FIXED - IMPORTANT) ================= */
+    /* ================= STORE ================= */
     public function store(Request $request)
     {
         $request->validate([
@@ -97,7 +99,9 @@ class AnnouncementController extends Controller
             'status' => 'approved'
         ]);
 
-        return back()->with('success', 'Announcement approved successfully!');
+        return redirect()
+            ->route('admin.announcement.index')
+            ->with('success', 'Announcement approved successfully!');
     }
 
     public function reject(Announcement $announcement)
@@ -106,7 +110,9 @@ class AnnouncementController extends Controller
             'status' => 'rejected'
         ]);
 
-        return back()->with('success', 'Announcement rejected successfully!');
+        return redirect()
+            ->route('admin.announcement.index')
+            ->with('success', 'Announcement rejected successfully!');
     }
 
     /* ================= VIEW ================= */
