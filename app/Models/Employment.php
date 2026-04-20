@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Employment extends Model
 {
@@ -10,13 +11,13 @@ class Employment extends Model
 
     protected $fillable = [
         'user_id',
-        'is_employed',
+        'currently_employed',
         'employment_type',
-        'company',
+        'company_name',
         'position',
         'location',
         'monthly_salary',
-        'reason_unemployed',
+        'unemployment_reason',
     ];
 
     public function user()

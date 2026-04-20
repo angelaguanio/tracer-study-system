@@ -26,10 +26,9 @@ class User extends Authenticatable
         'password',
         'user_role',
         'year_graduated',
-        'courses',
-        'username',        // ✅ added
-        'address',         // ✅ added
-        'contact_number',  // ✅ added
+        'courses',      
+        'address',         
+        'contact_number'
     ];
  
     /**
