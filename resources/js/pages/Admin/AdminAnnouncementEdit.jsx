@@ -33,9 +33,12 @@ export default function AdminAnnouncementEdit({ announcement }) {
   // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
-      setPreview(URL.createObjectURL(file)); // preview
+      setPreview(URL.createObjectURL(file));
       setFormData({ ...formData, image: file });
+
+      setRemoveImage(false);
     }
   };
 
@@ -82,7 +85,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
       <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
         <div className="w-full max-w-6xl">
-          <Card className="w-full flex flex-col min-h-[700px] max-h-[900px]">
+          <Card className="w-full flex flex-col min-h-[700px]">
 
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex items-center gap-2">
@@ -125,17 +128,21 @@ export default function AdminAnnouncementEdit({ announcement }) {
                   <img
                     src={preview}
                     alt="Preview"
-                    className="mb-2 flex justify-center sm:justify-start px-4 relative w-fit"
+                    className="w-50 h-50 object-cover rounded border"
                   />
 
                   {/* REMOVE BUTTON */}
                   <button
                     type="button"
                     onClick={() => {
-                      setPreview(null);
-                      setRemoveImage(true);
-                      setFormData({ ...formData, image: null });
-                    }}
+                    setPreview(null);
+                    setRemoveImage(true);
+                    setFormData({ ...formData, image: null });
+
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = "";
+                    }
+                  }}
                     className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full p-1 shadow-sm hover:bg-gray-100"
                   >
                     <X size={14} className="text-gray-700" />

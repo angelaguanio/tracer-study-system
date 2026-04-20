@@ -87,7 +87,7 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
           <div className="w-full max-w-5xl">
 
             {/* CARD */}
-            <Card className="w-full min-h-[600px] sm:min-h-[700px] flex flex-col">
+            <Card className="w-full flex flex-col min-h-[700px]">
 
               <CardHeader className="flex flex-row items-center justify-between">
 
@@ -127,13 +127,13 @@ export default function CoordinatorAnnouncementEdit({ announcement }) {
 
               {/* IMAGE PREVIEW */}
               {preview && !removeImage && (
-                <div className="mb-2 flex justify-center sm:justify-start px-4 relative w-fit">
+                <div className="mb-2 flex justify-start pl-6 relative w-fit">
 
                   <div className="relative">
                     <img
                       src={preview}
                       alt="Preview"
-                      className="w-32 sm:w-40 max-h-64 rounded border object-contain"
+                      className="w-50 h-50 object-cover rounded border"
                     />
 
                     {/* REMOVE BUTTON */}

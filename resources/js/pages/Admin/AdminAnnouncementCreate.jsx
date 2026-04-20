@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 
 export default function AdminAnnouncementCreate() {
     const fileInputRef = useRef(null); // Reference para sa hidden file input
@@ -62,7 +62,12 @@ export default function AdminAnnouncementCreate() {
                             {/* Upload Image Button */}
                             <Button
                                 type="button"
-                                onClick={() => fileInputRef.current.click()}
+                                onClick={() => {
+                                    if (fileInputRef.current) {
+                                        fileInputRef.current.value = "";
+                                        fileInputRef.current.click();
+                                    }
+                                }}
                                 className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
                             >
                                 Upload Image
@@ -83,19 +88,40 @@ export default function AdminAnnouncementCreate() {
                                     onChange={(e) => {
                                         const file = e.target.files[0];
                                         if (file) {
-                                            setData("image", file); // save file in form
-                                            setPreview(URL.createObjectURL(file)); // preview image
+                                            setData("image", file);
+                                            setPreview(URL.createObjectURL(file));
+                                            setRemoveImage(false);
                                         }
                                     }}
                                 />
 
                                 {/* IMAGE PREVIEW */}
                                 {preview && (
-                                    <img
-                                        src={preview}
-                                        alt="Preview"
-                                        className="w-40 mb-4 rounded border"
-                                    />
+                                    <div className="mb-4 flex justify-start relative w-fit">
+                                        <div className="relative">
+                                            <img
+                                                src={preview}
+                                                alt="Preview"
+                                                className="w-40 rounded border"
+                                            />
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPreview(null);
+                                                    setRemoveImage(true);
+                                                    setData("image", null);
+
+                                                    if (fileInputRef.current) {
+                                                        fileInputRef.current.value = "";
+                                                    }
+                                                }}
+                                                className="absolute -top-2 -right-2 bg-white border rounded-full p-1 shadow hover:bg-gray-100"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
 
                                 {/* TITLE */}
