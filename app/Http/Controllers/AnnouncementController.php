@@ -195,7 +195,8 @@ class AnnouncementController extends Controller
         // ONLY APPROVED SHOWN
         $announcements = Announcement::where('status', 'approved')
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Alumna/AlumnaAnnouncements', [
             'announcements' => $announcements,

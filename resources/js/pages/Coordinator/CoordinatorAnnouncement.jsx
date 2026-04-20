@@ -1,6 +1,6 @@
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAnnouncementCard from "@/components/coordinator/CoordinatorAnnouncementCard";
-import { Plus, X, Check, Search, ChevronDown } from "lucide-react";
+import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
@@ -173,22 +173,85 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
       {/* PAGINATION */}
       {announcements?.links && (
-        <div className="border-t border-gray-200 px-4 py-3 flex justify-end gap-2">
-          {announcements.links.map((link, index) => (
-            <button
-              key={index}
-              disabled={!link.url}
-              onClick={() =>
-                router.get(link.url, {}, { preserveState: true, preserveScroll: true })
-              }
-              dangerouslySetInnerHTML={{ __html: link.label }}
-              className={`px-3 py-1 border rounded-md text-sm ${
-                link.active
-                  ? "bg-[#008236] text-white"
-                  : "bg-transparent text-gray-700 hover:bg-gray-100"
-              } ${!link.url ? "opacity-50 cursor-not-allowed" : ""}`}
-            />
-          ))}
+        <div className="flex justify-end items-center gap-1 mt-4">
+
+          {/* PREVIOUS */}
+          <button
+            disabled={announcements.current_page === 1}
+            onClick={() =>
+              router.get(
+                `/coordinator/announcement?page=${announcements.current_page - 1}`,
+                {},
+                { preserveState: true, preserveScroll: true }
+              )
+            }
+            className="w-12 h-8 flex items-center justify-center rounded-md border
+                      hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: announcements.last_page }, (_, i) => i + 1)
+            .filter((page) => {
+              const current = announcements.current_page;
+
+              return (
+                page === 1 ||
+                page === announcements.last_page ||
+                (page >= current - 1 && page <= current + 1)
+              );
+            })
+            .map((page, index, arr) => {
+              const prevPage = arr[index - 1];
+
+              return (
+                <div key={page} className="flex items-center gap-1">
+
+                  {/* ELLIPSIS */}
+                  {prevPage && page - prevPage > 1 && (
+                    <span className="px-2 text-gray-400">...</span>
+                  )}
+
+                  {/* PAGE BUTTON */}
+                  <button
+                    onClick={() =>
+                      router.get(
+                        `/coordinator/announcement?page=${page}`,
+                        {},
+                        { preserveState: true, preserveScroll: true }
+                      )
+                    }
+                    className={`w-8 h-8 flex items-center justify-center rounded-md border text-sm transition
+                      ${
+                        announcements.current_page === page
+                          ? "bg-[#3b82f6] text-white border-[#3b82f6]"
+                          : "bg-white hover:bg-gray-100"
+                      }`}
+                  >
+                    {page}
+                  </button>
+
+                </div>
+              );
+            })}
+
+          {/* NEXT */}
+          <button
+            disabled={announcements.current_page === announcements.last_page}
+            onClick={() =>
+              router.get(
+                `/coordinator/announcement?page=${announcements.current_page + 1}`,
+                {},
+                { preserveState: true, preserveScroll: true }
+              )
+            }
+            className="w-12 h-8 flex items-center justify-center rounded-md border
+                      hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight size={18} />
+          </button>
+
         </div>
       )}
 
