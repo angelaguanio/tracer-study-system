@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\AlumniBroadcastEmail;
+use App\Jobs\SendAlumniBroadcastJob;
 
 class AdminAlumniController extends Controller
 {
@@ -101,21 +103,48 @@ class AdminAlumniController extends Controller
         ]);
     }
 
-    // SEND EMAIL
+    // SEND EMAIL (single alumna by route ID)
     public function sendEmail(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
         $request->validate([
-            'subject' => 'required',
-            'message' => 'required',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
         ]);
 
-        Mail::raw($request->message, function ($mail) use ($user, $request) {
-            $mail->to($user->email)
-                 ->subject($request->subject);
-        });
+        Mail::to($user->email)
+            ->queue(new AlumniBroadcastEmail($request->subject, $request->message));
 
-        return back()->with('success', 'Email sent successfully!');
+        return back()->with('success', "Email queued for {$user->first_name} {$user->last_name} ({$user->email}).");
+    }
+
+    // SEND BULK EMAIL (selected IDs or all alumni)
+    public function sendBulkEmail(Request $request)
+    {
+        $request->validate([
+            'subject'    => 'required|string|max:255',
+            'message'    => 'required|string',
+            'send_all'   => 'boolean',
+            'user_ids'   => 'required_if:send_all,false|array',
+            'user_ids.*' => 'integer|exists:users,id',
+        ]);
+
+        $userIds = $request->boolean('send_all') ? null : $request->user_ids;
+
+        // Count before dispatching so we can give a meaningful toast message
+        $count = $userIds === null
+            ? User::where('user_role', 'alumna')->count()
+            : count($userIds);
+
+        SendAlumniBroadcastJob::dispatch(
+            $request->subject,
+            $request->message,
+            $userIds,
+        );
+
+        $target = $userIds === null ? 'all alumni' : "{$count} selected alumni";
+
+        return back()->with('success', "✓ Bulk email queued for {$target}. Mailtrap will receive {$count} message(s) shortly.");
     }
 }

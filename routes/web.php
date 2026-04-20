@@ -120,12 +120,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
     ->name('alumni.show');
 
-    //Send email form
-    Route::get('/alumni/{id}/email', [AdminAlumniController::class, 'emailForm'])
-    ->name('alumni.email.form');
-
+    //Send email (individual — handled via modal, route kept for controller compatibility)
     Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
     ->name('alumni.email.send');
+
+    // Bulk email (selected IDs or all alumni)
+    Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+    ->name('alumni.email.bulk');
 
         Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
