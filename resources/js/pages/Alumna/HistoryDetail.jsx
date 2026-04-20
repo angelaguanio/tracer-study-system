@@ -1,4 +1,5 @@
 import React from 'react';
+import AlumnaLayout from "@/layouts/alumna-layout";
 import { Link, Head } from '@inertiajs/react';
 import NavbarAlumni from "../../components/navbar-alumni";
 

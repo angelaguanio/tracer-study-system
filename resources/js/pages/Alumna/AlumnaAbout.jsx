@@ -1,4 +1,5 @@
 import React from 'react'
+import AlumnaLayout from "@/layouts/alumna-layout";
 import graduationBg from '../../assets/graduation-bg.jpg'
 import AlumnaLayout from '../../layouts/alumna-layout';
 

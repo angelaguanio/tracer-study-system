@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import AlumnaLayout from "@/layouts/alumna-layout";
 import { usePage, useForm, Link } from '@inertiajs/react';
 import NavbarAlumni from "../../components/navbar-alumni";
 
