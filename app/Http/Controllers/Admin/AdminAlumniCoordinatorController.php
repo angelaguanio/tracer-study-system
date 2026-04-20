@@ -10,7 +10,6 @@ use Inertia\Inertia;
 
 class AdminAlumniCoordinatorController extends Controller
 {
-    // CHECK ADMIN
     private function checkAdmin()
     {
         if (!auth()->check() || auth()->user()->user_role !== 'admin') {
@@ -18,17 +17,17 @@ class AdminAlumniCoordinatorController extends Controller
         }
     }
 
-    // INDEX
     public function index()
     {
         $this->checkAdmin();
 
         return Inertia::render('Admin/AdminAlumniCoordinator', [
-            'coordinators' => User::where('user_role', 'coordinator')->get()
+            'coordinators' => User::where('user_role', 'coordinator')
+                ->latest()
+                ->get(),
         ]);
     }
 
-    // SHOW (VIEW SINGLE COORDINATOR)
     public function show(User $alumni_coordinator)
     {
         $this->checkAdmin();
@@ -38,37 +37,39 @@ class AdminAlumniCoordinatorController extends Controller
         }
 
         return Inertia::render('Admin/AdminAlumniCoordinatorView', [
-            'coordinator' => $alumni_coordinator
+            'coordinator' => $alumni_coordinator,
         ]);
     }
 
-    // STORE
     public function store(Request $request)
     {
         $this->checkAdmin();
 
-        $request->validate([
-            'first_name' => 'required',
-            'last_name'  => 'required',
-            'email'      => 'required|email|unique:users',
-            'password'   => 'required|min:6',
-            'department' => 'nullable'
+        $validated = $request->validate([
+            'first_name' => ['required', 'string'],
+            'last_name'  => ['required', 'string'],
+            'middle_name'=> ['nullable', 'string'],
+            'email'      => ['required', 'email', 'unique:users,email'],
+            'password'   => ['required', 'min:6'],
+            'department' => ['required', 'string'],
+            'courses'    => ['required', 'string'],
         ]);
 
         User::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'middle_name'=> $request->middle_name,
-            'email'      => $request->email,
-            'department' => $request->department,
-            'password'   => Hash::make($request->password),
-            'user_role'  => 'coordinator',
+            'first_name'  => $validated['first_name'],
+            'last_name'   => $validated['last_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'email'       => $validated['email'],
+            'password'    => Hash::make($validated['password']),
+            'department'  => $validated['department'],
+            'courses'     => $validated['courses'],
+            'user_role'   => 'coordinator',
         ]);
 
+  
         return back();
     }
 
-    // UPDATE
     public function update(Request $request, User $alumni_coordinator)
     {
         $this->checkAdmin();
@@ -77,25 +78,32 @@ class AdminAlumniCoordinatorController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'first_name' => 'required',
-            'last_name'  => 'required',
-            'email'      => 'required|email|unique:users,email,' . $alumni_coordinator->id,
-            'department' => 'nullable'
+        $validated = $request->validate([
+            'first_name' => ['required', 'string'],
+            'last_name'  => ['required', 'string'],
+            'middle_name'=> ['nullable', 'string'],
+            'email'      => [
+                'required',
+                'email',
+                'unique:users,email,' . $alumni_coordinator->id
+            ],
+            'department' => ['required', 'string'],
+            'courses'    => ['required', 'string'],
         ]);
 
         $alumni_coordinator->update([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'middle_name'=> $request->middle_name,
-            'email'      => $request->email,
-            'department' => $request->department,
+            'first_name'  => $validated['first_name'],
+            'last_name'   => $validated['last_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'email'       => $validated['email'],
+            'department'  => $validated['department'],
+            'courses'     => $validated['courses'],
         ]);
 
+       
         return back();
     }
 
-    // DELETE
     public function destroy(User $alumni_coordinator)
     {
         $this->checkAdmin();

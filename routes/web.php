@@ -118,22 +118,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
   
-        // Alumni Coordinators CRUD
-
-            Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index'])
-                ->name('alumni-coordinators.index');
-
-            Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store'])
-                ->name('alumni-coordinators.store');
-
-            Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show'])
-                ->name('alumni-coordinators.show');
-
-            Route::put('/alumni-coordinatorss/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update'])
-                ->name('alumni-coordinators.update');
-
-            Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy'])
-                ->name('alumni-coordinators.destroy');
+    // Alumni Coordinators            
+     Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index']);
+    Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store']);
+    Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show']);
+    Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
+    Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
 
         Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');

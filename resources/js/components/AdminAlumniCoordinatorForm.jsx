@@ -8,18 +8,23 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     const { data, setData, post, put, reset } = useForm({
         first_name: "",
         last_name: "",
+        middle_name: "",
         email: "",
-        department: "",
+        department: "CECT",
+        courses: "",
         password: "",
     });
 
+    // LOAD DATA WHEN EDITING
     useEffect(() => {
         if (editing) {
             setData({
                 first_name: editing.first_name || "",
                 last_name: editing.last_name || "",
+                middle_name: editing.middle_name || "",
                 email: editing.email || "",
-                department: editing.department || "",
+                department: editing.department || "CECT",
+                courses: editing.courses || "",
                 password: "",
             });
         } else {
@@ -27,16 +32,42 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         }
     }, [editing]);
 
+    // SUBMIT
     const submit = (e) => {
         e.preventDefault();
 
+        // ISASARA AGAD ANG FORM PAGKAPINDOT PARA INSTANT FEEDBACK
+        closeForm(); 
+
+        const payload = {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            middle_name: data.middle_name,
+            email: data.email,
+            department: data.department,
+            courses: data.courses,
+        };
+
+        // UPDATE
         if (editing) {
-            put(`/admin/alumni-coordinators/${editing.id}`, {
-                onSuccess: closeForm,
+            put(`/admin/alumni-coordinators/${editing.id}`, payload, {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    reset();
+                },
             });
-        } else {
+        }
+
+        // CREATE
+        else {
             post("/admin/alumni-coordinators", {
-                onSuccess: closeForm,
+                ...payload,
+                password: data.password,
+                preserveScroll: true,
+                onSuccess: () => {
+                    reset();
+                },
             });
         }
     };
@@ -44,101 +75,106 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     return (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-            {/* MODAL CARD */}
             <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
 
                 {/* HEADER */}
-                <div
-                    className="px-6 py-4 text-white"
-                    style={{ backgroundColor: "#1184E0" }}
-                >
+                <div className="px-6 py-4 text-white bg-blue-600">
                     <h2 className="text-lg font-semibold">
                         {editing ? "Edit Coordinator" : "Add Coordinator"}
                     </h2>
                 </div>
 
-                {/* FORM BODY */}
                 <form onSubmit={submit} className="p-6 space-y-5">
 
-                    {/* NAME */}
+                    {/* NAME (KATABI) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                         <div>
-                            <label className="text-sm text-gray-600">First Name</label>
+                            <label className="text-sm font-medium">First Name</label>
                             <Input
                                 value={data.first_name}
                                 onChange={(e) => setData("first_name", e.target.value)}
-                                className="mt-1 border-0 shadow-sm focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
 
                         <div>
-                            <label className="text-sm text-gray-600">Last Name</label>
+                            <label className="text-sm font-medium">Last Name</label>
                             <Input
                                 value={data.last_name}
                                 onChange={(e) => setData("last_name", e.target.value)}
-                                className="mt-1 border-0 shadow-sm focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
-
                     </div>
 
-                    {/* EMAIL */}
-                    <div>
-                        <label className="text-sm text-gray-600">Email</label>
-                        <Input
-                            value={data.email}
-                            onChange={(e) => setData("email", e.target.value)}
-                            className="mt-1 border-0 shadow-sm focus:ring-2 focus:ring-blue-400"
-                        />
+                    {/* MIDDLE & EMAIL (KATABI) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-sm font-medium">Middle Name</label>
+                            <Input
+                                value={data.middle_name}
+                                onChange={(e) => setData("middle_name", e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium">Email</label>
+                            <Input
+                                value={data.email}
+                                onChange={(e) => setData("email", e.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    {/* DEPARTMENT */}
-                    <div>
-                        <label className="text-sm text-gray-600">Department</label>
-                        <Input
-                            value={data.department}
-                            onChange={(e) => setData("department", e.target.value)}
-                            className="mt-1 border-0 shadow-sm focus:ring-2 focus:ring-blue-400"
-                        />
+                    {/* DEPARTMENT & COURSE (KATABI) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-sm font-medium">Department</label>
+                            <select
+                                value={data.department}
+                                onChange={(e) => setData("department", e.target.value)}
+                                className="w-full border p-2 rounded-md h-10 text-sm"
+                            >
+                                <option value="CECT">CECT</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-medium">Course</label>
+                            <select
+                                value={data.courses}
+                                onChange={(e) => setData("courses", e.target.value)}
+                                className="w-full border p-2 rounded-md h-10 text-sm"
+                            >
+                                <option value="">Select Course</option>
+                                <option value="BSIT">BSIT</option>
+                                <option value="BSCpE">BSCpE</option>
+                                <option value="BSEcE">BSEcE</option>
+                            </select>
+                        </div>
                     </div>
 
-                    {/* PASSWORD */}
+                    {/* PASSWORD (CREATE ONLY) */}
                     {!editing && (
                         <div>
-                            <label className="text-sm text-gray-600">Password</label>
+                            <label className="text-sm font-medium">Password</label>
                             <Input
                                 type="password"
                                 value={data.password}
                                 onChange={(e) => setData("password", e.target.value)}
-                                className="mt-1 border-0 shadow-sm focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
                     )}
 
-                    {/* ACTIONS */}
-                    <div className="flex justify-end gap-3 pt-4">
-
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={closeForm}
-                            className="border-0 shadow-sm hover:bg-gray-100"
-                        >
+                    {/* BUTTONS - INALIS ANG BORDER LINE PARA MALINIS */}
+                    <div className="flex justify-end gap-3 pt-2">
+                        <Button type="button" variant="outline" onClick={closeForm}>
                             Cancel
                         </Button>
 
-                        <Button
-                            className="text-white px-6 shadow-sm"
-                            style={{ backgroundColor: "#1184E0" }}
-                        >
+                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
                             {editing ? "Update" : "Save"}
                         </Button>
-
                     </div>
 
                 </form>
-
             </div>
         </div>
     );

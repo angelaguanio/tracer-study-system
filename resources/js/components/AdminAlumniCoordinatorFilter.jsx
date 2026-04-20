@@ -1,9 +1,8 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-
 export default function AdminAlumniCoordinatorFilter({
     search,
     setSearch,
+    departmentFilter,
+    setDepartmentFilter,
     courseFilter,
     setCourseFilter,
     setEditing,
@@ -13,38 +12,48 @@ export default function AdminAlumniCoordinatorFilter({
         <div className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 
             {/* SEARCH */}
-            <Input
-                placeholder="Search Alumni Coordinator"
-                className="w-full md:w-[300px]"
+            <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search Alumni Coordinator..."
+                className="w-full md:w-[250px] px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-400 outline-none"
             />
 
-            {/* RIGHT SIDE CONTROLS */}
-            <div className="flex gap-2 md:items-center md:justify-end w-full md:w-auto">
+            {/* FILTERS + BUTTON */}
+            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto md:items-center">
 
-                {/* FIXED COURSE FILTER */}
+                {/* DEPARTMENT */}
                 <select
-                    className="border rounded-md px-3 py-2 text-sm w-full md:w-[180px]"
+                    value={departmentFilter}
+                    onChange={(e) => setDepartmentFilter(e.target.value)}
+                    className="px-3 py-2 border rounded-md text-sm"
+                >
+                    <option value="all">All Department</option>
+                    <option value="CECT">CECT</option>
+                </select>
+
+                {/* COURSE (KEEP LABEL BUT VALUE MUST MATCH DB FIELD) */}
+                <select
                     value={courseFilter}
                     onChange={(e) => setCourseFilter(e.target.value)}
+                    className="px-3 py-2 border rounded-md text-sm"
                 >
                     <option value="all">All Courses</option>
                     <option value="BSIT">BSIT</option>
                     <option value="BSCpE">BSCpE</option>
-                    <option value="BSECE">BSECE</option>
+                    <option value="BSEcE">BSEcE</option>
                 </select>
 
                 {/* ADD BUTTON */}
-                <Button
+                <button
                     onClick={() => {
                         setEditing(null);
                         setShowForm(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white whitespace-nowrap"
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm"
                 >
                     + Add Alumni Coordinator
-                </Button>
+                </button>
 
             </div>
         </div>

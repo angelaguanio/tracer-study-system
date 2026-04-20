@@ -12,7 +12,6 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
     return (
         <div className="h-full w-full bg-[#f3f9ff] flex flex-col overflow-hidden">
 
-            {/* PAGE WRAPPER */}
             <div className="flex-1 p-6 flex flex-col overflow-hidden">
 
                 {/* BACK BUTTON */}
@@ -26,27 +25,26 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                     </Button>
                 </div>
 
-                {/* CENTER AREA (FIXED CENTERING) */}
-                <div className="flex-1 flex justify-center items-center overflow-hidden">
+                {/* CENTER */}
+                <div className="flex-1 flex justify-center items-center">
 
-                    {/* CARD */}
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-7xl">
+                    <div className="bg-white rounded-2xl w-full max-w-5xl shadow">
 
-                        <div className="p-12">
+                        <div className="p-10">
 
                             {/* HEADER */}
                             <div className="flex items-center gap-6 border-b pb-8 mb-10">
 
-                                <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 
-                                                text-white flex items-center justify-center text-4xl font-bold shadow-lg">
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 
+                                                text-white flex items-center justify-center text-3xl font-bold shadow-lg">
                                     {getInitials(coordinator.first_name, coordinator.last_name)}
                                 </div>
 
                                 <div>
-                                    <h1 className="text-4xl font-bold text-gray-800">
+                                    <h1 className="text-3xl font-bold text-gray-800">
                                         {coordinator.first_name} {coordinator.last_name}
                                     </h1>
-                                    <p className="text-gray-500 mt-2 text-lg">
+                                    <p className="text-gray-500 mt-1">
                                         Alumni Coordinator
                                     </p>
                                 </div>
@@ -54,13 +52,13 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                             </div>
 
                             {/* INFO GRID */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-lg">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                                 {/* FULL NAME */}
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-                                    <p className="text-sm text-gray-500 mb-3">Full Name</p>
-                                    <div className="flex items-center gap-3 text-gray-800 font-medium">
-                                        <User size={18} />
+                                <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+                                    <p className="text-sm text-gray-500 mb-2">Full Name</p>
+                                    <div className="flex items-center gap-2 text-gray-800 font-medium">
+                                        <User size={16} />
                                         {coordinator.first_name}{" "}
                                         {coordinator.middle_name}{" "}
                                         {coordinator.last_name}
@@ -68,19 +66,27 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                                 </div>
 
                                 {/* EMAIL */}
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-                                    <p className="text-sm text-gray-500 mb-3">Email Address</p>
-                                    <div className="flex items-center gap-3 text-gray-800 font-medium">
-                                        <Mail size={18} />
+                                <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+                                    <p className="text-sm text-gray-500 mb-2">Email</p>
+                                    <div className="flex items-center gap-2 text-gray-800 font-medium">
+                                        <Mail size={16} />
                                         {coordinator.email}
                                     </div>
                                 </div>
 
-                                {/* COURSE */}
-                                <div className="bg-gray-50 p-6 rounded-xl shadow-sm md:col-span-2">
-                                    <p className="text-sm text-gray-500 mb-3">Course / Department</p>
+                                {/* DEPARTMENT */}
+                                <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+                                    <p className="text-sm text-gray-500 mb-2">Department</p>
                                     <p className="text-gray-800 font-medium">
                                         {coordinator.department}
+                                    </p>
+                                </div>
+
+                                {/* COURSE (FIXED HERE) */}
+                                <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+                                    <p className="text-sm text-gray-500 mb-2">Course</p>
+                                    <p className="text-gray-800 font-medium">
+                                        {coordinator.courses}
                                     </p>
                                 </div>
 

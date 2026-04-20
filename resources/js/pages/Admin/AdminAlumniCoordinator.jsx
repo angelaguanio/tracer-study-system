@@ -9,31 +9,56 @@ import AdminAlumniCoordinatorDeletePrompt from "@/components/AdminAlumniCoordina
 export default function AdminAlumniCoordinator({ coordinators }) {
 
     const [search, setSearch] = useState("");
+    const [departmentFilter, setDepartmentFilter] = useState("all");
     const [courseFilter, setCourseFilter] = useState("all");
 
     const [showForm, setShowForm] = useState(false);
     const [editing, setEditing] = useState(null);
-
     const [deleteTarget, setDeleteTarget] = useState(null);
 
+    // ========================
+    // FILTER (UNCHANGED BUT CLEAN)
+    // ========================
     const filtered = useMemo(() => {
         return coordinators.filter((c) => {
 
-            const fullName =
-                `${c.first_name} ${c.last_name}`.toLowerCase();
+            const searchValue = search.toLowerCase().trim();
+
+            const fullName = `${c.first_name || ""} ${c.middle_name || ""} ${c.last_name || ""}`
+                .toLowerCase()
+                .replace(/\s+/g, " ")
+                .trim();
+
+            const email = c.email?.toLowerCase() || "";
 
             const matchSearch =
-                fullName.includes(search.toLowerCase()) ||
-                c.email?.toLowerCase().includes(search.toLowerCase());
+                searchValue === "" ||
+                fullName.includes(searchValue) ||
+                email.includes(searchValue);
+
+            const matchDepartment =
+                departmentFilter === "all" ||
+                c.department === departmentFilter;
 
             const matchCourse =
-                courseFilter === "all" || c.department === courseFilter;
+                courseFilter === "all" ||
+                c.courses === courseFilter;
 
-            return matchSearch && matchCourse;
+            return matchSearch && matchDepartment && matchCourse;
         });
-    }, [coordinators, search, courseFilter]);
+    }, [coordinators, search, departmentFilter, courseFilter]);
 
-    const courses = ["all", ...new Set(coordinators.map(c => c.department))];
+    // ========================
+    // FIXED CLOSE HANDLER (IMPORTANT)
+    // ========================
+    const closeForm = () => {
+        setShowForm(false);
+
+        //  CRITICAL FIX: reset AFTER modal closes
+        setTimeout(() => {
+            setEditing(null);
+        }, 0);
+    };
 
     return (
         <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6">
@@ -41,9 +66,10 @@ export default function AdminAlumniCoordinator({ coordinators }) {
             <AdminAlumniCoordinatorFilter
                 search={search}
                 setSearch={setSearch}
+                departmentFilter={departmentFilter}
+                setDepartmentFilter={setDepartmentFilter}
                 courseFilter={courseFilter}
                 setCourseFilter={setCourseFilter}
-                courses={courses}
                 setEditing={setEditing}
                 setShowForm={setShowForm}
             />
@@ -57,13 +83,13 @@ export default function AdminAlumniCoordinator({ coordinators }) {
                 />
             </div>
 
+            {/* ======================== */}
+            {/* MODAL (FIXED CONTROL FLOW) */}
+            {/* ======================== */}
             {showForm && (
                 <AdminAlumniCoordinatorForm
                     editing={editing}
-                    closeForm={() => {
-                        setEditing(null);
-                        setShowForm(false);
-                    }}
+                    closeForm={closeForm}
                 />
             )}
 

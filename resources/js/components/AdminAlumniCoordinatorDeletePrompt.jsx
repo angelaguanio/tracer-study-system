@@ -50,16 +50,14 @@ export default function AdminAlumniCoordinatorDeletePrompt({
                 ) : (
 
                     <>
-                        <h2 className="text-lg font-semibold text-center">
+                        <h2 className="text-lg font-semibold ">
                             Are you sure?
                         </h2>
 
-                        <p className="text-gray-500 text-center mt-2">
-                            Delete{" "}
-                            <span className="font-medium text-gray-800">
-                                {coordinator.first_name} {coordinator.last_name}
-                            </span>
-                            ?
+                        <p className="text-gray-500 mt-2">
+                            Deleting <span className="font-semibold text-gray-900">
+                                {coordinator.first_name} {coordinator.last_name}</span> will permanently 
+                                remove their account and they will no longer have access to the system.
                         </p>
 
                         <div className="flex justify-center gap-3 mt-5">
