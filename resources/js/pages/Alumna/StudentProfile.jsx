@@ -1,7 +1,5 @@
-import React from 'react';
-import AlumnaLayout from "@/layouts/alumna-layout";
 import { usePage, Link } from '@inertiajs/react';
-import NavbarAlumni from "../../components/navbar-alumni";
+import AlumnaLayout from "@/layouts/alumna-layout";
 
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
 const IconMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>;
@@ -20,9 +18,9 @@ export default function StudentProfile() {
     const fullName = `${profile.first_name} ${profile.middle_name ? profile.middle_name + ' ' : ''}${profile.last_name}`;
 
     const avatarElement = profile.profile_picture ? (
-        <img 
-            src={`/storage/${profile.profile_picture}`} 
-            alt={`${profile.first_name}'s profile`} 
+        <img
+            src={`/storage/${profile.profile_picture}`}
+            alt={`${profile.first_name}'s profile`}
             className="w-full h-full object-cover"
         />
     ) : (
@@ -32,144 +30,144 @@ export default function StudentProfile() {
     );
 
     return (
-        <div className="min-h-screen bg-[#e8f4fd]">
-            <NavbarAlumni />
+        <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
+            {flash?.success && (
+                <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">
+                    {flash.success}
+                </div>
+            )}
 
-            <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
-                {flash?.success && (
-                    <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">
-                        {flash.success}
-                    </div>
-                )}
+            <div className="flex justify-end">
+                <Link
+                    href={route('alumna.profile.edit')}
+                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors"
+                >
+                    <IconEdit /> Edit Profile
+                </Link>
+            </div>
 
-                <div className="flex justify-end">
-                    <Link 
-                        href={route('alumna.profile.edit')} 
-                        className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors"
-                    >
-                        <IconEdit /> Edit Profile
-                    </Link>
+            {/* Personal Information */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+                <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                    <IconUser /> Personal Information
                 </div>
 
-                <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-                    <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconUser /> Personal Information
+                <div className="flex items-center gap-5 mb-8">
+                    <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white">
+                        {avatarElement}
                     </div>
+                    <div>
+                        <h3 className="text-2xl font-bold text-[#343a40] leading-tight">{fullName}</h3>
+                    </div>
+                </div>
 
-                    <div className="flex items-center gap-5 mb-8">
-                        <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white">
-                            {avatarElement}
+                <hr className="border-gray-100 mb-6" />
+
+                <div className="grid grid-cols-2 gap-y-6">
+                    <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
+                    <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
+                    <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
+                    <InfoItem
+                        icon={<IconGrad />}
+                        label="Course & Year"
+                        value={profile.courses && profile.year_graduated
+                            ? `${profile.courses} (${profile.year_graduated})`
+                            : null
+                        }
+                    />
+                </div>
+            </section>
+
+            {/* Employment Status */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                        <IconBriefcase /> Employment Status
+                    </div>
+                    <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
+                        {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+                    </span>
+                </div>
+
+                {emp?.currently_employed === 'Yes' ? (
+                    <div className="mt-4">
+                        <div className="flex items-center gap-2 mb-6">
+                            <IconBuilding />
+                            <span className="font-bold text-gray-800 text-base">{emp.company_name}</span>
+                            <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
                         </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-[#343a40] leading-tight">{fullName}</h3>
-                        </div>
-                    </div>
-
-                    <hr className="border-gray-100 mb-6" />
-
-                    <div className="grid grid-cols-2 gap-y-6">
-                        <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
-                        <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
-                        <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
-                        <InfoItem 
-                            icon={<IconGrad />} 
-                            label="Course & Year" 
-                            value={profile.courses && profile.year_graduated 
-                                ? `${profile.courses} (${profile.year_graduated})` 
-                                : null
-                            } 
-                        />
-                    </div>
-                </section>
-
-                <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                            <IconBriefcase /> Employment Status
-                        </div>
-                        <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
-                            {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
-                        </span>
-                    </div>
-
-                    {emp?.currently_employed === 'Yes' ? (
-                        <div className="mt-4">
-                            <div className="flex items-center gap-2 mb-6">
-                                <IconBuilding />
-                                <span className="font-bold text-gray-800 text-base">{emp.company_name}</span>
-                                <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-y-6">
-                                <InfoItem label="Position" value={emp.position} />
-                                <InfoItem label="Location" value={emp.location} />
-                                <div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
-                                    <p className="text-[13px] font-bold text-[#343a40]">
-                                        ₱{emp?.monthly_salary ? 
-                                            parseFloat(emp.monthly_salary.replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', {minimumFractionDigits: 0}) ?? '0' 
-                                            : '0'}
-                                    </p>
-                                </div>
+                        <div className="grid grid-cols-2 gap-y-6">
+                            <InfoItem label="Position" value={emp.position} />
+                            <InfoItem label="Location" value={emp.location} />
+                            <div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
+                                <p className="text-[13px] font-bold text-[#343a40]">
+                                    ₱{emp?.monthly_salary ?
+                                        parseFloat(emp.monthly_salary.replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
+                                        : '0'}
+                                </p>
                             </div>
                         </div>
-                    ) : (
-                        <div className="py-4 flex flex-col gap-2">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reason for Unemployment</p>
-                            <p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'No details provided.'}</p>
-                        </div>
-                    )}
-                </section>
-
-                <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-                    <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconHistory /> Employment History
                     </div>
+                ) : (
+                    <div className="py-4 flex flex-col gap-2">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reason for Unemployment</p>
+                        <p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'No details provided.'}</p>
+                    </div>
+                )}
+            </section>
 
-                    {profile.employment_history?.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead>
-                                    <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                        <th className="pb-3 font-bold">Date Updated</th>
-                                        <th className="pb-3 font-bold">Company</th>
-                                        <th className="pb-3 font-bold">Position</th>
-                                        <th className="pb-3 font-bold">Action</th>
+            {/* Employment History */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+                <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                    <IconHistory /> Employment History
+                </div>
+
+                {profile.employment_history?.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
+                                    <th className="pb-3 font-bold">Date Updated</th>
+                                    <th className="pb-3 font-bold">Company</th>
+                                    <th className="pb-3 font-bold">Position</th>
+                                    <th className="pb-3 font-bold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {profile.employment_history.map((history) => (
+                                    <tr key={history.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="py-4 text-gray-600">
+                                            {new Date(history.created_at).toLocaleDateString()}
+                                        </td>
+                                        <td className="py-4 font-bold text-gray-800">
+                                            {history.company_name || 'Unemployed'}
+                                        </td>
+                                        <td className="py-4 text-gray-600">{history.position || '—'}</td>
+                                        <td className="py-4">
+                                            <Link
+                                                href={route('alumna.history.show', history.id)}
+                                                className="text-[#008542] font-bold text-xs hover:underline"
+                                            >
+                                                View Details
+                                            </Link>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {profile.employment_history.map((history) => (
-                                        <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 text-gray-600">
-                                                {new Date(history.created_at).toLocaleDateString()}
-                                            </td>
-                                            <td className="py-4 font-bold text-gray-800">
-                                                {history.company_name || 'Unemployed'}
-                                            </td>
-                                            <td className="py-4 text-gray-600">{history.position || '—'}</td>
-                                            <td className="py-4">
-                                                <Link 
-                                                    href={route('alumna.history.show', history.id)}
-                                                    className="text-[#008542] font-bold text-xs hover:underline"
-                                                >
-                                                    View Details
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="text-center py-6 text-gray-400 italic text-sm">
-                            No employment history on record.
-                        </div>
-                    )}
-                </section>
-            </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="text-center py-6 text-gray-400 italic text-sm">
+                        No employment history on record.
+                    </div>
+                )}
+            </section>
         </div>
     );
 }
+
+StudentProfile.layout = (page) => <AlumnaLayout>{page}</AlumnaLayout>;
 
 function InfoItem({ icon, label, value }) {
     return (
