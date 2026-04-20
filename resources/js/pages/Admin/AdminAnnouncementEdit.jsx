@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X  } from "lucide-react";
 import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdate";
 
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
+
+  const [removeImage, setRemoveImage] = useState(false);
 
   // Preview image
   const [preview, setPreview] = useState(announcement?.image);
@@ -44,20 +46,29 @@ export default function AdminAnnouncementEdit({ announcement }) {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("details", formData.details);
-    if (formData.image) data.append("image", formData.image);
 
-    // POST with method override to PUT
+    // new image upload
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
+
+    // if user removed existing image
+    if (removeImage) {
+      data.append("remove_image", "1");
+    }
+
+    // method override
     data.append("_method", "PUT");
 
     router.post(`/admin/announcement/${announcement.id}`, data, {
       forceFormData: true,
 
       onSuccess: () => {
-      router.visit("/admin/announcement?updated=1", {
-        replace: true,
-        preserveScroll: true,
-    });
-},
+        router.visit("/admin/announcement?updated=1", {
+          replace: true,
+          preserveScroll: true,
+        });
+      },
 
       onError: (errors) => {
         console.log("Validation errors:", errors);
@@ -106,13 +117,31 @@ export default function AdminAnnouncementEdit({ announcement }) {
             </CardHeader>
 
             {/* Image Preview */}
-            {preview && (
-              <div className="mb-2 flex justify-start pl-6">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-40 max-h-64 rounded border object-contain"
-                />
+            {preview && !removeImage && (
+              <div className="mb-2 flex justify-start pl-6 relative w-fit">
+                
+                {/* IMAGE */}
+                <div className="relative">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="mb-2 flex justify-center sm:justify-start px-4 relative w-fit"
+                  />
+
+                  {/* REMOVE BUTTON */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreview(null);
+                      setRemoveImage(true);
+                      setFormData({ ...formData, image: null });
+                    }}
+                    className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full p-1 shadow-sm hover:bg-gray-100"
+                  >
+                    <X size={14} className="text-gray-700" />
+                  </button>
+                </div>
+
               </div>
             )}
 

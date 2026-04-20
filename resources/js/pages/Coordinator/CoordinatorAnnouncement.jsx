@@ -100,10 +100,10 @@ export default function CoordinatorAnnouncement({ announcements }) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
+              className={`px-4 py-2 rounded-md text-sm font-medium border transition ${
                 activeTab === tab
                   ? "bg-[#008236] text-white"
-                  : "bg-gray-100 text-gray-600"
+                  : "text-gray-600 border-gray-300 hover:border-gray-400"
               }`}
             >
               {tab}
@@ -112,7 +112,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
         </div>
 
         {/* SEARCH + SORT */}
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center bg-white">
 
           {/* SEARCH */}
           <div className="relative w-full sm:w-64">
@@ -185,7 +185,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
                 { preserveState: true, preserveScroll: true }
               )
             }
-            className="w-12 h-8 flex items-center justify-center rounded-md border
+            className="w-12 h-8 flex items-center justify-center rounded-md border bg-white shadow-sm hover:shadow-md
                       hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ChevronLeft size={18} />
@@ -222,7 +222,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
                         { preserveState: true, preserveScroll: true }
                       )
                     }
-                    className={`w-8 h-8 flex items-center justify-center rounded-md border text-sm transition
+                    className={`w-8 h-8 flex items-center justify-center rounded-md border text-sm transition shadow-sm hover:shadow-md
                       ${
                         announcements.current_page === page
                           ? "bg-[#3b82f6] text-white border-[#3b82f6]"
@@ -246,7 +246,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
                 { preserveState: true, preserveScroll: true }
               )
             }
-            className="w-12 h-8 flex items-center justify-center rounded-md border
+            className="w-12 h-8 flex items-center justify-center rounded-md border bg-white shadow-sm hover:shadow-md
                       hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ChevronRight size={18} />

@@ -69,7 +69,7 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            'image'   => 'nullable|image|max:10240',
         ]);
 
         $imageUrl = null;
@@ -157,10 +157,14 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            'image'   => 'nullable|image|max:10240',
         ]);
 
         $imagePath = $announcement->image;
+
+        if ($request->remove_image) {
+            $imagePath = null;
+        }
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('announcements', 'public');
