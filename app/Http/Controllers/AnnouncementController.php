@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
+    private function validateTotalImageSize($files)
+    {
+        $totalSize = 0;
+
+        foreach ($files as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size must not exceed 10MB.');
+        }
+    }
+    
     /* ================= ADMIN LIST ================= */
     public function index(Request $request)
     {
@@ -69,16 +82,18 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'images.*' => 'image|max:10240',
+            'images.*' => 'image',
         ]);
+
+        $files = $request->file('images', []);
+
+        $this->validateTotalImageSize($files);
 
         $imageUrls = [];
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('announcements', 'public');
-                $imageUrls[] = Storage::url($path);
-            }
+        foreach ($files as $file) {
+            $path = $file->store('announcements', 'public');
+            $imageUrls[] = Storage::url($path);
         }
 
         Announcement::create([
@@ -165,19 +180,19 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'images.*' => 'image|max:10240',
+            'images.*' => 'image',
         ]);
 
-        $imagePaths = [];
+        $existing = json_decode($request->existing_images, true) ?? [];
+        $newFiles = $request->file('images', []);
 
-        $imagePaths = json_decode($request->existing_images, true) ?? [];
+        $this->validateTotalImageSize($newFiles);
 
-        // ADD NEW IMAGES ONLY
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('announcements', 'public');
-                $imagePaths[] = Storage::url($path);
-            }
+        $imagePaths = $existing;
+
+        foreach ($newFiles as $file) {
+            $path = $file->store('announcements', 'public');
+            $imagePaths[] = Storage::url($path);
         }
 
         $announcement->update([
