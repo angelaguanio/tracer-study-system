@@ -243,7 +243,6 @@ const handleSubmit = (e) => {
         <form id="signupForm" className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
           {step === 1 && (
             <>
-              <div className="grid lg:grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {PERSONAL_FIELDS.map((field) => (
                   <TextInput
                     key={field.name}
@@ -253,9 +252,9 @@ const handleSubmit = (e) => {
                     placeholder={field.placeholder}
                     onChange={handleChange}
                     error={errors[field.name]}
+                    className="text-black border-gray-400 w-full text-sm sm:text-base"
                   />
                 ))}
-              </div>
 
               <TextInput
                 name="email"
@@ -264,6 +263,7 @@ const handleSubmit = (e) => {
                 placeholder="Email Address"
                 onChange={handleChange}
                 error={errors.email}
+                className="text-black border-gray-400 w-full text-sm sm:text-base"
               />
 
               <TextInput
@@ -273,6 +273,7 @@ const handleSubmit = (e) => {
                 placeholder="Password"
                 onChange={handleChange}
                 error={errors.password}
+                className="text-black border-gray-400 w-full text-sm sm:text-base"
               />
 
               <TextInput
@@ -282,19 +283,21 @@ const handleSubmit = (e) => {
                 placeholder="Confirm Password"
                 onChange={handleChange}
                 error={errors.password_confirmation}
+                className="text-black border-gray-400 w-full text-sm sm:text-base"
               />
 
               <Select
                 value={data.year_graduated}
                 onValueChange={(value) => handleSelectChange('year_graduated', value)}
+                
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
                   <SelectValue placeholder="Year Graduated" />
                 </SelectTrigger>
-                <SelectContent className="max-h-48">
-                  <SelectGroup>
+                <SelectContent className="max-h-48" >
+                  <SelectGroup >
                     {yearOptions.map((year) => (
-                      <SelectItem key={year.value} value={year.value}>
+                      <SelectItem key={year.value} value={year.value} >
                         {year.label}
                       </SelectItem>
                     ))}
@@ -306,7 +309,7 @@ const handleSubmit = (e) => {
                 value={data.courses}
                 onValueChange={(value) => handleSelectChange('courses', value)}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
                   <SelectValue placeholder="Course" />
                 </SelectTrigger>
                 <SelectContent className="max-h-48">
