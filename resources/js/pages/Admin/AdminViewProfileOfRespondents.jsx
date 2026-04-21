@@ -16,6 +16,17 @@ export default function AdminViewProfileOfRespondents({ user }) {
       <div className="w-full p-4">
         <div className="max-w-6xl mx-auto space-y-6">
 
+          {/* BACK BUTTON - upper left */}
+          <div>
+            <Button
+              onClick={() => router.visit(route("admin.alumni.index"))}
+              variant="outline"
+              className="flex items-center gap-2 bg-blue-600 !text-white hover:bg-blue-700">
+              <ArrowLeft size={16} />
+              Back
+            </Button>
+          </div>
+
           {/* PERSONAL INFORMATION */}
           <Card>
             <CardHeader>
@@ -80,15 +91,15 @@ export default function AdminViewProfileOfRespondents({ user }) {
 
               <div>
                 <p className="font-semibold">
-                  {user.employment.company}
+                  {user.employment?.company}
                 </p>
 
                 <p className="text-sm text-gray-600">
-                  {user.employment.nature}
+                  {user.employment?.nature}
                 </p>
 
                 <p className="text-sm">
-                  Salary: {user.employment.salary}
+                  Salary: {user.employment?.salary}
                 </p>
               </div>
 
@@ -100,20 +111,11 @@ export default function AdminViewProfileOfRespondents({ user }) {
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {user.employment.status}
+                {user.employment?.status}
               </span>
 
             </CardContent>
           </Card>
-
-          {/* BACK BUTTON */}
-          <Button
-            onClick={() => router.visit(route("admin.alumni.index"))}
-            className="bg-blue-600 flex items-center gap-2"
-          >
-            <ArrowLeft size={16} />
-            Back
-          </Button>
 
         </div>
       </div>
