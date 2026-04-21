@@ -13,8 +13,7 @@ class AdminAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query()
-            ->where('user_role', 'alumna');
+        $query = User::query()->where('user_role', 'alumna');
 
         if ($request->filled('search')) {
             $search = strtolower($request->search);
@@ -48,15 +47,10 @@ class AdminAlumniController extends Controller
 
         return Inertia::render('Admin/AdminAlumni', [
             'alumni' => $users,
-            'filters' => [
-                'search' => $request->search,
-                'year' => $request->year,
-                'course' => $request->course,
-            ],
+            'filters' => $request->only(['search', 'year', 'course']),
         ]);
     }
 
-    // SHOW PROFILE
     public function show($id)
     {
         $user = User::with('employment')->findOrFail($id);
@@ -64,32 +58,29 @@ class AdminAlumniController extends Controller
         return Inertia::render('Admin/AdminViewProfileOfRespondents', [
             'user' => [
                 'id' => $user->id,
-                'name' => $user->first_name . ' ' . $user->last_name,
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
                 'email' => $user->email,
-                'course' => $user->courses,
-                'year' => $user->year_graduated,
+                'courses' => $user->courses,
+                'year_graduated' => $user->year_graduated,
                 'avatar' => $user->avatar,
                 'address' => $user->address ?? 'N/A',
-                'contact' => $user->contact_number ?? 'N/A',
+                'contact_number' => $user->contact_number ?? 'N/A',
 
-                //  EMPLOYMENT FROM RELATIONSHIP
-                'employment' => [
-                    'status' => $user->employment
-                        ? ($user->employment->currently_employed ? 'Employed' : 'Unemployed')
-                        : 'No record',
-
-                    'type' => $user->employment->employment_type ?? 'N/A',
-                    'company' => $user->employment->company_name ?? 'N/A',
-                    'position' => $user->employment->position ?? 'N/A',
-                    'location' => $user->employment->location ?? 'N/A',
-                    'salary' => $user->employment->monthly_salary ?? 'N/A',
-                    'reason' => $user->employment->unemployment_reason ?? 'N/A',
-                ],
+                'employment' => $user->employment ? [
+                    'currently_employed' => $user->employment->currently_employed,
+                    'company_name' => $user->employment->company_name,
+                    'position' => $user->employment->position,
+                    'employment_type' => $user->employment->employment_type,
+                    'location' => $user->employment->location,
+                    'monthly_salary' => $user->employment->monthly_salary,
+                    'unemployment_reason' => $user->employment->unemployment_reason,
+                ] : null,
             ]
         ]);
     }
 
-    // EMAIL FORM
     public function emailForm($id)
     {
         $user = User::findOrFail($id);
@@ -103,7 +94,6 @@ class AdminAlumniController extends Controller
         ]);
     }
 
-    // SEND EMAIL (single alumna by route ID)
     public function sendEmail(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -116,35 +106,34 @@ class AdminAlumniController extends Controller
         Mail::to($user->email)
             ->queue(new AlumniBroadcastEmail($request->subject, $request->message));
 
-        return back()->with('success', "Email queued for {$user->first_name} {$user->last_name} ({$user->email}).");
+        return back()->with('success', 'Email queued successfully.');
     }
 
-    // SEND BULK EMAIL (selected IDs or all alumni)
     public function sendBulkEmail(Request $request)
     {
         $request->validate([
-            'subject'    => 'required|string|max:255',
-            'message'    => 'required|string',
-            'send_all'   => 'boolean',
-            'user_ids'   => 'required_if:send_all,false|array',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+            'send_all' => 'boolean',
+            'user_ids' => 'required_if:send_all,false|array',
             'user_ids.*' => 'integer|exists:users,id',
         ]);
 
         $userIds = $request->boolean('send_all') ? null : $request->user_ids;
 
-        // Count before dispatching so we can give a meaningful toast message
-        $count = $userIds === null
-            ? User::where('user_role', 'alumna')->count()
-            : count($userIds);
+        $count = $userIds
+            ? count($userIds)
+            : User::where('user_role', 'alumna')->count();
 
         SendAlumniBroadcastJob::dispatch(
             $request->subject,
             $request->message,
-            $userIds,
+            $userIds
         );
 
-        $target = $userIds === null ? 'all alumni' : "{$count} selected alumni";
-
-        return back()->with('success', "✓ Bulk email queued for {$target}. Mailtrap will receive {$count} message(s) shortly.");
+        return back()->with(
+            'success',
+            "Bulk email queued for {$count} users."
+        );
     }
 }
