@@ -69,20 +69,22 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:10240',
+            'images.*' => 'image|max:10240',
         ]);
 
-        $imageUrl = null;
+        $imageUrls = [];
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('announcements', 'public');
-            $imageUrl = asset("storage/$path");
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('announcements', 'public');
+                $imageUrls[] = Storage::url($path);
+            }
         }
 
         Announcement::create([
             'title'   => $request->title,
             'details' => $request->details,
-            'image'   => $imageUrl,
+            'image'   => $imageUrls,
             'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
             'user_id' => auth()->id(),
         ]);
@@ -119,6 +121,10 @@ class AnnouncementController extends Controller
     public function show(Announcement $announcement)
     {
         $role = auth()->user()->user_role;
+
+        $announcement->image = is_string($announcement->image)
+        ? json_decode($announcement->image, true)
+        : ($announcement->image ?? []);
 
         if ($role === 'admin') {
             return Inertia::render('Admin/AdminAnnouncementView', [

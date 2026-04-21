@@ -97,15 +97,21 @@ export default function AdminAnnouncementViewCard({ announcement }) {
         </div>
 
         {/* IMAGE */}
-        {image && (
-          <div className="flex justify-center w-full">
-            <img
-              src={image}
-              alt={title}
-              className="max-w-full max-h-100 w-auto h-auto object-contain rounded-md shadow"
-            />
+        {Array.isArray(image) && image.length > 0 ? (
+          <div className="flex flex-wrap justify-center gap-3 w-full">
+            {image.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                className="max-w-[250px] max-h-60 object-contain rounded-md shadow"
+              />
+            ))}
           </div>
-        )}
+        ) : typeof image === "string" ? (
+          <div className="flex justify-center w-full">
+            <img src={image} className="max-w-[250px] rounded shadow" />
+          </div>
+        ) : null}
 
       </div>
 

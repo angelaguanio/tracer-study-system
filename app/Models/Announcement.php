@@ -16,4 +16,8 @@ class Announcement extends Model
         'status',
         'user_id',
     ];
+
+     protected $casts = [
+        'image' => 'array',
+    ];
 }
