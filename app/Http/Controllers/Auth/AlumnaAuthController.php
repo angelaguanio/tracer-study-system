@@ -138,7 +138,7 @@ class AlumnaAuthController extends Controller
         };
 
         throw ValidationException::withMessages([
-            'email' => 'The username or password is incorrect.'
+            'credentials' => 'The username or password is incorrect.'
         ]);
     }
 
