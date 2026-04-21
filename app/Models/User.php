@@ -1,94 +1,81 @@
 <?php
- 
+
 namespace App\Models;
- 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
- 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
- 
+
     /**
      * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Updated to include the profile_picture field.
      */
     protected $fillable = [
-        'last_name',
-        'first_name',
-        'middle_name',
-        'email',
-        'password',
-        'user_role',
-        'year_graduated',
-        'courses',      
-        'address',         
-        'contact_number'
+        'last_name', 
+        'first_name', 
+        'middle_name', 
+        'email', 
+        'password', 
+        'user_role', 
+        'year_graduated', 
+        'courses', 
+        'address',       
+        'contact_number',
+        'profile_picture'
     ];
- 
+
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 
+        'remember_token'
     ];
- 
-    // helper func
-    public function isAlumna()
-    {
-        return $this->user_role === 'alumna';
-    }
- 
-    public function isCoordinator()
-    {
-        return $this->user_role === 'coordinator';
-    }
- 
-    public function isAdmin()
-    {
-        return $this->user_role === 'admin';
-    }
- 
-    // get initials for temp profile
-    public function getInitialsAttribute()
-    {
-        return strtoupper(substr($this->first_name ?? '', 0, 1) . substr($this->last_name ?? '', 0, 1));
-    }
- 
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * The accessors to append to the model's array form.
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-        ];
+    protected $appends = ['initials', 'avatar_url'];
+
+    /**
+     * Generate initials from first and last name.
+     */
+    public function getInitialsAttribute() {
+        return strtoupper(
+            substr($this->first_name ?? '', 0, 1) . 
+            substr($this->last_name ?? '', 0, 1)
+        );
     }
- 
-    public function responses(): HasMany
-    {
-        return $this->hasMany(Response::class);
+
+    /**
+     * Generate the full URL for the profile picture.
+     */
+    public function getAvatarUrlAttribute() {
+        if ($this->profile_picture) {
+            return asset('storage/' . $this->profile_picture);
+        }
+        return null;
     }
- 
-    public function drafts(): HasMany
-    {
-        return $this->hasMany(SurveyDraft::class);
+
+    /**
+     * Relationship: One current employment status.
+     */
+    public function employment(): HasOne {
+        return $this->hasOne(Employment::class, 'user_id');
     }
- 
-    public function employment()
+    
+    /**
+     * Relationship: Multiple employment history records.
+     * This allows tracking changes over time.
+     */
+    public function employmentHistory(): HasMany
     {
-        return $this->hasOne(Employment::class);
+         return $this->hasMany(EmploymentHistory::class);
     }
 }
- 
