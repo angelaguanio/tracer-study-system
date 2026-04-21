@@ -17,32 +17,38 @@ export default function AdminSurveyResponseTable({
   setPage,
   onDelete,
 }) {
+  /**
+   * Function para sa pag-view ng response.
+   * Nagdedesisyon kung saang URL pupunta base sa status.
+   */
   const handleView = (res) => {
-    router.visit(`/admin/survey-response/${res.id}`);
+    if (res.status === "completed") {
+      // Route: survey-response.show
+      router.visit(`/admin/survey-response/${res.id}`);
+    } else {
+      // Route: survey-response.not-complete
+      router.visit(`/admin/survey-response/${res.id}/not-complete`);
+    }
   };
 
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden">
-
-      {/* TABLE */}
+      {/* TABLE CONTAINER */}
       <div className="h-[500px] overflow-y-auto">
-
         <Table className="w-full">
-
           {/* HEADER */}
           <TableHeader className="bg-[#70CAFF] sticky top-0 z-10">
             <TableRow>
-              <TableHead className="text-center py-4">Alumni</TableHead>
-              <TableHead className="text-center py-4">Status</TableHead>
-              <TableHead className="text-center py-4">Course</TableHead>
-              <TableHead className="text-center py-4">Year</TableHead>
-              <TableHead className="text-center py-4">Action</TableHead>
+              <TableHead className="text-center py-4 text-black font-bold">Alumni</TableHead>
+              <TableHead className="text-center py-4 text-black font-bold">Status</TableHead>
+              <TableHead className="text-center py-4 text-black font-bold">Course</TableHead>
+              <TableHead className="text-center py-4 text-black font-bold">Year</TableHead>
+              <TableHead className="text-center py-4 text-black font-bold">Action</TableHead>
             </TableRow>
           </TableHeader>
 
           {/* BODY */}
           <TableBody>
-
             {responses?.data?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-10 text-gray-500">
@@ -52,17 +58,15 @@ export default function AdminSurveyResponseTable({
             )}
 
             {responses?.data?.map((res) => (
-              <TableRow key={res.id} className="h-[60px] hover:bg-gray-50">
-
-                {/* ALUMNI */}
+              <TableRow key={res.id} className="h-[60px] hover:bg-gray-50 transition-colors">
+                {/* ALUMNI WITH AVATAR */}
                 <TableCell className="relative text-center px-6">
-
                   <div className="absolute left-6 top-1/2 -translate-y-1/2">
                     {res.avatar ? (
                       <img
                         src={res.avatar}
                         alt={res.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center font-semibold text-sm">
@@ -75,43 +79,38 @@ export default function AdminSurveyResponseTable({
                       </div>
                     )}
                   </div>
-
-                  <span className="font-medium text-gray-800">
+                  <span className="font-medium text-gray-800 ml-10">
                     {res.name}
                   </span>
-
                 </TableCell>
 
-                {/* STATUS */}
+                {/* STATUS BADGE */}
                 <TableCell className="text-center">
                   <span
-                    className={`px-3 py-1 text-xs rounded-full ${
+                    className={`px-3 py-1 text-xs font-medium rounded-full ${
                       res.status === "completed"
                         ? "bg-green-100 text-green-600"
                         : "bg-red-100 text-red-600"
                     }`}
                   >
-                    {res.status === "completed"
-                      ? "Completed"
-                      : "Not Completed"}
+                    {res.status === "completed" ? "Completed" : "Not Completed"}
                   </span>
                 </TableCell>
 
                 {/* COURSE */}
-                <TableCell className="text-center">
+                <TableCell className="text-center text-gray-600">
                   {res.course}
                 </TableCell>
 
                 {/* YEAR */}
-                <TableCell className="text-center">
+                <TableCell className="text-center text-gray-600">
                   {res.year}
                 </TableCell>
 
-                {/* ACTION */}
+                {/* ACTION BUTTONS */}
                 <TableCell className="text-center">
                   <div className="flex justify-center gap-2">
-
-                    {/* VIEW BUTTON */}
+                    {/* VIEW BUTTON (Dynamic Routing) */}
                     <Button
                       size="sm"
                       onClick={() => handleView(res)}
@@ -130,33 +129,25 @@ export default function AdminSurveyResponseTable({
                       <Trash2 size={16} className="text-[#E70813]" />
                       Delete
                     </Button>
-
                   </div>
                 </TableCell>
-
               </TableRow>
             ))}
-
           </TableBody>
-
         </Table>
       </div>
 
       {/* PAGINATION */}
       <div className="flex justify-end px-3 py-2 bg-white">
-
         <div className="flex gap-1">
-
           {responses?.links?.map((link, i) => (
             <button
               key={i}
               disabled={!link.url}
               onClick={() => {
                 if (!link.url) return;
-
                 const url = new URL(link.url);
                 const newPage = url.searchParams.get("page");
-
                 setPage(Number(newPage));
               }}
               className={`px-3 py-1 text-sm rounded-md transition ${
@@ -167,11 +158,8 @@ export default function AdminSurveyResponseTable({
               dangerouslySetInnerHTML={{ __html: link.label }}
             />
           ))}
-
         </div>
-
       </div>
-
     </div>
   );
 }

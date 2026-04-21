@@ -12,7 +12,7 @@ class AdminOfSurveyResponseController extends Controller
     public function index(Request $request)
     {
         $query = User::query()
-            ->where('user_role', 'alumna'); // ✅ ONLY ALUMNA
+            ->where('user_role', 'alumna');
 
         // SEARCH
         if ($request->filled('search')) {
@@ -55,30 +55,59 @@ class AdminOfSurveyResponseController extends Controller
 
     public function show($id)
     {
-        // ✅ ONLY ALUMNA CAN BE VIEWED
         $user = User::where('user_role', 'alumna')
-            ->with('responses')
+            ->with(['responses.question'])
             ->findOrFail($id);
 
         $isCompleted = $user->responses()->exists();
+
+        if (!$isCompleted) {
+            return redirect()->route('survey-response.not-complete', $id);
+        }
 
         return Inertia::render('Admin/AdminSurveyResponseView', [
             'response' => [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'email' => $user->email,
-                'status' => $isCompleted ? 'completed' : 'incomplete',
-                'course' => $user->courses ?? '-',
-                'year' => $user->year_graduated ?? '-',
                 'mobile' => $user->contact_number ?? '-',
                 'address' => $user->address ?? '-',
+                'course' => $user->courses ?? '-',
+                'year' => $user->year_graduated ?? '-',
+
+                // 🔥 SURVEY Q&A (SAFE + COMPLETE)
+                'answers' => $user->responses->map(function ($r) {
+
+                    return [
+                        'question' =>
+                            $r->question->question_text
+                            ?? $r->question->text
+                            ?? 'Question not found',
+
+                        'answer' => $r->answer_value ?? '-',
+                    ];
+                })->values(),
+            ],
+        ]);
+    }
+
+    public function notComplete($id)
+    {
+        $user = User::where('user_role', 'alumna')
+            ->findOrFail($id);
+
+        return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
+            'user' => [
+                'id' => $user->id,
+                'name' => trim($user->first_name . ' ' . $user->last_name),
+                'course' => $user->courses ?? '-',
+                'year' => $user->year_graduated ?? '-',
             ],
         ]);
     }
 
     public function destroy($id)
     {
-        // optional safety: prevent deleting non-alumna anyway
         $user = User::where('user_role', 'alumna')->findOrFail($id);
         $user->delete();
 

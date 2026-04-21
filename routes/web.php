@@ -125,6 +125,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
             ->name('survey-response.show');
+        
+        Route::get('/survey-response/{id}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+       ->name('survey-response.not-complete');
 
         Route::delete('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'destroy'])
             ->name('survey-response.destroy');
