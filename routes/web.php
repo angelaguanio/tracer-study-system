@@ -116,6 +116,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
+Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
+    ->name('admin.alumni.index');
+
+Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
+    ->name('admin.alumni.show');
+
      // VIEW PROFILE
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
     ->name('alumni.show');

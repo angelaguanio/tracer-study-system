@@ -7,21 +7,30 @@ import { ArrowLeft } from "lucide-react";
 
 export default function AdminViewProfileOfRespondents({ user }) {
 
-  const isEmployed = user?.employment?.status === "Employed";
+  if (!user) {
+    return (
+      <AdminLayout>
+        <div className="p-6 text-red-500">No user data found.</div>
+      </AdminLayout>
+    );
+  }
+
+  const employment = user.employment || {};
 
   return (
     <>
       <Head title="Alumni Profile" />
 
-      <div className="w-full p-4">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <div className="w-full p-6">
+        <div className="max-w-5xl mx-auto space-y-6">
 
-          {/* BACK BUTTON - upper left */}
+          {/* BACK BUTTON */}
           <div>
             <Button
               onClick={() => router.visit(route("admin.alumni.index"))}
               variant="outline"
-              className="flex items-center gap-2 bg-blue-600 !text-white hover:bg-blue-700">
+              className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
+            >
               <ArrowLeft size={16} />
               Back
             </Button>
@@ -34,21 +43,26 @@ export default function AdminViewProfileOfRespondents({ user }) {
             </CardHeader>
 
             <CardContent>
-              <div className="flex gap-6 items-center">
+              <div className="flex items-center gap-4">
 
-                <div className="w-20 h-20 rounded-full bg-gray-300 overflow-hidden">
-                  {user.avatar && (
+                {/* AVATAR */}
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                  {user.avatar ? (
                     <img
                       src={user.avatar}
-                      className="w-full h-full object-cover"
                       alt="avatar"
+                      className="w-full h-full object-cover"
                     />
+                  ) : (
+                    <span className="text-gray-500 text-sm">No Image</span>
                   )}
                 </div>
 
+                {/* INFO */}
                 <div>
                   <h2 className="text-xl font-bold">{user.name}</h2>
                   <p className="text-gray-600">{user.course}</p>
+                  <p className="text-gray-600">Year: {user.year}</p>
                 </div>
 
               </div>
@@ -68,11 +82,6 @@ export default function AdminViewProfileOfRespondents({ user }) {
                 </div>
 
                 <div>
-                  <p className="text-gray-500">Year Graduated</p>
-                  <p>{user.year}</p>
-                </div>
-
-                <div>
                   <p className="text-gray-500">Address</p>
                   <p>{user.address}</p>
                 </div>
@@ -84,34 +93,44 @@ export default function AdminViewProfileOfRespondents({ user }) {
           {/* EMPLOYMENT STATUS */}
           <Card>
             <CardHeader>
-              <CardTitle>Employment Status</CardTitle>
+              <CardTitle>Employment Information</CardTitle>
             </CardHeader>
 
             <CardContent className="flex justify-between items-start">
 
-              <div>
-                <p className="font-semibold">
-                  {user.employment?.company}
+              <div className="space-y-1 text-sm">
+
+                <p>
+                  <span className="font-semibold">Company:</span>{" "}
+                  {employment.company}
                 </p>
 
-                <p className="text-sm text-gray-600">
-                  {user.employment?.nature}
+                <p>
+                  <span className="font-semibold">Position:</span>{" "}
+                  {employment.position}
                 </p>
 
-                <p className="text-sm">
-                  Salary: {user.employment?.salary}
+                <p>
+                  <span className="font-semibold">Type:</span>{" "}
+                  {employment.type}
                 </p>
+
+                <p>
+                  <span className="font-semibold">Salary:</span>{" "}
+                  {employment.salary}
+                </p>
+
               </div>
 
               {/* STATUS BADGE */}
               <span
-                className={`px-4 py-1 rounded-full h-fit text-sm font-semibold ${
-                  isEmployed
+                className={`px-4 py-1 rounded-full text-sm font-semibold ${
+                  employment.status === "Employed"
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {user.employment?.status}
+                {employment.status}
               </span>
 
             </CardContent>
