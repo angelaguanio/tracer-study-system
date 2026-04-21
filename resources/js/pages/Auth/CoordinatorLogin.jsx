@@ -31,7 +31,7 @@ export default function CoordinatorLogin() {
 
 return (
   <AuthLayout>
-    <Card className="w-full max-w-lg sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
+    <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
       <CardHeader className="relative flex flex-col items-center justify-center">
          {/* Back Button */}
               <Link
@@ -43,7 +43,7 @@ return (
         <Wup />
       </CardHeader>
 
-      <CardContent className="px-0">
+      <CardContent className="px-6">
         <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
           {errors.email && (
             <div className="mb-2 rounded bg-red-100 p-2 text-sm text-red-700 sm:text-base">
@@ -58,7 +58,7 @@ return (
             placeholder="Email Address"
             onChange={handleChange}
             icon={UserRound}
-            className="w-full pl-10 text-sm sm:text-base"
+            className="pl-10 text-black border-gray-400 w-full text-sm sm:text-base"
           />
 
           <TextInput
@@ -68,7 +68,7 @@ return (
             placeholder="Password"
             onChange={handleChange}
             icon={Lock}
-            className="w-full pl-10 text-sm sm:text-base"
+            className="pl-10 text-black border-gray-400 w-full text-sm sm:text-base"
           />
 
           <Button

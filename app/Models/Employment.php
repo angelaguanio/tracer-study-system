@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Employment extends Model
 {
+    // Points to the singular table name in your migration
     protected $table = 'employment';
 
     protected $fillable = [
@@ -17,10 +18,10 @@ class Employment extends Model
         'position',
         'location',
         'monthly_salary',
-        'unemployment_reason',
+        'unemployment_reason'
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
