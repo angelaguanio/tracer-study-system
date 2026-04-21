@@ -144,8 +144,10 @@ class AnnouncementController extends Controller
     /* ================= EDIT ================= */
     public function edit(Announcement $announcement)
     {
+        $announcement->image = is_string($announcement->image)
+            ? json_decode($announcement->image, true)
+            : ($announcement->image ?? []);
 
-        // role-based page ulit
         if (auth()->user()->user_role === 'admin') {
             return Inertia::render('Admin/AdminAnnouncementEdit', [
                 'announcement' => $announcement,
@@ -163,24 +165,25 @@ class AnnouncementController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:10240',
+            'images.*' => 'image|max:10240',
         ]);
 
-        $imagePath = $announcement->image;
+        $imagePaths = [];
 
-        if ($request->remove_image) {
-            $imagePath = null;
-        }
+        $imagePaths = json_decode($request->existing_images, true) ?? [];
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('announcements', 'public');
-            $imagePath = asset("storage/$path");
+        // ADD NEW IMAGES ONLY
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('announcements', 'public');
+                $imagePaths[] = Storage::url($path);
+            }
         }
 
         $announcement->update([
             'title'   => $request->title,
             'details' => $request->details,
-            'image'   => $imagePath,
+            'image'   => $imagePaths,
         ]);
 
         return redirect()

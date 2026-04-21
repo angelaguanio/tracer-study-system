@@ -10,27 +10,35 @@ import { ArrowLeft, X } from "lucide-react";
 
 export default function CoordinatorAnnouncementCreate() {
     const fileInputRef = useRef(null); // Reference para sa hidden file input
-    const [preview, setPreview] = useState(null); // Preview ng image bago i-upload
+    const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
 
     // INERTIA FORM DATA
     const { data, setData, post, processing, errors } = useForm({
         title: "",
         details: "",
-        image: null,
+        images: [],
     });
 
     // SUBMIT HANDLER
     const handleSubmit = (e) => {
-        e.preventDefault(); // prevent default HTML GET request
-
+        e.preventDefault();
+    
         post("/coordinator/announcement", {
-            forceFormData: true, // important para sa image file
+            forceFormData: true,
+    
             onSuccess: () => {
-                // Reset form after successful submission (optional)
-                setData({ title: "", details: "", image: null });
-                setPreview(null);
-
-                // Redirect to announcements index page
+                setData({
+                    title: "",
+                    details: "",
+                    images: [],
+                });
+    
+                setPreviews([]);
+    
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = null;
+                }
+    
                 router.visit("/coordinator/announcement");
             },
         });
@@ -85,42 +93,51 @@ export default function CoordinatorAnnouncementCreate() {
                                     ref={fileInputRef}
                                     className="hidden"
                                     accept="image/*"
+                                    multiple
                                     onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            setData("image", file);
-                                            setPreview(URL.createObjectURL(file));
-                                            setRemoveImage(false);
-                                        }
+                                        const newFiles = Array.from(e.target.files || []);
+
+                                        if (newFiles.length === 0) return;
+
+                                        const newPreviews = newFiles.map(file =>
+                                            URL.createObjectURL(file)
+                                        );
+
+                                        setData(prev => ({
+                                            ...prev,
+                                            images: [...(prev.images || []), ...newFiles]
+                                        }));
+
+                                        setPreviews(prev => [...prev, ...newPreviews]);
                                     }}
                                 />
 
                                 {/* IMAGE PREVIEW */}
-                                {preview && (
-                                    <div className="mb-4 flex justify-start relative w-fit">
-                                        <div className="relative">
-                                            <img
-                                                src={preview}
-                                                alt="Preview"
-                                                className="w-40 rounded border"
-                                            />
-
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setPreview(null);
-                                                    setRemoveImage(true);
-                                                    setData("image", null);
-
-                                                    if (fileInputRef.current) {
-                                                        fileInputRef.current.value = "";
-                                                    }
-                                                }}
-                                                className="absolute -top-2 -right-2 bg-white border rounded-full p-1 shadow hover:bg-gray-100"
-                                            >
-                                                <X size={14} />
-                                            </button>
-                                        </div>
+                                {previews.length > 0 && (
+                                    <div className="mb-4 flex gap-2 flex-wrap">
+                                        {previews.map((src, index) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    src={src}
+                                                    className="w-32 rounded border"
+                                                />
+                                
+                                                {/* REMOVE SPECIFIC IMAGE */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setPreviews(prev => prev.filter((_, i) => i !== index));
+                                                        setData("images", prev => prev.filter((_, i) => i !== index));
+                                
+                                                        setPreviews(newPreviews);
+                                                        setData("images", newImages);
+                                                    }}
+                                                    className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
 

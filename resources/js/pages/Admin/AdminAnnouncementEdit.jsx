@@ -14,51 +14,66 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
   const [removeImage, setRemoveImage] = useState(false);
 
-  // Preview image
-  const [preview, setPreview] = useState(announcement?.image);
+  let parsedImages = announcement?.image;
+  
+  try {
+    parsedImages =
+      typeof parsedImages === "string"
+        ? JSON.parse(parsedImages)
+        : parsedImages;
+  } catch (e) {
+    parsedImages = [];
+  }
 
-  // Form data state
+  const initialImages = Array.isArray(parsedImages)
+    ? parsedImages
+    : parsedImages
+      ? [parsedImages]
+      : [];
+
+  const [existingImages, setExistingImages] = useState(initialImages);
+  const [newImages, setNewImages] = useState([]);
+  const [previewNew, setPreviewNew] = useState([]);
+  
+  const previews = [...existingImages, ...previewNew];
+  
   const [formData, setFormData] = useState({
     title: announcement?.title || "",
     details: announcement?.details || "",
     image: null,
   });
-
-  // Handle text changes
+  
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // Handle file selection
+     const { name, value } = e.target;
+     setFormData({ ...formData, [name]: value });
+   };
+  
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      setFormData({ ...formData, image: file });
+    const newPreviews = files.map(file => URL.createObjectURL(file));
 
-      setRemoveImage(false);
-    }
+    setPreviewNew(prev => [...prev, ...newPreviews]);
+    setNewImages(prev => [...prev, ...files]);
   };
-
-  // Form submit
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!announcement?.id) return;
 
     const data = new FormData();
     data.append("title", formData.title);
     data.append("details", formData.details);
 
-    // new image upload
-    if (formData.image) {
-      data.append("image", formData.image);
-    }
+    // existing images
+    data.append("existing_images", JSON.stringify(existingImages));
 
-    // if user removed existing image
-    if (removeImage) {
-      data.append("remove_image", "1");
-    }
+    // new uploaded images
+    newImages.forEach(file => {
+      data.append("images[]", file);
+    });
 
     // method override
     data.append("_method", "PUT");
@@ -120,34 +135,37 @@ export default function AdminAnnouncementEdit({ announcement }) {
             </CardHeader>
 
             {/* Image Preview */}
-            {preview && !removeImage && (
-              <div className="mb-2 flex justify-start pl-6 relative w-fit">
-                
-                {/* IMAGE */}
-                <div className="relative">
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-50 h-50 object-cover rounded border"
-                  />
+            {previews.length > 0 && (
+              <div className="mb-2 flex gap-2 flex-wrap pl-6">
 
-                  {/* REMOVE BUTTON */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                    setPreview(null);
-                    setRemoveImage(true);
-                    setFormData({ ...formData, image: null });
+                {previews.map((img, index) => (
+                  <div key={index} className="relative">
 
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = "";
-                    }
-                  }}
-                    className="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full p-1 shadow-sm hover:bg-gray-100"
-                  >
-                    <X size={14} className="text-gray-700" />
-                  </button>
-                </div>
+                    <img
+                      src={img}
+                      className="w-32 h-32 object-cover rounded border"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const removed = img;
+
+                        setExistingImages(prev =>
+                          prev.filter(i => i !== removed)
+                        );
+
+                        setPreviewNew(prev =>
+                          prev.filter(i => i !== removed)
+                        );
+                      }}
+                      className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
+                    >
+                      <X size={14} />
+                    </button>
+
+                  </div>
+                ))}
 
               </div>
             )}

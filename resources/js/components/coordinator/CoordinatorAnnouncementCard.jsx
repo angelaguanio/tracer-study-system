@@ -151,7 +151,13 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
 
               <div className="w-20 h-20 flex-shrink-0 rounded-md flex items-center justify-center overflow-hidden">
 
-                {data.image ? (
+                {Array.isArray(data.image) && data.image.length > 0 ? (
+                  <img
+                    src={data.image[0]}
+                    alt={data.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : typeof data.image === "string" ? (
                   <img
                     src={data.image}
                     alt={data.title}
