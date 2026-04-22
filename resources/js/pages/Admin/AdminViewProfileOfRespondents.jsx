@@ -24,17 +24,21 @@ export default function AdminViewProfileOfRespondents({ user }) {
     const emp = user.employment;
     const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
 
-    const avatarElement = user.profile_picture ? (
-        <img
-            src={`/storage/${user.profile_picture}`}
-            alt={`${user.first_name}'s profile`}
-            className="w-full h-full object-cover"
-        />
-    ) : (
-        <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl font-bold">
-            {user.initials}
-        </div>
-    );
+  const avatarElement = user.profile_picture ? (
+    <img
+        src={user.profile_picture}
+        alt={`${user.first_name}'s profile`}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = `https://ui-avatars.com/api/?name=${user.first_name}&background=008542&color=fff`;
+        }}
+    />
+) : (
+    <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl font-bold">
+        {user.initials}
+    </div>
+);
 
     return (
         <>

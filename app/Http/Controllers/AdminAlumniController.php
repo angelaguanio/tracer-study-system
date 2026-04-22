@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AlumniBroadcastEmail;
-use App\Jobs\SendAlumniBroadcastJob;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminAlumniController extends Controller
 {
@@ -40,7 +39,10 @@ class AdminAlumniController extends Controller
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'course' => $user->courses,
                 'year' => $user->year_graduated,
-                'avatar' => $user->avatar,
+
+                //  FIXED IMAGE
+                'avatar' => $user->avatar ? Storage::url($user->avatar) : null,
+
                 'email' => $user->email,
             ];
         });
@@ -52,88 +54,109 @@ class AdminAlumniController extends Controller
     }
 
     public function show($id)
-    {
-        $user = User::with('employment')->findOrFail($id);
+{
+    $user = User::with(['employment', 'employmentHistory'])->findOrFail($id);
 
-        return Inertia::render('Admin/AdminViewProfileOfRespondents', [
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'courses' => $user->courses,
-                'year_graduated' => $user->year_graduated,
-                'avatar' => $user->avatar,
-                'address' => $user->address ?? 'N/A',
-                'contact_number' => $user->contact_number ?? 'N/A',
+    return Inertia::render('Admin/AdminViewProfileOfRespondents', [
+        'user' => [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'middle_name' => $user->middle_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'courses' => $user->courses,
+            'year_graduated' => $user->year_graduated,
 
-                'employment' => $user->employment ? [
-                    'currently_employed' => $user->employment->currently_employed,
-                    'company_name' => $user->employment->company_name,
-                    'position' => $user->employment->position,
-                    'employment_type' => $user->employment->employment_type,
-                    'location' => $user->employment->location,
-                    'monthly_salary' => $user->employment->monthly_salary,
-                    'unemployment_reason' => $user->employment->unemployment_reason,
-                ] : null,
-            ]
-        ]);
-    }
+            //  IMPORTANT FIX (RAW PATH ONLY)
+            'profile_picture' => $user->avatar
+            ? asset('storage/' . $user->avatar)
+            : null,
 
-    public function emailForm($id)
-    {
-        $user = User::findOrFail($id);
+            'initials' => strtoupper(
+                substr($user->first_name ?? '', 0, 1) .
+                substr($user->last_name ?? '', 0, 1)
+            ) ?: '??',
 
-        return Inertia::render('Admin/AdminSendEmail', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->first_name . ' ' . $user->last_name,
-                'email' => $user->email,
-            ]
-        ]);
-    }
+            'address' => $user->address ?? 'N/A',
+            'contact_number' => $user->contact_number ?? 'N/A',
 
-    public function sendEmail(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+            'employment' => $user->employment,
+            'employment_history' => $user->employmentHistory ?? [],
+        ]
+    ]);
+}
+    /**
+     * Update or create employment records.
+     */
+    public function updateEmployment(Request $request, $id)
+{
+    $user = User::findOrFail($id);
 
-        $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+    $validated = $request->validate([
+        'company_name'       => 'nullable|string|max:255',
+        'position'           => 'nullable|string|max:255',
+        'employment_type'    => 'nullable|string|max:255',
+        'location'           => 'nullable|string|max:255',
+        'currently_employed' => 'required|string|in:Yes,No',
+        'monthly_salary'     => 'nullable|string',
+        'unemployment_reason'=> 'nullable|string',
+    ]);
 
-        Mail::to($user->email)
-            ->queue(new AlumniBroadcastEmail($request->subject, $request->message));
+    // Clean values: Gawing null ang empty strings para sa accurate comparison
+    $clean = collect($validated)->map(function ($value) {
+        if (is_string($value)) {
+            $trimmed = trim($value);
+            return $trimmed === '' ? null : $trimmed;
+        }
+        return $value;
+    })->toArray();
 
-        return back()->with('success', 'Email queued successfully.');
-    }
+    DB::transaction(function () use ($user, $clean) {
+        // Kunin ang current record
+        $employment = $user->employment;
 
-    public function sendBulkEmail(Request $request)
-    {
-        $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-            'send_all' => 'boolean',
-            'user_ids' => 'required_if:send_all,false|array',
-            'user_ids.*' => 'integer|exists:users,id',
-        ]);
+        if ($employment) {
+            // I-fill ang data para makita kung ano ang magbabago
+            $employment->fill($clean);
 
-        $userIds = $request->boolean('send_all') ? null : $request->user_ids;
+            // Titingnan lang natin ang mga core fields para sa history
+            $isDirty = $employment->isDirty([
+                'company_name',
+                'position',
+                'currently_employed',
+                'employment_type'
+            ]);
 
-        $count = $userIds
-            ? count($userIds)
-            : User::where('user_role', 'alumna')->count();
+            if ($isDirty) {
+                $employment->save();
 
-        SendAlumniBroadcastJob::dispatch(
-            $request->subject,
-            $request->message,
-            $userIds
-        );
+                // Dito lang gagawa ng history record kung may totoong nagbago
+                $user->employmentHistory()->create([
+                    'company_name'       => $clean['company_name'] 
+                        ?? ($clean['currently_employed'] === 'No' ? 'Unemployed' : 'N/A'),
+                    'position'           => $clean['position'] ?? 'N/A',
+                    'currently_employed' => $clean['currently_employed'],
+                    'created_at'         => now(),
+                ]);
+            } else {
+                // Kung walang pagbabago sa history fields, i-save pa rin ang iba (e.g. salary, location)
+                $employment->save();
+            }
+        } else {
+            // Kung first time pa lang gagawa ng record
+            $newEmployment = $user->employment()->create($clean);
 
-        return back()->with(
-            'success',
-            "Bulk email queued for {$count} users."
-        );
-    }
+            // Gawa ng initial history record
+            $user->employmentHistory()->create([
+                'company_name'       => $clean['company_name'] 
+                    ?? ($clean['currently_employed'] === 'No' ? 'Unemployed' : 'N/A'),
+                'position'           => $clean['position'] ?? 'N/A',
+                'currently_employed' => $clean['currently_employed'],
+                'created_at'         => now(),
+            ]);
+        }
+    });
+
+    return back()->with('success', 'Employment updated successfully.');
+}
 }
