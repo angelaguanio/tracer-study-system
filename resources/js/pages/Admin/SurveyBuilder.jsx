@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { router, usePage, Link } from "@inertiajs/react";
-import { Plus, ArrowLeft } from "lucide-react";
+import { router, usePage, Link, useForm } from "@inertiajs/react";
+import { Plus, ArrowLeft, Pencil, Check, X } from "lucide-react";
 import AdminLayout from "@/layouts/admin-layout";
 import SectionPanel from "@/components/survey/coordinator/SectionPanel";
 import QuestionItem from "@/components/survey/coordinator/QuestionItem";
@@ -10,11 +10,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function SurveyBuilder({ survey }) {
     const { props } = usePage();
     const [localSections, setLocalSections] = useState(survey.sections ?? []);
     const [activeSectionId, setActiveSectionId] = useState((survey.sections ?? [])[0]?.id ?? null);
+    const [isEditingHeader, setIsEditingHeader] = useState(false);
+
+    const { data, setData, put, processing, errors, reset } = useForm({
+        title: survey.title,
+        description: survey.description || '',
+    });
 
     // Sync from server after Inertia reloads (add/delete/rename)
     useEffect(() => {
@@ -64,6 +72,20 @@ export default function SurveyBuilder({ survey }) {
         router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
     };
 
+    const handleSaveHeader = () => {
+        put(route("admin.surveys.update", survey.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsEditingHeader(false);
+            },
+        });
+    };
+
+    const handleCancelEdit = () => {
+        reset();
+        setIsEditingHeader(false);
+    };
+
     const handleQuestionReorder = (questionId, direction) => {
         const questions = activeSection?.questions ?? [];
         const idx = questions.findIndex((q) => q.id === questionId);
@@ -86,30 +108,101 @@ export default function SurveyBuilder({ survey }) {
     return (
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <Link href={route("admin.surveys.index")}>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:bg-gray-300 px-2">
-                            <ArrowLeft size={16} />
-                        </Button>
-                    </Link>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-800">{survey.title}</h1>
-                        {survey.description && <p className="text-sm text-gray-500">{survey.description}</p>}
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+                <div className="flex items-start justify-between gap-4">
+                    {/* Left: Back button + Title/Description */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Link href={route("admin.surveys.index")}>
+                            <Button variant="ghost" size="sm" className=" text-gray-400 hover:text-gray-600 hover:bg-gray-100 px-2 mt-1">
+                                <ArrowLeft size={18} />
+                            </Button>
+                        </Link>
+                        
+                        {isEditingHeader ? (
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        value={data.title}
+                                        onChange={(e) => setData('title', e.target.value)}
+                                        placeholder="Enter survey title"
+                                        className="text-lg font-semibold border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                        autoFocus
+                                    />
+                                </div>
+                                <Textarea
+                                    value={data.description}
+                                    onChange={(e) => setData('description', e.target.value)}
+                                    placeholder="Add a description (optional)"
+                                    className="text-sm resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                    rows={2}
+                                />
+                                {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
+                                {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
+                                
+                                <div className="flex items-center justify-end gap-2">
+                                    <Button
+                                        size="sm"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                        onClick={handleSaveHeader}
+                                        disabled={processing || !data.title.trim()}
+                                    >
+                                        <Check size={14} className="mr-1" />
+                                        Save
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                                        onClick={handleCancelEdit}
+                                        disabled={processing}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex-1 group">
+                                <div className="flex items-start gap-2">
+                                    <div className="flex-1 min-w-0">
+                                        <h1 className="text-lg font-semibold text-gray-900 truncate">{survey.title}</h1>
+                                        {survey.description && (
+                                            <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{survey.description}</p>
+                                        )}
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="self-center transition-opacity h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                                        onClick={() => setIsEditingHeader(true)}
+                                    >
+                                        <Pencil size={14} />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Badge className={survey.status === "active" ? "bg-green-100 text-green-700 border-green-300" : "bg-gray-100 text-gray-500 border-gray-300"}>
-                        {survey.status.charAt().toUpperCase() + survey.status.slice(1)}
-                    </Badge>
-                    <div className="flex items-center gap-2">
-                        <Switch
-                            id="status-toggle"
-                            checked={survey.status === "active"}
-                            onCheckedChange={handleStatusToggle}
-                        />
-                        <Label htmlFor="status-toggle" className="text-sm">Active</Label>
-                    </div>
+
+                    {/* Right: Status Badge + Toggle */}
+                    {!isEditingHeader && (
+                        <div className="flex items-center gap-3 shrink-0 self-center">
+                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200 ">
+                                <Switch
+                                    id="status-toggle"
+                                    checked={survey.status === "active"}
+                                    onCheckedChange={handleStatusToggle}
+                                    className="data-[state=checked]:bg-green-600"
+                                />
+                                <Label 
+                                    htmlFor="status-toggle" 
+                                    className={`text-sm font-medium cursor-pointer ${
+                                        survey.status === "active" ? "text-green-700" : "text-gray-500"
+                                    }`}
+                                >
+                                    {survey.status === "active" ? "Active" : "Inactive"}
+                                </Label>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

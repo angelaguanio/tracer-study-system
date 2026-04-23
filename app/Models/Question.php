@@ -23,6 +23,14 @@ class Question extends Model
         'is_required' => 'boolean',
     ];
 
+    /**
+     * Check if this question is a subheading type
+     */
+    public function isSubheading(): bool
+    {
+        return $this->type === 'subheading';
+    }
+
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);

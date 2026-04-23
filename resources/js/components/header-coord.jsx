@@ -38,13 +38,13 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
 
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
-              <Link>
+              <Link >
                 Profile
               </Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-                <Link href={route('coordinator.logout')} method="post" as="button">
+                <Link href={route('coordinator.logout')} method="post" as="button" className='w-full flex'>
                   Logout
                 </Link>
             </DropdownMenuItem>
