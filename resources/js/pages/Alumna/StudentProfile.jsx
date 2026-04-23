@@ -117,10 +117,10 @@ export default function StudentProfile() {
                 )}
             </section>
 
-            {/* Employment History */}
+            {/* Employment History Logs */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                    <IconHistory /> Employment History
+                    <IconHistory /> Employment History Logs
                 </div>
 
                 {profile.employment_history?.length > 0 ? (
@@ -128,11 +128,11 @@ export default function StudentProfile() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="pb-3 font-bold">Date Logged</th>
+                                    <th className="pb-3 font-bold pl-2">Date Logged</th>
                                     <th className="pb-3 font-bold">Company</th>
                                     <th className="pb-3 font-bold">Position</th>
                                     <th className="pb-3 font-bold text-center">Status</th>
-                                    <th className="pb-3 font-bold text-right">Action</th>
+                                    <th className="pb-3 font-bold text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -141,21 +141,21 @@ export default function StudentProfile() {
 
                                     return (
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 text-gray-600">
+                                            <td className="py-2 pl-2 text-gray-600">
                                                 {new Date(history.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="py-4 font-bold text-gray-800">
+                                            <td className="py-2 font-bold text-gray-800">
                                                 {isUnemployed ? '—' : history.company_name}
                                             </td>
-                                            <td className="py-4 text-gray-600">
+                                            <td className="py-2 text-gray-600">
                                                 {isUnemployed ? '—' : (history.position || '—')}
                                             </td>
-                                            <td className="py-4 text-center">
+                                            <td className="py-2 text-center">
                                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${history.currently_employed === 'Yes' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                                     {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
                                                 </span>
                                             </td>
-                                            <td className="py-4 text-right">
+                                            <td className="py-2 text-center">
                                                 <Link
                                                     href={route('alumna.history.show', history.id)}
                                                     className="text-[#008542] font-bold text-xs hover:underline"
