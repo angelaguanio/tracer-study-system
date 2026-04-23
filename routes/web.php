@@ -117,6 +117,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('analytics.employment-location');
 
         Route::get('/surveys/{survey}/analytics', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics');
+
+        // Employment location analytics
+        Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
+            ->name('analytics.employment-location');
     });
 
     // Survey management — auth + admin middleware
