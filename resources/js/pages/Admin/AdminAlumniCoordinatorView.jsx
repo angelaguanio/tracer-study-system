@@ -25,7 +25,6 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                     </Button>
                 </div>
 
-                {/* CENTER */}
                 <div className="flex-1 flex justify-center items-center">
 
                     <div className="bg-white rounded-2xl w-full max-w-5xl shadow">
@@ -42,7 +41,9 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
 
                                 <div>
                                     <h1 className="text-3xl font-bold text-gray-800">
-                                        {coordinator.first_name} {coordinator.last_name}
+                                        {coordinator.first_name}{" "}
+                                        {coordinator.middle_name && coordinator.middle_name + " "}
+                                        {coordinator.last_name}
                                     </h1>
                                     <p className="text-gray-500 mt-1">
                                         Alumni Coordinator
@@ -54,18 +55,16 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                             {/* INFO GRID */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                {/* FULL NAME */}
                                 <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
                                     <p className="text-sm text-gray-500 mb-2">Full Name</p>
                                     <div className="flex items-center gap-2 text-gray-800 font-medium">
                                         <User size={16} />
                                         {coordinator.first_name}{" "}
-                                        {coordinator.middle_name}{" "}
+                                        {coordinator.middle_name && coordinator.middle_name + " "}
                                         {coordinator.last_name}
                                     </div>
                                 </div>
 
-                                {/* EMAIL */}
                                 <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
                                     <p className="text-sm text-gray-500 mb-2">Email</p>
                                     <div className="flex items-center gap-2 text-gray-800 font-medium">
@@ -74,7 +73,6 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                                     </div>
                                 </div>
 
-                                {/* DEPARTMENT */}
                                 <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
                                     <p className="text-sm text-gray-500 mb-2">Department</p>
                                     <p className="text-gray-800 font-medium">
@@ -82,7 +80,6 @@ export default function AdminAlumniCoordinatorView({ coordinator }) {
                                     </p>
                                 </div>
 
-                                {/* COURSE (FIXED HERE) */}
                                 <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
                                     <p className="text-sm text-gray-500 mb-2">Course</p>
                                     <p className="text-gray-800 font-medium">

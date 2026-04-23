@@ -46,7 +46,7 @@ export default function AdminAlumniCoordinatorTable({
 
   const paginationItems = getPaginationItems();
 
-  // ✅ REMOVED BORDER HERE
+  //  REMOVED BORDER HERE
   const paginationBtnClass =
     "w-9 h-9 flex items-center justify-center text-sm rounded-md shadow-sm transition-all";
 

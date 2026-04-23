@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/select";
 
 export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
-
-    const { data, setData, post, put, reset } = useForm({
+    const { data, setData, post, put, reset, errors, processing } = useForm({
         first_name: "",
         last_name: "",
         middle_name: "",
@@ -31,18 +30,17 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                 middle_name: editing.middle_name || "",
                 email: editing.email || "",
                 department: editing.department || "CECT",
-                courses: editing.courses || "",
+                courses: editing.courses ? String(editing.courses) : "",
                 password: "",
             });
         } else {
             reset();
         }
-    }, [editing]);
+    }, [editing?.id]);
 
     // SUBMIT
     const submit = (e) => {
         e.preventDefault();
-        closeForm(); 
 
         const payload = {
             first_name: data.first_name,
@@ -54,16 +52,35 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         };
 
         if (editing) {
+            if (data.password) {
+                payload.password = data.password;
+            }
+
             put(`/admin/alumni-coordinators/${editing.id}`, payload, {
                 preserveScroll: true,
-                onSuccess: () => reset(),
+                preserveState: false,
+
+                // ✅ FIX HERE
+                onFinish: () => {
+                    if (Object.keys(errors).length === 0) {
+                        reset();
+                        closeForm();
+                    }
+                },
             });
         } else {
             post("/admin/alumni-coordinators", {
                 ...payload,
                 password: data.password,
                 preserveScroll: true,
-                onSuccess: () => reset(),
+
+                // ✅ FIX HERE
+                onFinish: () => {
+                    if (Object.keys(errors).length === 0) {
+                        reset();
+                        closeForm();
+                    }
+                },
             });
         }
     };
@@ -72,38 +89,40 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden px-2">
 
-                {/* HEADER */}
                 <div className="px-8 pt-8 pb-5 text-black">
                     <h2 className="text-lg font-semibold">
                         {editing ? "Edit Coordinator" : "Add Coordinator"}
                     </h2>
                 </div>
 
-                <hr/>
-                
+                <hr />
+
                 <form onSubmit={submit} className="p-6 space-y-5">
 
-                    {/* FIRST & LAST NAME */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">First Name</label>
                             <Input
                                 value={data.first_name}
                                 onChange={(e) => setData("first_name", e.target.value)}
-                                placeholder="Enter first name"
                             />
+                            {errors.first_name && (
+                                <p className="text-red-500 text-xs">{errors.first_name}</p>
+                            )}
                         </div>
+
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Last Name</label>
                             <Input
                                 value={data.last_name}
                                 onChange={(e) => setData("last_name", e.target.value)}
-                                placeholder="Enter last name"
                             />
+                            {errors.last_name && (
+                                <p className="text-red-500 text-xs">{errors.last_name}</p>
+                            )}
                         </div>
                     </div>
 
-                    {/* MIDDLE & EMAIL */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Middle Name</label>
@@ -112,28 +131,33 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                                 onChange={(e) => setData("middle_name", e.target.value)}
                                 placeholder="Optional"
                             />
+                            {errors.middle_name && (
+                                <p className="text-red-500 text-xs">{errors.middle_name}</p>
+                            )}
                         </div>
+
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Email Address</label>
                             <Input
                                 type="email"
                                 value={data.email}
                                 onChange={(e) => setData("email", e.target.value)}
-                                placeholder="email@example.com"
                             />
+                            {errors.email && (
+                                <p className="text-red-500 text-xs">{errors.email}</p>
+                            )}
                         </div>
                     </div>
 
-                    {/* DEPARTMENT & COURSE (SHADCN SELECT) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Department</label>
-                            <Select 
-                                value={data.department} 
+                            <Select
+                                value={data.department}
                                 onValueChange={(val) => setData("department", val)}
                             >
                                 <SelectTrigger className="w-full bg-white">
-                                    <SelectValue placeholder="Select Department" />
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="CECT">CECT</SelectItem>
@@ -143,12 +167,12 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Assigned Course</label>
-                            <Select 
-                                value={data.courses} 
+                            <Select
+                                value={data.courses}
                                 onValueChange={(val) => setData("courses", val)}
                             >
                                 <SelectTrigger className="w-full bg-white">
-                                    <SelectValue placeholder="Select Course" />
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="BSIT">BSIT</SelectItem>
@@ -156,29 +180,43 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                                     <SelectItem value="BSEcE">BSEcE</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {errors.courses && (
+                                <p className="text-red-500 text-xs">{errors.courses}</p>
+                            )}
                         </div>
                     </div>
 
-                    {/* PASSWORD (CREATE ONLY) */}
-                    {!editing && (
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium text-gray-700">Password</label>
-                            <Input
-                                type="password"
-                                value={data.password}
-                                onChange={(e) => setData("password", e.target.value)}
-                                placeholder="Create a password"
-                            />
-                        </div>
-                    )}
+                    <div className="space-y-1 pt-4">
+                        <label className="text-sm font-medium text-gray-700">
+                            {editing ? "Reset Password (Leave blank to keep current)" : "Password"}
+                        </label>
+                        <Input
+                            type="password"
+                            value={data.password}
+                            onChange={(e) => setData("password", e.target.value)}
+                            required={!editing}
+                        />
+                        {errors.password && (
+                            <p className="text-red-500 text-xs">{errors.password}</p>
+                        )}
+                    </div>
 
-                    {/* ACTIONS */}
                     <div className="flex justify-end gap-3 pt-4">
-                        <Button type="button" variant="outline" onClick={closeForm}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={closeForm}
+                            disabled={processing}
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-8">
-                            {editing ? "Update Changes" : "Save Coordinator"}
+
+                        <Button
+                            type="submit"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+                            disabled={processing}
+                        >
+                            {processing ? "Saving..." : editing ? "Update Changes" : "Save Coordinator"}
                         </Button>
                     </div>
 
