@@ -18,8 +18,8 @@ class UpdateQuestionRequest extends FormRequest
         $type = $this->input('type');
 
         return [
-            'label'         => ['sometimes', 'string', 'max:255'],
-            'type'          => ['sometimes', 'in:text,select,radio,checkbox,number,textarea,likert'],
+            'label'         => ['sometimes', 'string', 'max:1000'], // Increased for subheadings
+            'type'          => ['sometimes', 'in:text,select,radio,checkbox,number,textarea,likert,subheading'],
             'is_required'   => ['sometimes', 'boolean'],
             'display_order' => ['sometimes', 'integer', 'min:1'],
             'options'       => [
