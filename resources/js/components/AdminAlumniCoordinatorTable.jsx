@@ -56,9 +56,9 @@ export default function AdminAlumniCoordinatorTable({
       {/* TABLE */}
       <div className="flex-1 overflow-auto">
         <Table className="min-w-[800px] w-full">
-          <TableHeader className="sticky top-0 bg-[#EAF5FF] z-10">
+          <TableHeader className="sticky top-0 bg-[#70CAFF] hover:bg-transparent z-10">
             <TableRow className="h-[56px]">
-              <TableHead className="text-center font-semibold">Alumni Coordinator</TableHead>
+              <TableHead className="text-center font-semibold px-8">Alumni Coordinator</TableHead>
               <TableHead className="text-center font-semibold">Email</TableHead>
               <TableHead className="text-center font-semibold">Department</TableHead>
               <TableHead className="text-center font-semibold">Course</TableHead>
@@ -70,7 +70,7 @@ export default function AdminAlumniCoordinatorTable({
             {data?.map((c) => (
               <TableRow key={c.id} className="h-[70px] hover:bg-gray-50">
                 <TableCell className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pl-4">
                     <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm">
                       {getInitials(c.first_name, c.last_name)}
                     </div>
