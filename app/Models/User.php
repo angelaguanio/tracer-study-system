@@ -78,4 +78,19 @@ class User extends Authenticatable
     {
          return $this->hasMany(EmploymentHistory::class);
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->user_role === 'admin';
+    }
+
+    public function isCoordinator(): bool
+    {
+        return $this->user_role === 'coordinator';
+    }
+
+    public function isAlumna(): bool
+    {
+        return $this->user_role === 'alumna';
+    }
 }

@@ -1,5 +1,5 @@
 import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAnnouncementCard from "@/components/CoordinatorAnnouncementCard";
+// import CoordinatorAnnouncementCard from "@/components/CoordinatorAnnouncementCard";
 import { Plus, X, Check } from "lucide-react"; 
 import { Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
