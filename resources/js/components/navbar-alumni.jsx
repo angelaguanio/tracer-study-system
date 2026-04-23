@@ -76,7 +76,7 @@ export default function NavbarAlumni({ children }) {
               <Link href={route('alumna.profile')}>Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.logout')} method="post" as="button">
+              <Link href={route('alumna.logout')} method="post" as="button" className='w-full flex'>
                 Logout
               </Link>
             </DropdownMenuItem>
