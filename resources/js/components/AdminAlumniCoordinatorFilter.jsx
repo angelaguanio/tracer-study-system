@@ -39,12 +39,12 @@ export default function AdminAlumniCoordinatorFilter({
           onValueChange={setDepartmentFilter} 
           value={departmentFilter}
         >
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm">
-            <SelectValue placeholder="All Department" />
+          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm cursor-pointer">
+            <SelectValue placeholder="All Department"  />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Department</SelectItem>
-            <SelectItem value="CECT">CECT</SelectItem>
+            <SelectItem value="all" className='cursor-pointer'>All Department</SelectItem>
+            <SelectItem value="CECT" className='cursor-pointer'>CECT</SelectItem>
           </SelectContent>
         </Select>
 
@@ -53,14 +53,14 @@ export default function AdminAlumniCoordinatorFilter({
           onValueChange={setCourseFilter} 
           value={courseFilter}
         >
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm">
+          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm cursor-pointer">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courses</SelectItem>
-            <SelectItem value="BSIT">BSIT</SelectItem>
-            <SelectItem value="BSCpE">BSCpE</SelectItem>
-            <SelectItem value="BSEcE">BSEcE</SelectItem>
+          <SelectContent >
+            <SelectItem value="all" className='cursor-pointer'>All Courses</SelectItem>
+            <SelectItem value="BSIT" className='cursor-pointer'>BSIT</SelectItem>
+            <SelectItem value="BSCpE" className='cursor-pointer'>BSCpE</SelectItem>
+            <SelectItem value="BSEcE" className='cursor-pointer'>BSEcE</SelectItem>
           </SelectContent>
         </Select>
 
