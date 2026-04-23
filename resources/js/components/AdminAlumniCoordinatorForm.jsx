@@ -69,16 +69,18 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden px-2">
 
                 {/* HEADER */}
-                <div className="px-6 py-4 text-white bg-blue-600">
+                <div className="px-8 pt-8 pb-5 text-black">
                     <h2 className="text-lg font-semibold">
                         {editing ? "Edit Coordinator" : "Add Coordinator"}
                     </h2>
                 </div>
 
+                <hr/>
+                
                 <form onSubmit={submit} className="p-6 space-y-5">
 
                     {/* FIRST & LAST NAME */}
