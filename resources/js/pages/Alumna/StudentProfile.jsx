@@ -103,7 +103,7 @@ export default function StudentProfile() {
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
                                     ₱{emp?.monthly_salary ?
-                                        parseFloat(emp.monthly_salary.replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
+                                        parseFloat(emp.monthly_salary.toString().replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
                                         : '0'}
                                 </p>
                             </div>
@@ -128,15 +128,15 @@ export default function StudentProfile() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="pb-3 font-bold">Date Updated</th>
+                                    <th className="pb-3 font-bold">Date Logged</th>
                                     <th className="pb-3 font-bold">Company</th>
                                     <th className="pb-3 font-bold">Position</th>
-                                    <th className="pb-3 font-bold">Action</th>
+                                    <th className="pb-3 font-bold text-center">Status</th>
+                                    <th className="pb-3 font-bold text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {profile.employment_history.map((history) => {
-                                    // logic para sa display ng dash sa table
                                     const isUnemployed = history.currently_employed === 'No' || !history.company_name;
 
                                     return (
@@ -150,7 +150,12 @@ export default function StudentProfile() {
                                             <td className="py-4 text-gray-600">
                                                 {isUnemployed ? '—' : (history.position || '—')}
                                             </td>
-                                            <td className="py-4">
+                                            <td className="py-4 text-center">
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${history.currently_employed === 'Yes' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 text-right">
                                                 <Link
                                                     href={route('alumna.history.show', history.id)}
                                                     className="text-[#008542] font-bold text-xs hover:underline"
