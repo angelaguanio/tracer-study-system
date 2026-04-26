@@ -14,6 +14,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
+use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 
 use Illuminate\Support\Facades\Route;
@@ -95,6 +96,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
 
+  
+       // Alumni Coordinators            
+        Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index']);
+        Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store']);
+        Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show']);
+        Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
+        Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
+
+        //logout route
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         // Bulk email
         Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
