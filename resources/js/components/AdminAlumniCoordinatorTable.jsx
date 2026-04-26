@@ -51,12 +51,12 @@ export default function AdminAlumniCoordinatorTable({
     "w-9 h-9 flex items-center justify-center text-sm rounded-md shadow-sm transition-all";
 
   return (
-    <div className="bg-white rounded-xl shadow flex flex-col h-full overflow-hidden">
+    <div className="bg-white rounded-xl shadow flex flex-col h-full overflow-hidden relative">
 
       {/* TABLE */}
       <div className="flex-1 overflow-auto">
         <Table className="min-w-[800px] w-full">
-          <TableHeader className="sticky top-0 bg-[#70CAFF] hover:bg-transparent z-10">
+          <TableHeader className="bg-[#70CAFF] hover:bg-transparent">
             <TableRow className="h-[56px]">
               <TableHead className="text-center font-semibold px-8">Alumni Coordinator</TableHead>
               <TableHead className="text-center font-semibold">Email</TableHead>
@@ -70,13 +70,11 @@ export default function AdminAlumniCoordinatorTable({
             {data?.map((c) => (
               <TableRow key={c.id} className="h-[70px] hover:bg-gray-50">
                 <TableCell className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pl-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm">
+                  <div className="flex items-center gap-3 pl-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm shrink-0">
                       {getInitials(c.first_name, c.last_name)}
                     </div>
-                  </div>
-                  <div className="w-full text-center">
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium pl-15 text-gray-800">
                       {c.first_name} {c.last_name}
                     </span>
                   </div>
