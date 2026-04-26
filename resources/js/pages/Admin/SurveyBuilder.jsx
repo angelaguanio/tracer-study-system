@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { router, usePage, Link, useForm } from "@inertiajs/react";
-import { Plus, ArrowLeft, Pencil, Check, X } from "lucide-react";
+import { Plus, ArrowLeft, Pencil, Check } from "lucide-react";
+import { route } from "ziggy-js";
 import AdminLayout from "@/layouts/admin-layout";
 import SectionPanel from "@/components/survey/coordinator/SectionPanel";
 import QuestionItem from "@/components/survey/coordinator/QuestionItem";
 import SectionFormModal from "@/components/survey/coordinator/SectionFormModal";
 import QuestionFormModal from "@/components/survey/coordinator/QuestionFormModal";
+import SubheadingFormModal from "@/components/survey/coordinator/SubheadingFormModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -48,6 +50,7 @@ export default function SurveyBuilder({ survey }) {
 
     const [sectionModal, setSectionModal] = useState({ open: false, section: null });
     const [questionModal, setQuestionModal] = useState({ open: false, question: null });
+    const [subheadingModal, setSubheadingModal] = useState({ open: false, subheading: null });
 
     const activeSection = localSections.find((s) => s.id === activeSectionId);
 
@@ -86,22 +89,36 @@ export default function SurveyBuilder({ survey }) {
         setIsEditingHeader(false);
     };
 
-    const handleQuestionReorder = (questionId, direction) => {
-        const questions = activeSection?.questions ?? [];
-        const idx = questions.findIndex((q) => q.id === questionId);
+    const handleQuestionReorder = (itemId, direction) => {
+        // Get all items (questions + subheadings) merged and sorted
+        const questions = (activeSection?.questions || []).map(q => ({ ...q, itemType: 'question' }));
+        const subheadings = (activeSection?.subheadings || []).map(s => ({ ...s, itemType: 'subheading' }));
+        const allItems = [...questions, ...subheadings].sort((a, b) => a.display_order - b.display_order);
+        
+        const idx = allItems.findIndex((item) => item.id === itemId);
         const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-        if (swapIdx < 0 || swapIdx >= questions.length) return;
+        if (swapIdx < 0 || swapIdx >= allItems.length) return;
 
-        const reordered = [...questions];
+        const reordered = [...allItems];
         [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
 
-        // Optimistic update
+        // Optimistic update - update both questions and subheadings in local state
+        const updatedQuestions = reordered.filter(item => item.itemType === 'question');
+        const updatedSubheadings = reordered.filter(item => item.itemType === 'subheading');
+        
         setLocalSections((prev) => prev.map((s) =>
-            s.id === activeSectionId ? { ...s, questions: reordered } : s
+            s.id === activeSectionId 
+                ? { ...s, questions: updatedQuestions, subheadings: updatedSubheadings } 
+                : s
         ));
 
-        router.put(route("admin.questions.reorder", activeSectionId), {
-            questions: reordered.map((q, i) => ({ id: q.id, display_order: i + 1 })),
+        // Send reorder request with mixed items
+        router.put(route("admin.subheadings.reorder", activeSectionId), {
+            items: reordered.map((item, i) => ({ 
+                id: item.id, 
+                type: item.itemType === 'subheading' ? 'subheading' : 'question',
+                display_order: i + 1 
+            })),
         }, { preserveScroll: true });
     };
 
@@ -243,26 +260,46 @@ export default function SurveyBuilder({ survey }) {
                         <>
                             <div className="flex items-center justify-between mb-1">
                                 <span className="text-sm font-semibold text-gray-600">{activeSection.title}</span>
-                                <Button size="sm" className="h-7 text-xs bg-[#008236] hover:bg-green-700 text-white" onClick={() => setQuestionModal({ open: true, question: null })}>
-                                    <Plus size={12} /> Add Question
-                                </Button>
-                            </div>
-                            {activeSection.questions?.length === 0 ? (
-                                <div className="bg-white border rounded-lg p-8 text-center text-gray-400 text-sm">
-                                    No questions in this section yet.
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" className="h-7 text-xs border-amber-300 text-amber-700 hover:bg-amber-50" onClick={() => setSubheadingModal({ open: true, subheading: null })}>
+                                        <Plus size={12} /> Add Subheading
+                                    </Button>
+                                    <Button size="sm" className="h-7 text-xs bg-[#008236] hover:bg-green-700 text-white" onClick={() => setQuestionModal({ open: true, question: null })}>
+                                        <Plus size={12} /> Add Question
+                                    </Button>
                                 </div>
-                            ) : (
-                                activeSection.questions?.map((q, idx) => (
+                            </div>
+                            {(() => {
+                                // Merge questions and subheadings, sort by display_order
+                                const questions = (activeSection.questions || []).map(q => ({ ...q, itemType: 'question' }));
+                                const subheadings = (activeSection.subheadings || []).map(s => ({ ...s, itemType: 'subheading', type: 'subheading' }));
+                                const allItems = [...questions, ...subheadings].sort((a, b) => a.display_order - b.display_order);
+                                
+                                if (allItems.length === 0) {
+                                    return (
+                                        <div className="bg-white border rounded-lg p-8 text-center text-gray-400 text-sm">
+                                            No questions or subheadings in this section yet.
+                                        </div>
+                                    );
+                                }
+                                
+                                return allItems.map((item, idx) => (
                                     <QuestionItem
-                                        key={q.id}
-                                        question={q}
+                                        key={`${item.itemType}-${item.id}`}
+                                        question={item}
                                         isFirst={idx === 0}
-                                        isLast={idx === activeSection.questions.length - 1}
-                                        onEdit={(q) => setQuestionModal({ open: true, question: q })}
+                                        isLast={idx === allItems.length - 1}
+                                        onEdit={(item) => {
+                                            if (item.itemType === 'subheading') {
+                                                setSubheadingModal({ open: true, subheading: item });
+                                            } else {
+                                                setQuestionModal({ open: true, question: item });
+                                            }
+                                        }}
                                         onReorder={handleQuestionReorder}
                                     />
-                                ))
-                            )}
+                                ));
+                            })()}
                         </>
                     ) : (
                         <div className="bg-white border rounded-lg p-8 text-center text-gray-400 text-sm">
@@ -284,6 +321,12 @@ export default function SurveyBuilder({ survey }) {
                 sectionId={activeSectionId}
                 question={questionModal.question}
                 likertScale={activeSection?.likert_scale ?? null}
+            />
+            <SubheadingFormModal
+                open={subheadingModal.open}
+                onClose={() => setSubheadingModal({ open: false, subheading: null })}
+                sectionId={activeSectionId}
+                subheading={subheadingModal.subheading}
             />
         </div>
     );

@@ -1,6 +1,17 @@
 import QuestionRenderer from "./QuestionRenderer";
 
 export default function SurveySection({ section, answers, onChange, errors = {} }) {
+    // Merge questions and subheadings, sort by display_order
+    const questions = (section.questions || []).map(q => ({ ...q, itemType: 'question' }));
+    const subheadings = (section.subheadings || []).map(s => ({ 
+        ...s, 
+        itemType: 'subheading', 
+        type: 'subheading',
+        // Subheadings don't need is_required since they're not input fields
+        is_required: false
+    }));
+    const allItems = [...questions, ...subheadings].sort((a, b) => a.display_order - b.display_order);
+
     return (
         <div className="flex flex-col gap-6">
             <div className="mb-3">
@@ -9,13 +20,13 @@ export default function SurveySection({ section, answers, onChange, errors = {} 
                 
             </div>
 
-            {section.questions.map((question) => (
+            {allItems.map((item) => (
                 <QuestionRenderer
-                    key={question.id}
-                    question={question}
-                    value={answers[question.id]}
-                    onChange={(val) => onChange(question.id, val)}
-                    error={errors[`answers.${question.id}`]}
+                    key={`${item.itemType}-${item.id}`}
+                    question={item}
+                    value={answers[item.id]}
+                    onChange={(val) => onChange(item.id, val)}
+                    error={errors[`answers.${item.id}`]}
                 />
             ))}
         </div>
