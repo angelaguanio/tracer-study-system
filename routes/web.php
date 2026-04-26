@@ -126,8 +126,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
 
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
       //announcement

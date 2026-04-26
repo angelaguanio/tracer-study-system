@@ -87,18 +87,34 @@ class AdminAlumniCoordinatorController extends Controller
                 'email',
                 'unique:users,email,' . $alumni_coordinator->id
             ],
-            'department' => ['required', 'string'],
-            'courses'    => ['required', 'string'],
+            'department' => ['nullable', 'string'],
+            'courses'    => ['nullable', 'string'],
+            'password'   => ['nullable', 'min:6'],
         ]);
 
-        $alumni_coordinator->update([
+        $updateData = [
             'first_name'  => $validated['first_name'],
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
             'email'       => $validated['email'],
-            'department'  => $validated['department'],
-            'courses'     => $validated['courses'],
-        ]);
+        ];
+
+        // Only update department if provided
+        if (!empty($validated['department'])) {
+            $updateData['department'] = $validated['department'];
+        }
+
+        // Only update courses if provided
+        if (!empty($validated['courses'])) {
+            $updateData['courses'] = $validated['courses'];
+        }
+
+        // Only update password if provided
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+
+        $alumni_coordinator->update($updateData);
 
        
         return back();

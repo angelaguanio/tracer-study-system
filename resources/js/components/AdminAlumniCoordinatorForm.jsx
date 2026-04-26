@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "@inertiajs/react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,13 +25,14 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     // LOAD DATA WHEN EDITING
     useEffect(() => {
         if (editing) {
+            console.log("Loading editing data:", editing);
             setData({
                 first_name: editing.first_name || "",
                 last_name: editing.last_name || "",
                 middle_name: editing.middle_name || "",
                 email: editing.email || "",
                 department: editing.department || "CECT",
-                courses: editing.courses ? String(editing.courses) : "",
+                courses: editing.courses || "",
                 password: "",
             });
         } else {
@@ -42,44 +44,37 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     const submit = (e) => {
         e.preventDefault();
 
-        const payload = {
-            first_name: data.first_name,
-            last_name: data.last_name,
-            middle_name: data.middle_name,
-            email: data.email,
-            department: data.department,
-            courses: data.courses,
-        };
+        console.log("Submitting form data:", data);
 
         if (editing) {
-            if (data.password) {
-                payload.password = data.password;
-            }
-
-            put(`/admin/alumni-coordinators/${editing.id}`, payload, {
+            put(`/admin/alumni-coordinators/${editing.id}`, {
                 preserveScroll: true,
                 preserveState: false,
 
-                // ✅ FIX HERE
-                onFinish: () => {
-                    if (Object.keys(errors).length === 0) {
-                        reset();
-                        closeForm();
-                    }
+                onSuccess: () => {
+                    toast.success("Coordinator updated successfully!");
+                    reset();
+                    closeForm();
+                },
+
+                onError: (errors) => {
+                    console.error("Update failed:", errors);
+                    toast.error("Failed to update coordinator. Please check the form.");
                 },
             });
         } else {
             post("/admin/alumni-coordinators", {
-                ...payload,
-                password: data.password,
                 preserveScroll: true,
 
-                // ✅ FIX HERE
-                onFinish: () => {
-                    if (Object.keys(errors).length === 0) {
-                        reset();
-                        closeForm();
-                    }
+                onSuccess: () => {
+                    toast.success("Coordinator created successfully!");
+                    reset();
+                    closeForm();
+                },
+
+                onError: (errors) => {
+                    console.error("Create failed:", errors);
+                    toast.error("Failed to create coordinator. Please check the form.");
                 },
             });
         }
@@ -168,11 +163,13 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                         <div className="space-y-1">
                             <label className="text-sm font-medium text-gray-700">Assigned Course</label>
                             <Select
-                                value={data.courses}
+                                value={data.courses || undefined}
                                 onValueChange={(val) => setData("courses", val)}
                             >
                                 <SelectTrigger className="w-full bg-white">
-                                    <SelectValue />
+                                    <SelectValue placeholder="Select a course">
+                                        {data.courses || "Select a course"}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="BSIT">BSIT</SelectItem>
@@ -182,6 +179,9 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                             </Select>
                             {errors.courses && (
                                 <p className="text-red-500 text-xs">{errors.courses}</p>
+                            )}
+                            {data.courses && (
+                                <p className="text-xs text-gray-500">Current: {data.courses}</p>
                             )}
                         </div>
                     </div>
