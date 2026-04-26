@@ -116,8 +116,6 @@ const PERSONAL_FIELDS = [
 const EMPLOYMENT_TYPE_OPTIONS = [
   { value: 'Permanent/Regular', label: 'Permanent/Regular' },
   { value: 'Probationary', label: 'Probationary' },
-  { value: 'Contractual', label: 'Contractual' },
-  { value: 'Part-time', label: 'Part-time' },
 ];
 
 const EMPLOYED_FIELDS = [

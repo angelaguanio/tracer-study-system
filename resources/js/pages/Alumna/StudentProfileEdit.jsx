@@ -174,8 +174,6 @@ export default function StudentProfileEdit() {
                                         <option value="">Select Type</option>
                                         <option value="Permanent/Regular">Permanent/Regular</option>
                                         <option value="Probationary">Probationary</option>
-                                        <option value="Contractual">Contractual</option>
-                                        <option value="Part-time">Part-time</option>
                                     </select>
                                 </div>
                                 <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={e => setData('company', e.target.value)} className={inputClass} placeholder="Company Name" /></div>
