@@ -2,6 +2,7 @@ import { router } from "@inertiajs/react";
 import { Pencil, Trash2, ChevronUp, ChevronDown, Rows3, Rows4, Hash, CircleChevronDown, CircleDashed, SquareCheck, Heading2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { route } from "ziggy-js";
 
 const TYPE_MAP = {
     text:       { label: "Short Answer",    icon: Rows3 },
@@ -16,7 +17,11 @@ const TYPE_MAP = {
 
 export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast }) {
     const handleDelete = () => {
-        router.delete(route("admin.questions.destroy", question.id));
+        if (question.itemType === 'subheading') {
+            router.delete(route("admin.subheadings.destroy", question.id));
+        } else {
+            router.delete(route("admin.questions.destroy", question.id));
+        }
     };
 
     const typeInfo = TYPE_MAP[question.type] ?? { label: question.type, icon: Rows3 };
