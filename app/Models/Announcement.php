@@ -12,6 +12,6 @@ class Announcement extends Model
     protected $fillable = [
         'title',
         'details',
-        'image', // ✅ make sure image is fillable
+        'image', 
     ];
 }

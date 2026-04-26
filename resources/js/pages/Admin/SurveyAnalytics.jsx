@@ -59,6 +59,7 @@ export default function SurveyAnalytics({
     trendByYear = [],
     textAnalysis = [],
     filters = {},
+    locationMigration = {},
 }) {
     const [localFilters, setLocalFilters] = useState({
         year_graduated: filters.yearGraduated || "",
@@ -185,9 +186,84 @@ export default function SurveyAnalytics({
                     )}
                 </SectionCard>
 
-                {/* ── 3. Grouped Likert Analysis ── */}
+                {/* ── 3. Employment Migration ── */}
+                {(locationMigration?.total > 0) && (
+                    <SectionCard title="3. Employment Migration — Local vs. External">
+                        <p className="text-xs text-gray-500 mb-3">
+                            Based on home address vs. company location for employed respondents with location data.
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                            <StatCard label="With Location Data" value={locationMigration.total} />
+                            <StatCard
+                                label="Local Employment"
+                                value={locationMigration.local}
+                                sub={`${locationMigration.local_percentage}%`}
+                            />
+                            <StatCard
+                                label="External Employment"
+                                value={locationMigration.external}
+                                sub={`${locationMigration.external_percentage}%`}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Bar Chart */}
+                            <div>
+                                <p className="text-xs font-semibold text-gray-500 mb-2">Count Comparison</p>
+                                <ResponsiveContainer width="100%" height={180}>
+                                    <BarChart
+                                        data={[
+                                            { name: "Local", value: locationMigration.local },
+                                            { name: "External", value: locationMigration.external },
+                                        ]}
+                                        margin={{ top: 5, right: 10, bottom: 5, left: 0 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                        <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                                        <Tooltip />
+                                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                            <Cell fill="#22c55e" />
+                                            <Cell fill="#3b82f6" />
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            {/* Percentage bars */}
+                            <div className="flex flex-col justify-center gap-3">
+                                <div>
+                                    <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                        <span>Local (same area)</span>
+                                        <span className="font-semibold">{locationMigration.local_percentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-100 rounded-full h-4">
+                                        <div
+                                            className="h-4 rounded-full bg-green-500 transition-all"
+                                            style={{ width: `${locationMigration.local_percentage}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                        <span>External (different area)</span>
+                                        <span className="font-semibold">{locationMigration.external_percentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-100 rounded-full h-4">
+                                        <div
+                                            className="h-4 rounded-full bg-blue-500 transition-all"
+                                            style={{ width: `${locationMigration.external_percentage}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </SectionCard>
+                )}
+
+                {/* ── 4. Grouped Likert Analysis ── */}
                 {likertGroups.length > 0 && (
-                    <SectionCard title="3. Grouped Likert Analysis">
+                    <SectionCard title="4. Grouped Likert Analysis">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-2">
                             {likertGroups.map((g) => (
                                 <div key={g.section_id} className="border rounded-lg p-3 bg-gray-50">
@@ -221,7 +297,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 4. Cross Analysis ── */}
                 {(crossAnalysis.section_vs_employment?.length > 0 || crossAnalysis.degree_vs_employment?.length > 0) && (
-                    <SectionCard title="4. Cross Analysis">
+                    <SectionCard title="5. Cross Analysis">
                         {crossAnalysis.section_vs_employment?.length > 0 && (
                             <div>
                                 <p className="text-xs font-semibold text-gray-500 mb-2">Section Score vs Employment Status</p>
@@ -280,7 +356,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 5. Trend Analysis ── */}
                 {trendData.length > 1 && (
-                    <SectionCard title="5. Trend Analysis by Year Graduated">
+                    <SectionCard title="6. Trend Analysis by Year Graduated">
                         <p className="text-xs font-semibold text-gray-500 mb-1">Employment Rate Over Time</p>
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart data={trendData}>

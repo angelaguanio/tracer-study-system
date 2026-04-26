@@ -17,8 +17,8 @@ class StoreQuestionRequest extends FormRequest
         $choiceTypes = ['select', 'radio', 'checkbox'];
 
         return [
-            'label'         => ['required', 'string', 'max:255'],
-            'type'          => ['required', 'in:text,select,radio,checkbox,number,textarea,likert'],
+            'label'         => ['required', 'string', 'max:1000'], // Increased for subheadings
+            'type'          => ['required', 'in:text,select,radio,checkbox,number,textarea,likert,subheading'],
             'is_required'   => ['sometimes', 'boolean'],
             'display_order' => ['sometimes', 'integer', 'min:1'],
             'options'       => [
