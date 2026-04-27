@@ -35,7 +35,7 @@ class StudentProfileController extends Controller
     }
 
     /**
-     * Update the profile and archive the *previous* state into history.
+     * Update the profile and archive the *previous* state into history ONLY if employment changed.
      */
     public function update(Request $request) {
         /** @var \App\Models\User $user */
@@ -64,7 +64,7 @@ class StudentProfileController extends Controller
         ]);
         $user->save();
 
-        // ---PREPARE NEW EMPLOYMENT DATA ---
+        // --- PREPARE NEW EMPLOYMENT DATA ---
         $salaryValue = $request->monthly_salary;
         if ($salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
@@ -73,20 +73,32 @@ class StudentProfileController extends Controller
         $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
         $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
 
-        // --- THE CRITICAL LOGIC: ARCHIVE PREVIOUS STATE FIRST ---
+        // --- THE CRITICAL LOGIC: ARCHIVE ONLY IF EMPLOYMENT DATA CHANGED ---
         $oldEmp = $user->employment;
 
         if ($oldEmp) {
-            $user->employmentHistory()->create([
-                'currently_employed' => $oldEmp->currently_employed,
-                'employment_type'    => $oldEmp->employment_type,
-                'company_name'       => $oldEmp->company_name,
-                'position'           => $oldEmp->position,
-                'location'           => $oldEmp->location,
-                'monthly_salary'     => $oldEmp->monthly_salary,
-                'unemployment_reason' => $oldEmp->unemployment_reason,
-                'created_at'         => $oldEmp->updated_at, 
-            ]);
+            $hasEmploymentChanged = (
+                $oldEmp->currently_employed !== $isEmployed ||
+                $oldEmp->company_name       !== $request->company ||
+                $oldEmp->position           !== $request->position ||
+                $oldEmp->employment_type    !== $request->employment_type ||
+                $oldEmp->location           !== $request->location ||
+                $oldEmp->monthly_salary     !=  $salaryValue || 
+                $oldEmp->unemployment_reason !== $unemploymentReason
+            );
+
+            if ($hasEmploymentChanged) {
+                $user->employmentHistory()->create([
+                    'currently_employed' => $oldEmp->currently_employed,
+                    'employment_type'    => $oldEmp->employment_type,
+                    'company_name'       => $oldEmp->company_name,
+                    'position'           => $oldEmp->position,
+                    'location'           => $oldEmp->location,
+                    'monthly_salary'     => $oldEmp->monthly_salary,
+                    'unemployment_reason' => $oldEmp->unemployment_reason,
+                    'created_at'         => $oldEmp->updated_at, 
+                ]);
+            }
         }
 
         // --- UPDATE CURRENT EMPLOYMENT RECORD ---
@@ -103,7 +115,7 @@ class StudentProfileController extends Controller
             ]
         );
 
-        return redirect()->route('alumna.profile')->with('success', 'Profile updated and previous record archived!');
+        return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
     }
 
     /**
