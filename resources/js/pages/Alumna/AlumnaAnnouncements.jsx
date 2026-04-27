@@ -36,10 +36,10 @@ const lastPage = announcements?.last_page ?? 1;
                 {/* IMAGE */}
                 {ann.image ? (
                   <img
-                    src={ann.image}
-                    alt={ann.title}
-                    className="w-full h-80 object-cover"
-                  />
+                  src={Array.isArray(ann.image) ? ann.image[0] : ann.image}
+                  alt={ann.title}
+                  className="w-full h-80 object-cover"
+                />
                 ) : (
                   <div className="w-full h-80 flex items-center justify-center text-gray-400">
                     <ImageOff size={100} className="text-[#2859C5]" />

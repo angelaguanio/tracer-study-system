@@ -12,6 +12,10 @@ import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdat
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
 
+  // LIMITS
+  const MAX_FILES = 10;
+  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
   const [removeImage, setRemoveImage] = useState(false);
 
   let parsedImages = announcement?.image;
@@ -47,10 +51,29 @@ export default function AdminAnnouncementEdit({ announcement }) {
      const { name, value } = e.target;
      setFormData({ ...formData, [name]: value });
    };
-  
+
+   // FILE HANDLER (UPDATED LIMITS)
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+
+    // MAX 10 IMAGES TOTAL
+    if ((existingImages.length + newImages.length + files.length) > MAX_FILES) {
+      alert("Maximum of 10 images only.");
+      return;
+    }
+
+    // TOTAL SIZE CHECK (ALL FILES COMBINED)
+    let totalSize = 0;
+
+    for (let file of files) {
+      totalSize += file.size;
+    }
+
+    if ((totalSize / 1024 / 1024) > 10) {
+      alert("Total image size must not exceed 10MB.");
+      return;
+    }
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
 
@@ -121,6 +144,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                   ref={fileInputRef}
                   className="hidden"
                   accept="image/*"
+                  multiple
                   onChange={handleFileChange}
                 />
 

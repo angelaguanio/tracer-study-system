@@ -39,7 +39,11 @@ export default function AlumnaAnnouncementView({ announcement }) {
         {/* IMAGE (ONLY IF AVAILABLE) */}
         {announcement?.image && (
             <img
-              src={announcement.image}
+              src={
+                Array.isArray(announcement.image)
+                  ? announcement.image[0] // first image lang ipapakita
+                  : announcement.image
+              }
               alt={announcement.title}
               className="w-full max-h-[500px] object-contain mb-6"
             />

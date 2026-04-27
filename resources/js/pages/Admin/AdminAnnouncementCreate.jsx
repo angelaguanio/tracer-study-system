@@ -12,6 +12,10 @@
         const fileInputRef = useRef(null); // Reference para sa hidden file input
         const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
 
+        // LIMITS
+        const MAX_FILES = 10;
+        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
         // INERTIA FORM DATA
         const { data, setData, post, processing, errors } = useForm({
             title: "",
@@ -52,7 +56,7 @@
                 <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
                     {/* Card wrapper */}
                     <div className="w-full max-w-6xl">
-                        <Card className="w-full flex flex-col min-h-[700px] max-h-[900px]">
+                        <Card className="w-full flex flex-col min-h-[700px]">
 
                             {/* Card Header */}
                             <CardHeader className="flex flex-row items-center justify-between">
@@ -85,7 +89,7 @@
                             {/* Card Content */}
                             <CardContent className="flex flex-col flex-grow">
                                 {/* SINGLE FORM */}
-                                <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
+                                <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
 
                                     {/* HIDDEN FILE INPUT */}
                                     <input
@@ -114,12 +118,12 @@
 
                                     {/* IMAGE PREVIEW */}
                                     {previews.length > 0 && (
-                                        <div className="mb-4 flex gap-2 flex-wrap">
+                                        <div className="mb-4 flex gap-2 flex-wrap px-6">
                                             {previews.map((src, index) => (
                                                 <div key={index} className="relative">
                                                     <img
                                                         src={src}
-                                                        className="w-32 rounded border"
+                                                        className="w-32 h-32 object-cover rounded border"
                                                     />
 
                                                     {/* REMOVE SPECIFIC IMAGE */}
@@ -167,7 +171,7 @@
                                             placeholder="Details"
                                             value={data.details} // bind form data
                                             onChange={e => setData("details", e.target.value)}
-                                            className="h-90 max-h-100 overflow-y-auto"
+                                            className="h-100 overflow-y-auto"
                                         />
                                         {/* ERROR */}
                                         {errors.details && (

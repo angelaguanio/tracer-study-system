@@ -87,7 +87,21 @@ class AnnouncementController extends Controller
 
         $files = $request->file('images', []);
 
-        $this->validateTotalImageSize($files);
+        // MAX 10 IMAGES
+        if (count($files) > 10) {
+            abort(422, 'Maximum of 10 images only.');
+        }
+
+        // TOTAL SIZE CHECK (10MB total)
+        $totalSize = 0;
+
+        foreach ($files as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size must not exceed 10MB.');
+        }
 
         $imageUrls = [];
 
@@ -186,7 +200,31 @@ class AnnouncementController extends Controller
         $existing = json_decode($request->existing_images, true) ?? [];
         $newFiles = $request->file('images', []);
 
-        $this->validateTotalImageSize($newFiles);
+        // MAX 10 TOTAL IMAGES (existing + new)
+        if (count($existing) + count($newFiles) > 10) {
+            abort(422, 'Maximum of 10 images only.');
+        }
+
+        // TOTAL SIZE CHECK (NEW FILES ONLY)
+        $totalSize = 0;
+
+        foreach ($existing as $imageUrl) {
+        $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
+
+        if (Storage::disk('public')->exists($path)) {
+            $totalSize += Storage::disk('public')->size($path);
+        }
+    }
+
+        // NEW FILES SIZE
+        foreach ($newFiles as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        // FINAL CHECK (10MB TOTAL)
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size (existing + new) must not exceed 10MB.');
+        }
 
         $imagePaths = $existing;
 

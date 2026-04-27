@@ -7,11 +7,17 @@ import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 
 
 // Card Component
 function AnnouncementCard({ id, date, title, description, image }) {
+
+  // kahit array ang image, gagana pa rin
+  const imgSrc = Array.isArray(image)
+    ? image[0] // first image lang ipapakita sa card
+    : image;
+
   return (
     <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col h-[420px]">      
-      {image ? (
+      {imgSrc ? (
         <img
-          src={image}
+          src={imgSrc}
           className="w-full h-[150px] object-cover rounded-xl mb-6"
         />
       ) : (
