@@ -1,3 +1,4 @@
+import React from 'react';
 import { usePage, Link } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 
@@ -129,8 +130,9 @@ export default function StudentProfile() {
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
                                     <th className="pb-3 font-bold pl-2">Date Logged</th>
-                                    <th className="pb-3 font-bold">Company</th>
-                                    <th className="pb-3 font-bold">Position</th>
+                                    {/* Centered Headers */}
+                                    <th className="pb-3 font-bold text-center">Company</th>
+                                    <th className="pb-3 font-bold text-center">Position</th>
                                     <th className="pb-3 font-bold text-center">Status</th>
                                     <th className="pb-3 font-bold text-center">Action</th>
                                 </tr>
@@ -144,10 +146,12 @@ export default function StudentProfile() {
                                             <td className="py-2 pl-2 text-gray-600">
                                                 {new Date(history.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="py-2 font-bold text-gray-800">
+                                            {/* Centered Company Dash/Value */}
+                                            <td className="py-2 font-bold text-gray-800 text-center">
                                                 {isUnemployed ? '—' : history.company_name}
                                             </td>
-                                            <td className="py-2 text-gray-600">
+                                            {/* Centered Position Dash/Value */}
+                                            <td className="py-2 text-gray-600 text-center">
                                                 {isUnemployed ? '—' : (history.position || '—')}
                                             </td>
                                             <td className="py-2 text-center">
@@ -187,7 +191,10 @@ function InfoItem({ icon, label, value }) {
             {icon && <div className="text-gray-400 mt-1">{icon}</div>}
             <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
-                <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
+                {/* Applied a flex container to center the fallback dash if value is missing */}
+                <span className={`text-[13px] font-bold text-[#343a40] ${!value ? 'flex justify-center' : ''}`}>
+                    {value || '—'}
+                </span>
             </div>
         </div>
     );

@@ -16,7 +16,7 @@ class StudentProfileController extends Controller
      */
     public function show() {
         $user = Auth::user()->fresh()->load(['employment', 'employmentHistory' => function($query) {
-            $query->latest(); // Pinakabagong history ang una
+            $query->latest(); 
         }]);
         
         return Inertia::render('Alumna/StudentProfile', [
