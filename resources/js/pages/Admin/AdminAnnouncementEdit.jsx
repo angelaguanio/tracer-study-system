@@ -16,6 +16,8 @@ export default function AdminAnnouncementEdit({ announcement }) {
   const MAX_FILES = 10;
   const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+  const [fileError, setFileError] = useState(""); //error state for image validation
+
   const [removeImage, setRemoveImage] = useState(false);
 
   let parsedImages = announcement?.image;
@@ -49,31 +51,41 @@ export default function AdminAnnouncementEdit({ announcement }) {
   
   const handleChange = (e) => {
      const { name, value } = e.target;
-     setFormData({ ...formData, [name]: value });
-   };
+      setFormData({ ...formData, [name]: value });
+    };
 
-   // FILE HANDLER (UPDATED LIMITS)
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+    // FILE HANDLER (UPDATED LIMITS)
+    const handleFileChange = (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
 
-    // MAX 10 IMAGES TOTAL
-    if ((existingImages.length + newImages.length + files.length) > MAX_FILES) {
-      alert("Maximum of 10 images only.");
-      return;
-    }
+      setFileError(""); // reset error every upload attempt
 
-    // TOTAL SIZE CHECK (ALL FILES COMBINED)
-    let totalSize = 0;
+      const currentCount = existingImages.length + newImages.length;
 
-    for (let file of files) {
-      totalSize += file.size;
-    }
+      // MAX 10 IMAGES TOTAL
+      if (currentCount + files.length > MAX_FILES) {
+        setFileError("Maximum of 10 images only.");
+        return;
+      }
 
-    if ((totalSize / 1024 / 1024) > 10) {
-      alert("Total image size must not exceed 10MB.");
-      return;
-    }
+      // TOTAL SIZE CHECK (ALL FILES COMBINED)
+      const existingSize = newImages.reduce(
+        (sum, file) => sum + file.size,
+        0
+      );
+
+      const incomingSize = files.reduce(
+        (sum, file) => sum + file.size,
+        0
+      );
+
+      const totalSize = existingSize + incomingSize;
+
+      if (totalSize > MAX_SIZE) {
+        setFileError("Total image size must not exceed 10MB.");
+        return;
+      }
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
 
@@ -158,6 +170,20 @@ export default function AdminAnnouncementEdit({ announcement }) {
               </div>
             </CardHeader>
 
+            {/* INFO TEXT (only shows kapag may image na) */}
+            {previews.length > 0 && (
+                <span className="text-xs text-gray-500 px-6 block">
+                    You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
+                </span>
+            )}
+
+            {/* ERROR DISPLAY */}
+            {fileError && (
+                <span className="text-sm text-red-500 px-6 block">
+                    {fileError}
+                </span>
+            )}
+
             {/* Image Preview */}
             {previews.length > 0 && (
               <div className="mb-2 flex gap-2 flex-wrap pl-6">
@@ -173,17 +199,27 @@ export default function AdminAnnouncementEdit({ announcement }) {
                     <button
                       type="button"
                       onClick={() => {
-                        const removed = img;
+                        setFileError("");
 
-                        setExistingImages(prev =>
-                          prev.filter(i => i !== removed)
-                        );
+                        const indexInAll = index;
 
-                        setPreviewNew(prev =>
-                          prev.filter(i => i !== removed)
-                        );
+                        if (indexInAll < existingImages.length) {
+                          setExistingImages(prev =>
+                            prev.filter((_, i) => i !== indexInAll)
+                          );
+                        } else {
+                          const newIndex = indexInAll - existingImages.length;
+
+                          setPreviewNew(prev =>
+                            prev.filter((_, i) => i !== newIndex)
+                          );
+
+                          setNewImages(prev =>
+                            prev.filter((_, i) => i !== newIndex)
+                          );
+                        }
                       }}
-                      className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
+                      className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
                     >
                       <X size={14} />
                     </button>

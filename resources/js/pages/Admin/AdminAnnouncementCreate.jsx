@@ -11,6 +11,7 @@
     export default function AdminAnnouncementCreate() {
         const fileInputRef = useRef(null); // Reference para sa hidden file input
         const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
+        const [fileError, setFileError] = useState(""); //error state for image validation
 
         // LIMITS
         const MAX_FILES = 10;
@@ -38,6 +39,7 @@
                     });
 
                     setPreviews([]);
+                    setFileError("");
 
                     if (fileInputRef.current) {
                         fileInputRef.current.value = null;
@@ -101,7 +103,30 @@
                                         onChange={(e) => {
                                             const newFiles = Array.from(e.target.files || []);
 
-                                            if (newFiles.length === 0) return;
+                                            if (!newFiles.length) return;
+
+                                            // reset error every upload attempt
+                                            setFileError("");
+
+                                            const currentFiles = data.images || [];
+                                            const combinedFiles = [...currentFiles, ...newFiles];
+
+                                            // LIMIT 10 IMAGES
+                                            if (combinedFiles.length > MAX_FILES) {
+                                                setFileError("Maximum of 10 images only.");
+                                                return;
+                                            }
+
+                                            // LIMIT 10MB TOTAL SIZE
+                                            const totalSize = combinedFiles.reduce(
+                                                (sum, file) => sum + file.size,
+                                                0
+                                            );
+
+                                            if (totalSize > MAX_SIZE) {
+                                                setFileError("Total image size must not exceed 10MB.");
+                                                return;
+                                            }
 
                                             const newPreviews = newFiles.map(file =>
                                                 URL.createObjectURL(file)
@@ -115,6 +140,20 @@
                                             setPreviews(prev => [...prev, ...newPreviews]);
                                         }}
                                     />
+
+                                    {/* INFO TEXT (only shows kapag may image na) */}
+                                    {previews.length > 0 && (
+                                        <span className="text-xs text-gray-500 px-6 block">
+                                            You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
+                                        </span>
+                                    )}
+
+                                    {/* ERROR DISPLAY */}
+                                    {fileError && (
+                                        <span className="text-sm text-red-500 px-6 block">
+                                            {fileError}
+                                        </span>
+                                    )}
 
                                     {/* IMAGE PREVIEW */}
                                     {previews.length > 0 && (
@@ -130,13 +169,21 @@
                                                     <button
                                                         type="button"
                                                         onClick={() => {
-                                                            setPreviews(prev => prev.filter((_, i) => i !== index));
-                                                            setData("images", prev => prev.filter((_, i) => i !== index));
 
-                                                            setPreviews(newPreviews);
-                                                            setData("images", newImages);
+                                                            // remove preview
+                                                            setPreviews(prev =>
+                                                                prev.filter((_, i) => i !== index)
+                                                            );
+
+                                                            // sync images
+                                                            setData(prev => ({
+                                                                ...prev,
+                                                                images: prev.images.filter((_, i) => i !== index)
+                                                            }));
+
+                                                            setFileError(""); // reset error
                                                         }}
-                                                        className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
+                                                        className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
                                                     >
                                                         <X size={14} />
                                                     </button>

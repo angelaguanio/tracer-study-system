@@ -18,6 +18,8 @@
     const MAX_FILES = 10;
     const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+    const [fileError, setFileError] = useState(""); //error state for image validation
+
     let parsedImages = announcement?.image;
 
     try {
@@ -49,29 +51,39 @@
 
   const handleChange = (e) => {
      const { name, value } = e.target;
-     setFormData({ ...formData, [name]: value });
-   };
+      setFormData({ ...formData, [name]: value });
+    };
 
    // FILE HANDLER (UPDATED LIMITS)
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+    if (!files.length) return;
+
+    setFileError(""); // reset error every upload attempt
+
+    const currentCount = existingImages.length + newImages.length;
 
     // MAX 10 IMAGES TOTAL
-    if ((existingImages.length + newImages.length + files.length) > MAX_FILES) {
-      alert("Maximum of 10 images only.");
+    if (currentCount + files.length > MAX_FILES) {
+      setFileError("Maximum of 10 images only.");
       return;
     }
 
     // TOTAL SIZE CHECK (ALL FILES COMBINED)
-    let totalSize = 0;
+    const existingSize = newImages.reduce(
+      (sum, file) => sum + file.size,
+      0
+    );
 
-    for (let file of files) {
-      totalSize += file.size;
-    }
+    const incomingSize = files.reduce(
+      (sum, file) => sum + file.size,
+      0
+    );
 
-    if ((totalSize / 1024 / 1024) > 10) {
-      alert("Total image size must not exceed 10MB.");
+    const totalSize = existingSize + incomingSize;
+
+    if (totalSize > MAX_SIZE) {
+      setFileError("Total image size must not exceed 10MB.");
       return;
     }
 
@@ -163,6 +175,20 @@
                   />
                 </CardHeader>
 
+                {/* INFO TEXT (only shows kapag may image na) */}
+                {previews.length > 0 && (
+                    <span className="text-xs text-gray-500 px-6 block">
+                        You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
+                    </span>
+                )}
+
+                {/* ERROR DISPLAY */}
+                {fileError && (
+                    <span className="text-sm text-red-500 px-6 block">
+                        {fileError}
+                    </span>
+                )}
+
                 {/* IMAGE PREVIEW */}
                 {previews.length > 0 && (
                   <div className="mb-2 flex gap-2 flex-wrap pl-6">
@@ -178,17 +204,27 @@
                         <button
                           type="button"
                           onClick={() => {
-                            const removedImage = previews[index];
+                            setFileError("");
 
-                            setPreviewNew(prev =>
-                              prev.filter(img => img !== removedImage)
-                            );
+                            const indexInAll = index;
 
-                            setExistingImages(prev =>
-                              prev.filter(img => img !== removedImage)
-                            );
+                            if (indexInAll < existingImages.length) {
+                              setExistingImages(prev =>
+                                prev.filter((_, i) => i !== indexInAll)
+                              );
+                            } else {
+                              const newIndex = indexInAll - existingImages.length;
+
+                              setPreviewNew(prev =>
+                                prev.filter((_, i) => i !== newIndex)
+                              );
+
+                              setNewImages(prev =>
+                                prev.filter((_, i) => i !== newIndex)
+                              );
+                            }
                           }}
-                          className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
+                          className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
                         >
                           <X size={14} />
                         </button>
