@@ -83,7 +83,7 @@ export default function StudentProfileEdit() {
                     form="profile-form"
                     type="submit"
                     disabled={processing}
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all"
+                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all cursor-pointer"
                 >
                     <IconSave /> {processing ? 'Saving...' : 'Save Changes'}
                 </button>

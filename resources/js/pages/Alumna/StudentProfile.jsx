@@ -83,7 +83,7 @@ export default function StudentProfile() {
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconBriefcase /> Employment Status
+                        <IconBriefcase /> Current Employment Status
                     </div>
                     <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
                         {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
