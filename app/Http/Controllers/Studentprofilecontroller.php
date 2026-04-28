@@ -11,9 +11,6 @@ use App\Models\User;
 
 class StudentProfileController extends Controller
 {
-    /**
-     * Display the student profile with current employment and history.
-     */
     public function show() {
         $user = Auth::user()->fresh()->load(['employment', 'employmentHistory' => function($query) {
             $query->latest(); 
@@ -24,9 +21,6 @@ class StudentProfileController extends Controller
         ]);
     }
 
-    /**
-     * Show the profile edit form.
-     */
     public function edit() {
         $user = Auth::user()->load('employment');
         return Inertia::render('Alumna/StudentProfileEdit', [
@@ -34,9 +28,6 @@ class StudentProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the profile and archive the *previous* state into history ONLY if employment changed.
-     */
     public function update(Request $request) {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -53,7 +44,7 @@ class StudentProfileController extends Controller
             }
         }
 
-        // --- UPDATE PERSONAL INFO (USER MODEL) ---
+        // --- UPDATE PERSONAL INFO ---
         $user->fill([
             'first_name'     => $request->first_name,
             'middle_name'    => $request->middle_name ?? '',
@@ -64,7 +55,7 @@ class StudentProfileController extends Controller
         ]);
         $user->save();
 
-        // --- PREPARE NEW EMPLOYMENT DATA ---
+        // --- EMPLOYMENT DATA PREPARATION ---
         $salaryValue = $request->monthly_salary;
         if ($salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
@@ -73,9 +64,8 @@ class StudentProfileController extends Controller
         $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
         $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
 
-        // --- THE CRITICAL LOGIC: ARCHIVE ONLY IF EMPLOYMENT DATA CHANGED ---
+        // --- ARCHIVE OLD DATA IF CHANGED ---
         $oldEmp = $user->employment;
-
         if ($oldEmp) {
             $hasEmploymentChanged = (
                 $oldEmp->currently_employed !== $isEmployed ||
@@ -101,7 +91,7 @@ class StudentProfileController extends Controller
             }
         }
 
-        // --- UPDATE CURRENT EMPLOYMENT RECORD ---
+        // --- UPDATE CURRENT RECORD ---
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -118,15 +108,9 @@ class StudentProfileController extends Controller
         return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
     }
 
-    /**
-     * Show details of a specific history record.
-     */
     public function showHistory($id) {
         $history = \App\Models\EmploymentHistory::findOrFail($id);
-        
-        if ($history->user_id !== Auth::id()) {
-            abort(403);
-        }
+        if ($history->user_id !== Auth::id()) { abort(403); }
 
         return Inertia::render('Alumna/HistoryDetail', [
             'history' => $history,
