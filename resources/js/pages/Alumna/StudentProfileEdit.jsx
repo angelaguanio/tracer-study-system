@@ -113,7 +113,7 @@ export default function StudentProfileEdit() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all"
+                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all cursor-pointer"
                             >
                                 <IconImage />
                             </button>
