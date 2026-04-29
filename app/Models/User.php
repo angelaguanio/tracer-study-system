@@ -64,6 +64,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Role helper methods
+     */
+    public function isAlumna(): bool
+    {
+        return $this->user_role === 'alumna';
+    }
+
+    public function isCoordinator(): bool
+    {
+        return $this->user_role === 'coordinator';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->user_role === 'admin';
+    }
+
+    /**
      * Relationship: One current employment status.
      */
     public function employment(): HasOne {
@@ -78,4 +96,7 @@ class User extends Authenticatable
     {
          return $this->hasMany(EmploymentHistory::class);
     }
+
+    
+
 }

@@ -10,16 +10,19 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminAlumniController extends Controller
 {
+    /**
+     * LIST PAGE - Pagkuha ng listahan ng mga Alumna
+     */
     public function index(Request $request)
     {
         $query = User::query()->where('user_role', 'alumna');
 
         if ($request->filled('search')) {
-            $search = strtolower($request->search);
-
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
-                $q->whereRaw("LOWER(first_name) LIKE ?", ["%{$search}%"])
-                  ->orWhereRaw("LOWER(last_name) LIKE ?", ["%{$search}%"]);
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
             });
         }
 
@@ -28,7 +31,7 @@ class AdminAlumniController extends Controller
         }
 
         if ($request->filled('course') && $request->course !== 'all') {
-            $query->where('courses', $request->course);
+            $query->whereRaw('TRIM(courses) = ?', [$request->course]);
         }
 
         $users = $query->paginate(6)->appends($request->query());

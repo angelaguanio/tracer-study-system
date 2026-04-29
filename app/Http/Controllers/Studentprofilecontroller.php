@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\EmploymentHistory; // SIGURADUHIN NA NANDITO ITO
+use App\Models\EmploymentHistory;
+use App\Models\User;
 
 class StudentProfileController extends Controller
 {
@@ -34,12 +35,12 @@ class StudentProfileController extends Controller
     }
 
     /**
-     * Update the profile and archive a copy into employment history.
+     * Update the profile and archive a copy into employment history ONLY if data changed.
      */
     public function update(Request $request) {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Profile picture upload logic
         if ($request->hasFile('profile_picture')) {
             $picture = $request->file('profile_picture');
             if ($picture->isValid()) {
@@ -52,7 +53,6 @@ class StudentProfileController extends Controller
             }
         }
 
-        // Personal Information
         $user->fill([
             'first_name'     => $request->first_name,
             'middle_name'    => $request->middle_name ?? '',
@@ -63,17 +63,28 @@ class StudentProfileController extends Controller
         ]);
         $user->save();
 
-        // Salary formatting
         $salaryValue = $request->monthly_salary;
         if ($salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
         }
 
-        // Employment Logic
         $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
         $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
 
-        // Update Employment Record
+        $currentEmp = $user->employment;
+        $hasEmploymentChanges = true;
+
+        if ($currentEmp) {
+            $hasEmploymentChanges = 
+                $currentEmp->currently_employed !== $isEmployed ||
+                $currentEmp->employment_type    !== $request->employment_type ||
+                $currentEmp->company_name       !== $request->company ||
+                $currentEmp->position           !== $request->position ||
+                $currentEmp->location           !== $request->location ||
+                $currentEmp->monthly_salary     !=  $salaryValue || 
+                $currentEmp->unemployment_reason !== $unemploymentReason;
+        }
+
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -87,18 +98,19 @@ class StudentProfileController extends Controller
             ]
         );
 
-        // Save to History
-        $user->employmentHistory()->create([
-            'currently_employed' => $isEmployed,
-            'employment_type'    => $request->employment_type,
-            'company_name'       => $request->company,
-            'position'           => $request->position,
-            'location'           => $request->location,
-            'monthly_salary'     => $salaryValue,
-            'unemployment_reason' => $unemploymentReason,
-        ]);
+        if ($hasEmploymentChanges) {
+            $user->employmentHistory()->create([
+                'currently_employed' => $isEmployed,
+                'employment_type'    => $request->employment_type,
+                'company_name'       => $request->company,
+                'position'           => $request->position,
+                'location'           => $request->location,
+                'monthly_salary'     => $salaryValue,
+                'unemployment_reason' => $unemploymentReason,
+            ]);
+        }
 
-        return redirect()->route('alumna.profile')->with('success', 'Profile and history updated successfully!');
+        return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
     }
 
     /**

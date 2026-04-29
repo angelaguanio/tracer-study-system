@@ -135,25 +135,32 @@ export default function StudentProfile() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {profile.employment_history.map((history) => (
-                                    <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 text-gray-600">
-                                            {new Date(history.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="py-4 font-bold text-gray-800">
-                                            {history.company_name || 'Unemployed'}
-                                        </td>
-                                        <td className="py-4 text-gray-600">{history.position || '—'}</td>
-                                        <td className="py-4">
-                                            <Link
-                                                href={route('alumna.history.show', history.id)}
-                                                className="text-[#008542] font-bold text-xs hover:underline"
-                                            >
-                                                View Details
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {profile.employment_history.map((history) => {
+                                    // logic para sa display ng dash sa table
+                                    const isUnemployed = history.currently_employed === 'No' || !history.company_name;
+
+                                    return (
+                                        <tr key={history.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="py-4 text-gray-600">
+                                                {new Date(history.created_at).toLocaleDateString()}
+                                            </td>
+                                            <td className="py-4 font-bold text-gray-800">
+                                                {isUnemployed ? '—' : history.company_name}
+                                            </td>
+                                            <td className="py-4 text-gray-600">
+                                                {isUnemployed ? '—' : (history.position || '—')}
+                                            </td>
+                                            <td className="py-4">
+                                                <Link
+                                                    href={route('alumna.history.show', history.id)}
+                                                    className="text-[#008542] font-bold text-xs hover:underline"
+                                                >
+                                                    View Details
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

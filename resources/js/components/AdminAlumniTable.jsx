@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function AdminAlumniTable({
