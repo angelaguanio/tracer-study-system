@@ -16,7 +16,7 @@ use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
-
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -55,8 +55,11 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         // Static pages
         Route::get('/association', fn() => Inertia::render('Alumna/AlumnaAssociation'))->name('association');
         Route::get('/office', fn() => Inertia::render('Alumna/AlumnaOffice'))->name('office');
-        Route::get('/contact', fn() => Inertia::render('Alumna/ContactUs'))->name('contact');
         Route::get('/about', fn() => Inertia::render('Alumna/AlumnaAbout'))->name('about');
+
+        //contact us page
+        Route::get('/contact', [ContactController::class, 'alumniIndex'])->name('contact');
+        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
         // Student profile
         Route::get('/profile/history/{id}', [StudentProfileController::class, 'showHistory'])->name('history.show');
