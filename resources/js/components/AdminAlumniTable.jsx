@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Pencil, Mail } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye, Pencil, Trash2 } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function AdminAlumniTable({
@@ -172,18 +171,18 @@ export default function AdminAlumniTable({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="rounded-full border-[#9ECEFF] text-[#155DFC] hover:bg-blue-50 font-bold text-[11px]"
+                        className="border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center gap-1"
                         onClick={() =>
                           router.visit(route("admin.alumni.show", item.id))
                         }
                       >
-                        View Profile
+                        <Eye size={14} /> View
                       </Button>
 
                       <Button
                         size="sm"
                         variant="outline"
-                        className="rounded-full border-green-500 text-green-600 hover:bg-green-50 font-bold text-[11px]"
+                        className="border-green-500 text-green-600 hover:bg-green-50 flex items-center gap-1"
                         onClick={() =>
                           onSendEmail({
                             id: item.id,
@@ -192,7 +191,7 @@ export default function AdminAlumniTable({
                           })
                         }
                       >
-                        Send Email
+                        <Mail size={14} /> Send Email
                       </Button>
                     </div>
                   </TableCell>
