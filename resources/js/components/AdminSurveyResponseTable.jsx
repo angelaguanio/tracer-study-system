@@ -12,6 +12,7 @@ import { Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function AdminSurveyResponseTable({ responses, onDelete }) {
+
   const currentPage = responses?.current_page || 1;
   const lastPage = responses?.last_page || 1;
 
@@ -45,6 +46,8 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
   const paginationItems = getPaginationItems();
 
   const handleView = (res) => {
+    if (!res?.id) return;
+
     const url =
       res.status === "completed"
         ? `/admin/survey-response/${res.id}`
@@ -56,11 +59,10 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden">
 
-      {/* TABLE */}
       <div className="h-[500px] overflow-y-auto">
+
         <Table className="w-full">
 
-          {/* HEADER */}
           <TableHeader className="bg-[#70CAFF] sticky top-0 z-10">
             <TableRow>
               <TableHead className="text-center font-bold">Alumni</TableHead>
@@ -71,17 +73,15 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
             </TableRow>
           </TableHeader>
 
-          {/* BODY */}
           <TableBody>
             {responses?.data?.map((res) => (
               <TableRow key={res.id} className="hover:bg-gray-50 h-[60px]">
 
-                {/* ALUMNI (FIXED: avatar left, name centered) */}
+                {/* NAME */}
                 <TableCell className="text-center">
                   <div className="relative w-full flex items-center">
 
-                    {/* AVATAR (LEFT FIXED) */}
-                    <div className="absolute left-4 w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shadow-sm">
+                    <div className="absolute left-4 w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold">
                       {res.name
                         ?.split(" ")
                         .map((n) => n[0])
@@ -90,7 +90,6 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
                         .toUpperCase()}
                     </div>
 
-                    {/* NAME (TRUE CENTER) */}
                     <div className="w-full flex justify-center">
                       <span className="font-medium text-gray-800">
                         {res.name}
@@ -116,10 +115,14 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
                 </TableCell>
 
                 {/* COURSE */}
-                <TableCell className="text-center">{res.course}</TableCell>
+                <TableCell className="text-center">
+                  {res.course ?? "-"}
+                </TableCell>
 
                 {/* YEAR */}
-                <TableCell className="text-center">{res.year}</TableCell>
+                <TableCell className="text-center">
+                  {res.year ?? "-"}
+                </TableCell>
 
                 {/* ACTION */}
                 <TableCell className="text-center">
@@ -149,39 +152,35 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </div>
 
-      {/* PAGINATION */}
+      {/* PAGINATION (UNCHANGED UI) */}
       <div className="flex justify-end mt-4 px-4 pb-4">
         <div className="flex items-center gap-2">
 
-          {/* PREV */}
           <button
             onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-40"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          {/* NUMBERS */}
           {paginationItems.map((item, i) =>
             item === "..." ? (
-              <span
-                key={i}
-                className="w-9 h-9 flex items-center justify-center text-gray-400"
-              >
+              <span key={i} className="w-9 h-9 flex items-center justify-center">
                 ...
               </span>
             ) : (
               <button
                 key={item}
                 onClick={() => goToPage(item)}
-                className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border ${
+                className={`w-9 h-9 flex items-center justify-center rounded-lg border ${
                   currentPage === item
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white hover:bg-gray-50"
+                    ? "bg-blue-500 text-white"
+                    : "bg-white"
                 }`}
               >
                 {item}
@@ -189,13 +188,12 @@ export default function AdminSurveyResponseTable({ responses, onDelete }) {
             )
           )}
 
-          {/* NEXT */}
           <button
             onClick={() =>
               currentPage < lastPage && goToPage(currentPage + 1)
             }
             disabled={currentPage === lastPage}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-40"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

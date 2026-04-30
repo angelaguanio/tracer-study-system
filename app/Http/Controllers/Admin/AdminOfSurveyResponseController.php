@@ -4,20 +4,22 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Survey;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AdminOfSurveyResponseController extends Controller
 {
     /**
-     * Display a listing of the survey responses.
+     * Display ALL alumna users with correct survey status
      */
     public function index(Request $request)
     {
-        // 1. Base query: Siguraduhin na alumna lang ang kinukuha
-        $query = User::query()->where('user_role', 'alumna');
+        $survey = Survey::active()->latest()->first();
 
-        // 2. SEARCH logic (First Name or Last Name)
+        $query = User::where('user_role', 'alumna');
+
+        // SEARCH
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('first_name', 'like', "%{$request->search}%")
@@ -25,25 +27,32 @@ class AdminOfSurveyResponseController extends Controller
             });
         }
 
-        // 3. FILTER by Course
+        // FILTER COURSE
         if ($request->filled('course') && $request->course !== 'all') {
             $query->where('courses', $request->course);
         }
 
-        // 4. FILTER by Year
+        // FILTER YEAR
         if ($request->filled('year') && $request->year !== 'all') {
             $query->where('year_graduated', $request->year);
         }
 
-        // 5. PAGINATION: withQueryString() para hindi mawala ang filters paglipat ng page
         $users = $query->latest()->paginate(10)->withQueryString();
 
-        // 6. TRANSFORM: I-format ang data bago ipadala sa Inertia
-        $users->getCollection()->transform(function ($user) {
+        $users->getCollection()->transform(function ($user) use ($survey) {
+
+            $hasResponse = false;
+
+            if ($survey) {
+                $hasResponse = $user->responses()
+                    ->where('survey_id', $survey->id)
+                    ->exists();
+            }
+
             return [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
-                'status' => $user->responses()->exists() ? 'completed' : 'incomplete',
+                'status' => $hasResponse ? 'completed' : 'incomplete',
                 'course' => $user->courses ?? '-',
                 'year' => $user->year_graduated ?? '-',
             ];
@@ -56,20 +65,26 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * Show the detailed response of a specific user.
+     * Show survey answers (SURVEY-BASED, NOT PROFILE-BASED)
      */
     public function show($id)
     {
-        $user = User::where('user_role', 'alumna')
-            ->with(['responses.question'])
-            ->findOrFail($id);
+        $survey = Survey::active()->latest()->first();
 
-        $isCompleted = $user->responses()->exists();
+        if (!$survey) {
+            return redirect()->back();
+        }
 
-        // Redirect kung wala pang sagot
-        if (!$isCompleted) {
+        $responses = \App\Models\Response::with(['question', 'user'])
+            ->where('survey_id', $survey->id)
+            ->where('user_id', $id)
+            ->get();
+
+        if ($responses->isEmpty()) {
             return redirect()->route('survey-response.not-complete', $id);
         }
+
+        $user = $responses->first()->user;
 
         return Inertia::render('Admin/AdminSurveyResponseView', [
             'response' => [
@@ -80,11 +95,11 @@ class AdminOfSurveyResponseController extends Controller
                 'address' => $user->address ?? '-',
                 'course' => $user->courses ?? '-',
                 'year' => $user->year_graduated ?? '-',
-                'answers' => $user->responses->map(function ($r) {
+
+                // REAL SURVEY DATA ONLY
+                'answers' => $responses->map(function ($r) {
                     return [
-                        'question' => $r->question->question_text 
-                                      ?? $r->question->text 
-                                      ?? 'Question not found',
+                        'question' => $r->question->label ?? 'No question',
                         'answer' => $r->answer_value ?? '-',
                     ];
                 })->values(),
@@ -93,11 +108,11 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * Show incomplete status.
+     * Not completed page
      */
     public function notComplete($id)
     {
-        $user = User::where('user_role', 'alumna')->findOrFail($id);
+        $user = User::findOrFail($id);
 
         return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
             'user' => [
@@ -110,9 +125,9 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * Delete the user/response.
+     * Delete responses only (NOT user)
      */
-    public function destroy($id)
+   public function destroy($id)
     {
         // Hanapin ang user, siguruhing alumna ito bago i-delete
         $user = User::where('user_role', 'alumna')->findOrFail($id);

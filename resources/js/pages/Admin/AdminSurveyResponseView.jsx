@@ -41,56 +41,18 @@ export default function AdminSurveyResponseView({ response }) {
 
                     <div>
                         <p className="text-gray-500">Name</p>
-                        <p className="font-semibold">{response?.name}</p>
+                        <p className="font-semibold">{response?.name || "-"}</p>
                     </div>
 
                     <div>
                         <p className="text-gray-500">Email</p>
-                        <p className="font-semibold">{response?.email}</p>
-                    </div>
-
-                    <div>
-                        <p className="text-gray-500">Mobile</p>
-                        <p className="font-semibold">{response?.mobile}</p>
-                    </div>
-
-                    <div>
-                        <p className="text-gray-500">Address</p>
-                        <p className="font-semibold">{response?.address}</p>
-                    </div>
-
-                    <div>
-                        <p className="text-gray-500">Course</p>
-                        <p className="font-semibold">{response?.course}</p>
-                    </div>
-
-                    <div>
-                        <p className="text-gray-500">Year</p>
-                        <p className="font-semibold">{response?.year}</p>
+                        <p className="font-semibold">{response?.email || "-"}</p>
                     </div>
 
                 </div>
             </div>
 
-            {/* EMPLOYMENT (STATIC OR LATER DYNAMIC) */}
-            <div className="bg-white p-6 lg:p-8 rounded-xl shadow mb-6">
-
-                <h2 className="text-lg font-semibold mb-4">Employment Status</h2>
-
-                <div className="space-y-3 text-sm">
-                    <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full border" />
-                        <span>Graduate Study</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-black" />
-                        <span>Attending seminars/trainings</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* SURVEY ANSWERS (🔥 REAL DATA HERE) */}
+            {/* SURVEY ANSWERS (REAL SURVEY DATA ONLY) */}
             <div className="bg-white p-6 lg:p-8 rounded-xl shadow">
 
                 <h2 className="text-lg font-semibold mb-4">
@@ -104,11 +66,11 @@ export default function AdminSurveyResponseView({ response }) {
                             <div key={i} className="border-b pb-3">
 
                                 <p className="text-gray-500">
-                                    {item.question}
+                                    {item.question || "No question"}
                                 </p>
 
                                 <p className="font-semibold text-gray-900">
-                                    {item.answer}
+                                    {item.answer || "-"}
                                 </p>
 
                             </div>
