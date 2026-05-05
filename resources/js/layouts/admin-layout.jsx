@@ -2,7 +2,7 @@ import React from 'react'
 import SidebarAdmin from '../components/sidebar-admin'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderAdmin from '../components/header-admin'
-import { LayoutDashboard, Bell, NotebookPen, UsersRound, CircleUserRound, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
+import { LayoutDashboard, Bell, NotebookPen, UsersRound, CircleUserRound, Mail, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 
@@ -13,6 +13,12 @@ export default function AdminLayout({children}) {
       name: "Dashboard",
       href:"/admin/dashboard",
       icon: LayoutDashboard
+    },
+    {
+      id: "inquiries",
+      name: "Inquiries",
+      href:"/admin/inquiries",
+      icon: Mail
     },
     {
       id: "announcement",

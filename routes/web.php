@@ -16,7 +16,7 @@ use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InquiriesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -58,8 +58,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/about', fn() => Inertia::render('Alumna/AlumnaAbout'))->name('about');
 
         //contact us page
-        Route::get('/contact', [ContactController::class, 'alumniIndex'])->name('contact');
-        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+        Route::get('/contact', [InquiriesController::class, 'alumniIndex'])->name('contact');
+        Route::post('/contact', [InquiriesController::class, 'store'])->name('contact.store');
 
         // Student profile
         Route::get('/profile/history/{id}', [StudentProfileController::class, 'showHistory'])->name('history.show');
@@ -83,11 +83,13 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 //============== ADMIN ROUTES =========================
 Route::prefix('admin')->name('admin.')->group(function () {
 
+    //guest onlyy
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
     });
 
+    //auth userrr
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
@@ -99,18 +101,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
 
+        // Bulk email
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
   
-       // Alumni Coordinators            
+        //Inquiries
+        Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries');
+        Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
+
+        // Alumni Coordinators            
         Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index']);
         Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store']);
         Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show']);
         Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
-        //logout route
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Bulk email
-        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
         // Announcements
         Route::get('/announcement', [AnnouncementController::class, 'index'])->name('announcement.index');

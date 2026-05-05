@@ -14,8 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
@@ -27,6 +29,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
     title: '',
     department: '',
     alumni_coord: '',
+    subject: '',
     message: '',
 
     email: userEmail,
@@ -52,7 +55,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
             toast.success('Message sent successfully!', {
               description: 'We will get back to you as soon as possible.'
             });
-            reset('message', 'department', 'alumni_coord', 'title');
+            reset();
         },
         onError: (errors) => {
             toast.error('Failed to send message', {
@@ -101,7 +104,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
           <div className='flex flex-col w-full py-3 px-4 bg-blue-200/20 rounded-2xl border border-blue-300'>
             <div className='flex w-full justify-between'>
               <div className='flex'>
-                <Select onValueChange={(value) => setData('title', value)}>
+                <Select onValueChange={(value) => setData('title', value)} value={data.title}>
                     <SelectTrigger className=" text-black border-gray-400 text-sm bg-white">
                       <SelectValue placeholder="Select Title" />
                     </SelectTrigger>
@@ -132,7 +135,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
               {/* department */}
               <div className='flex flex-col gap-3 w-1/2 px-3 py-2'>
               <Label>Department</Label>
-                <Select onValueChange={(value) => setData('department', value)}>
+                <Select onValueChange={(value) => setData('department', value)} value={data.department}>
                   <SelectTrigger className="w-full text-black border-gray-400 text-sm bg-white">
                     <SelectValue placeholder="Select Department" />
                   </SelectTrigger>
@@ -188,15 +191,28 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                 </div>
               </div>
 
-              <div className='flex flex-col gap-3 px-3 py-4 h-50'>
-                <Label>Your Message</Label>
-                <Textarea 
-                  className='px-3 border border-gray-400 h-full' 
-                  placeholder="Tell us how we can help you..."
-                  name="message"
-                  value={data.message}
-                  onChange={handleChange}
-                />
+              <div className='flex flex-col gap-5 px-3 py-5'>
+                <div className='space-y-2 '>
+                  <Label>Subject</Label>
+                  <Input 
+                    className='px-3 border border-gray-400 h-10' 
+                    placeholder="Subject"
+                    name="subject"
+                    value={data.subject}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='space-y-2 h-20'>
+                  <Label>Your Message</Label>
+                  <Textarea 
+                    className='px-3 border border-gray-400 h-20' 
+                    placeholder="Tell us how we can help you..."
+                    name="message"
+                    value={data.message}
+                    onChange={handleChange}
+                    
+                  />
+                </div>
               </div>
           
         </CardContent>

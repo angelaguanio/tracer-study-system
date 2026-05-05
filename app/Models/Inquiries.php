@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Contact extends Model
+class Inquiries extends Model
 {
-    protected $table = 'contact';
+    
+    protected $appends = ['formatted_date'];
+
+    protected $table = 'inquiries';
 
     protected $fillable = [
         'user_id',
@@ -16,6 +19,7 @@ class Contact extends Model
         'recipient_id',
         'department',
         'title',
+        'subject',
         'message',
         'status',
 
@@ -30,5 +34,10 @@ class Contact extends Model
     public function recipient(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recipient_id');
+    }
+
+    public function getFormattedDateAttribute()
+    {
+        return $this->created_at->format('M d, Y');
     }
 }
