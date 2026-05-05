@@ -11,8 +11,10 @@ class CoordinatorAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        // ✅ GET USERS NA ALUMNI
-        $users = User::where('user_role', 'alumna')->get();
+        // Eager load surveyResponses to check completion status
+        $users = User::where('user_role', 'alumna')
+            ->with(['surveyResponses']) 
+            ->get();
 
         $alumni = $users->map(function ($user) {
             return [
@@ -21,6 +23,8 @@ class CoordinatorAlumniController extends Controller
                 'course' => $user->courses,
                 'year' => $user->year_graduated,
                 'avatar' => $user->avatar ?? null,
+                // Logic to check if they have submitted a survey
+                'survey_status' => $user->surveyResponses->isNotEmpty() ? 'Completed' : 'Not Completed',
             ];
         });
 

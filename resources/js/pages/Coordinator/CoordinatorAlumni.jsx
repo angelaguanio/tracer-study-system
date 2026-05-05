@@ -25,7 +25,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
     );
   };
 
-  //  AUTO SEARCH (debounce)
+  // AUTO SEARCH (debounce)
   useEffect(() => {
     const delay = setTimeout(() => {
       applyFilters();
@@ -35,27 +35,25 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   }, [search]);
 
   return (
-    
-        <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
+    <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm bg-white">
+      <CoordinatorAlumniFilters
+        search={search}
+        setSearch={setSearch}
+        year={year}
+        setYear={(val) => {
+          setYear(val);
+          applyFilters({ year: val });
+        }}
+        course={course}
+        setCourse={(val) => {
+          setCourse(val);
+          applyFilters({ course: val });
+        }}
+      />
 
-          <CoordinatorAlumniFilters
-            search={search}
-            setSearch={setSearch}
-            year={year}
-            setYear={(val) => {
-              setYear(val);
-              applyFilters({ year: val });
-            }}
-            course={course}
-            setCourse={(val) => {
-              setCourse(val);
-              applyFilters({ course: val });
-            }}
-          />
-
-          <CoordinatorAlumniTable alumni={alumni} />
-        </div>
-  
+      {/* This table now receives the updated alumni data containing survey_status */}
+      <CoordinatorAlumniTable alumni={alumni} />
+    </div>
   );
 }
 

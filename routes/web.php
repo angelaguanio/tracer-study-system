@@ -139,6 +139,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
+        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::get('/analytics', [SurveyAnalyticsController::class, 'index'])->name('analytics.index');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
     });
 });
