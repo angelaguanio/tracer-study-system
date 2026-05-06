@@ -42,10 +42,7 @@ class AdminAlumniController extends Controller
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'course' => $user->courses,
                 'year' => $user->year_graduated,
-
-                //  FIXED IMAGE
-                'avatar' => $user->avatar ? Storage::url($user->avatar) : null,
-
+                'avatar' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
                 'email' => $user->email,
             ];
         });
@@ -58,7 +55,9 @@ class AdminAlumniController extends Controller
 
     public function show($id)
 {
-    $user = User::with(['employment', 'employmentHistory'])->findOrFail($id);
+    $user = User::with(['employment', 'employmentHistory' => function($query) {
+        $query->orderBy('created_at', 'desc');
+    }])->findOrFail($id);
 
     return Inertia::render('Admin/AdminViewProfileOfRespondents', [
         'user' => [
@@ -70,9 +69,9 @@ class AdminAlumniController extends Controller
             'courses' => $user->courses,
             'year_graduated' => $user->year_graduated,
 
-            //  IMPORTANT FIX (RAW PATH ONLY)
-            'profile_picture' => $user->avatar
-            ? asset('storage/' . $user->avatar)
+            //  IMPORTANT FIX (RAW PATH ONLY) - using profile_picture column
+            'profile_picture' => $user->profile_picture
+            ? asset('storage/' . $user->profile_picture)
             : null,
 
             'initials' => strtoupper(
@@ -84,7 +83,19 @@ class AdminAlumniController extends Controller
             'contact_number' => $user->contact_number ?? 'N/A',
 
             'employment' => $user->employment,
-            'employment_history' => $user->employmentHistory ?? [],
+            'employment_history' => $user->employmentHistory->map(function ($history) {
+                return [
+                    'id' => $history->id,
+                    'created_at' => $history->created_at,
+                    'company_name' => $history->company_name,
+                    'position' => $history->position,
+                    'currently_employed' => $history->currently_employed,
+                    'employment_type' => $history->employment_type,
+                    'location' => $history->location,
+                    'monthly_salary' => $history->monthly_salary,
+                    'unemployment_reason' => $history->unemployment_reason,
+                ];
+            }) ?? [],
         ]
     ]);
 }

@@ -134,7 +134,7 @@ export default function AdminAlumniTable({
                       <div className="shrink-0 w-9 h-9 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs font-semibold overflow-hidden border border-gray-100">
                         {item.avatar ? (
                           <img
-                            src={`/storage/${item.avatar}`}
+                            src={item.avatar}
                             alt={item.name || "avatar"}
                             className="w-full h-full object-cover"
                           />

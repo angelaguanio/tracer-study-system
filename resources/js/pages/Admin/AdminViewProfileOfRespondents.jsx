@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import AdminLayout from "@/layouts/admin-layout";
 import { Head, router, Link } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 // ICONS (Consistent with StudentProfile)
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
@@ -15,6 +22,9 @@ const IconGrad = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 
 export default function AdminViewProfileOfRespondents({ user }) {
+    const [selectedHistory, setSelectedHistory] = useState(null);
+    const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+
     if (!user) {
         return (
             <div className="p-6 text-red-500 font-bold">No user data found.</div>
@@ -23,6 +33,11 @@ export default function AdminViewProfileOfRespondents({ user }) {
 
     const emp = user.employment;
     const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
+
+    const handleViewDetails = (history) => {
+        setSelectedHistory(history);
+        setDetailsModalOpen(true);
+    };
 
   const avatarElement = user.profile_picture ? (
     <img
@@ -140,26 +155,37 @@ export default function AdminViewProfileOfRespondents({ user }) {
                             <table className="w-full text-left text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                        <th className="pb-3 font-bold">Date Logged</th>
-                                        <th className="pb-3 font-bold">Company</th>
-                                        <th className="pb-3 font-bold">Position</th>
-                                        <th className="pb-3 font-bold">Status</th>
+                                        <th className="pb-3 font-bold text-center">Date Logged</th>
+                                        <th className="pb-3 font-bold text-center">Company</th>
+                                        <th className="pb-3 font-bold text-center">Position</th>
+                                        <th className="pb-3 font-bold text-center">Status</th>
+                                        <th className="pb-3 font-bold text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {user.employment_history.map((history) => (
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 text-gray-600">
+                                            <td className="py-4 text-gray-600 text-center">
                                                 {new Date(history.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="py-4 font-bold text-gray-800">
+                                            <td className="py-4 font-bold text-gray-800 text-center">
                                                 {history.company_name || '—'}
                                             </td>
-                                            <td className="py-4 text-gray-600">{history.position || '—'}</td>
-                                            <td className="py-4">
-                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${history.currently_employed === 'Yes' ? 'text-green-600 bg-green-50' : 'text-gray-500 bg-gray-50'}`}>
+                                            <td className="py-4 text-gray-600 text-center">{history.position || '—'}</td>
+                                            <td className="py-4 text-center">
+                                                <span className={`text-[10px] font-bold px-3 py-2 rounded-xl ${history.currently_employed === 'Yes' ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-100'}`}>
                                                     {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
                                                 </span>
+                                            </td>
+                                            <td className="py-4 text-center">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="text-[10px] font-bold text-blue-400 border-blue-300 hover:bg-green-50"
+                                                    onClick={() => handleViewDetails(history)}
+                                                >
+                                                    View Details
+                                                </Button>
                                             </td>
                                         </tr>
                                     ))}
@@ -172,6 +198,80 @@ export default function AdminViewProfileOfRespondents({ user }) {
                         </div>
                     )}
                 </section>
+
+                {/* Employment History Details Modal */}
+                <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
+                    <DialogContent className="sm:max-w-3xl p-0 overflow-hidden">
+                        <div className="bg-gray-50 px-8 py-6 border-b border-gray-100 flex items-center justify-between ">
+                            <div className="flex items-center gap-3 ">
+                                <div className="text-[#008542]"><IconHistory /></div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-gray-800 leading-tight">Archived Profile Record</h2>
+                                    <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                                        Saved on {selectedHistory ? new Date(selectedHistory.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {selectedHistory && (
+                            <div className="px-8 py-4 space-y-10 max-h-[60vh] overflow-y-auto inquiry-scrollbar">
+                                {/* Personal Information */}
+                                <div>
+                                    <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
+                                        <IconUser /> Personal Details
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <DetailItem label="Full Name" value={fullName} />
+                                        <DetailItem label="Email Address" value={user.email} />
+                                        <DetailItem label="Contact Number" value={user.contact_number} />
+                                        <DetailItem label="Address" value={user.address} />
+                                        <DetailItem
+                                            label="Course & Year"
+                                            value={user.courses && user.year_graduated
+                                                ? `${user.courses} (${user.year_graduated})`
+                                                : null
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                <hr className="border-gray-50" />
+
+                                {/* Employment Status */}
+                                <div>
+                                    <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
+                                        <IconBriefcase /> Employment Status
+                                    </div>
+                                    <div className="space-y-8">
+                                        <DetailItem
+                                            label="Status"
+                                            value={selectedHistory.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+                                            isStatus={true}
+                                        />
+
+                                        {selectedHistory.currently_employed === 'Yes' ? (
+                                            <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                                                <DetailItem label="Company Name" value={selectedHistory.company_name} />
+                                                <DetailItem label="Position" value={selectedHistory.position} />
+                                                <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
+                                                <DetailItem label="Location" value={selectedHistory.location} />
+                                                <DetailItem
+                                                    label="Monthly Salary"
+                                                    value={selectedHistory.monthly_salary ? `₱${parseFloat(selectedHistory.monthly_salary.replace(/[^\d.]/g, '')).toLocaleString()}` : '—'}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="pt-4 border-t border-gray-50">
+                                                <DetailItem label="Reason for Unemployment" value={selectedHistory.unemployment_reason} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );
@@ -186,6 +286,20 @@ function InfoItem({ icon, label, value }) {
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
                 <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
             </div>
+        </div>
+    );
+}
+
+// Sub-component for Detail Items in Modal (Consistent with HistoryDetail)
+function DetailItem({ label, value, isStatus = false }) {
+    const finalValue = (value === null || value === undefined || value === "null" || value === "null (null)") ? " — " : value;
+
+    return (
+        <div className="flex flex-col gap-1.5">
+            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
+            <span className={`text-[14px] font-bold ${isStatus && finalValue === 'Employed' ? 'text-green-600' : 'text-gray-800'}`}>
+                {finalValue}
+            </span>
         </div>
     );
 }

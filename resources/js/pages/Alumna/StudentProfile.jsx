@@ -82,7 +82,7 @@ export default function StudentProfile() {
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconBriefcase /> Employment Status
+                        <IconBriefcase /> Current Employment
                     </div>
                     <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
                         {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
@@ -128,10 +128,10 @@ export default function StudentProfile() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="pb-3 font-bold">Date Updated</th>
-                                    <th className="pb-3 font-bold">Company</th>
-                                    <th className="pb-3 font-bold">Position</th>
-                                    <th className="pb-3 font-bold">Action</th>
+                                    <th className="pb-3 font-bold text-center">Date Updated</th>
+                                    <th className="pb-3 font-bold text-center">Company</th>
+                                    <th className="pb-3 font-bold text-center">Position</th>
+                                    <th className="pb-3 font-bold text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -141,19 +141,19 @@ export default function StudentProfile() {
 
                                     return (
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-4 text-gray-600">
+                                            <td className="py-4 text-gray-600 text-center">
                                                 {new Date(history.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="py-4 font-bold text-gray-800">
+                                            <td className="py-4 font-bold text-gray-800 text-center">
                                                 {isUnemployed ? '—' : history.company_name}
                                             </td>
-                                            <td className="py-4 text-gray-600">
+                                            <td className="py-4 text-gray-600 text-center">
                                                 {isUnemployed ? '—' : (history.position || '—')}
                                             </td>
-                                            <td className="py-4">
+                                            <td className="py-4 text-center">
                                                 <Link
                                                     href={route('alumna.history.show', history.id)}
-                                                    className="text-[#008542] font-bold text-xs hover:underline"
+                                                    className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
                                                 >
                                                     View Details
                                                 </Link>
