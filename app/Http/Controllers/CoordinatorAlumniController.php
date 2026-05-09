@@ -11,10 +11,9 @@ class CoordinatorAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        // Eager load surveyResponses to check completion status
-        $users = User::where('user_role', 'alumna')
-            ->with(['surveyResponses']) 
-            ->get();
+        // FIX: Tinanggal muna ang ->with(['surveyResponses']) para iwas SQL error
+        // dahil wala pang table sa database.
+        $users = User::where('user_role', 'alumna')->get();
 
         $alumni = $users->map(function ($user) {
             return [
@@ -22,16 +21,16 @@ class CoordinatorAlumniController extends Controller
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'course' => $user->courses,
                 'year' => $user->year_graduated,
-                'avatar' => $user->avatar ?? null,
-                // Logic to check if they have submitted a survey
-                'survey_status' => $user->surveyResponses->isNotEmpty() ? 'Completed' : 'Not Completed',
+                'avatar' => $user->avatar_url,
+                'survey_status' => 'Not Completed', 
             ];
         });
 
         // 🔍 SEARCH FILTER
         if ($request->search) {
+            $search = strtolower($request->search);
             $alumni = $alumni->filter(fn ($a) =>
-                str_contains(strtolower($a['name']), strtolower($request->search))
+                str_contains(strtolower($a['name'] ?? ''), $search)
             );
         }
 
@@ -56,7 +55,7 @@ class CoordinatorAlumniController extends Controller
             $page,
             [
                 'path' => request()->url(),
-                'query' => request()->query(),
+                'query' => $request->query(),
             ]
         );
 

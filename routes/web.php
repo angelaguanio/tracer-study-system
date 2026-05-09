@@ -15,7 +15,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
 use App\Http\Controllers\AnnouncementController;
-
+use App\Http\Controllers\CoordinatorAlumniController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -139,10 +139,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
-        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
-        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-        Route::get('/analytics', [SurveyAnalyticsController::class, 'index'])->name('analytics.index');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
     });
 });
