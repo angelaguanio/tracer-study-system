@@ -10,17 +10,19 @@ class SurveyPolicy
 {
     public function viewAny(User $user): Response
     {
-        return ($user->isCoordinator() || $user->isAdmin())
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Only coordinators can list surveys.');
+            : Response::deny('Only admins can access survey analytics.');
     }
 
     public function view(User $user, Survey $survey): Response
     {
-        if ($user->isCoordinator() || $user->isAdmin()) {
+        // Admins can view any survey
+        if ($user->isAdmin()) {
             return Response::allow();
         }
 
+        // Alumni can view active surveys (for taking them)
         if ($user->isAlumna() && $survey->status === 'active') {
             return Response::allow();
         }
