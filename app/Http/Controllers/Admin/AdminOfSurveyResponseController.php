@@ -5,21 +5,46 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Survey;
+use App\Models\Response;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AdminOfSurveyResponseController extends Controller
 {
     /**
-     * Display ALL alumna users with correct survey status
+     * PAGE 1: Listahan ng lahat ng Surveys
      */
-    public function index(Request $request)
+    public function index()
     {
-        $survey = Survey::active()->latest()->first();
+        $surveys = Survey::withCount('sections')
+            ->latest()
+            ->get()
+            ->map(function ($survey) {
+                return [
+                    'id' => $survey->id,
+                    'title' => $survey->title,
+                    'status' => $survey->status,
+                    'sections_count' => $survey->sections_count,
+                    'created_at' => $survey->created_at,
+                ];
+            });
+
+        return Inertia::render('Admin/AdminSurveyResponseIndex', [
+            'surveys' => $surveys
+        ]);
+    }
+
+    /**
+     * PAGE 2: FIX PARA SA ERROR MO
+     * Ito ang hinahanap ng route: /admin/survey-response/{id}
+     */
+    public function show(Request $request, $id)
+    {
+        $survey = Survey::findOrFail($id);
 
         $query = User::where('user_role', 'alumna');
 
-        // SEARCH
+        // Search Filters
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('first_name', 'like', "%{$request->search}%")
@@ -27,12 +52,10 @@ class AdminOfSurveyResponseController extends Controller
             });
         }
 
-        // FILTER COURSE
         if ($request->filled('course') && $request->course !== 'all') {
             $query->where('courses', $request->course);
         }
 
-        // FILTER YEAR
         if ($request->filled('year') && $request->year !== 'all') {
             $query->where('year_graduated', $request->year);
         }
@@ -40,14 +63,9 @@ class AdminOfSurveyResponseController extends Controller
         $users = $query->latest()->paginate(10)->withQueryString();
 
         $users->getCollection()->transform(function ($user) use ($survey) {
-
-            $hasResponse = false;
-
-            if ($survey) {
-                $hasResponse = $user->responses()
-                    ->where('survey_id', $survey->id)
-                    ->exists();
-            }
+            $hasResponse = Response::where('survey_id', $survey->id)
+                ->where('user_id', $user->id)
+                ->exists();
 
             return [
                 'id' => $user->id,
@@ -61,83 +79,57 @@ class AdminOfSurveyResponseController extends Controller
         return Inertia::render('Admin/AdminSurveyResponse', [
             'responses' => $users,
             'filters' => $request->only(['search', 'course', 'year']),
+            'survey' => [
+                'id' => $survey->id,
+                'title' => $survey->title,
+            ]
         ]);
     }
 
     /**
-     * Show survey answers (SURVEY-BASED, NOT PROFILE-BASED)
+     * PAGE 3: View ng sagot ng Completed User
      */
-    public function show($id)
+    public function viewUserResponse($surveyId, $userId)
     {
-        $survey = Survey::active()->latest()->first();
-
-        if (!$survey) {
-            return redirect()->back();
-        }
-
-        $responses = \App\Models\Response::with(['question', 'user'])
-            ->where('survey_id', $survey->id)
-            ->where('user_id', $id)
+        $user = User::findOrFail($userId);
+        
+        $responses = Response::with(['question'])
+            ->where('survey_id', $surveyId)
+            ->where('user_id', $userId)
             ->get();
-
-        if ($responses->isEmpty()) {
-            return redirect()->route('survey-response.not-complete', $id);
-        }
-
-        $user = $responses->first()->user;
 
         return Inertia::render('Admin/AdminSurveyResponseView', [
             'response' => [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'email' => $user->email,
-                'mobile' => $user->contact_number ?? '-',
-                'address' => $user->address ?? '-',
-                'course' => $user->courses ?? '-',
-                'year' => $user->year_graduated ?? '-',
-
-                // REAL SURVEY DATA ONLY
                 'answers' => $responses->map(function ($r) {
                     return [
                         'question' => $r->question->label ?? 'No question',
                         'answer' => $r->answer_value ?? '-',
                     ];
-                })->values(),
+                }),
             ],
         ]);
     }
 
     /**
-     * Not completed page
+     * PAGE 4: View para sa Not Completed
      */
-    public function notComplete($id)
+    public function notComplete($surveyId, $userId)
     {
-        $user = User::findOrFail($id);
-
-        return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
-            'user' => [
-                'id' => $user->id,
-                'name' => trim($user->first_name . ' ' . $user->last_name),
-                'course' => $user->courses ?? '-',
-                'year' => $user->year_graduated ?? '-',
-            ],
-        ]);
+        return Inertia::render('Admin/AdminSurveyResponseViewNotComplete');
     }
 
     /**
-     * Delete responses only (NOT user)
+     * ACTION: Delete Response
      */
-   public function destroy($id)
+    public function destroy($surveyId, $userId)
     {
-        // Hanapin ang user, siguruhing alumna ito bago i-delete
-        $user = User::where('user_role', 'alumna')->findOrFail($id);
-        
-        // Delete the user record
-        $user->delete();
+        Response::where('survey_id', $surveyId)
+            ->where('user_id', $userId)
+            ->delete();
 
-        /** * Importante: Ang redirect back() ay magpapadala ng updated props sa Inertia.
-         * Ang flash message ('success') ay pwedeng basahin sa frontend kung kailangan.
-         */
-        return redirect()->back()->with('success', 'Deleted successfully');
+        return redirect()->back();
     }
 }

@@ -120,17 +120,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     //AdminSurveyResponse
 
-        Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
-            ->name('survey-response.index');
+      
+    Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
+        ->name('survey-response.index');
 
-        Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
-            ->name('survey-response.show');
-        
-        Route::get('/survey-response/{id}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
-       ->name('survey-response.not-complete');
+    Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
+        ->name('survey-response.show');
 
-        Route::delete('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'destroy'])
-            ->name('survey-response.destroy');
+    // Route para sa COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
+        ->name('survey-response.view');
+
+    // Route para sa NOT COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+        ->name('survey-response.not-complete');
+
+    Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
+        ->name('survey-response.destroy');
 
         Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');

@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { router } from "@inertiajs/react";
 
 export default function AdminSurveyResponseFilter({
   search,
@@ -14,11 +15,25 @@ export default function AdminSurveyResponseFilter({
   setYear,
   course,
   setCourse,
+  surveyId,
 }) {
+
+  const updateFilters = (params) => {
+    router.get(
+      `/admin/survey-response/${surveyId}`,
+      params,
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+      }
+    );
+  };
+
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-3">
 
-      {/* LEFT: TITLE */}
+      {/* LEFT */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900">
           Survey Responses
@@ -28,7 +43,7 @@ export default function AdminSurveyResponseFilter({
         </p>
       </div>
 
-      {/* RIGHT: FILTERS */}
+      {/* RIGHT */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
 
         {/* SEARCH */}
@@ -36,11 +51,20 @@ export default function AdminSurveyResponseFilter({
           placeholder="Search..."
           className="h-10 w-full sm:w-[220px] bg-white"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            updateFilters({ search: e.target.value, year, course });
+          }}
         />
 
         {/* COURSE */}
-        <Select onValueChange={setCourse} value={course}>
+        <Select
+          value={course}
+          onValueChange={(val) => {
+            setCourse(val);
+            updateFilters({ search, year, course: val });
+          }}
+        >
           <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
@@ -53,7 +77,13 @@ export default function AdminSurveyResponseFilter({
         </Select>
 
         {/* YEAR */}
-        <Select onValueChange={setYear} value={year}>
+        <Select
+          value={year}
+          onValueChange={(val) => {
+            setYear(val);
+            updateFilters({ search, course, year: val });
+          }}
+        >
           <SelectTrigger className="h-10 w-full sm:w-[140px] bg-white">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
