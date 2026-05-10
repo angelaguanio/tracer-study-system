@@ -162,7 +162,7 @@ export default function StudentProfile() {
                                             <td className="py-2 text-center">
                                                 <Link
                                                     href={route('alumna.history.show', history.id)}
-                                                    className="text-[#008542] font-bold text-xs hover:underline"
+                                                    className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
                                                 >
                                                     View Details
                                                 </Link>
