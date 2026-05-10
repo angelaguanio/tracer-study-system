@@ -1,80 +1,131 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
- 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\EmploymentHistory;
+use App\Models\User;
+
 class StudentProfileController extends Controller
 {
-    public function show(Request $request)
-    {
-        $user = $request->user();
- 
+    /**
+     * Display the student profile with current employment and history.
+     */
+    public function show() {
+        $user = Auth::user()->fresh()->load(['employment', 'employmentHistory' => function($query) {
+            $query->latest();
+        }]);
+        
         return Inertia::render('Alumna/StudentProfile', [
-            'profile' => [
-                'name'           => $user->first_name . ' ' . $user->last_name,
-                'first_name'     => $user->first_name,
-                'last_name'      => $user->last_name,
-                'middle_name'    => $user->middle_name,
-                'email'          => $user->email,
-                'username'       => $user->username ?? '',       // ✅ added
-                'address'        => $user->address ?? '',        // ✅ added
-                'contact_number' => $user->contact_number ?? '', // ✅ added
-                'initials'       => $user->initials,
-            ],
+            'profile' => $user
         ]);
     }
- 
-    public function edit(Request $request)
-    {
-        $user = $request->user();
- 
+
+    /**
+     * Show the profile edit form.
+     */
+    public function edit() {
+        $user = Auth::user()->load('employment');
         return Inertia::render('Alumna/StudentProfileEdit', [
-            'profile' => [
-                'first_name'     => $user->first_name,
-                'last_name'      => $user->last_name,
-                'middle_name'    => $user->middle_name,
-                'email'          => $user->email,
-                'username'       => $user->username ?? '',
-                'address'        => $user->address ?? '',
-                'contact_number' => $user->contact_number ?? '',
-                'initials'       => $user->initials,
-            ],
+            'profile' => $user
         ]);
     }
- 
-    public function update(Request $request)
-    {
-        $user = $request->user();
- 
-        $validated = $request->validate([
-            'first_name'     => 'required|string|max:255',
-            'last_name'      => 'required|string|max:255',
-            'middle_name'    => 'nullable|string|max:255',
-            'email'          => 'required|email|unique:users,email,' . $user->id,
-            'username'       => 'nullable|string|max:255',
-            'address'        => 'nullable|string|max:255',
-            'contact_number' => 'nullable|string|max:20',
-            'is_employed'    => 'nullable|string',
-            'employment_type'=> 'nullable|string|max:100',
-            'company'        => 'nullable|string|max:255',
-            'position'       => 'nullable|string|max:255',
-            'location'       => 'nullable|string|max:255',
-            'monthly_salary' => 'nullable|string|max:100',
+
+    /**
+     * Update the profile and archive a copy into employment history ONLY if data changed.
+     */
+    public function update(Request $request) {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($request->hasFile('profile_picture')) {
+            $picture = $request->file('profile_picture');
+            if ($picture->isValid()) {
+                if ($user->profile_picture) {
+                    Storage::disk('public')->delete($user->profile_picture);
+                }
+                
+                $path = $picture->store('avatars', 'public');
+                $user->profile_picture = $path;
+            }
+        }
+
+        $user->fill([
+            'first_name'     => $request->first_name,
+            'middle_name'    => $request->middle_name ?? '',
+            'last_name'      => $request->last_name,
+            'contact_number' => $request->contact_number,
+            'address'        => $request->address,
+            'email'          => $request->email,
         ]);
- 
-        $user->update([
-            'first_name'     => $validated['first_name'],
-            'last_name'      => $validated['last_name'],
-            'middle_name'    => $validated['middle_name'] ?? null,
-            'email'          => $validated['email'],
-            'username'       => $validated['username'] ?? null,
-            'address'        => $validated['address'] ?? null,
-            'contact_number' => $validated['contact_number'] ?? null,
+        $user->save();
+
+        $salaryValue = $request->monthly_salary;
+        if ($salaryValue !== null && $salaryValue !== '') {
+            $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
+        }
+
+        $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
+        $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
+
+        $currentEmp = $user->employment;
+        $hasEmploymentChanges = true;
+
+        if ($currentEmp) {
+            $hasEmploymentChanges = 
+                $currentEmp->currently_employed !== $isEmployed ||
+                $currentEmp->employment_type    !== $request->employment_type ||
+                $currentEmp->company_name       !== $request->company ||
+                $currentEmp->position           !== $request->position ||
+                $currentEmp->location           !== $request->location ||
+                $currentEmp->monthly_salary     !=  $salaryValue || 
+                $currentEmp->unemployment_reason !== $unemploymentReason;
+        }
+
+        $user->employment()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'currently_employed' => $isEmployed,
+                'employment_type'    => $request->employment_type,
+                'company_name'       => $request->company,
+                'position'           => $request->position,
+                'location'           => $request->location,
+                'monthly_salary'     => $salaryValue,
+                'unemployment_reason' => $unemploymentReason,
+            ]
+        );
+
+        if ($hasEmploymentChanges) {
+            $user->employmentHistory()->create([
+                'currently_employed' => $isEmployed,
+                'employment_type'    => $request->employment_type,
+                'company_name'       => $request->company,
+                'position'           => $request->position,
+                'location'           => $request->location,
+                'monthly_salary'     => $salaryValue,
+                'unemployment_reason' => $unemploymentReason,
+            ]);
+        }
+
+        return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
+    }
+
+    /**
+     * Show details of a specific history record.
+     */
+    public function showHistory($id) {
+        $history = EmploymentHistory::findOrFail($id);
+        
+        if ($history->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return Inertia::render('Alumna/HistoryDetail', [
+            'history' => $history,
+            'profile' => Auth::user()
         ]);
- 
-        return redirect()->route('alumna.profile')
-            ->with('success', 'Profile updated successfully!');
     }
 }

@@ -11,34 +11,15 @@ import { Button } from './ui/button'
 import ProfileTemp from './profile-temp'
 
 const navBtns = [
-  {
-    id: "home",
-    name: "Home",
-    href:"/alumna/home"
-  },
-  {
-    id: "announcements",
-    name: "Announcements",
-    href: "/alumna/announcements"
-  },
-  {
-    id: "questionnaire",
-    name: "Questionnaire",
-    href:"/alumna/questionnaire"
-  },
-  {
-    id: "about",
-    name: "About",
-    href:"/alumna/about"
-  },
-  {
-    id: "contact",
-    name: "Contact us",
-    href:"/alumna/contact"
-  }
+  { id: "home", name: "Home", href:"/alumna/home" },
+  { id: "announcements", name: "Announcements", href: "/alumna/announcements" },
+  { id: "questionnaire", name: "Questionnaire", href:"/alumna/questionnaire" },
+  { id: "about", name: "About", href:"/alumna/about" },
+  { id: "contact", name: "Contact us", href:"/alumna/contact" }
 ]
 
-export default function NavbarAlumni() {
+// FIX: Added { children } to the arguments
+export default function NavbarAlumni({ children }) { 
   const { auth } = usePage().props
   const { url } = usePage()
   const user = auth?.user
@@ -56,7 +37,6 @@ export default function NavbarAlumni() {
           <ul className="flex items-center gap-5">
             {navBtns.map((navigation) => {
               const isActive = currentPath === navigation.href
-
               return (
                 <li key={navigation.id}>
                   <Link
@@ -96,13 +76,18 @@ export default function NavbarAlumni() {
               <Link href={route('alumna.profile')}>Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.logout')} method="post" as="button">
+              <Link href={route('alumna.logout')} method="post" as="button" className='w-full flex'>
                 Logout
-            </Link>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
+
+      {/* FIX: Added this main tag to render the page content */}
+      <main>
+        {children}
+      </main>
     </>
   )
 }
