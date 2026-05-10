@@ -17,7 +17,7 @@ return new class extends Migration
             // Content
             $table->string('title');
             $table->text('details');
-            $table->string('image')->nullable();
+            $table->longText('image')->nullable();
 
             // State
             $table->string('status')->default('pending');
