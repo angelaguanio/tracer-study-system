@@ -14,8 +14,8 @@ class UpdateSurveyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => ['sometimes', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'title'       => ['sometimes', 'required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
             'status'      => ['sometimes', 'in:active,inactive'],
         ];
     }

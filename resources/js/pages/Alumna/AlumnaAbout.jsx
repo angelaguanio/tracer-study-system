@@ -1,6 +1,7 @@
 import React from 'react'
-import graduationBg from '../../assets/graduation-bg.jpg'
-import AlumnaLayout from '../../layouts/alumna-layout';
+import AlumnaLayout from "@/layouts/alumna-layout";
+import graduationBg from '../../assets/graduation-bg.jpg';
+
 
 
 export default function AlumnaAbout() {
