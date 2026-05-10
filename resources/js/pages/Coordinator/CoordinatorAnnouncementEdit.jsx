@@ -1,163 +1,293 @@
-import React, { useRef, useState } from "react";
-import CoordinatorLayout from "@/layouts/coord-layout";
-import { Head, router } from "@inertiajs/react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+  import React, { useRef, useState } from "react";
+  import CoordinatorLayout from "@/layouts/coord-layout";
+  import { Head, router, Link } from "@inertiajs/react";
+  import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+  import { Input } from "@/components/ui/input";
+  import { Textarea } from "@/components/ui/textarea";
+  import { Button } from "@/components/ui/button";
+  import { Label } from "@/components/ui/label";
+  import { ArrowLeft, X } from "lucide-react";
 
-import CoordinatorAnnouncementEditUpdate from "@/components/CoordinatorAnnouncementEditUpdate";
+  export default function CoordinatorAnnouncementEdit({ announcement }) {
+    const fileInputRef = useRef(null);
 
-export default function CoordinatorAnnouncementEdit({ announcement }) {
-  const fileInputRef = useRef(null);
+    const [showModal, setShowModal] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-  const [preview, setPreview] = useState(announcement?.image);
+    // LIMITS
+    const MAX_FILES = 10;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-  const [formData, setFormData] = useState({
-    title: announcement?.title || "",
-    details: announcement?.details || "",
-    image: null,
-  });
+    const [fileError, setFileError] = useState(""); //error state for image validation
+
+    let parsedImages = announcement?.image;
+
+    try {
+      parsedImages =
+        typeof parsedImages === "string"
+          ? JSON.parse(parsedImages)
+          : parsedImages;
+    } catch (e) {
+      parsedImages = [];
+    }
+
+    const initialImages = Array.isArray(parsedImages)
+      ? parsedImages
+      : parsedImages
+        ? [parsedImages]
+        : [];
+
+    const [existingImages, setExistingImages] = useState(initialImages);
+    const [newImages, setNewImages] = useState([]);
+    const [previewNew, setPreviewNew] = useState([]);
+
+    const previews = [...existingImages, ...previewNew];
+
+    const [formData, setFormData] = useState({
+      title: announcement?.title || "",
+      details: announcement?.details || "",
+      image: null,
+    });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+     const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+    };
 
+   // FILE HANDLER (UPDATED LIMITS)
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      setFormData({ ...formData, image: file });
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    setFileError(""); // reset error every upload attempt
+
+    const currentCount = existingImages.length + newImages.length;
+
+    // MAX 10 IMAGES TOTAL
+    if (currentCount + files.length > MAX_FILES) {
+      setFileError("Maximum of 10 images only.");
+      return;
     }
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    // TOTAL SIZE CHECK (ALL FILES COMBINED)
+    const existingSize = newImages.reduce(
+      (sum, file) => sum + file.size,
+      0
+    );
 
-    if (!announcement?.id) return;
+    const incomingSize = files.reduce(
+      (sum, file) => sum + file.size,
+      0
+    );
 
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("details", formData.details);
-    if (formData.image) data.append("image", formData.image);
-    data.append("_method", "PUT");
+    const totalSize = existingSize + incomingSize;
 
-    router.post(`/coordinator/announcement/${announcement.id}`, data, {
-      forceFormData: true,
+    if (totalSize > MAX_SIZE) {
+      setFileError("Total image size must not exceed 10MB.");
+      return;
+    }
 
-      onSuccess: () => {
-        setShowModal(true);
+      const newPreviews = files.map(file => URL.createObjectURL(file));
 
-        setTimeout(() => {
-          setShowModal(false);
-          router.visit("/coordinator/announcement");
-        }, 3000);
-      },
-    });
-  };
+      setPreviewNew(prev => [...prev, ...newPreviews]);
 
-  return (
-    <CoordinatorLayout>
-      <>
-        <Head title="Edit Announcement" />
+      setNewImages(prev => [...prev, ...files]);
+    };
 
-        {/* PAGE WRAPPER */}
-        <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 px-4 sm:py-10">
+    const handleSubmit = (e) => {
+      e.preventDefault();
 
-          {/* RESPONSIVE CONTAINER */}
-          <div className="w-full max-w-5xl">
+      if (!announcement?.id) return;
 
-            {/* CARD */}
-            <Card className="w-full min-h-[600px] sm:min-h-[700px] flex flex-col">
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("details", formData.details);
 
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-lg font-semibold">
-                  Edit Announcement
-                </CardTitle>
+      // existing images
+      data.append("existing_images", JSON.stringify(existingImages));
 
-                <Button
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className="bg-[#2859C5] text-white hover:bg-[#1f47a0] w-full sm:w-auto"
-                >
-                  Upload Image
-                </Button>
+      // new uploaded images
+      newImages.forEach(file => {
+        data.append("images[]", file);
+      });
 
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </CardHeader>
+      data.append("_method", "PUT");
 
-              {preview && (
-                <div className="mb-2 flex justify-center sm:justify-start px-4">
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-32 sm:w-40 max-h-64 rounded border object-contain"
-                  />
-                </div>
-              )}
+      router.post(`/coordinator/announcement/${announcement.id}`, data, {
+        forceFormData: true,
+        onSuccess: () => {
+          router.visit("/coordinator/announcement?updated=1", {
+            replace: true,
+            preserveState: false,
+          });
+        },
+      });
+    };
 
-              <CardContent className="flex flex-col flex-grow px-4 sm:px-6">
+    return (
+      <CoordinatorLayout>
+        <>
+          <Head title="Edit Announcement" />
 
-                <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
+          {/* PAGE WRAPPER */}
+          <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 px-4 sm:py-10">
 
-                  {/* TITLE */}
-                  <div className="space-y-2">
-                    <Label className="text-[#6E6C6C] font-bold">
-                      Announcement Title
-                    </Label>
+            {/* RESPONSIVE CONTAINER */}
+            <div className="w-full max-w-5xl">
 
-                    <Input
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      placeholder="Title"
-                    />
-                  </div>
+              {/* CARD */}
+              <Card className="w-full flex flex-col min-h-[700px]">
 
-                  {/* DETAILS */}
-                  <div className="space-y-2">
-                    <Label className="text-[#6E6C6C] font-bold">
-                      Details
-                    </Label>
+                <CardHeader className="flex flex-row items-center justify-between">
 
-                    <Textarea
-                      name="details"
-                      value={formData.details}
-                      onChange={handleChange}
-                      placeholder="Details"
-                      className="h-[250px] sm:h-[400px] lg:h-[500px] overflow-y-auto resize-none"
-                    />
-                  </div>
+                  <div className="flex items-center gap-2">
 
-                  {/* BUTTON */}
-                  <div className="mt-auto pt-4">
                     <Button
-                      type="submit"
-                      className="w-full bg-[#2859C5] hover:bg-[#1f47a0]"
+                      type="button"
+                      variant="ghost"
+                      onClick={() => router.visit("/coordinator/announcement")}
+                      className="p-2"
                     >
-                      Update
+                      <ArrowLeft size={18} />
                     </Button>
+
+                    <CardTitle className="text-lg font-semibold">
+                      Edit Announcement
+                    </CardTitle>
                   </div>
 
-                </form>
-              </CardContent>
-            </Card>
+                  {/* RIGHT SIDE */}
+                  <Button
+                    type="button"
+                    onClick={() => fileInputRef.current.click()}
+                    className="bg-[#2859C5] text-white hover:bg-[#1f47a0] w-full sm:w-auto"
+                  >
+                    Upload Image
+                  </Button>
 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileChange}
+                  />
+                </CardHeader>
+
+                {/* INFO TEXT (only shows kapag may image na) */}
+                {previews.length > 0 && (
+                    <span className="text-xs text-gray-500 px-6 block">
+                        You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
+                    </span>
+                )}
+
+                {/* ERROR DISPLAY */}
+                {fileError && (
+                    <span className="text-sm text-red-500 px-6 block">
+                        {fileError}
+                    </span>
+                )}
+
+                {/* IMAGE PREVIEW */}
+                {previews.length > 0 && (
+                  <div className="mb-2 flex gap-2 flex-wrap pl-6">
+
+                    {previews.map((img, index) => (
+                      <div key={index} className="relative">
+
+                        <img
+                          src={img}
+                          className="w-32 h-32 object-cover rounded border"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFileError("");
+
+                            const indexInAll = index;
+
+                            if (indexInAll < existingImages.length) {
+                              setExistingImages(prev =>
+                                prev.filter((_, i) => i !== indexInAll)
+                              );
+                            } else {
+                              const newIndex = indexInAll - existingImages.length;
+
+                              setPreviewNew(prev =>
+                                prev.filter((_, i) => i !== newIndex)
+                              );
+
+                              setNewImages(prev =>
+                                prev.filter((_, i) => i !== newIndex)
+                              );
+                            }
+                          }}
+                          className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    ))}
+
+                  </div>
+                )}
+
+                <CardContent className="flex flex-col flex-grow px-4 sm:px-6">
+
+                  <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
+
+                    {/* TITLE */}
+                    <div className="space-y-2">
+                      <Label className="text-[#6E6C6C] font-bold">
+                        Announcement Title
+                      </Label>
+
+                      <Input
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        placeholder="Title"
+                      />
+                    </div>
+
+                    {/* DETAILS */}
+                    <div className="space-y-2">
+                      <Label className="text-[#6E6C6C] font-bold">
+                        Details
+                      </Label>
+
+                      <Textarea
+                        name="details"
+                        value={formData.details}
+                        onChange={handleChange}
+                        placeholder="Details"
+                        className="h-[250px] sm:h-[400px] lg:h-[500px] overflow-y-auto resize-none"
+                      />
+                    </div>
+
+                    {/* BUTTON */}
+                    <div className="mt-auto pt-4">
+                      <Button
+                        type="submit"
+                        className="w-full bg-[#2859C5] hover:bg-[#1f47a0]"
+                      >
+                        Update
+                      </Button>
+                    </div>
+
+                  </form>
+
+                </CardContent>
+              </Card>
+
+            </div>
           </div>
-        </div>
 
-        {/* MODAL */}
-        <CoordinatorAnnouncementEditUpdate show={showModal} />
-      </>
-    </CoordinatorLayout>
-  );
-}
+          {/* MODAL */}
+          <CoordinatorAnnouncementEditUpdate show={showModal} />
+        </>
+      </CoordinatorLayout>
+    );
+  }

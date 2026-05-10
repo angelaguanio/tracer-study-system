@@ -39,14 +39,18 @@ export default function AlumnaAnnouncementView({ announcement }) {
         {/* IMAGE (ONLY IF AVAILABLE) */}
         {announcement?.image && (
             <img
-              src={announcement.image}
+              src={
+                Array.isArray(announcement.image)
+                  ? announcement.image[0] // first image lang ipapakita
+                  : announcement.image
+              }
               alt={announcement.title}
               className="w-full max-h-[500px] object-contain mb-6"
             />
         )}
 
         {/* CONTENT */}
-        <div className="text-gray-700 text-base sm:text-lg leading-relaxed">
+        <div className="text-gray-700 text-base sm:text-lg leading-relaxed whitespace-pre-line">
           {announcement?.details}
         </div>
 

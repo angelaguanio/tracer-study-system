@@ -6,33 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        // Explicitly naming the table 'employment' to match your Model
+        // Stores the CURRENT employment status for each alumna (1-to-1 with users).
         Schema::create('employment', function (Blueprint $table) {
             $table->id();
-            // This links the record to the User
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            
-            // Employment detail columns
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+
+            // 'Yes' or 'No' — kept as string to match existing controller logic.
             $table->string('currently_employed')->nullable();
             $table->string('employment_type')->nullable();
             $table->string('company_name')->nullable();
             $table->string('position')->nullable();
             $table->string('location')->nullable();
-            $table->string('monthly_salary')->nullable();
+
+            // decimal instead of string — analytics controller does float casts on this value.
+            $table->decimal('monthly_salary', 10, 2)->nullable();
+
             $table->text('unemployment_reason')->nullable();
-            
             $table->timestamps();
+
+            $table->index('user_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('employment');
