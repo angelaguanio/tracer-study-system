@@ -7,7 +7,6 @@
   import { Button } from "@/components/ui/button";
   import { Label } from "@/components/ui/label";
   import { ArrowLeft, X } from "lucide-react";
-  import CoordinatorAnnouncementEditUpdate from "@/components/CoordinatorAnnouncementEditUpdate";
 
   export default function CoordinatorAnnouncementEdit({ announcement }) {
     const fileInputRef = useRef(null);

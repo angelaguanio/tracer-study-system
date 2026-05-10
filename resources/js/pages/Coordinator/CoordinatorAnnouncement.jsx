@@ -1,5 +1,4 @@
 import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAnnouncementCard from "@/components/coordinator/CoordinatorAnnouncementCard";
 import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, router } from "@inertiajs/react";
 import { useState, useEffect } from "react";

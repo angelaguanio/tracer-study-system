@@ -1,6 +1,5 @@
 import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAnnouncementViewCard from "@/components/Coordinator/CoordinatorAnnouncementViewCard";
 import { Link } from "@inertiajs/react";
 import { ArrowLeft } from "lucide-react";
 

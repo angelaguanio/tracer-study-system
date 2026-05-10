@@ -14,8 +14,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('details');
 
-            // JSON instead of longText — Announcement model casts this as array.
-            $table->json('image')->nullable();
+            $table->lonText('image')->nullable();
 
             // Workflow states: pending → approved | rejected
             $table->string('status')->default('pending');
