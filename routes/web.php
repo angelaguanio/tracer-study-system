@@ -14,8 +14,8 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
-use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
-
+use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
+use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 
 use Illuminate\Support\Facades\Route;
@@ -96,8 +96,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     //AdminSurveyResponse
-
-      
     Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
         ->name('survey-response.index');
 
