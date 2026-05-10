@@ -54,6 +54,20 @@ export default function StudentProfileEdit() {
         });
     };
 
+    // This logic ensures all fields are cleared when switching status
+    const handleStatusChange = (newStatus) => {
+        setData({
+            ...data,
+            is_employed: newStatus,
+            company: '',
+            position: '',
+            location: '',
+            employment_type: '',
+            monthly_salary: '',
+            reason_unemployed: ''
+        });
+    };
+
     return (
         <div className="w-full max-w-[800px] mx-auto py-8 px-4 flex flex-col gap-5 pb-12">
 
@@ -69,7 +83,7 @@ export default function StudentProfileEdit() {
                     form="profile-form"
                     type="submit"
                     disabled={processing}
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all"
+                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all cursor-pointer"
                 >
                     <IconSave /> {processing ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -99,7 +113,7 @@ export default function StudentProfileEdit() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all"
+                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all cursor-pointer"
                             >
                                 <IconImage />
                             </button>
@@ -126,11 +140,27 @@ export default function StudentProfileEdit() {
                             <label className={labelClass}>Currently Employed</label>
                             <div className="flex gap-4">
                                 <label className="flex items-center gap-2 text-sm">
-                                    <input type="radio" required name="is_employed" value="yes" checked={data.is_employed === 'yes'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
+                                    <input 
+                                        type="radio" 
+                                        required 
+                                        name="is_employed" 
+                                        value="yes" 
+                                        checked={data.is_employed === 'yes'} 
+                                        onChange={() => handleStatusChange('yes')} 
+                                        className="w-4 h-4" 
+                                    />
                                     Yes
                                 </label>
                                 <label className="flex items-center gap-2 text-sm">
-                                    <input type="radio" required name="is_employed" value="no" checked={data.is_employed === 'no'} onChange={e => setData('is_employed', e.target.value)} className="w-4 h-4" />
+                                    <input 
+                                        type="radio" 
+                                        required 
+                                        name="is_employed" 
+                                        value="no" 
+                                        checked={data.is_employed === 'no'} 
+                                        onChange={() => handleStatusChange('no')} 
+                                        className="w-4 h-4" 
+                                    />
                                     No
                                 </label>
                             </div>
@@ -141,10 +171,9 @@ export default function StudentProfileEdit() {
                                 <div className="flex flex-col gap-2">
                                     <label className={labelClass}>Employment Type</label>
                                     <select required value={data.employment_type} onChange={e => setData('employment_type', e.target.value)} className={inputClass}>
+                                        <option value="">Select Type</option>
                                         <option value="Permanent/Regular">Permanent/Regular</option>
                                         <option value="Probationary">Probationary</option>
-                                        <option value="Contractual">Contractual</option>
-                                        <option value="Part-time">Part-time</option>
                                     </select>
                                 </div>
                                 <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={e => setData('company', e.target.value)} className={inputClass} placeholder="Company Name" /></div>

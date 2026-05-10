@@ -12,14 +12,30 @@ return new class extends Migration
             $table->id();
             $table->foreignId('section_id')->constrained()->cascadeOnDelete();
             $table->string('question_identifier');
-            $table->string('label');
-            $table->enum('type', ['text', 'select', 'radio', 'checkbox', 'number', 'textarea', 'likert']);
+
+            // TEXT to support long question labels (was VARCHAR(255) originally,
+            // widened via ALTER migration). Unique index on (section_id, label)
+            // was intentionally dropped because TEXT columns cannot be fully
+            // indexed in MySQL without a prefix, and subheading-type questions
+            // may share labels across a section.
+            $table->text('label');
+
+            $table->enum('type', [
+                'text',
+                'select',
+                'radio',
+                'checkbox',
+                'number',
+                'textarea',
+                'likert',
+                'subheading',
+            ]);
             $table->json('options')->nullable();
             $table->unsignedInteger('display_order');
             $table->boolean('is_required')->default(false);
             $table->timestamps();
 
-            $table->unique(['section_id', 'label']);
+            $table->index(['section_id', 'display_order']);
         });
     }
 

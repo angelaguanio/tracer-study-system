@@ -1,3 +1,4 @@
+import React from 'react';
 import { usePage, Link } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 
@@ -82,7 +83,7 @@ export default function StudentProfile() {
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                        <IconBriefcase /> Employment Status
+                        <IconBriefcase /> Current Employment Status
                     </div>
                     <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
                         {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
@@ -103,7 +104,7 @@ export default function StudentProfile() {
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
                                     ₱{emp?.monthly_salary ?
-                                        parseFloat(emp.monthly_salary.replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
+                                        parseFloat(emp.monthly_salary.toString().replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
                                         : '0'}
                                 </p>
                             </div>
@@ -117,10 +118,10 @@ export default function StudentProfile() {
                 )}
             </section>
 
-            {/* Employment History */}
+            {/* Employment History Logs */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                    <IconHistory /> Employment History
+                    <IconHistory /> Employment History Logs
                 </div>
 
                 {profile.employment_history?.length > 0 ? (
@@ -128,32 +129,47 @@ export default function StudentProfile() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="pb-3 font-bold">Date Updated</th>
-                                    <th className="pb-3 font-bold">Company</th>
-                                    <th className="pb-3 font-bold">Position</th>
-                                    <th className="pb-3 font-bold">Action</th>
+                                    <th className="pb-3 font-bold pl-2">Date Logged</th>
+                                    {/* Centered Headers */}
+                                    <th className="pb-3 font-bold text-center">Company</th>
+                                    <th className="pb-3 font-bold text-center">Position</th>
+                                    <th className="pb-3 font-bold text-center">Status</th>
+                                    <th className="pb-3 font-bold text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {profile.employment_history.map((history) => (
-                                    <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 text-gray-600">
-                                            {new Date(history.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="py-4 font-bold text-gray-800">
-                                            {history.company_name || 'Unemployed'}
-                                        </td>
-                                        <td className="py-4 text-gray-600">{history.position || '—'}</td>
-                                        <td className="py-4">
-                                            <Link
-                                                href={route('alumna.history.show', history.id)}
-                                                className="text-[#008542] font-bold text-xs hover:underline"
-                                            >
-                                                View Details
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {profile.employment_history.map((history) => {
+                                    const isUnemployed = history.currently_employed === 'No' || !history.company_name;
+
+                                    return (
+                                        <tr key={history.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="py-2 pl-2 text-gray-600">
+                                                {new Date(history.created_at).toLocaleDateString()}
+                                            </td>
+                                            {/* Centered Company Dash/Value */}
+                                            <td className="py-2 font-bold text-gray-800 text-center">
+                                                {isUnemployed ? '—' : history.company_name}
+                                            </td>
+                                            {/* Centered Position Dash/Value */}
+                                            <td className="py-2 text-gray-600 text-center">
+                                                {isUnemployed ? '—' : (history.position || '—')}
+                                            </td>
+                                            <td className="py-2 text-center">
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${history.currently_employed === 'Yes' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+                                                </span>
+                                            </td>
+                                            <td className="py-2 text-center">
+                                                <Link
+                                                    href={route('alumna.history.show', history.id)}
+                                                    className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
+                                                >
+                                                    View Details
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -175,7 +191,10 @@ function InfoItem({ icon, label, value }) {
             {icon && <div className="text-gray-400 mt-1">{icon}</div>}
             <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
-                <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
+                {/* Applied a flex container to center the fallback dash if value is missing */}
+                <span className={`text-[13px] font-bold text-[#343a40] ${!value ? 'flex justify-center' : ''}`}>
+                    {value || '—'}
+                </span>
             </div>
         </div>
     );

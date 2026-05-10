@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                     'last_name' => $request->user()->last_name,
                     'email' => $request->user()->email,
                     'initials' => $request->user()->initials,
+                    'profile_picture' => $request->user()->profile_picture,
                     'user_role' => $request->user()->user_role,
                 ] : null,
             ],
@@ -69,7 +70,7 @@ class HandleInertiaRequests extends Middleware
     {
         $response = parent::handle($request, $next);
 
-        // Prevent browser from caching authenticated pages so the back button doesn't show stale content after logout
+        // Prevent browser from caching authenticated pages
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         $response->headers->set('Pragma', 'no-cache');
 

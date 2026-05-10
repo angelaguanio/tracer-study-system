@@ -4,10 +4,24 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Heading2 } from "lucide-react";
 
 export default function QuestionRenderer({ question, value, onChange, error }) {
     const id = `q-${question.id}`;
     const hasOthers = (question.options ?? []).includes("Others");
+
+    // Handle subheading type - render as static text block
+    if (question.type === "subheading") {
+        return (
+            <div className="flex flex-col gap-2 px-4 py-3 rounded-lg bg-blue-50 border-l-4 border-blue-500">
+                <div className="flex items-center gap-2">
+                    <Heading2 size={18} className="text-blue-700" />
+                    <span className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Section Information</span>
+                </div>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{question.label}</p>
+            </div>
+        );
+    }
 
     const handleCheckbox = (option, checked) => {
         const current = Array.isArray(value) ? value : [];

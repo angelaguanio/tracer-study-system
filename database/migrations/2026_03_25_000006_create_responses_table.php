@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('responses', function (Blueprint $table) {
@@ -20,14 +17,14 @@ return new class extends Migration
             $table->timestamp('submitted_at');
             $table->timestamps();
 
+            // Composite index for the most common query pattern:
+            // "all responses for a survey by a specific user"
             $table->index(['survey_id', 'user_id']);
+            // Separate index for question-level aggregation queries.
             $table->index('question_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('responses');
