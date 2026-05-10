@@ -97,6 +97,6 @@ class User extends Authenticatable
          return $this->hasMany(EmploymentHistory::class);
     }
 
-
+    
 
 }

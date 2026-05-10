@@ -10,6 +10,12 @@ class EmploymentHistory extends Model
     use HasFactory;
 
     /**
+     * Laravel would pluralize this to 'employment_histories' by default.
+     * Explicitly set to match the migration table name.
+     */
+    protected $table = 'employment_history';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

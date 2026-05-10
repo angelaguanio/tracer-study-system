@@ -6,20 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // Personal info
             $table->string('last_name');
             $table->string('first_name');
             $table->string('middle_name')->nullable();
+            $table->string('address')->nullable();
+            $table->string('contact_number')->nullable();
+
+            // Auth
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Role & academic info
             $table->string('user_role');
+            $table->smallInteger('year_graduated')->nullable(); // smallInteger is sufficient for a 4-digit year
+            $table->string('courses')->nullable();
+            $table->string('department')->nullable();          // used by AdminAlumniController
+
+            // Profile
+            $table->string('profile_picture')->nullable();     // stores relative path under storage/avatars/
+
             $table->rememberToken();
             $table->timestamps();
         });
@@ -40,9 +52,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
