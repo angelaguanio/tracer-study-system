@@ -1,87 +1,305 @@
 import { useState, useEffect, useRef } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
+import { toast } from "sonner";
 import AdminLayout from "@/layouts/admin-layout";
 import AdminAlumniFilters from "@/components/AdminAlumniFilters";
 import AdminAlumniTable from "@/components/AdminAlumniTable";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Mail } from "lucide-react";
 
 export default function AdminAlumni({ alumni, filters }) {
+  const { flash } = usePage().props;
+
+  // ── Filters ───────────────────────────────────────────────
   const [search, setSearch] = useState(filters.search || "");
-  const [year, setYear] = useState(filters.year || "all");
+  const [year, setYear]     = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
   const isFirstRender = useRef(true);
 
-  const applyFilters = (newFilters = {}) => {
+  // ── Bulk selection ────────────────────────────────────────
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  // ── Bulk email modal ──────────────────────────────────────
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkSubject, setBulkSubject]     = useState("");
+  const [bulkMessage, setBulkMessage]     = useState("");
+  const [bulkSending, setBulkSending]     = useState(false);
+
+  // ── Individual email modal ────────────────────────────────
+  const [indivModalOpen, setIndivModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser]     = useState(null); // { id, name, email }
+  const [indivSubject, setIndivSubject]     = useState("");
+  const [indivMessage, setIndivMessage]     = useState("");
+  const [indivSending, setIndivSending]     = useState(false);
+
+  // ── Flash toast ───────────────────────────────────────────
+  useEffect(() => {
+    if (flash?.success) toast.success(flash.success);
+  }, [flash?.success]);
+
+  // Clear selection on page change
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [alumni?.current_page]);
+
+  // ── Filter logic ──────────────────────────────────────────
+  const applyFilters = (params = {}) => {
     router.get(
       "/admin/alumni",
-      {
-        search,
-        year,
-        course,
-        page: 1,
-        ...newFilters,
-      },
-      {
-        preserveState: true,
-        replace: true,
-      }
+      { search, year, course, page: 1, ...params },
+      { preserveState: true, replace: true }
     );
   };
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const delay = setTimeout(() => {
-      applyFilters({ page: 1 });
-    }, 500);
-
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    const delay = setTimeout(() => applyFilters(), 500);
     return () => clearTimeout(delay);
   }, [search]);
 
+  useEffect(() => {
+    if (!isFirstRender.current) applyFilters();
+  }, [year, course]);
+
+  // ── Bulk selection helpers ────────────────────────────────
+  const currentPageIds = alumni?.data?.map((a) => a.id) ?? [];
+  const allSelected =
+    currentPageIds.length > 0 &&
+    currentPageIds.every((id) => selectedIds.includes(id));
+
+  const toggleOne = (id) =>
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+    } else {
+      setSelectedIds((prev) => [...new Set([...prev, ...currentPageIds])]);
+    }
+  };
+
+  // ── Open individual email modal ───────────────────────────
+  const openIndivModal = (user) => {
+    setSelectedUser(user);
+    setIndivSubject("");
+    setIndivMessage("");
+    setIndivModalOpen(true);
+  };
+
+  // ── Individual email submit ───────────────────────────────
+  const handleSendIndividual = () => {
+    if (!indivSubject.trim() || !indivMessage.trim()) {
+      toast.error("Subject and message are required.");
+      return;
+    }
+
+    setIndivSending(true);
+    router.post(
+      route("admin.alumni.email.send", selectedUser.id),
+      { subject: indivSubject, message: indivMessage },
+      {
+        onSuccess: () => {
+          setIndivModalOpen(false);
+          setSelectedUser(null);
+        },
+        onError: () => toast.error("Failed to send email. Please try again."),
+        onFinish: () => setIndivSending(false),
+      }
+    );
+  };
+
+  // ── Bulk email submit ─────────────────────────────────────
+  const handleSendBulk = () => {
+    if (!bulkSubject.trim() || !bulkMessage.trim()) {
+      toast.error("Subject and message are required.");
+      return;
+    }
+
+    setBulkSending(true);
+    router.post(
+      route("admin.alumni.email.bulk"),
+      { subject: bulkSubject, message: bulkMessage, send_all: false, user_ids: selectedIds },
+      {
+        onSuccess: () => {
+          setBulkModalOpen(false);
+          setBulkSubject("");
+          setBulkMessage("");
+          setSelectedIds([]);
+        },
+        onError: () => toast.error("Failed to queue emails. Please try again."),
+        onFinish: () => setBulkSending(false),
+      }
+    );
+  };
+
   return (
-    <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
+    <div className="w-full p-4">
+
+      {/* FILTERS */}
       <AdminAlumniFilters
-        search={search}
-        setSearch={setSearch}
-        year={year}
-        setYear={(val) => {
-          setYear(val);
-          router.get(
-            "/admin/alumni",
-            {
-              search,
-              year: val,
-              course,
-              page: 1,
-            },
-            {
-              preserveState: true,
-              replace: true,
-            }
-          );
-        }}
-        course={course}
-        setCourse={(val) => {
-          setCourse(val);
-          router.get(
-            "/admin/alumni",
-            {
-              search,
-              year,
-              course: val,
-              page: 1,
-            },
-            {
-              preserveState: true,
-              replace: true,
-            }
-          );
-        }}
+        search={search} setSearch={setSearch}
+        year={year}     setYear={setYear}
+        course={course} setCourse={setCourse}
       />
 
-      <AdminAlumniTable alumni={alumni} />
+      {/* BULK ACTION BAR */}
+      <div className="mt-4 flex items-center justify-between">
+        {selectedIds.length > 0 ? (
+          <span className="text-sm text-gray-500">
+            {selectedIds.length} alumni selected
+          </span>
+        ) : (
+          <span />
+        )}
+
+        <Button
+          disabled={selectedIds.length === 0}
+          onClick={() => setBulkModalOpen(true)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-sm disabled:opacity-40"
+        >
+          <Mail className="w-4 h-4" />
+          Send Bulk Email
+          {selectedIds.length > 0 && (
+            <span className="ml-1 bg-white text-blue-600 rounded-full px-2 py-0.5 text-xs font-semibold">
+              {selectedIds.length}
+            </span>
+          )}
+        </Button>
+      </div>
+
+      {/* TABLE */}
+      <div className="mt-3">
+        <AdminAlumniTable
+          alumni={alumni}
+          selectedIds={selectedIds}
+          onToggleOne={toggleOne}
+          onToggleAll={toggleAll}
+          allSelected={allSelected}
+          onSendEmail={openIndivModal}
+        />
+      </div>
+
+      {/* ── INDIVIDUAL EMAIL MODAL ── */}
+      <Dialog open={indivModalOpen} onOpenChange={setIndivModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-blue-800">
+              Send an email to {selectedUser?.name}
+            </DialogTitle>
+            <DialogDescription className="text-gray-500 text-sm">
+              {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="indiv-subject">Subject</Label>
+              <Input
+                id="indiv-subject"
+                placeholder="Email subject..."
+                value={indivSubject}
+                onChange={(e) => setIndivSubject(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="indiv-message">Message</Label>
+              <Textarea
+                id="indiv-message"
+                placeholder="Write your message here..."
+                rows={6}
+                value={indivMessage}
+                onChange={(e) => setIndivMessage(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIndivModalOpen(false)}
+              disabled={indivSending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendIndividual}
+              disabled={indivSending}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {indivSending ? "Sending..." : "Send Email"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── BULK EMAIL MODAL ── */}
+      <Dialog open={bulkModalOpen} onOpenChange={setBulkModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-blue-800">
+              Send Bulk Email
+              <span className="ml-2 text-sm font-normal text-gray-500">
+                ({selectedIds.length} recipients)
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="bulk-subject">Subject</Label>
+              <Input
+                id="bulk-subject"
+                placeholder="Email subject..."
+                value={bulkSubject}
+                onChange={(e) => setBulkSubject(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="bulk-message">Message</Label>
+              <Textarea
+                id="bulk-message"
+                placeholder="Write your message here..."
+                rows={6}
+                value={bulkMessage}
+                onChange={(e) => setBulkMessage(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setBulkModalOpen(false)}
+              disabled={bulkSending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendBulk}
+              disabled={bulkSending}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {bulkSending ? "Queuing..." : "Send Email"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
