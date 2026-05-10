@@ -14,6 +14,7 @@ class EmploymentHistory extends Model
      *
      * @var array<int, string>
      */
+     protected $table = 'employment_history';
     protected $fillable = [
         'user_id',
         'currently_employed',
