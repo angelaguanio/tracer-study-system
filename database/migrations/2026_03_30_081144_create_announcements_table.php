@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('details');
 
-            $table->lonText('image')->nullable();
+            $table->longText('image')->nullable();
 
             // Workflow states: pending → approved | rejected
             $table->string('status')->default('pending');
