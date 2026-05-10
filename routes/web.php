@@ -145,18 +145,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         //logout route
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
         // Bulk email
         Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
-        // Announcements
-        Route::get('/announcement', [AnnouncementController::class, 'index'])->name('announcement.index');
-        Route::get('/announcement/create', [AnnouncementController::class, 'create'])->name('announcement.create');
-        Route::post('/announcement', [AnnouncementController::class, 'store'])->name('announcement.store');
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])->name('admin.announcement.show');
-        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcement.edit');
-        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');
-        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcement.destroy');
-
+        
         // Analytics
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
