@@ -85,6 +85,45 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
     });
 
+    //AUTH ADMIN
+    Route::middleware('auth')->group(function () {
+
+        Route::get('/dashboard', AdminDashboardController::class)
+            ->name('dashboard');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
+            ->name('logout');
+
+        // ANNOUNCEMENT CRUD
+        Route::get('/announcement', [AnnouncementController::class, 'index'])
+            ->name('announcement.index');
+
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
+
+        // APPROVAL SYSTEM
+        Route::put('/announcement/{announcement}/approve', [AnnouncementController::class, 'approve'])
+            ->name('announcement.approve');
+
+        Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
+            ->name('announcement.reject');
+    });
+
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
@@ -106,18 +145,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         //logout route
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
         // Bulk email
         Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
-        // Announcements
-        Route::get('/announcement', [AnnouncementController::class, 'index'])->name('announcement.index');
-        Route::get('/announcement/create', [AnnouncementController::class, 'create'])->name('announcement.create');
-        Route::post('/announcement', [AnnouncementController::class, 'store'])->name('announcement.store');
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])->name('admin.announcement.show');
-        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcement.edit');
-        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');
-        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcement.destroy');
-
+        
         // Analytics
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
@@ -170,5 +202,34 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+        // ANNOUNCEMENT CRUD ONLY
+        // LIST
+        Route::get('/announcement', [AnnouncementController::class, 'coordinatorIndex'])
+            ->name('announcement.index');
+
+        // CREATE
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        // STORE (pending)
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        //  VIEW SINGLE ANNOUNCEMENT
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        // EDIT
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        // UPDATE
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        // DELETE
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
     });
 });
