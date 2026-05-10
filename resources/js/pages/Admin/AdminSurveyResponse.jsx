@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
-import { Check } from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
 
 import AdminSurveyDeletePrompt from "@/components/AdminSurveyDeletePrompt";
 import AdminSurveyResponseTable from "@/components/AdminSurveyResponseTable";
@@ -31,7 +31,7 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
   useEffect(() => {
     const delay = setTimeout(() => {
       router.get(
-        `/admin/survey-response/${survey.id}`, 
+        `/admin/survey-response/${survey.id}`,
         { search, year, course, page },
         {
           preserveState: true,
@@ -44,10 +44,14 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
     return () => clearTimeout(delay);
   }, [search, year, course, page]);
 
+  const handleBack = () => {
+    router.get("/admin/survey-response");
+  };
+
   const confirmDelete = () => {
     if (!deleteId) return;
 
-    router.delete(`/admin/survey-response/${survey.id}/${deleteId}`, { 
+    router.delete(`/admin/survey-response/${survey.id}/${deleteId}`, {
       preserveScroll: true,
       onSuccess: () => {
         setLocalResponses((prev) =>
@@ -65,11 +69,21 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
   return (
     <div className="w-full p-4">
 
-      {/* TITLE */}
-      <div className="mb-4">
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-6">
+
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 bg-[#0B63F6] text-white px-5 py-2.5 rounded-md hover:bg-blue-700 text-sm font-medium shadow"
+        >
+          <ArrowLeft size={16} />
+          Back
+        </button>
+
         <h1 className="text-lg font-semibold text-gray-800">
           {survey.title}
         </h1>
+
       </div>
 
       {/* FILTER */}
@@ -88,7 +102,7 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
         page={page}
         setPage={setPage}
         onDelete={(res) => setDeleteId(res.id)}
-        surveyId={survey.id} // optional if needed inside table
+        surveyId={survey.id}
       />
 
       {/* DELETE MODAL */}
@@ -103,6 +117,7 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
       {showSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white w-[420px] rounded-xl p-10 shadow-xl text-center flex flex-col items-center gap-5">
+
             <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center shadow-md">
               <Check className="text-white w-9 h-9 stroke-[3]" />
             </div>
@@ -110,6 +125,7 @@ export default function AdminSurveyResponse({ responses, filters, survey }) {
             <p className="text-gray-700 text-lg font-semibold">
               Deleted successfully
             </p>
+
           </div>
         </div>
       )}

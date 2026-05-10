@@ -1,17 +1,17 @@
 import { router } from "@inertiajs/react";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import AdminLayout from "@/layouts/admin-layout";
 
-export default function AdminSurveyResponseViewNotComplete() {
+export default function AdminSurveyResponseViewNotComplete({ survey }) {
 
     const handleBack = () => {
-        router.visit("/admin/survey-response");
+        router.get(`/admin/survey-response/${survey.id}`);
     };
 
     return (
-        <div className="bg-[#F3FAFF] min-h-screen w-full px-6 lg:px-10 py-6 relative">
+        <div className="bg-[#F3FAFF] min-h-screen w-full px-6 lg:px-10 py-6 flex flex-col">
 
-            {/* HEADER (SAME AS COMPLETED VIEW) */}
+            {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
 
                 <button
@@ -22,16 +22,15 @@ export default function AdminSurveyResponseViewNotComplete() {
                     Back
                 </button>
 
-                {/* <div className="flex items-center gap-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium">
-                    <Eye size={16} />
-                    Not Completed
-                </div> */}
+                <h1 className="text-lg font-semibold text-gray-800">
+                    {survey?.title}
+                </h1>
 
             </div>
 
-            {/* MESSAGE */}
-            <div className="flex items-center justify-center min-h-[80vh]">
-                <p className="text-gray-600 font-bold text-lg max-w-md leading-relaxed text-center">
+            {/* CENTER MESSAGE (properly centered but not too low) */}
+            <div className="flex-1 flex items-start justify-center pt-20">
+                <p className="text-gray-600 font-semibold text-lg max-w-md text-center leading-relaxed">
                     This user has not yet completed the survey
                 </p>
             </div>

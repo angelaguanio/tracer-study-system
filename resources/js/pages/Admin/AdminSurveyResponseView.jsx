@@ -2,10 +2,10 @@ import { router } from "@inertiajs/react";
 import { ArrowLeft, Eye, User } from "lucide-react";
 import AdminLayout from "@/layouts/admin-layout";
 
-export default function AdminSurveyResponseView({ response }) {
+export default function AdminSurveyResponseView({ response, survey }) {
 
     const handleBack = () => {
-        router.visit("/admin/survey-response");
+        router.visit(`/admin/survey-response/${survey.id}`);
     };
 
     return (
@@ -52,32 +52,50 @@ export default function AdminSurveyResponseView({ response }) {
                 </div>
             </div>
 
-            {/* SURVEY ANSWERS (REAL SURVEY DATA ONLY) */}
+            {/* SURVEY ANSWERS (FIXED: SECTION-BASED) */}
             <div className="bg-white p-6 lg:p-8 rounded-xl shadow">
 
                 <h2 className="text-lg font-semibold mb-4">
                     Survey Answers
                 </h2>
 
-                <div className="space-y-4 text-sm">
+                <div className="space-y-6 text-sm">
 
-                    {response?.answers?.length > 0 ? (
-                        response.answers.map((item, i) => (
-                            <div key={i} className="border-b pb-3">
+                    {response?.sections?.length > 0 ? (
+                        response.sections.map((section, i) => (
+                            <div key={i} className="border-b pb-4">
 
-                                <p className="text-gray-500">
-                                    {item.question || "No question"}
-                                </p>
+                                {/* SECTION TITLE */}
+                                <h3 className="font-bold text-gray-800 mb-3">
+                                    {section.section_title}
+                                </h3>
 
-                                <p className="font-semibold text-gray-900">
-                                    {item.answer || "-"}
-                                </p>
+                                {/* ANSWERS */}
+                                {section.answers?.length > 0 ? (
+                                    section.answers.map((item, idx) => (
+                                        <div key={idx} className="mb-3">
+
+                                            <p className="text-gray-500">
+                                                {item.question || "No question"}
+                                            </p>
+
+                                            <p className="font-semibold text-gray-900">
+                                                {item.answer || "-"}
+                                            </p>
+
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-400">
+                                        No answers in this section
+                                    </p>
+                                )}
 
                             </div>
                         ))
                     ) : (
                         <p className="text-gray-500">
-                            No survey answers found.
+                            No survey responses found.
                         </p>
                     )}
 

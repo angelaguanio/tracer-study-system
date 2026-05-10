@@ -114,7 +114,7 @@ export default function AdminSurveyResponseTable({
                   {/* STATUS */}
                   <TableCell className="text-center">
                     <span
-                      className={`px-3 py-1 text-[11px] font-semibold rounded-full uppercase tracking-wide ${
+                      className={`px-3 py-1 text-[11px] font-semibold rounded-full tracking-wide ${
                         res.status === "completed"
                           ? "bg-green-100 text-green-600 border border-green-200"
                           : "bg-red-100 text-red-600 border border-red-200"

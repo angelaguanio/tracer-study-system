@@ -12,7 +12,7 @@ use Inertia\Inertia;
 class AdminOfSurveyResponseController extends Controller
 {
     /**
-     * PAGE 1: Listahan ng lahat ng Surveys
+     * PAGE 1: List of Surveys
      */
     public function index()
     {
@@ -35,8 +35,7 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * PAGE 2: FIX PARA SA ERROR MO
-     * Ito ang hinahanap ng route: /admin/survey-response/{id}
+     * PAGE 2: Survey Responses (Main Page)
      */
     public function show(Request $request, $id)
     {
@@ -44,7 +43,7 @@ class AdminOfSurveyResponseController extends Controller
 
         $query = User::where('user_role', 'alumna');
 
-        // Search Filters
+        // SEARCH
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('first_name', 'like', "%{$request->search}%")
@@ -52,10 +51,12 @@ class AdminOfSurveyResponseController extends Controller
             });
         }
 
+        // COURSE FILTER
         if ($request->filled('course') && $request->course !== 'all') {
             $query->where('courses', $request->course);
         }
 
+        // YEAR FILTER
         if ($request->filled('year') && $request->year !== 'all') {
             $query->where('year_graduated', $request->year);
         }
@@ -78,7 +79,7 @@ class AdminOfSurveyResponseController extends Controller
 
         return Inertia::render('Admin/AdminSurveyResponse', [
             'responses' => $users,
-            'filters' => $request->only(['search', 'course', 'year']),
+            'filters' => $request->only(['search', 'course', 'year', 'page']),
             'survey' => [
                 'id' => $survey->id,
                 'title' => $survey->title,
@@ -87,42 +88,72 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * PAGE 3: View ng sagot ng Completed User
+     * PAGE 3: Completed User Response View (WITH SECTION GROUPING FIX)
      */
     public function viewUserResponse($surveyId, $userId)
     {
+        $survey = Survey::with('sections.questions')->findOrFail($surveyId);
         $user = User::findOrFail($userId);
-        
-        $responses = Response::with(['question'])
+
+        $responses = Response::with(['question.section'])
             ->where('survey_id', $surveyId)
             ->where('user_id', $userId)
             ->get();
+
+        // GROUP RESPONSES BY SECTION
+        $sections = $survey->sections->map(function ($section) use ($responses) {
+
+            $answers = $responses->filter(function ($response) use ($section) {
+                return optional($response->question)->section_id === $section->id;
+            })->map(function ($r) {
+                return [
+                    'question' => $r->question->label ?? 'No question',
+                    'answer' => $r->answer_value ?? '-',
+                ];
+            })->values();
+
+            return [
+                'section_title' => $section->title,
+                'answers' => $answers,
+            ];
+        });
 
         return Inertia::render('Admin/AdminSurveyResponseView', [
             'response' => [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'email' => $user->email,
-                'answers' => $responses->map(function ($r) {
-                    return [
-                        'question' => $r->question->label ?? 'No question',
-                        'answer' => $r->answer_value ?? '-',
-                    ];
-                }),
+                'sections' => $sections, // ✅ FIXED STRUCTURE
             ],
+            'survey' => [
+                'id' => $survey->id,
+                'title' => $survey->title,
+            ]
         ]);
     }
 
     /**
-     * PAGE 4: View para sa Not Completed
+     * PAGE 4: NOT COMPLETED VIEW
      */
     public function notComplete($surveyId, $userId)
     {
-        return Inertia::render('Admin/AdminSurveyResponseViewNotComplete');
+        $survey = Survey::findOrFail($surveyId);
+        $user = User::findOrFail($userId);
+
+        return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
+            'survey' => [
+                'id' => $survey->id,
+                'title' => $survey->title,
+            ],
+            'user' => [
+                'id' => $user->id,
+                'name' => trim($user->first_name . ' ' . $user->last_name),
+            ]
+        ]);
     }
 
     /**
-     * ACTION: Delete Response
+     * DELETE RESPONSE
      */
     public function destroy($surveyId, $userId)
     {
