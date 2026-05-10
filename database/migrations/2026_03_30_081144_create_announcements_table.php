@@ -10,19 +10,18 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-
-            // Author
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-
-            // Content
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->text('details');
-            $table->longText('image')->nullable();
 
-            // State
+            // JSON instead of longText — Announcement model casts this as array.
+            $table->json('image')->nullable();
+
+            // Workflow states: pending → approved | rejected
             $table->string('status')->default('pending');
-
             $table->timestamps();
+
+            $table->index('status');
         });
     }
 

@@ -25,8 +25,12 @@ return new class extends Migration
 
             // Role & academic info
             $table->string('user_role');
-            $table->integer('year_graduated')->nullable();
+            $table->smallInteger('year_graduated')->nullable(); // smallInteger is sufficient for a 4-digit year
             $table->string('courses')->nullable();
+            $table->string('department')->nullable();          // used by AdminAlumniController
+
+            // Profile
+            $table->string('profile_picture')->nullable();     // stores relative path under storage/avatars/
 
             $table->rememberToken();
             $table->timestamps();
