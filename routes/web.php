@@ -228,7 +228,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+        Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
+        Route::get('/coordinator/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('coordinator.alumni.show');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
         // ANNOUNCEMENT CRUD ONLY
@@ -237,7 +238,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
             ->name('announcement.index');
 
         // CREATE
-        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])   
             ->name('announcement.create');
 
         // STORE (pending)

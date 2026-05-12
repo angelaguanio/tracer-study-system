@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // Idagdag ang useRef
+import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAlumniFilters from "@/components/CoordinatorAlumniFilters";
@@ -8,63 +8,40 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");
   const [year, setYear] = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
-  
-  // Gagamit tayo ng Ref para malaman kung "first render" pa lang
   const isFirstRender = useRef(true);
 
-  const applyFilters = (newFilters = {}) => {
-    router.get(
-      "/coordinator/alumni",
-      {
-        search,
-        year,
-        course,
-        // Kunin ang current page mula sa props para hindi mawala
-        page: alumni.current_page, 
-        ...newFilters,
-      },
-      {
-        preserveState: true,
-        replace: true,
-      }
+  const applyFilters = (params = {}) => {
+    router.get("/coordinator/alumni", 
+      { search, year, course, page: 1, ...params }, 
+      { preserveState: true, replace: true }
     );
   };
 
+  // Logic para sa View button
+  const handleView = (id) => {
+    router.visit(route("coordinator.alumni.show", id));
+  };
+
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const delay = setTimeout(() => {
-      applyFilters({ search, page: 1 });
-    }, 500);
-
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    const delay = setTimeout(() => applyFilters(), 500);
     return () => clearTimeout(delay);
   }, [search]);
 
   return (
-    <div className="w-full rounded-2xl p-3 md:p-4 shadow-sm">
-      <CoordinatorAlumniFilters
-        search={search}
-        setSearch={setSearch}
-        year={year}
-        setYear={(val) => {
-          setYear(val);
-          applyFilters({ year: val, page: 1 });
-        }}
-        course={course}
-        setCourse={(val) => {
-          setCourse(val);
-          applyFilters({ course: val, page: 1 });
-        }}
+    <div className="w-full p-4">
+      <CoordinatorAlumniFilters 
+        search={search} setSearch={setSearch} 
+        year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
+        course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}} 
       />
 
-      <CoordinatorAlumniTable alumni={alumni} />
+      <div className="mt-6">
+        {/* I-pass ang handleView sa table component */}
+        <CoordinatorAlumniTable alumni={alumni} onView={handleView} />
+      </div>
     </div>
   );
 }
 
-CoordinatorAlumni.layout = (page) => (
-  <CoordinatorLayout>{page}</CoordinatorLayout>
-);
+CoordinatorAlumni.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
