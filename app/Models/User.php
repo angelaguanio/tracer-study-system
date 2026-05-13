@@ -25,6 +25,7 @@ class User extends Authenticatable
         'user_role', 
         'year_graduated', 
         'courses', 
+        'department',
         'address',       
         'contact_number',
         'profile_picture'
