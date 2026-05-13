@@ -71,9 +71,18 @@ export default function AlumnaHome({ announcements }) {
               Community
             </h1>
             <p className="text-white text-lg md:text-xl">
-              Share experiences, discover opportunities, and build lasting
-              relationships with fellow alumni from our institution.
+              Reconnect with fellow graduates, explore new opportunities, <br />
+              and participate in our tracer survey to help improve the <br /> 
+              future of our institution.
             </p>
+
+            <Link
+              href="/alumna/questionnaire"
+              className="inline-flex mt-6 items-center gap-2 bg-white text-[#013A63] px-5 py-2 rounded-md text-sm font-semibold hover:bg-gray-200 transition shadow-sm"
+            >
+              Take the Survey
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
 
@@ -141,7 +150,7 @@ export default function AlumnaHome({ announcements }) {
                 <ReceiptText size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
                 <p className="text-gray-600 text-sm">
-                  Participate in tracer studies and update your academic and employment information
+                  Participate in tracer studies and update <br /> your academic and employment information
                 </p>
               </div>
 
@@ -181,10 +190,13 @@ export default function AlumnaHome({ announcements }) {
             <p className="text-gray-200 text-lg mb-8">
               Contribute to institutional development by updating your records and responding to tracer study surveys.
             </p>
-            <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2">
+            <Link
+              href="/alumna/profile"
+              className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2"
+            >
               Proceed to Profile
               <ArrowRight size={18} />
-            </button>
+            </Link>
           </div>
         </div>
 
