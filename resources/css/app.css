@@ -349,3 +349,27 @@
     background: #888; /* Customize thumb color */
     border-radius: 4px;
   }
+
+/* Custom scrollbar for inquiry list */
+.inquiry-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.inquiry-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.inquiry-scrollbar::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 10px;
+}
+
+.inquiry-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Firefox scrollbar */
+.inquiry-scrollbar {
+    scrollbar-width: 8px;
+    scrollbar-color: #9ca3af transparent;
+}

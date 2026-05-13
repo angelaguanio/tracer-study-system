@@ -23,7 +23,7 @@ const buttonVariants = cva(
 
         //custom variants
         blue:
-        "bg-blue-btn text-xl font-inter text-white hover:bg-bluehover-btn shadow-md w-md",
+        "bg-blue-btn text-lg font-inter text-white hover:bg-bluehover-btn shadow-md w-md",
         nav:
         "text-navbar-text py-2 px-2 rounded-sm hover:bg-bluehover-btn hover:text-white text-md font-normal"
       },
