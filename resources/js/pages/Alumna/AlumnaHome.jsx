@@ -7,12 +7,17 @@ import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 
 
 // Card Component
 function AnnouncementCard({ id, date, title, description, image }) {
+
+  // kahit array ang image, gagana pa rin
+  const imgSrc = Array.isArray(image)
+    ? image[0] // first image lang ipapakita sa card
+    : image;
+
   return (
-    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col">
-      
-      {image ? (
+    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col h-[420px]">      
+      {imgSrc ? (
         <img
-          src={image}
+          src={imgSrc}
           className="w-full h-[150px] object-cover rounded-xl mb-6"
         />
       ) : (
@@ -24,7 +29,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
 
       <p className="text-[#0042A8] text-sm mb-4">{date}</p>
       <h3 className="text-lg font-semibold text-[#0042A8] mb-4">{title}</h3>
-      <p className="text-gray-600 text-sm mb-6">{description}</p>
+      <p className="text-gray-600 text-sm mb-4 h-[50px] overflow-hidden">{description}</p>
 
       <Link href={`/alumna/announcement/${id}`}>
         <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
@@ -39,15 +44,15 @@ function AnnouncementCard({ id, date, title, description, image }) {
 export default function AlumnaHome({ announcements }) {
   return (
     
-      <div className="bg-white -mt-6 md:-mt-4">
+      <div className="bg-white -mt-6 md:-mt-4 overflow-x-hidden w-full">
 
         {/* HERO SECTION */}
         <section
-          className="relative w-screen h-[450px] flex items-center"
+          className="relative w-screen h-[450px] flex items-center overflow-hidden"
           style={{
             backgroundImage: `url(${alumniHomeImg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '50% 30%',
+            backgroundSize: '115%',
+            backgroundPosition: '10% 42%',
             backgroundRepeat: 'no-repeat',
           }}
         >

@@ -20,7 +20,7 @@ export default function HistoryDetail({ history, profile }) {
             <div className="flex items-center">
                 <Link
                     href={route('alumna.profile')}
-                    className="flex items-center gap-2 text-gray-500 hover:text-[#008542] text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors"
                 >
                     <IconArrow /> Back to Profile
                 </Link>

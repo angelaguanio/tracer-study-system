@@ -9,107 +9,260 @@ use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
-    public function index()
+    private function validateTotalImageSize($files)
     {
-        $announcements = Announcement::latest()->get();
+        $totalSize = 0;
+
+        foreach ($files as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size must not exceed 10MB.');
+        }
+    }
+    
+    /* ================= ADMIN LIST ================= */
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+        $status = $request->query('status');
+        $sort   = $request->query('sort', 'newest');
+
+        $announcements = Announcement::query()
+
+            ->where('status', '!=', 'rejected')
+
+            // STATUS FILTER
+            ->when($status && $status !== 'All', function ($q) use ($status) {
+                $q->where('status', strtolower($status));
+            })
+
+            // SEARCH
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('title', 'like', "%{$search}%")
+                        ->orWhere('details', 'like', "%{$search}%");
+                });
+            })
+
+            // SORT            
+            ->when($sort === 'oldest', function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }, function ($q) {
+                $q->orderBy('created_at', 'desc');
+            })
+
+            ->paginate(5)
+            ->withQueryString();
 
         return Inertia::render('Admin/AdminAnnouncement', [
             'announcements' => $announcements,
-            'flash' => session()->all(),
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+                'sort' => $sort,
+            ],
         ]);
     }
 
+    /* ================= CREATE FORM ================= */
     public function create()
     {
-        return Inertia::render('Admin/AdminAnnouncementCreate');
+        if (auth()->user()->user_role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementCreate');
+        }
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncementCreate');
     }
 
+    /* ================= STORE ================= */
     public function store(Request $request)
     {
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            'images.*' => 'image',
         ]);
 
-        $imageUrl = '';
+        $files = $request->file('images', []);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('announcements', 'public');
-            $imageUrl = asset("storage/$path");
+        // MAX 10 IMAGES
+        if (count($files) > 10) {
+            abort(422, 'Maximum of 10 images only.');
+        }
+
+        // TOTAL SIZE CHECK (10MB total)
+        $totalSize = 0;
+
+        foreach ($files as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size must not exceed 10MB.');
+        }
+
+        $imageUrls = [];
+
+        foreach ($files as $file) {
+            $path = $file->store('announcements', 'public');
+            $imageUrls[] = Storage::url($path);
         }
 
         Announcement::create([
             'title'   => $request->title,
             'details' => $request->details,
-            'image'   => $imageUrl,
+            'image'   => $imageUrls,
+            'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route(auth()->user()->user_role . '.announcement.index')
+            ->with('success', 'Announcement created successfully!');
+    }
+
+    /* ================= APPROVE / REJECT ================= */
+    public function approve(Announcement $announcement)
+    {
+        $announcement->update([
+            'status' => 'approved'
         ]);
 
         return redirect()
             ->route('admin.announcement.index')
-            ->with('success', 'Announcement created successfully.');
+            ->with('success', 'Announcement approved successfully!');
     }
 
+    public function reject(Announcement $announcement)
+    {
+        $announcement->update([
+            'status' => 'rejected'
+        ]);
+
+        return redirect()
+            ->route('admin.announcement.index')
+            ->with('success', 'Announcement rejected successfully!');
+    }
+
+    /* ================= VIEW ================= */
     public function show(Announcement $announcement)
     {
-        return Inertia::render('Admin/AdminAnnouncementView', [
-            'announcement' => $announcement,
-        ]);
+        $role = auth()->user()->user_role;
+
+        $announcement->image = is_string($announcement->image)
+        ? json_decode($announcement->image, true)
+        : ($announcement->image ?? []);
+
+        if ($role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementView', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        if ($role === 'coordinator') {
+            return Inertia::render('Coordinator/CoordinatorAnnouncementView', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        return abort(403);
     }
 
+    /* ================= EDIT ================= */
     public function edit(Announcement $announcement)
     {
-        return Inertia::render('Admin/AdminAnnouncementEdit', [
+        $announcement->image = is_string($announcement->image)
+            ? json_decode($announcement->image, true)
+            : ($announcement->image ?? []);
+
+        if (auth()->user()->user_role === 'admin') {
+            return Inertia::render('Admin/AdminAnnouncementEdit', [
+                'announcement' => $announcement,
+            ]);
+        }
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncementEdit', [
             'announcement' => $announcement,
         ]);
     }
 
+    /* ================= UPDATE ================= */
     public function update(Request $request, Announcement $announcement)
     {
-        // Validate input
         $request->validate([
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            'images.*' => 'image',
         ]);
 
-        // Keep old image if no new file uploaded
-        $imagePath = $announcement->image;
+        $existing = json_decode($request->existing_images, true) ?? [];
+        $newFiles = $request->file('images', []);
 
-        if ($request->hasFile('image')) {
-            // Optional: delete old image file
-            // Storage::disk('public')->delete(str_replace(asset('storage/'), '', $announcement->image));
-
-            $path = $request->file('image')->store('announcements', 'public');
-            $imagePath = asset("storage/$path");
+        // MAX 10 TOTAL IMAGES (existing + new)
+        if (count($existing) + count($newFiles) > 10) {
+            abort(422, 'Maximum of 10 images only.');
         }
 
-        // Update announcement
+        // TOTAL SIZE CHECK (NEW FILES ONLY)
+        $totalSize = 0;
+
+        foreach ($existing as $imageUrl) {
+        $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
+
+        if (Storage::disk('public')->exists($path)) {
+            $totalSize += Storage::disk('public')->size($path);
+        }
+    }
+
+        // NEW FILES SIZE
+        foreach ($newFiles as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        // FINAL CHECK (10MB TOTAL)
+        if (($totalSize / 1024 / 1024) > 10) {
+            abort(422, 'Total image size (existing + new) must not exceed 10MB.');
+        }
+
+        $imagePaths = $existing;
+
+        foreach ($newFiles as $file) {
+            $path = $file->store('announcements', 'public');
+            $imagePaths[] = Storage::url($path);
+        }
+
         $announcement->update([
             'title'   => $request->title,
             'details' => $request->details,
-            'image'   => $imagePath,
+            'image'   => $imagePaths,
         ]);
 
-        // Redirect back to announcement page
-        return redirect('/admin/announcement')
-                            ->with('success', 'Updated successfully');
-        
+        return redirect()
+            ->route(auth()->user()->user_role . '.announcement.index')
+            ->with('success', 'Updated');
     }
 
+    /* ================= DELETE ================= */
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
 
         return redirect()
-            ->route('admin.announcement.index')
-            ->with('success', 'Announcement deleted successfully.');
+            ->route(auth()->user()->user_role . '.announcement.index')
+            ->with('success', 'Deleted');
     }
 
-    // ALUMNA SIDE
+    /* ================= ALUMNA ================= */
     public function alumna()
     {
-        $announcements = Announcement::latest()->get();
+
+        // ONLY APPROVED SHOWN
+        $announcements = Announcement::where('status', 'approved')
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Alumna/AlumnaAnnouncements', [
             'announcements' => $announcements,
@@ -118,10 +271,50 @@ class AnnouncementController extends Controller
 
     public function showAlumna($id)
     {
-        $announcement = Announcement::findOrFail($id);
-
         return Inertia::render('Alumna/AlumnaAnnouncementView', [
-            'announcement' => $announcement
+            'announcement' => Announcement::findOrFail($id)
+        ]);
+    }
+
+    /* ================= COORDINATOR LIST ================= */
+    public function coordinatorIndex(Request $request)
+    {
+        $status = $request->query('status');
+        $search = $request->query('search');
+        $sort   = $request->query('sort', 'newest');
+
+        $announcements = Announcement::query()
+
+            // STATUS FILTER
+            ->when($status && $status !== 'All', function ($q) use ($status) {
+                $q->where('status', strtolower($status));
+            })
+
+            // SEARCH (GLOBAL)
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('title', 'like', "%{$search}%")
+                        ->orWhere('details', 'like', "%{$search}%");
+                });
+            })
+
+            // SORT
+            ->when($sort === 'oldest', function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }, function ($q) {
+                $q->orderBy('created_at', 'desc');
+            })
+
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Coordinator/CoordinatorAnnouncement', [
+            'announcements' => $announcements,
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+                'sort' => $sort,
+            ],
         ]);
     }
 }
