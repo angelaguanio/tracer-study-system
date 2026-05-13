@@ -321,6 +321,9 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // DELETE
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
             ->name('announcement.destroy');
+
+        Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries');
+        Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
     });
 });
 

@@ -2,7 +2,7 @@ import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
-import { LayoutDashboard, Bell, NotebookPen, CircleUserRound, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
+import { LayoutDashboard, Bell, NotebookPen, CircleUserRound, Mail, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
@@ -16,6 +16,12 @@ export default function CoordinatorLayout({children}) {
       name: "Dashboard",
       href:"/coordinator/dashboard",
       icon: LayoutDashboard
+    },
+    {
+      id: "inquiries",
+      name: "Inquiries",
+      href:"/coordinator/inquiries",
+      icon: Mail
     },
     {
       id: "announcement",

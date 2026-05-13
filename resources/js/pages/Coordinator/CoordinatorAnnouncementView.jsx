@@ -2,6 +2,7 @@ import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import { Link } from "@inertiajs/react";
 import { ArrowLeft } from "lucide-react";
+import CoordinatorAnnouncementViewCard from "../../components/coordinator/CoordinatorAnnouncementViewCard";
 
 function CoordinatorAnnouncementView({ announcement }) {
   return (

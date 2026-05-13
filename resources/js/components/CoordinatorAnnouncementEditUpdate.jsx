@@ -1,7 +1,7 @@
 import React from "react";
 import { X, Check } from "lucide-react";
 
-export default function AdminAnnouncementEditUpdate({ show, onClose }) {
+export default function CoordinatorAnnouncementEditUpdate({ show, onClose }) {
   if (!show) return null;
 
   return (
