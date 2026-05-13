@@ -5,8 +5,11 @@ import HeaderAdmin from '../components/header-admin'
 import { LayoutDashboard, Bell, NotebookPen, UsersRound, CircleUserRound, Mail, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
+import { usePage } from '@inertiajs/react';
+import ChatWidget from '../components/chat/ChatWidget';
 
 export default function AdminLayout({children}) {
+  const { auth } = usePage().props;
   const navItems = [
     {
       id: "dashboard",
@@ -69,6 +72,7 @@ export default function AdminLayout({children}) {
           </SidebarInset>
       </SidebarProvider>
       <Toaster position="top-right" duration={1000} />
+      <ChatWidget user={auth.user} />
     </ThemeProvider>
   )
 }

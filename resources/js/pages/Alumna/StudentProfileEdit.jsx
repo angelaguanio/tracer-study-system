@@ -83,7 +83,7 @@ export default function StudentProfileEdit() {
                     form="profile-form"
                     type="submit"
                     disabled={processing}
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all"
+                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all cursor-pointer"
                 >
                     <IconSave /> {processing ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -113,7 +113,7 @@ export default function StudentProfileEdit() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all"
+                                className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border hover:shadow-xl transition-all cursor-pointer"
                             >
                                 <IconImage />
                             </button>
@@ -174,8 +174,6 @@ export default function StudentProfileEdit() {
                                         <option value="">Select Type</option>
                                         <option value="Permanent/Regular">Permanent/Regular</option>
                                         <option value="Probationary">Probationary</option>
-                                        <option value="Contractual">Contractual</option>
-                                        <option value="Part-time">Part-time</option>
                                     </select>
                                 </div>
                                 <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={e => setData('company', e.target.value)} className={inputClass} placeholder="Company Name" /></div>

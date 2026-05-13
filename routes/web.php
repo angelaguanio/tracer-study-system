@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
@@ -14,11 +15,15 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
+use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\InquiriesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Broadcasting auth route is registered via withBroadcasting() in bootstrap/app.php
+// with ['middleware' => ['web', 'auth']] to ensure unauthenticated requests are rejected.
 
 // Role-select / root — redirect authenticated users to their dashboard
 Route::get('/', function () {
@@ -89,14 +94,132 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
     });
 
+    //AUTH ADMIN
+    Route::middleware('auth')->group(function () {
+
+        Route::get('/dashboard', AdminDashboardController::class)
+            ->name('dashboard');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
+            ->name('logout');
+
+        // ANNOUNCEMENT CRUD
+        Route::get('/announcement', [AnnouncementController::class, 'index'])
+            ->name('announcement.index');
+
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
+
+        // APPROVAL SYSTEM
+        Route::put('/announcement/{announcement}/approve', [AnnouncementController::class, 'approve'])
+            ->name('announcement.approve');
+
+        Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
+            ->name('announcement.reject');
+    });
+
+    //AUTH ADMIN
+    Route::middleware('auth')->group(function () {
+
+        Route::get('/dashboard', AdminDashboardController::class)
+            ->name('dashboard');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
+            ->name('logout');
+
+        // ANNOUNCEMENT CRUD
+        Route::get('/announcement', [AnnouncementController::class, 'index'])
+            ->name('announcement.index');
+
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
+
+        // APPROVAL SYSTEM
+        Route::put('/announcement/{announcement}/approve', [AnnouncementController::class, 'approve'])
+            ->name('announcement.approve');
+
+        Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
+            ->name('announcement.reject');
+    });
+
     //auth userrr
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+
+    //AdminAlumni
+    Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
+
+    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
+
+    Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
+        ->name('admin.alumni.index');
+
+    Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
+        ->name('admin.alumni.show');
+
+        // VIEW PROFILE
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
+        ->name('alumni.show');
+
+        //Send email (individual — handled via modal, route kept for controller compatibility)
+        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+        ->name('alumni.email.send');
+
+        // Bulk email (selected IDs or all alumni)
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+        ->name('alumni.email.bulk');
+
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
-        // Alumni
-        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+    //AdminSurveyResponse
+    Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
+        ->name('survey-response.index');
+
+    Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
+        ->name('survey-response.show');
+
+    // Route para sa COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
+        ->name('survey-response.view');
+
+    // Route para sa NOT COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+        ->name('survey-response.not-complete');
+
+    Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
+        ->name('survey-response.destroy');
 
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
@@ -116,15 +239,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
 
-        // Announcements
-        Route::get('/announcement', [AnnouncementController::class, 'index'])->name('announcement.index');
-        Route::get('/announcement/create', [AnnouncementController::class, 'create'])->name('announcement.create');
-        Route::post('/announcement', [AnnouncementController::class, 'store'])->name('announcement.store');
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])->name('admin.announcement.show');
-        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcement.edit');
-        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])->name('announcement.update');
-        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcement.destroy');
-
+        
         // Analytics
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
@@ -139,7 +254,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Employment location analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
-    });
+        });
 
     // Survey management — auth + admin middleware
     Route::middleware(['auth', 'admin'])->group(function () {
@@ -177,5 +292,43 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+        // ANNOUNCEMENT CRUD ONLY
+        // LIST
+        Route::get('/announcement', [AnnouncementController::class, 'coordinatorIndex'])
+            ->name('announcement.index');
+
+        // CREATE
+        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
+            ->name('announcement.create');
+
+        // STORE (pending)
+        Route::post('/announcement', [AnnouncementController::class, 'store'])
+            ->name('announcement.store');
+
+        //  VIEW SINGLE ANNOUNCEMENT
+        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
+            ->name('announcement.show');
+
+        // EDIT
+        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
+            ->name('announcement.edit');
+
+        // UPDATE
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
+            ->name('announcement.update');
+
+        // DELETE
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->name('announcement.destroy');
     });
+});
+
+
+//============== CHAT ROUTES =========================
+Route::middleware(['auth', 'chat.participant'])->group(function () {
+    Route::get('/chat/conversations', [ChatController::class, 'index']);
+    Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/chat/messages', [ChatController::class, 'store']);
+    Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
 });

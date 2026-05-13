@@ -6,23 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->string('title');      // Announcement title
-            $table->text('details');      // Announcement details
-            $table->string('image')->nullable();      // Image path
-            $table->timestamps();         // created_at & updated_at
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('title');
+            $table->text('details');
+
+            $table->longText('image')->nullable();
+
+            // Workflow states: pending → approved | rejected
+            $table->string('status')->default('pending');
+            $table->timestamps();
+
+            $table->index('status');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('announcements');
