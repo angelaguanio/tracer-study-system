@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
@@ -19,6 +20,9 @@ use App\Http\Controllers\AnnouncementController;
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Broadcasting auth route is registered via withBroadcasting() in bootstrap/app.php
+// with ['middleware' => ['web', 'auth']] to ensure unauthenticated requests are rejected.
 
 // Role-select / root — redirect authenticated users to their dashboard
 Route::get('/', function () {
@@ -258,4 +262,13 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
             ->name('announcement.destroy');
     });
+});
+
+
+//============== CHAT ROUTES =========================
+Route::middleware(['auth', 'chat.participant'])->group(function () {
+    Route::get('/chat/conversations', [ChatController::class, 'index']);
+    Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/chat/messages', [ChatController::class, 'store']);
+    Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
 });
