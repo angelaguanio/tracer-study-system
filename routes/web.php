@@ -15,6 +15,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
+use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 
@@ -158,9 +159,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
         Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
-        // Alumni
-        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+    //AdminSurveyResponse
+    Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
+        ->name('survey-response.index');
+
+    Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
+        ->name('survey-response.show');
+
+    // Route para sa COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
+        ->name('survey-response.view');
+
+    // Route para sa NOT COMPLETED response
+    Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+        ->name('survey-response.not-complete');
+
+    Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
+        ->name('survey-response.destroy');
 
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
