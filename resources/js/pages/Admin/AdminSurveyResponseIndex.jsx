@@ -57,7 +57,7 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
                 onClick={() =>
                   router.get(`/admin/survey-response/${survey.id}`)
                 }
-                className="bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-4 py-2 rounded-md text-sm font-medium"
               >
                 View Survey Response
               </button>

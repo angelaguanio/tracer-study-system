@@ -151,7 +151,7 @@ export default function ChatWidget({ user }) {
     if (!isAdmin && !isCoordinator) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+        <div className={`fixed bottom-4 right-4 flex flex-col items-end gap-2 ${isOpen ? 'z-50' : 'z-40 pointer-events-none'}`}>
             {/* Floating panel */}
             <div className={`w-80 h-[420px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${
                 isOpen
@@ -210,7 +210,7 @@ export default function ChatWidget({ user }) {
             {/* Toggle button */}
             <button
                 onClick={isOpen ? handleClose : handleOpen}
-                className="relative w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center cursor-pointer"
+                className="relative w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center cursor-pointer pointer-events-auto"
                 aria-label="Toggle chat"
             >
                 <MessageCircle size={22} />
