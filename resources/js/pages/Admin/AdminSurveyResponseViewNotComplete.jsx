@@ -16,7 +16,7 @@ export default function AdminSurveyResponseViewNotComplete({ survey }) {
 
                 <button
                     onClick={handleBack}
-                    className="flex items-center gap-2 bg-[#0B63F6] text-white px-5 py-2.5 rounded-md hover:bg-blue-700 text-sm font-medium shadow"
+                    className="flex items-center gap-2 bg-[#0B63F6] text-white px-5 py-2.5 rounded-md hover:bg-blue-700 text-sm font-medium shadow cursor-pointer"
                 >
                     <ArrowLeft size={16} />
                     Back

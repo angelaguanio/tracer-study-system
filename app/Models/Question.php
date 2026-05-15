@@ -30,6 +30,21 @@ class Question extends Model
     {
         return $this->type === 'subheading';
     }
+    /**
+     * Scope to filter out subheadings and return only input questions
+     */
+    public function scopeInputQuestions($query)
+    {
+        return $query->where('type', '!=', 'subheading');
+    }
+
+    /**
+     * Scope to filter only subheading questions
+     */
+    public function scopeSubheadings($query)
+    {
+        return $query->where('type', 'subheading');
+    }
 
     public function section(): BelongsTo
     {
