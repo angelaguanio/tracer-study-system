@@ -11,20 +11,30 @@ import {
 } from "@/components/ui/table";
 import { router } from "@inertiajs/react";
 
-export default function CoordinatorAlumniTable({ alumni }) {
+// HELPER FUNCTIONS
+const getInitials = (name) => {
+  if (!name) return "";
+  const parts = name.split(" ");
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
+const badgeColor = (course) => {
+  switch (course) {
+    case "BSIT": return "bg-blue-100 text-blue-600";
+    case "BSCpE": return "bg-yellow-100 text-yellow-600";
+    case "BSECE": return "bg-purple-100 text-purple-600";
+    default: return "bg-gray-100 text-gray-600";
+  }
+};
+
+export default function CoordinatorAlumniTable({ alumni, onView }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
   const rowsPerPage = 6;
-
-  // HELPER FUNCTION: Kukuha ng initials mula sa pangalan
-  const getInitials = (name) => {
-    if (!name) return "";
-    const parts = name.split(" ");
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-    }
-    return parts[0][0].toUpperCase();
-  };
+  const alumniData = alumni?.data ?? [];
 
   const goToPage = (page) => {
     if (!page || page === "...") return;
@@ -36,16 +46,42 @@ export default function CoordinatorAlumniTable({ alumni }) {
     });
   };
 
-  const badgeColor = (course) => {
-    switch (course) {
-      case "BSIT": return "bg-blue-100 text-blue-600";
-      case "BSCpE": return "bg-yellow-100 text-yellow-600";
-      case "BSECE": return "bg-purple-100 text-purple-600";
-      default: return "bg-gray-100 text-gray-600";
+  // SMART PAGINATION GENERATOR LOGIC
+  const renderPageNumbers = () => {
+    const pages = [];
+    
+    for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
+      // Always display the First Page, Last Page, Current Page, and its adjacent left and right neighbors
+      if (
+        pageNum === 1 ||
+        pageNum === lastPage ||
+        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+      ) {
+        pages.push(
+          <button
+            key={pageNum}
+            onClick={() => goToPage(pageNum)}
+            className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium transition-all cursor-pointer ${
+              currentPage === pageNum
+                ? "bg-blue-500 text-white border-blue-500 shadow-sm"
+                : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
+            }`}
+          >
+            {pageNum}
+          </button>
+        );
+      }
+      // Insert a "..." divider if there are skipped pages in between
+      else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+        pages.push(
+          <span key={`dots-${pageNum}`} className="w-9 h-9 flex items-center justify-center text-gray-400 text-sm">
+            ...
+          </span>
+        );
+      }
     }
+    return pages;
   };
-
-  const alumniData = alumni?.data ?? [];
 
   return (
     <div className="flex flex-col gap-3">
@@ -70,14 +106,12 @@ export default function CoordinatorAlumniTable({ alumni }) {
                   >
                     <TableCell className="pl-6">
                       <div className="flex items-center gap-3">
-                        {/* AVATAR CONTAINER */}
                         <div className="shrink-0 w-9 h-9 rounded-full bg-blue-500 overflow-hidden border border-gray-100 flex items-center justify-center text-white font-bold text-xs">
                           {item.avatar ? (
                             <img 
                               src={item.avatar} 
                               alt={item.name} 
                               className="w-full h-full object-cover" 
-                              // Fallback kung sakaling broken link ang image
                               onError={(e) => { e.target.style.display = 'none'; }}
                             />
                           ) : (
@@ -99,14 +133,12 @@ export default function CoordinatorAlumniTable({ alumni }) {
                     </TableCell>
 
                     <TableCell className="text-center">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center gap-1 mx-auto"
-                        onClick={() => router.visit(route('coordinator.alumni.show', item.id))}
+                      <button
+                        onClick={() => onView && onView(item.id)}
+                        className="relative z-50 inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium mx-auto shadow-sm cursor-pointer"
                       >
                         <Eye size={14} /> View
-                      </Button>
+                      </button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -118,6 +150,7 @@ export default function CoordinatorAlumniTable({ alumni }) {
                 </TableRow>
               )}
 
+              {/* Maintains table height consistent when rows are less than 6 */}
               {Array.from({ length: Math.max(0, rowsPerPage - alumniData.length) }).map((_, i) => (
                 <TableRow key={`empty-${i}`} className="h-[64px] border-b border-gray-50">
                   <TableCell colSpan={4} />
@@ -128,30 +161,33 @@ export default function CoordinatorAlumniTable({ alumni }) {
         </div>
       </div>
 
-      {/* Pagination Controls... (Unchanged) */}
-      <div className="flex justify-end mt-2">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          
-          <span className="w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium bg-blue-500 text-white border-blue-500">
-            {currentPage}
-          </span>
-          
-          <button
-            onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
-            disabled={currentPage === lastPage}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all"
-          >
-            <ChevronRight size={16} />
-          </button>
+      {/* DYNAMIC PAGINATION CONTROLS - Displayed only if total pages exceed 1 */}
+      {lastPage > 1 && (
+        <div className="flex justify-end mt-2">
+          <div className="flex items-center gap-1">
+            {/* Previous Page Button */}
+            <button
+              onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            
+            {/* Dynamic List of Pages (1, 2, 3...) */}
+            {renderPageNumbers()}
+            
+            {/* Next Page Button */}
+            <button
+              onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
+              disabled={currentPage === lastPage}
+              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

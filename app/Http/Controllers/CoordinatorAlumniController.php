@@ -11,8 +11,12 @@ class CoordinatorAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::where('user_role', 'alumna')->get();
+        // 1. Get users with 'alumna' role, sorted by newest first
+        $users = User::where('user_role', 'alumna')
+            ->latest() // This ensures new users appear at the top
+            ->get();
 
+        // 2. Map the data to the format needed by the frontend
         $alumni = $users->map(function ($user) {
             return [
                 'id' => $user->id,
@@ -24,18 +28,21 @@ class CoordinatorAlumniController extends Controller
             ];
         });
 
-        // Filters
+        // 3. Apply Filters on the collection
         if ($request->search) {
             $search = strtolower($request->search);
             $alumni = $alumni->filter(fn ($a) => str_contains(strtolower($a['name'] ?? ''), $search));
         }
+
         if ($request->year && $request->year !== 'all') {
             $alumni = $alumni->where('year', $request->year);
         }
+
         if ($request->course && $request->course !== 'all') {
             $alumni = $alumni->where('course', $request->course);
         }
 
+        // 4. Manual Pagination
         $perPage = 6;
         $page = $request->get('page', 1);
         $paginated = new LengthAwarePaginator(
@@ -54,7 +61,7 @@ class CoordinatorAlumniController extends Controller
 
     public function show($id)
     {
-        // Ginagamit ang relationships mula sa User.php
+        // Fetch user with employment relationships
         $user = User::with(['employment', 'employmentHistory'])->findOrFail($id);
 
         return Inertia::render('Coordinator/CoordinatorViewProfile', [

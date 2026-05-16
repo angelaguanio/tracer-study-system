@@ -16,6 +16,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
 use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
+use App\Http\Controllers\Coordinator\CoordinatorOfSurveyResponseController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\InquiriesController;
@@ -206,21 +207,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     //AdminSurveyResponse
     Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
-        ->name('survey-response.index');
+        ->name('admin.survey-response.index');
 
     Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
-        ->name('survey-response.show');
+        ->name('admin.survey-response.show');
 
     // Route para sa COMPLETED response
     Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
-        ->name('survey-response.view');
+        ->name('admin.survey-response.view');
 
     // Route para sa NOT COMPLETED response
     Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
-        ->name('survey-response.not-complete');
+        ->name('admin.survey-response.not-complete');
 
     Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
-        ->name('survey-response.destroy');
+        ->name('admin.survey-response.destroy');
 
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
@@ -294,10 +295,28 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
-        Route::get('/coordinator/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('coordinator.alumni.show');
         Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
+        // Survey Response (Coordinator)
+        Route::get('/survey-response', [CoordinatorOfSurveyResponseController::class, 'index'])
+            ->name('coordinator.survey-response.index');
+
+        Route::get('/survey-response/{id}', [CoordinatorOfSurveyResponseController::class, 'show'])
+            ->name('coordinator.survey-response.show');
+
+        // Completed response
+        Route::get('/survey-response/{surveyId}/{userId}', [CoordinatorOfSurveyResponseController::class, 'viewUserResponse'])
+            ->name('coordinator.survey-response.view');
+
+        // Not completed response
+        Route::get('/survey-response/{surveyId}/{userId}/not-complete', [CoordinatorOfSurveyResponseController::class, 'notComplete'])
+            ->name('coordinator.survey-response.not-complete');
+
+        Route::delete('/survey-response/{surveyId}/{userId}', [CoordinatorOfSurveyResponseController::class, 'destroy'])
+            ->name('coordinator.survey-response.destroy');
+
         // ANNOUNCEMENT CRUD ONLY
+
         // LIST
         Route::get('/announcement', [AnnouncementController::class, 'coordinatorIndex'])
             ->name('announcement.index');

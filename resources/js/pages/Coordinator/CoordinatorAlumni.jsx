@@ -17,7 +17,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
     );
   };
 
-  // Logic para sa View button
+  // Logic for the View profile action button
   const handleView = (id) => {
     router.visit(route("coordinator.alumni.show", id));
   };
@@ -37,7 +37,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
       />
 
       <div className="mt-6">
-        {/* I-pass ang handleView sa table component */}
+        {/* Pass the view action handler directly down to the table view component */}
         <CoordinatorAlumniTable alumni={alumni} onView={handleView} />
       </div>
     </div>
