@@ -51,7 +51,6 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
     const pages = [];
     
     for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
-      // Always display the First Page, Last Page, Current Page, and its adjacent left and right neighbors
       if (
         pageNum === 1 ||
         pageNum === lastPage ||
@@ -71,7 +70,6 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
           </button>
         );
       }
-      // Insert a "..." divider if there are skipped pages in between
       else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
         pages.push(
           <span key={`dots-${pageNum}`} className="w-9 h-9 flex items-center justify-center text-gray-400 text-sm">
@@ -90,7 +88,8 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
           <Table className="w-full table-fixed min-w-[700px]">
             <TableHeader>
               <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
-                <TableHead className="w-[40%] text-left text-gray-800 font-semibold pl-6">Alumni</TableHead>
+                {/* Changed to text-center to match Survey Response header layout */}
+                <TableHead className="w-[40%] text-center text-gray-800 font-semibold">Alumni</TableHead>
                 <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Course</TableHead>
                 <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Year</TableHead>
                 <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Actions</TableHead>
@@ -104,21 +103,30 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                     key={item.id}
                     className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <TableCell className="pl-6">
-                      <div className="flex items-center gap-3">
-                        <div className="shrink-0 w-9 h-9 rounded-full bg-blue-500 overflow-hidden border border-gray-100 flex items-center justify-center text-white font-bold text-xs">
+                    {/* Copied layout format from CoordinatorSurveyResponseTable */}
+                    <TableCell className="text-center">
+                      <div className="relative w-full flex items-center px-4">
+                        <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
                           {item.avatar ? (
                             <img 
                               src={item.avatar} 
                               alt={item.name} 
                               className="w-full h-full object-cover" 
-                              onError={(e) => { e.target.style.display = 'none'; }}
+                              onError={(e) => { 
+                                e.target.style.display = 'none'; 
+                                const parent = e.target.parentElement;
+                                if (parent) parent.innerText = getInitials(item.name);
+                              }}
                             />
                           ) : (
                             <span>{getInitials(item.name)}</span>
                           )}
                         </div>
-                        <span className="font-medium text-gray-800 truncate">{item.name}</span>
+                        <div className="w-full text-center">
+                          <span className="font-medium text-gray-800 ml-[-36px] truncate block">
+                            {item.name}
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
 
@@ -161,11 +169,10 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
         </div>
       </div>
 
-      {/* DYNAMIC PAGINATION CONTROLS - Displayed only if total pages exceed 1 */}
+      {/* DYNAMIC PAGINATION CONTROLS */}
       {lastPage > 1 && (
         <div className="flex justify-end mt-2">
           <div className="flex items-center gap-1">
-            {/* Previous Page Button */}
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
               disabled={currentPage === 1}
@@ -174,10 +181,8 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
               <ChevronLeft size={16} />
             </button>
             
-            {/* Dynamic List of Pages (1, 2, 3...) */}
             {renderPageNumbers()}
             
-            {/* Next Page Button */}
             <button
               onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
               disabled={currentPage === lastPage}
