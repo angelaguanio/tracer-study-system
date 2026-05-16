@@ -73,6 +73,9 @@ class SurveyController extends Controller
                     'questions' => function ($q) {
                         $q->orderBy('display_order');
                     },
+                    'subheadings' => function ($q) {
+                        $q->orderBy('display_order');
+                    },
                 ]);
             },
         ]);

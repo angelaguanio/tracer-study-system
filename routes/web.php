@@ -13,6 +13,7 @@ use App\Http\Controllers\SurveyAnalyticsController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\SubheadingController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\AdminAlumniController;
 use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
@@ -223,6 +224,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
         ->name('admin.survey-response.destroy');
 
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
+        // Alumni
+        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+
         // Individual email (modal-based, no GET form page needed)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
 
@@ -279,6 +289,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
         Route::put('/questions/{question}/move', [QuestionController::class, 'move'])->name('questions.move');
         Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+
+        // Subheadings
+        Route::post('/sections/{section}/subheadings', [SubheadingController::class, 'store'])->name('subheadings.store');
+        Route::put('/sections/{section}/subheadings/reorder', [SubheadingController::class, 'reorder'])->name('subheadings.reorder');
+        Route::put('/subheadings/{subheading}', [SubheadingController::class, 'update'])->name('subheadings.update');
+        Route::delete('/subheadings/{subheading}', [SubheadingController::class, 'destroy'])->name('subheadings.destroy');
     });
 });
 

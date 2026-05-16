@@ -18,7 +18,6 @@ const QUESTION_TYPES = [
     { icon: CircleDashed, value: "radio", label: "Multiple Choice" },
     { icon: SquareCheck, value: "checkbox", label: "Checkboxes" },
     { icon: RectangleEllipsis, value: "likert", label: "Likert Scale" },
-    { icon: Heading2, value: "subheading", label: "Subheading / Description" },
 ];
 
 export default function QuestionFormModal({ open, onClose, sectionId, question = null, likertScale = null }) {
@@ -28,9 +27,11 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
-        if (question) {
+        if (question?.id) {
+            // Edit existing question
             setForm({ label: question.label, type: question.type, is_required: question.is_required, options: question.options ?? [] });
         } else {
+            // Create new regular question
             setForm({ label: "", type: "text", is_required: false, options: [] });
         }
         setErrors({});
@@ -85,17 +86,8 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                 {/* question input part */}
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-3">
-                        <Label>{form.type === 'subheading' ? 'Subheading / Description Text:' : 'Question:'}</Label>
-                        {form.type === 'subheading' ? (
-                            <textarea
-                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                value={form.label}
-                                onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
-                                placeholder="Enter section description or instructions..."
-                            />
-                        ) : (
-                            <Input value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Question label" />
-                        )}
+                        <Label>Question:</Label>
+                        <Input value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Question label" />
                         {errors.label && <p className="text-xs text-red-500">{errors.label}</p>}
                     </div>
 
@@ -117,16 +109,14 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                         </Select>
                     </div>
 
-                    {form.type !== 'subheading' && (
-                        <div className="flex items-center gap-3">
-                            <Switch
-                                id="is_required"
-                                checked={form.is_required}
-                                onCheckedChange={(v) => setForm((f) => ({ ...f, is_required: v }))}
-                            />
-                            <Label htmlFor="is_required">Required</Label>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-3">
+                        <Switch
+                            id="is_required"
+                            checked={form.is_required}
+                            onCheckedChange={(v) => setForm((f) => ({ ...f, is_required: v }))}
+                        />
+                        <Label htmlFor="is_required">Required</Label>
+                    </div>
 
                     {form.type === "likert" && (
                         <div className="flex flex-col gap-1">
@@ -183,7 +173,7 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                 <DialogFooter>
                     <Button variant="outline" onClick={onClose}>Cancel</Button>
                     <Button className="bg-[#008236] hover:bg-green-700 text-white" onClick={handleSubmit}>
-                        {isEdit ? "Save" : "Add Question"}
+                        {isEdit ? "Save Question" : "Add Question"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
