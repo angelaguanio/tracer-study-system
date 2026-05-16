@@ -5,81 +5,52 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class CoordinatorAlumniController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Get users with 'alumna' role, sorted by newest first
-        $users = User::where('user_role', 'alumna')
-            ->latest() // This ensures new users appear at the top
-            ->get();
+        // 1. Build the base query with database-level filtering
+        $query = User::where('user_role', 'alumna')
+            ->latest()
+            ->when($request->search, function ($q, $search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%");
+            })
+            ->when($request->year && $request->year !== 'all', function ($q) use ($request) {
+                $q->where('year_graduated', $request->year);
+            })
+            ->when($request->course && $request->course !== 'all', function ($q) use ($request) {
+                $q->where('courses', $request->course);
+            });
 
-        // 2. Map the data to the format needed by the frontend
-        $alumni = $users->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->first_name . ' ' . $user->last_name,
-                'course' => $user->courses,
-                'year' => $user->year_graduated,
-                'avatar' => $user->avatar_url,
-                'survey_status' => 'Not Completed', 
-            ];
-        });
+        // 2. Paginate with 10 items per page
+        $alumni = $query->paginate(10)->withQueryString();
 
-        // 3. Apply Filters on the collection
-        if ($request->search) {
-            $search = strtolower($request->search);
-            $alumni = $alumni->filter(fn ($a) => str_contains(strtolower($a['name'] ?? ''), $search));
-        }
-
-        if ($request->year && $request->year !== 'all') {
-            $alumni = $alumni->where('year', $request->year);
-        }
-
-        if ($request->course && $request->course !== 'all') {
-            $alumni = $alumni->where('course', $request->course);
-        }
-
-        // 4. Manual Pagination
-        $perPage = 6;
-        $page = $request->get('page', 1);
-        $paginated = new LengthAwarePaginator(
-            $alumni->forPage($page, $perPage)->values(),
-            $alumni->count(),
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => $request->query()]
-        );
+        // 3. Transform the data format for your frontend template
+        $alumni->through(fn ($user) => [
+            'id' => $user->id,
+            'name' => "{$user->first_name} {$user->last_name}",
+            'course' => $user->courses,
+            'year' => $user->year_graduated,
+            'avatar' => $user->avatar_url,
+            'survey_status' => 'Not Completed', 
+        ]);
 
         return Inertia::render('Coordinator/CoordinatorAlumni', [
-            'alumni' => $paginated,
+            'alumni' => $alumni,
             'filters' => $request->only(['search', 'year', 'course'])
         ]);
     }
 
     public function show($id)
     {
-        // Fetch user with employment relationships
+        // Much simpler: Fetch the user with relationships and pass it directly.
+        // Laravel handles mapping this to your frontend automatically!
         $user = User::with(['employment', 'employmentHistory'])->findOrFail($id);
 
         return Inertia::render('Coordinator/CoordinatorViewProfile', [
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'contact_number' => $user->contact_number,
-                'address' => $user->address,
-                'courses' => $user->courses,
-                'year_graduated' => $user->year_graduated,
-                'profile_picture' => $user->avatar_url,
-                'initials' => $user->initials,
-                'employment' => $user->employment,
-                'employment_history' => $user->employmentHistory,
-            ]
+            'user' => $user
         ]);
     }
 }

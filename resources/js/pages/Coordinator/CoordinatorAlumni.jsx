@@ -17,7 +17,6 @@ export default function CoordinatorAlumni({ alumni, filters }) {
     );
   };
 
-  // Logic for the View profile action button
   const handleView = (id) => {
     router.visit(route("coordinator.alumni.show", id));
   };
@@ -29,15 +28,16 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   }, [search]);
 
   return (
-    <div className="w-full p-4">
-      <CoordinatorAlumniFilters 
-        search={search} setSearch={setSearch} 
-        year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
-        course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}} 
-      />
+    <div className="w-full flex flex-col p-4 gap-4">
+      <div>
+        <CoordinatorAlumniFilters 
+          search={search} setSearch={setSearch} 
+          year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
+          course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}} 
+        />
+      </div>
 
-      <div className="mt-6">
-        {/* Pass the view action handler directly down to the table view component */}
+      <div>
         <CoordinatorAlumniTable alumni={alumni} onView={handleView} />
       </div>
     </div>

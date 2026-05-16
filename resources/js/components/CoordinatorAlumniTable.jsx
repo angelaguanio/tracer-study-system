@@ -1,14 +1,5 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { router } from "@inertiajs/react";
 
 // HELPER FUNCTIONS
@@ -33,7 +24,7 @@ const badgeColor = (course) => {
 export default function CoordinatorAlumniTable({ alumni, onView }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
-  const rowsPerPage = 6;
+  const rowsPerPage = 10; 
   const alumniData = alumni?.data ?? [];
 
   const goToPage = (page) => {
@@ -46,10 +37,8 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
     });
   };
 
-  // SMART PAGINATION GENERATOR LOGIC
   const renderPageNumbers = () => {
     const pages = [];
-    
     for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
       if (
         pageNum === 1 ||
@@ -82,30 +71,34 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="rounded-xl shadow overflow-hidden bg-white border border-gray-100">
-        <div className="overflow-x-auto">
-          <Table className="w-full table-fixed min-w-[700px]">
-            <TableHeader>
-              <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
-                {/* Changed to text-center to match Survey Response header layout */}
-                <TableHead className="w-[40%] text-center text-gray-800 font-semibold">Alumni</TableHead>
-                <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Course</TableHead>
-                <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Year</TableHead>
-                <TableHead className="w-[20%] text-center text-gray-800 font-semibold">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
+    <div className="flex flex-col gap-3 w-full">
+      
+      {/* Outer Main Container Card */}
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col">
+        
+        {/* FIXED HEADER ROW */}
+        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100">
+          <div className="w-[40%] text-center">Alumni</div>
+          <div className="w-[20%] text-center">Course</div>
+          <div className="w-[20%] text-center">Year</div>
+          <div className="w-[20%] text-center">Actions</div>
+        </div>
 
-            <TableBody>
+        {/* SCROLLABLE ROWS BODY */}
+        <div className="w-full max-h-[460px] overflow-y-auto overflow-x-auto">
+          <table className="w-full table-fixed min-w-[700px] border-collapse">
+            <tbody>
               {alumniData.length > 0 ? (
                 alumniData.map((item) => (
-                  <TableRow
+                  <tr
                     key={item.id}
-                    className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-center w-full"
                   >
-                    {/* Copied layout format from CoordinatorSurveyResponseTable */}
-                    <TableCell className="text-center">
+                    {/* ALUMNI CELL WITH MATCHING SEPARATED GAP STRUCTURE */}
+                    <td className="w-[40%] text-center flex items-center justify-center">
                       <div className="relative w-full flex items-center px-4">
+                        
+                        {/* Profile Picture anchored on the left */}
                         <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
                           {item.avatar ? (
                             <img 
@@ -122,56 +115,59 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                             <span>{getInitials(item.name)}</span>
                           )}
                         </div>
+
+                        {/* Name Text sitting centered independently */}
                         <div className="w-full text-center">
-                          <span className="font-medium text-gray-800 ml-[-36px] truncate block">
+                          <span className="font-medium text-gray-800 ml-[-36px]">
                             {item.name}
                           </span>
                         </div>
-                      </div>
-                    </TableCell>
 
-                    <TableCell className="text-center">
+                      </div>
+                    </td>
+
+                    <td className="w-[20%] text-center flex items-center justify-center">
                       <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                         {item.course ?? "N/A"}
                       </span>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="text-center text-gray-600 font-medium">
+                    <td className="w-[20%] text-center text-gray-600 font-medium flex items-center justify-center">
                       {item.year}
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="text-center">
+                    <td className="w-[20%] text-center flex items-center justify-center">
                       <button
                         onClick={() => onView && onView(item.id)}
-                        className="relative z-50 inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium mx-auto shadow-sm cursor-pointer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium shadow-sm cursor-pointer"
                       >
                         <Eye size={14} /> View
                       </button>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))
               ) : (
-                <TableRow className="h-[64px]">
-                  <TableCell colSpan={4} className="text-center text-gray-500">
+                <tr className="h-[64px] flex items-center w-full">
+                  <td className="w-full text-center text-gray-500">
                     No alumni found.
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
 
-              {/* Maintains table height consistent when rows are less than 6 */}
+              {/* Dynamic empty filler spacing up to 10 entries */}
               {Array.from({ length: Math.max(0, rowsPerPage - alumniData.length) }).map((_, i) => (
-                <TableRow key={`empty-${i}`} className="h-[64px] border-b border-gray-50">
-                  <TableCell colSpan={4} />
-                </TableRow>
+                <tr key={`empty-${i}`} className="h-[64px] border-b border-gray-50/50 flex items-center w-full">
+                  <td className="w-full" />
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* DYNAMIC PAGINATION CONTROLS */}
+      {/* FIXED PAGES BUTTON BOX AT THE BASE */}
       {lastPage > 1 && (
-        <div className="flex justify-end mt-2">
+        <div className="flex justify-end mt-1 pb-2">
           <div className="flex items-center gap-1">
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}

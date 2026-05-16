@@ -51,8 +51,6 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
   const confirmDelete = () => {
     if (!deleteId) return;
 
-    // delete route exists as: DELETE /survey-response/{surveyId}/{userId}
-    // under coordinator group in routes/web.php
     router.delete(`/coordinator/survey-response/${survey.id}/${deleteId}`, {
       preserveScroll: true,
       onSuccess: () => {
@@ -65,11 +63,11 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
   };
 
   return (
-    <div className="w-full p-4">
-      {/*  Title block at Filters sa iisang main flex element */}
+    <div className="w-full p-4 flex flex-col drop-shadow-sm">
+      {/* Title block at Filters sa iisang main flex element */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 w-full">
         
-        {/*  Back Button + Survey Title */}
+        {/* Back Button + Survey Title */}
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleBack}
@@ -95,6 +93,7 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
         
       </div>
 
+      {/* Dito papasok ang minatch nating fixed-header architecture */}
       <CoordinatorSurveyResponseTable
         responses={{ ...responses, data: localResponses }}
         page={page}
