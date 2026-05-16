@@ -7,8 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Button } from "@/components/ui/button";
-import { Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function CoordinatorSurveyResponseTable({
@@ -40,26 +39,33 @@ export default function CoordinatorSurveyResponseTable({
     if (currentPage >= lastPage - 2)
       return [1, "...", lastPage - 2, lastPage - 1, lastPage];
 
-    return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", lastPage];
+    return [
+      1,
+      "...",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "...",
+      lastPage,
+    ];
   };
 
   const paginationItems = getPaginationItems();
 
   const handleView = (res) => {
-    if (!res?.id || !surveyId) return;
+    if (!res?.id) return;
 
-    // Route to the correct survey response view depending on completion status.
-    const isCompleted = res.status === "completed";
+    // Grab the active survey configuration context safely
+    const currentSurveyId = surveyId || res.survey_id || res.survey_form_id;
+    if (!currentSurveyId) return;
 
-    router.visit(
-      route(
-        isCompleted
-          ? "coordinator.survey-response.view"
-          : "coordinator.survey-response.not-complete",
-        surveyId,
-        res.id
-      )
-    );
+    // Matches the exact endpoint names handled by the Laravel Controller routes
+    const url =
+      res.status === "completed"
+        ? `/coordinator/survey-response/${currentSurveyId}/${res.id}`
+        : `/coordinator/survey-response/${currentSurveyId}/${res.id}/not-complete`;
+
+    router.get(url);
   };
 
   const getInitials = (name = "") =>
@@ -88,32 +94,38 @@ export default function CoordinatorSurveyResponseTable({
           <TableBody>
             {responses?.data?.length > 0 ? (
               responses.data.map((res) => {
-                console.log("Response Data for", res.name, ":", res);
+                const rawImage = res.avatar || res.profile_picture;
+                const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
+                  ? rawImage
+                  : rawImage 
+                    ? `/storage/${rawImage}` 
+                    : null;
 
                 return (
                   <TableRow key={res.id} className="hover:bg-gray-50 h-[60px]">
-                    <TableCell className="text-left">
-                      <div className="flex items-center gap-3 px-6">
-                        <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
-                          {res.profile_picture ? (
-                            <img 
-                              src={`/storage/${res.profile_picture}`} 
+                    <TableCell className="text-center">
+                      <div className="relative w-full flex items-center px-4">
+                        <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
+                          {imageSrc ? (
+                            <img
+                              src={imageSrc}
                               alt={res.name}
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                // If path is wrong or 404, hide image and show initials
-                                e.target.style.display = 'none';
-                                e.target.parentElement.innerText = getInitials(res.name);
+                                e.target.style.display = "none";
+                                const parent = e.target.parentElement;
+                                if (parent) parent.innerText = getInitials(res.name);
                               }}
                             />
                           ) : (
-                            getInitials(res.name)
+                            <span>{getInitials(res.name)}</span>
                           )}
                         </div>
-                        
-                        <span className="font-medium text-gray-800 whitespace-nowrap">
-                          {res.name}
-                        </span>
+                        <div className="w-full text-center">
+                          <span className="font-medium text-gray-800 ml-[-36px]">
+                            {res.name}
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
 
@@ -129,29 +141,25 @@ export default function CoordinatorSurveyResponseTable({
                       </span>
                     </TableCell>
 
-                    <TableCell className="text-center text-gray-600">{res.course ?? "-"}</TableCell>
-                    <TableCell className="text-center text-gray-600">{res.year ?? "-"}</TableCell>
+                    <TableCell className="text-center text-gray-600">
+                      {res.course ?? "-"}
+                    </TableCell>
+
+                    <TableCell className="text-center text-gray-600">
+                      {res.year ?? "-"}
+                    </TableCell>
 
                     <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
                           onClick={() => handleView(res)}
-                          className="border-[#9ECEFF] text-[#155DFC] hover:bg-blue-50 flex items-center gap-1"
+                          className="border border-[#9ECEFF] text-[#155DFC] bg-white hover:bg-blue-50 flex items-center justify-center gap-1 px-4 h-8 text-xs font-medium rounded-md shadow-sm transition-colors cursor-pointer"
+                          style={{ pointerEvents: 'auto', opacity: 1 }}
                         >
                           <Eye size={14} />
                           View
-                        </Button>
-
-                        <Button
-                          size="sm"
-                          onClick={() => onDelete(res)}
-                          className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 flex items-center gap-1"
-                        >
-                          <Trash2 size={14} />
-                          Delete
-                        </Button>
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -184,7 +192,7 @@ export default function CoordinatorSurveyResponseTable({
                 <span key={i} className="w-9 h-9 flex items-center justify-center text-gray-400">...</span>
               ) : (
                 <button
-                  key={i}
+                  key={item}
                   onClick={() => goToPage(item)}
                   className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
                     currentPage === item

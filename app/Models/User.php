@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     /**
      * Generate the full URL for the profile picture.
-     * Tandaan: I-run ang 'php artisan storage:link' para gumana ito.
+     * Note: Run 'php artisan storage:link' for this to function properly.
      */
     public function getAvatarUrlAttribute() {
         if ($this->profile_picture) {
@@ -79,6 +79,19 @@ class User extends Authenticatable
          return $this->hasMany(EmploymentHistory::class);
     }
 
-    
+    /**
+     * Check if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->user_role === 'admin';
+    }
 
+    /**
+     * Check if the user is a coordinator.
+     */
+    public function isCoordinator(): bool
+    {
+        return $this->user_role === 'coordinator';
+    }
 }

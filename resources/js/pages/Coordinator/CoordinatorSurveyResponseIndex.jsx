@@ -4,9 +4,10 @@ import CoordinatorLayout from "@/layouts/coord-layout";
 export default function CoordinatorSurveyResponseIndex({ surveys = [] }) {
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">List of Surveys</h1>
-      </div>
+      <div className="flex flex-col gap-1">
+         <h2 className="text-xl font-bold text-gray-900">Survey Responses</h2>
+         <p className="text-sm text-gray-500">Review survey submissions</p>
+    </div>
 
       {surveys.length === 0 ? (
         <div className="bg-white border rounded-lg p-10 text-center text-gray-400 shadow-sm">
@@ -40,9 +41,11 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [] }) {
                 </div>
               </div>
 
-              <button
-                onClick={() => router.get(`/coordinator/survey-response/${survey.id}`)}
-                className="bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+             <button
+                onClick={() =>
+                  router.get(`/coordinator/survey-response/${survey.id}`)
+                }
+                className="border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-4 py-2 rounded-md text-sm font-medium"
               >
                 View Survey Response
               </button>

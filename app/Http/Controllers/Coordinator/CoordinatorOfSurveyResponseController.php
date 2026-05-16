@@ -74,6 +74,7 @@ class CoordinatorOfSurveyResponseController extends Controller
                 'status' => $hasResponse ? 'completed' : 'incomplete',
                 'course' => $user->courses ?? '-',
                 'year' => $user->year_graduated ?? '-',
+                'avatar' => $user->avatar ?? $user->profile_picture, 
             ];
         });
 
@@ -88,7 +89,7 @@ class CoordinatorOfSurveyResponseController extends Controller
     }
 
     /**
-     * PAGE 3: Completed User Response View (WITH SECTION GROUPING FIX)
+     * PAGE 3: Completed User Response View
      */
     public function viewUserResponse($surveyId, $userId)
     {
@@ -132,14 +133,15 @@ class CoordinatorOfSurveyResponseController extends Controller
     }
 
     /**
-     * PAGE 4: NOT COMPLETED VIEW
+     * PAGE 4: NOT COMPLETED VIEW (FIXED INERTIA COMPONENT PATH STRING)
      */
     public function notComplete($surveyId, $userId)
     {
         $survey = Survey::findOrFail($surveyId);
         $user = User::findOrFail($userId);
 
-        return Inertia::render('Coordinator/CoordinatorSurveyResponseViewNotComplete', [
+        // FIXED: Added trailing "d" to point directly to CoordinatorSurveyResponseViewNotCompleted.jsx
+        return Inertia::render('Coordinator/CoordinatorSurveyResponseViewNotCompleted', [
             'survey' => [
                 'id' => $survey->id,
                 'title' => $survey->title,
@@ -147,12 +149,13 @@ class CoordinatorOfSurveyResponseController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
+                'email' => $user->email,
             ],
         ]);
     }
 
     /**
-     * DELETE RESPONSE (view-only UI delete)
+     * DELETE RESPONSE
      */
     public function destroy($surveyId, $userId)
     {
@@ -163,4 +166,3 @@ class CoordinatorOfSurveyResponseController extends Controller
         return redirect()->back();
     }
 }
-

@@ -9,16 +9,19 @@ export default function CoordinatorSurveyResponseViewNotCompleted({ survey }) {
 
   return (
     <div className="bg-[#F3FAFF] min-h-screen w-full px-6 lg:px-10 py-6 flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+      {/* Back Button + Survey Title Alignment Copy from CoordinatorSurveyResponse */}
+      <div className="flex items-center gap-3 mb-6 shrink-0 w-full">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 bg-[#0B63F6] text-white px-5 py-2.5 rounded-md hover:bg-blue-700 text-sm font-medium shadow"
+          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 rounded-md"
+          title="Back"
         >
-          <ArrowLeft size={16} />
-          Back
+          <ArrowLeft size={24} className="stroke-[2]" />
         </button>
 
-        <h1 className="text-lg font-semibold text-gray-800">{survey?.title}</h1>
+        <h1 className="text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
+          {survey?.title}
+        </h1>
       </div>
 
       <div className="flex-1 flex items-start justify-center pt-20">
@@ -33,4 +36,3 @@ export default function CoordinatorSurveyResponseViewNotCompleted({ survey }) {
 CoordinatorSurveyResponseViewNotCompleted.layout = (page) => (
   <CoordinatorLayout>{page}</CoordinatorLayout>
 );
-

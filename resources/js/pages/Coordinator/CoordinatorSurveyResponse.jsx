@@ -17,8 +17,6 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
   const [localResponses, setLocalResponses] = useState(responses.data || []);
 
   // When parent route changes (page/filter), keep local state in sync
-
-
   useEffect(() => {
     setLocalResponses(responses.data || []);
   }, [responses]);
@@ -50,7 +48,6 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
   const [deleteId, setDeleteId] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
-
   const confirmDelete = () => {
     if (!deleteId) return;
 
@@ -69,26 +66,34 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
 
   return (
     <div className="w-full p-4">
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 bg-[#0B63F6] text-white px-5 py-2.5 rounded-md hover:bg-blue-700 text-sm font-medium shadow"
-        >
-          <ArrowLeft size={16} />
-          Back
-        </button>
+      {/*  Title block at Filters sa iisang main flex element */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 w-full">
+        
+        {/*  Back Button + Survey Title */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={handleBack}
+            className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 rounded-md"
+            title="Back"
+          >
+            <ArrowLeft size={24} className="stroke-[2]" />
+          </button>
 
-        <h1 className="text-lg font-semibold text-gray-800">{survey.title}</h1>
+          <h1 className="text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
+            {survey.title}
+          </h1>
+        </div>
+
+        <CoordinatorSurveyResponseFilter
+          search={search}
+          setSearch={setSearch}
+          year={year}
+          setYear={setYear}
+          course={course}
+          setCourse={setCourse}
+        />
+        
       </div>
-
-      <CoordinatorSurveyResponseFilter
-        search={search}
-        setSearch={setSearch}
-        year={year}
-        setYear={setYear}
-        course={course}
-        setCourse={setCourse}
-      />
 
       <CoordinatorSurveyResponseTable
         responses={{ ...responses, data: localResponses }}
@@ -120,4 +125,3 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
 }
 
 CoordinatorSurveyResponse.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
-
