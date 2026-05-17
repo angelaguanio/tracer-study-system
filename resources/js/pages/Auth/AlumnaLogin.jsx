@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup';
@@ -9,6 +9,7 @@ import TextLink from '../../components/text-link';
 import AuthLayout from "@/layouts/auth-layout";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@inertiajs/react";
+import axios from 'axios';
 
 
 
@@ -19,6 +20,14 @@ export default function AlumnaLogin() {
     email: "",
     password: "",
   });
+
+  // Ensure fresh CSRF token on mount
+  useEffect(() => {
+    const csrfToken = document.head.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content;
+    }
+  }, []);
 
   //form change
   function handleChange(e) {

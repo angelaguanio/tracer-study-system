@@ -75,7 +75,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
 
-        Route::post('/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
+        Route::match(['get', 'post'], '/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
     });
 
     // Survey routes — auth + alumna middleware
@@ -103,7 +103,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)
             ->name('dashboard');
 
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
+        Route::match(['get', 'post'], '/logout', [AdminAuthController::class, 'logoutAdmin'])
             ->name('logout');
 
         // ANNOUNCEMENT CRUD
@@ -134,50 +134,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
             ->name('announcement.reject');
-    });
-
-    //AUTH ADMIN
-    Route::middleware('auth')->group(function () {
-
-        Route::get('/dashboard', AdminDashboardController::class)
-            ->name('dashboard');
-
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])
-            ->name('logout');
-
-        // ANNOUNCEMENT CRUD
-        Route::get('/announcement', [AnnouncementController::class, 'index'])
-            ->name('announcement.index');
-
-        Route::get('/announcement/create', [AnnouncementController::class, 'create'])
-            ->name('announcement.create');
-
-        Route::post('/announcement', [AnnouncementController::class, 'store'])
-            ->name('announcement.store');
-
-        Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show'])
-            ->name('announcement.show');
-
-        Route::get('/announcement/{announcement}/edit', [AnnouncementController::class, 'edit'])
-            ->name('announcement.edit');
-
-        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update'])
-            ->name('announcement.update');
-
-        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
-            ->name('announcement.destroy');
-
-        // APPROVAL SYSTEM
-        Route::put('/announcement/{announcement}/approve', [AnnouncementController::class, 'approve'])
-            ->name('announcement.approve');
-
-        Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
-            ->name('announcement.reject');
-    });
-
-    //auth userrr
-    Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
 
     //AdminAlumni
     Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
@@ -190,23 +146,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
         ->name('admin.alumni.show');
 
-        // VIEW PROFILE
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
+    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
         ->name('alumni.show');
 
         //Send email (individual — handled via modal, route kept for controller compatibility)
-        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+    Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
         ->name('alumni.email.send');
 
         // Bulk email (selected IDs or all alumni)
-        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+    Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
         ->name('alumni.email.bulk');
 
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
-    //AdminSurveyResponse
+         //AdminSurveyResponse
     Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
         ->name('admin.survey-response.index');
 
@@ -224,21 +175,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
         ->name('admin.survey-response.destroy');
 
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
-        // Alumni
-        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
-
-        // Individual email (modal-based, no GET form page needed)
-        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
-
-        // Bulk email
-        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
-  
         //Inquiries
         Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
@@ -250,9 +186,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
-
-        
-        // Analytics
+          // Analytics
         Route::get('/analytics', function () {
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
             return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys]);
@@ -268,9 +202,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('analytics.employment-location');
         });
 
-    // Survey management — auth + admin middleware
-    Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+          Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
         Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
         Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
         Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
@@ -295,8 +227,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/sections/{section}/subheadings/reorder', [SubheadingController::class, 'reorder'])->name('subheadings.reorder');
         Route::put('/subheadings/{subheading}', [SubheadingController::class, 'update'])->name('subheadings.update');
         Route::delete('/subheadings/{subheading}', [SubheadingController::class, 'destroy'])->name('subheadings.destroy');
+
+
     });
-});
+
 
 
 //============== COORDINATOR ROUTES =========================
@@ -311,7 +245,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
-        Route::post('/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+        Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
         // Survey Response (Coordinator)
         Route::get('/survey-response', [CoordinatorOfSurveyResponseController::class, 'index'])

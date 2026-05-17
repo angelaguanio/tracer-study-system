@@ -8,17 +8,18 @@ import CoordinatorSurveyResponseFilter from "@/components/CoordinatorSurveyRespo
 import CoordinatorLayout from "@/layouts/coord-layout";
 
 export default function CoordinatorSurveyResponse({ responses, filters, survey }) {
+  console.log(responses);
   const [search, setSearch] = useState(filters?.search || "");
   const [year, setYear] = useState(filters?.year || "all");
   const [course, setCourse] = useState(filters?.course || "all");
 
   const [page, setPage] = useState(filters?.page || 1);
 
-  const [localResponses, setLocalResponses] = useState(responses.data || []);
+  const [localResponses, setLocalResponses] = useState(responses?.data || []);
 
   // When parent route changes (page/filter), keep local state in sync
   useEffect(() => {
-    setLocalResponses(responses.data || []);
+    setLocalResponses(responses?.data || []);
   }, [responses]);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
       },
     });
   };
+
 
   return (
     <div className="w-full p-4 flex flex-col drop-shadow-sm">
