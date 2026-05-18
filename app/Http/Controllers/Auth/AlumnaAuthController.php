@@ -150,6 +150,7 @@ class AlumnaAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('role.select');
+        
+        return Inertia::location(route('role.select'));
     }
 }

@@ -44,7 +44,7 @@ export default function HeaderAdmin({ navItems = [] }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Link href={route('admin.logout')} method="post" as="button" className='w-full flex'>
+              <Link href={route('admin.logout')} className='w-full flex'>
                 Logout
               </Link>
             </DropdownMenuItem>

@@ -44,7 +44,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-                <Link href={route('coordinator.logout')} method="post" as="button" className='w-full flex'>
+                <Link href={route('coordinator.logout')} className='w-full flex'>
                   Logout
                 </Link>
             </DropdownMenuItem>
