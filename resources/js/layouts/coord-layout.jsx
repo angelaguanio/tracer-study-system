@@ -42,9 +42,11 @@ export default function CoordinatorLayout({ children }) {
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
         <SidebarAdmin navItems={navItems} />
-        <SidebarInset>
+        {/* Added flex utilities and overflow hidden to trap layout size */}
+        <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
           <HeaderAdmin navItems={navItems} />
-          <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
+          {/* Changed overflow handle to let only the child pages scroll scrollable */}
+          <main className="flex-1 overflow-y-auto flex items-start justify-center p-4 bg-app-bg">
             {children}
           </main>
         </SidebarInset>
