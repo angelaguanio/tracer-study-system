@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CoordinatorLayout from "@/layouts/coord-layout"; // Matches your first picture layout
+import CoordinatorLayout from "@/layouts/coord-layout"; 
 import { Head, router } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -8,7 +8,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 
-// Icons (Same as your original file)
+// Icons
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
 const IconMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>;
 const IconPhone = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 013.1 4.2 2 2 0 015.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2L9.1 9.9a16 16 0 006.9 6.9l1.3-1.3a2 2 0 012-.5c.9.3 1.9.6 2.9.7a2 2 0 011.8 2z"/></svg>;
@@ -21,12 +21,20 @@ export default function CoordinatorViewProfile({ user }) {
   const emp = user.employment;
   const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
 
+  // RESOLVE IMAGE PATH URL (Prepend /storage/ if it's a local upload relative path)
+  const rawImage = user.profile_picture;
+  const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
+    ? rawImage
+    : rawImage 
+      ? `/storage/${rawImage}` 
+      : `https://ui-avatars.com/api/?name=${user.first_name}&background=70CAFF&color=fff`;
+
   return (
     <>
       <Head title={`Alumna Profile - ${fullName}`} />
       <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
         
-        {/* Back Button - Points to Coordinator route */}
+        {/* Back Button */}
         <div className="flex justify-start">
           <Button
             onClick={() => router.visit(route("coordinator.alumni.index"))}
@@ -44,10 +52,15 @@ export default function CoordinatorViewProfile({ user }) {
           </div>
 
           <div className="flex items-center gap-5 mb-8">
-            <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-gray-200">
+            <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-gray-200 shrink-0">
               <img 
-                src={user.profile_picture || `https://ui-avatars.com/api/?name=${user.first_name}&background=70CAFF&color=fff`} 
+                src={imageSrc} 
+                alt={fullName}
                 className="w-full h-full object-cover" 
+                onError={(e) => {
+                  // Fallback to UI-Avatars if loading fails
+                  e.target.src = `https://ui-avatars.com/api/?name=${user.first_name}&background=70CAFF&color=fff`;
+                }}
               />
             </div>
             <div>
@@ -97,6 +110,5 @@ function InfoItem({ icon, label, value }) {
     </div>
   );
 }
-
 
 CoordinatorViewProfile.layout = (page) => <CoordinatorLayout children={page} />;

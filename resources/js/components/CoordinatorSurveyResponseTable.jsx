@@ -72,11 +72,11 @@ export default function CoordinatorSurveyResponseTable({
   return (
     <div className="flex flex-col gap-3 w-full">
       
-      {/* Outer Main Container Card (Gaya ng CoordinatorAlumniTable) */}
-      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col">
+      {/* Outer Main Container Card */}
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full">
         
-        {/* FIXED HEADER ROW - Bukod at hindi kailanman masasama sa scroll */}
-        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100">
+        {/* FIXED HEADER ROW - Added right padding to align perfectly with scrollable container */}
+        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
           <div className="w-[32%] text-center">Alumni</div>
           <div className="w-[17%] text-center">Status</div>
           <div className="w-[17%] text-center">Course</div>
@@ -84,107 +84,103 @@ export default function CoordinatorSurveyResponseTable({
           <div className="w-[17%] text-center">Action</div>
         </div>
 
-        {/* SCROLLABLE ROWS BODY - Ang element lang na ito ang gumagalaw */}
-        <div className="w-full max-h-[460px] overflow-y-auto overflow-x-auto">
-          <table className="w-full table-fixed min-w-[750px] border-collapse">
-            <tbody>
-              {responseData.length > 0 ? (
-                responseData.map((res) => {
-                  const rawImage = res.avatar || res.profile_picture;
-                  const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
-                    ? rawImage
-                    : rawImage 
-                      ? `/storage/${rawImage}` 
-                      : null;
+        {/* SCROLLABLE ROWS BODY - Converted to strict vertical scrolling div elements */}
+        <div className="w-full max-h-[460px] overflow-y-scroll overflow-x-hidden">
+          <div className="w-full flex flex-col">
+            {responseData.length > 0 ? (
+              responseData.map((res) => {
+                const rawImage = res.avatar || res.profile_picture;
+                const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
+                  ? rawImage
+                  : rawImage 
+                    ? `/storage/${rawImage}` 
+                    : null;
 
-                  return (
-                    <tr
-                      key={res.id}
-                      className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-center w-full"
-                    >
-                      {/* ALUMNI CELL WITH ABSOLUTE OFFSET ALIGNMENT */}
-                      <td className="w-[32%] text-center flex items-center justify-center">
-                        <div className="relative w-full flex items-center px-4">
-                          
-                          {/* Profile Picture fixed to the left side of the cell */}
-                          <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
-                            {imageSrc ? (
-                              <img
-                                src={imageSrc}
-                                alt={res.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                  const parent = e.target.parentElement;
-                                  if (parent) parent.innerText = getInitials(res.name);
-                                }}
-                              />
-                            ) : (
-                              <span>{getInitials(res.name)}</span>
-                            )}
-                          </div>
-
-                          {/* Name Text centered freely inside the cell */}
-                          <div className="w-full text-center">
-                            <span className="font-medium text-gray-800 ml-[-36px] truncate block">
-                              {res.name}
-                            </span>
-                          </div>
+                return (
+                  <div
+                    key={res.id}
+                    className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-center w-full text-center"
+                  >
+                    {/* ALUMNI CELL WITH ABSOLUTE OFFSET ALIGNMENT */}
+                    <div className="w-[32%] flex items-center justify-center">
+                      <div className="relative w-full flex items-center px-4">
+                        
+                        {/* Profile Picture fixed to the left side of the cell */}
+                        <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
+                          {imageSrc ? (
+                            <img
+                              src={imageSrc}
+                              alt={res.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                                const parent = e.target.parentElement;
+                                if (parent) parent.innerText = getInitials(res.name);
+                              }}
+                            />
+                          ) : (
+                            <span>{getInitials(res.name)}</span>
+                          )}
                         </div>
-                      </td>
 
-                      {/* STATUS CELL */}
-                      <td className="w-[17%] text-center flex items-center justify-center">
-                        <span
-                          className={`px-3 py-1 text-[11px] font-semibold rounded-full tracking-wide ${
-                            res.status === "completed"
-                              ? "bg-green-100 text-green-600 border border-green-200"
-                              : "bg-red-100 text-red-600 border border-red-200"
-                          }`}
-                        >
-                          {res.status === "completed" ? "Completed" : "Not Completed"}
-                        </span>
-                      </td>
+                        {/* Name Text centered freely inside the cell */}
+                        <div className="w-full text-center">
+                          <span className="font-medium text-gray-800 ml-[-36px] truncate block">
+                            {res.name}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                      {/* COURSE CELL */}
-                      <td className="w-[17%] text-center text-gray-600 font-medium flex items-center justify-center">
-                        {res.course ?? "-"}
-                      </td>
+                    {/* STATUS CELL */}
+                    <div className="w-[17%] flex items-center justify-center">
+                      <span
+                        className={`px-3 py-1 text-[11px] font-semibold rounded-full tracking-wide ${
+                          res.status === "completed"
+                            ? "bg-green-100 text-green-600 border border-green-200"
+                            : "bg-red-100 text-red-600 border border-red-200"
+                        }`}
+                      >
+                        {res.status === "completed" ? "Completed" : "Not Completed"}
+                      </span>
+                    </div>
 
-                      {/* YEAR CELL */}
-                      <td className="w-[17%] text-center text-gray-600 font-medium flex items-center justify-center">
-                        {res.year ?? "-"}
-                      </td>
+                    {/* COURSE CELL */}
+                    <div className="w-[17%] text-gray-600 font-medium flex items-center justify-center">
+                      {res.course ?? "-"}
+                    </div>
 
-                      {/* ACTION CELL */}
-                      <td className="w-[17%] text-center flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => handleView(res)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium shadow-sm cursor-pointer"
-                        >
-                          <Eye size={14} /> View
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr className="h-[64px] flex items-center w-full">
-                  <td className="w-full text-center text-gray-500">
-                    No records found.
-                  </td>
-                </tr>
-              )}
+                    {/* YEAR CELL */}
+                    <div className="w-[17%] text-gray-600 font-medium flex items-center justify-center">
+                      {res.year ?? "-"}
+                    </div>
 
-              {/* Dynamic empty rows up to 10 entries para pareho ang taas palagi */}
-              {Array.from({ length: Math.max(0, rowsPerPage - responseData.length) }).map((_, i) => (
-                <tr key={`empty-${i}`} className="h-[64px] border-b border-gray-50/50 flex items-center w-full">
-                  <td className="w-full" />
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    {/* ACTION CELL */}
+                    <div className="w-[17%] flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => handleView(res)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium shadow-sm cursor-pointer"
+                      >
+                        <Eye size={14} /> View
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="h-[64px] flex items-center justify-center w-full text-gray-500">
+                No records found.
+              </div>
+            )}
+
+            {/* Dynamic empty rows up to 10 entries */}
+            {Array.from({ length: Math.max(0, rowsPerPage - responseData.length) }).map((_, i) => (
+              <div key={`empty-${i}`} className="h-[64px] border-b border-gray-50/50 flex items-center w-full">
+                <div className="w-full" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
