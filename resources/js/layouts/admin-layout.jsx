@@ -20,36 +20,68 @@ import ChatWidget from "../components/chat/ChatWidget";
 export default function AdminLayout({ children }) {
   const { auth } = usePage().props;
 
-  const navItems = [
-    { id: "dashboard", name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-    { id: "inquiries", name: "Inquiries", href: "/admin/inquiries", icon: Mail },
-    { id: "announcement", name: "Announcement", href: "/admin/announcement", icon: Bell },
-    { id: "alumni-coordinator", name: "Alumni Coordinator", href: "/admin/alumni-coordinators", icon: UsersRound },
-    { id: "alumni", name: "Alumni", href: "/admin/alumni", icon: CircleUserRound },
-    { id: "surveys", name: "Surveys", href: "/admin/surveys", icon: NotebookPen },
-    { id: "survey-response", name: "Survey Response", href: "/admin/survey-response", icon: FileChartColumn },
-    { id: "analytics", name: "Analytics", href: "/admin/analytics", icon: ChartNoAxesCombined },
-  ];
+   const navItems = [
+    {
+      id: "dashboard",
+      name: "Dashboard",
+      href:"/admin/dashboard",
+      icon: LayoutDashboard
+    },
+    {
+      id: "inquiries",
+      name: "Inquiries",
+      href:"/admin/inquiries",
+      icon: Mail
+    },
+    {
+      id: "announcement",
+      name: "Announcement",
+      href:"/admin/announcement",
+      icon: Bell
+    },
+    {
+      id: "alumni-coordinator",
+      name: "Alumni Coordinator",
+      href: "/admin/alumni-coordinators",
+      icon: UsersRound
+    },
+    {
+      id: "alumni",
+      name: "Alumni",
+      href:"/admin/alumni",
+      icon: CircleUserRound
+    },
+    {
+      id: "surveys",
+      name: "Surveys",
+      href:"/admin/surveys",
+      icon: NotebookPen
+    },
+    {
+      id: "survey-response",
+      name: "Survey Response",
+      href:"/admin/survey-response",
+      icon: FileChartColumn
+    },
+    {
+      id: "analytics",
+      name: "Analytics",
+      href:"/admin/analytics",
+      icon: ChartNoAxesCombined
+    }
+  ]
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarAdmin navItems={navItems} />
-
-        {/* FIXED ROOT CONTAINER */}
-        <SidebarInset className="h-screen flex flex-col overflow-hidden">
-
-          {/* HEADER (fixed) */}
-          <HeaderAdmin navItems={navItems} />
-
-          {/* MAIN CONTENT AREA (ONLY THIS SHOULD CONTROL SCROLL INSIDE PAGES) */}
-          <main className="flex-1 min-h-0 overflow-hidden bg-app-bg">
-            {children}
-          </main>
-
-        </SidebarInset>
+         <SidebarAdmin navItems={navItems}/>
+          <SidebarInset>
+            <HeaderAdmin navItems={navItems}/>
+              <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
+                  {children}
+                </main>
+          </SidebarInset>
       </SidebarProvider>
-
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
     </ThemeProvider>
