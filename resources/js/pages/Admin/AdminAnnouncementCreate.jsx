@@ -55,7 +55,7 @@
                 <Head title="Create Announcement" />
 
                 {/* Full-screen background wrapper */}
-                <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
+                <div className="bg-[#f0faff] w-full overflow-y-auto flex justify-center py-10">
                     {/* Card wrapper */}
                     <div className="w-full max-w-6xl">
                         <Card className="w-full flex flex-col min-h-[700px]">

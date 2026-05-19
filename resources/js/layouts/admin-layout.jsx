@@ -77,7 +77,7 @@ export default function AdminLayout({ children }) {
          <SidebarAdmin navItems={navItems}/>
           <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
             <HeaderAdmin navItems={navItems}/>
-              <main className="flex-1 min-h-0 flex items-start justify-center p-4 bg-app-bg overflow-hidden">
+              <main className="flex-1 min-h-0 flex items-start justify-center p-4 bg-app-bg overflow-y-auto">
                   {children}
                 </main>
           </SidebarInset>

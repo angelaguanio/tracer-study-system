@@ -42,9 +42,9 @@ export default function CoordinatorLayout({ children }) {
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
           <SidebarCoord navItemsCoord={navItemsCoord}/>
-          <SidebarInset>
+          <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
             <HeaderCoord navItemsCoord={navItemsCoord}/>
-              <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
+              <main className="flex-1 min-h-0 flex items-start justify-center p-4 bg-app-bg overflow-y-auto">
                   {children}
                 </main>
           </SidebarInset>
