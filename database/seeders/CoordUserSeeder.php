@@ -18,7 +18,8 @@ class CoordUserSeeder extends Seeder
             'last_name' => 'Tugaff',
             'first_name' => 'Catalina',
             'password' => Hash::make('admin123'),
-            'user_role' => 'coordinator', // if you have role column
+            'user_role' => 'coordinator',
+            'courses' => 'BSIT' 
         ]
     );
 }

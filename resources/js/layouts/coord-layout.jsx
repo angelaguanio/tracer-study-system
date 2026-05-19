@@ -1,7 +1,7 @@
 import React from 'react'
-import SidebarAdmin from '../components/sidebar-admin'
-import { SidebarProvider, SidebarInset } from "../components/ui/sidebar"
-import HeaderAdmin from '../components/header-admin'
+import SidebarCoord from '../components/sidebar-coord'
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
+import HeaderCoord from '../components/header-coord'
 import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
@@ -11,7 +11,7 @@ import ChatWidget from '../components/chat/ChatWidget';
 export default function CoordinatorLayout({ children }) {
   const { auth } = usePage().props;
   
-  const navItems = [
+  const navItemsCoord = [
     {
       id: "dashboard",
       name: "Dashboard",
@@ -41,15 +41,13 @@ export default function CoordinatorLayout({ children }) {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarAdmin navItems={navItems} />
-        {/* Added flex utilities and overflow hidden to trap layout size */}
-        <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
-          <HeaderAdmin navItems={navItems} />
-          {/* Changed overflow handle to let only the child pages scroll scrollable */}
-          <main className="flex-1 min-h-0 flex items-start justify-center p-4 bg-app-bg overflow-hidden">
-            {children}
-          </main>
-        </SidebarInset>
+          <SidebarCoord navItemsCoord={navItemsCoord}/>
+          <SidebarInset>
+            <HeaderCoord navItemsCoord={navItemsCoord}/>
+              <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
+                  {children}
+                </main>
+          </SidebarInset>
       </SidebarProvider>
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
