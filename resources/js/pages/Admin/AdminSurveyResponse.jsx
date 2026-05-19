@@ -50,10 +50,10 @@ export default function AdminSurveyResponse({
 
   return (
     // 🔥 ())
-    <div className="w-full p-4 flex flex-col">
+    <div className="w-full h-full p-4 flex flex-col overflow-hidden">
 
       {/* HEADER + FILTER AREA (IDENTICAL STRUCTURE) */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 w-full">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 w-full">
 
         {/* BACK + TITLE */}
         <div className="flex items-center gap-3 shrink-0">

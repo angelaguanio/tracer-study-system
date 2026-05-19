@@ -61,10 +61,10 @@ export default function AdminSurveyResponseTable({
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex flex-col gap-3 w-full flex-1 min-h-0">
 
       {/* MAIN CARD */}
-      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full">
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full flex-1 min-h-0">
 
         {/* HEADER (same as coordinator) */}
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
@@ -76,7 +76,7 @@ export default function AdminSurveyResponseTable({
         </div>
 
         {/* SCROLLABLE BODY (IMPORTANT FIX HERE) */}
-        <div className="w-full max-h-[460px] overflow-y-scroll overflow-x-hidden">
+        <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
           <div className="w-full flex flex-col">
 
             {responseData.length > 0 ? (
@@ -155,8 +155,7 @@ export default function AdminSurveyResponseTable({
       </div>
 
       {/* PAGINATION (same style) */}
-      {lastPage > 1 && (
-        <div className="flex justify-end mt-1 pb-2">
+      <div className="flex justify-start mt-1 pb-2">
           <div className="flex items-center gap-1">
 
             <button
@@ -197,7 +196,6 @@ export default function AdminSurveyResponseTable({
 
           </div>
         </div>
-      )}
     </div>
   );
 }

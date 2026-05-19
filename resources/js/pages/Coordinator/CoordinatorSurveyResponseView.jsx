@@ -8,7 +8,7 @@ export default function CoordinatorSurveyResponseView({ response, survey }) {
   };
 
   return (
-    <div className="bg-[#F3FAFF] min-h-screen w-full px-6 lg:px-10 py-6">
+    <div className="min-h-screen w-full px-6 lg:px-10 py-6">
       {/* Justified Layout Row holding Side Header elements alongside Action Badge */}
       <div className="flex items-center justify-between gap-4 mb-6 w-full">
         

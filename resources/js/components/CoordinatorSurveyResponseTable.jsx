@@ -70,10 +70,10 @@ export default function CoordinatorSurveyResponseTable({
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex flex-col gap-3 w-full flex-1 min-h-0">
       
       {/* Outer Main Container Card */}
-      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full">
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full flex-1 min-h-0">
         
         {/* FIXED HEADER ROW - Added right padding to align perfectly with scrollable container */}
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
@@ -85,7 +85,7 @@ export default function CoordinatorSurveyResponseTable({
         </div>
 
         {/* SCROLLABLE ROWS BODY - Converted to strict vertical scrolling div elements */}
-        <div className="w-full max-h-[460px] overflow-y-scroll overflow-x-hidden">
+        <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
           <div className="w-full flex flex-col">
             {responseData.length > 0 ? (
               responseData.map((res) => {
@@ -185,8 +185,7 @@ export default function CoordinatorSurveyResponseTable({
       </div>
 
       {/* FIXED PAGINATION LOWER PANEL */}
-      {lastPage > 1 && (
-        <div className="flex justify-end mt-1 pb-2">
+      <div className="flex justify-start mt-1 pb-2">
           <div className="flex items-center gap-1">
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
@@ -225,7 +224,6 @@ export default function CoordinatorSurveyResponseTable({
             </button>
           </div>
         </div>
-      )}
     </div>
   );
 }

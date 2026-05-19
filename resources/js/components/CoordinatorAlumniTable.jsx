@@ -163,7 +163,7 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
 
       {/* FIXED PAGES BUTTON BOX AT THE BASE */}
       {lastPage > 1 && (
-        <div className="flex justify-end mt-1 pb-2">
+        <div className="flex justify-start mt-1 pb-2">
           <div className="flex items-center gap-1">
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
