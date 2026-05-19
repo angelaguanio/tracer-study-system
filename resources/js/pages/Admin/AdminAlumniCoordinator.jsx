@@ -61,7 +61,7 @@ export default function AdminAlumniCoordinator({ coordinators }) {
     };
 
     return (
-        <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6">
+        <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6 overflow-hidden">
 
             <AdminAlumniCoordinatorFilter
                 search={search}

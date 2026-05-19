@@ -34,74 +34,83 @@ export default function AdminSurveyResponseTable({ data, meta }) {
   };
 
   const paginationItems = getPaginationItems();
-  const paginationBtnClass = "w-9 h-9 flex items-center justify-center text-sm rounded-md shadow-sm transition-all";
 
   return (
-    <div className="bg-white rounded-xl shadow flex flex-col h-full overflow-hidden relative">
-      
-      {/* TABLE SECTION */}
-      <div className="flex-1 overflow-auto">
-        <Table className="min-w-[800px] w-full">
-          <TableHeader className="bg-[#70CAFF] hover:bg-transparent">
-            <TableRow className="h-[56px]">
-              <TableHead className="text-left font-semibold px-8 text-gray-700">Alumni</TableHead>
-              <TableHead className="text-center font-semibold text-gray-700">Status</TableHead>
-              <TableHead className="text-center font-semibold text-gray-700">Course</TableHead>
-            </TableRow>
-          </TableHeader>
+    <div className="flex flex-col gap-3 flex-1 min-h-0 h-full">
 
-          <TableBody>
-            {data?.map((item) => (
-              <TableRow key={item.id} className="h-[70px] hover:bg-gray-50 border-b border-gray-100">
-                {/* ALUMNI COLUMN */}
-                <TableCell>
-                  <div className="flex items-center gap-3 pl-4">
-                    <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-semibold text-sm shrink-0">
-                      {getInitials(item.first_name, item.last_name)}
-                    </div>
-                    <span className="font-medium text-gray-800">
-                      {item.first_name} {item.last_name}
-                    </span>
-                  </div>
-                </TableCell>
+      {/* TABLE CARD */}
+      <div className="bg-white rounded-xl shadow flex flex-col flex-1 min-h-0 overflow-hidden">
 
-                {/* STATUS COLUMN WITH PILL BADGE */}
-                <TableCell className="text-center">
-                  <span className={`inline-flex px-4 py-1 rounded-full text-xs font-medium border ${
-                    item.status === 'Completed' 
-                      ? 'bg-green-100 text-green-600 border-green-200' 
-                      : 'bg-red-100 text-red-600 border-red-200'
-                  }`}>
-                    {item.status}
-                  </span>
-                </TableCell>
-
-                {/* COURSE COLUMN */}
-                <TableCell className="text-center text-gray-600">
-                  {item.course}
-                </TableCell>
+        {/* Fixed header */}
+        <div className="shrink-0">
+          <Table className="min-w-[800px] w-full">
+            <TableHeader className="bg-[#70CAFF] hover:bg-transparent">
+              <TableRow className="h-[56px]">
+                <TableHead className="text-left font-semibold px-8 text-gray-700">Alumni</TableHead>
+                <TableHead className="text-center font-semibold text-gray-700">Status</TableHead>
+                <TableHead className="text-center font-semibold text-gray-700">Course</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+          </Table>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+          <Table className="min-w-[800px] w-full">
+            <TableBody>
+              {data?.length > 0 ? data.map((item) => (
+                <TableRow key={item.id} className="h-[70px] hover:bg-gray-50 border-b border-gray-100">
+                  {/* ALUMNI */}
+                  <TableCell>
+                    <div className="flex items-center gap-3 pl-4">
+                      <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-semibold text-sm shrink-0">
+                        {getInitials(item.first_name, item.last_name)}
+                      </div>
+                      <span className="font-medium text-gray-800">
+                        {item.first_name} {item.last_name}
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  {/* STATUS */}
+                  <TableCell className="text-center">
+                    <span className={`inline-flex px-4 py-1 rounded-full text-xs font-medium border ${
+                      item.status === 'Completed'
+                        ? 'bg-green-100 text-green-600 border-green-200'
+                        : 'bg-red-100 text-red-600 border-red-200'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </TableCell>
+
+                  {/* COURSE */}
+                  <TableCell className="text-center text-gray-600">
+                    {item.course}
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="h-[64px] text-center text-gray-500">
+                    No records found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
-      {/* PAGINATION SECTION */}
-      <div className="p-4 flex justify-end bg-white border-t border-gray-100">
-        <div className="flex gap-2 items-center">
-          
-          {/* PREVIOUS */}
+      {/* PAGINATION */}
+      <div className="flex justify-start mt-1 pb-2">
+        <div className="flex items-center gap-1">
           <button
             disabled={currentPage === 1}
             onClick={() => goToPage(currentPage - 1)}
-            className={`${paginationBtnClass} ${
-              currentPage === 1 ? "opacity-40 cursor-not-allowed text-gray-400" : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          {/* PAGE NUMBERS */}
           {paginationItems.map((item, index) =>
             item === "..." ? (
               <div key={`dots-${index}`} className="w-9 h-9 flex items-center justify-center text-gray-400">
@@ -111,10 +120,10 @@ export default function AdminSurveyResponseTable({ data, meta }) {
               <button
                 key={index}
                 onClick={() => goToPage(item)}
-                className={`${paginationBtnClass} ${
+                className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium transition ${
                   currentPage === item
-                    ? "bg-blue-600 text-white font-semibold"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-white hover:bg-gray-50 text-gray-600"
                 }`}
               >
                 {item}
@@ -122,17 +131,13 @@ export default function AdminSurveyResponseTable({ data, meta }) {
             )
           )}
 
-          {/* NEXT */}
           <button
             disabled={currentPage === lastPage}
             onClick={() => goToPage(currentPage + 1)}
-            className={`${paginationBtnClass} ${
-              currentPage === lastPage ? "opacity-40 cursor-not-allowed text-gray-400" : "text-gray-600 hover:bg-gray-100"
-            }`}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
-
         </div>
       </div>
     </div>
