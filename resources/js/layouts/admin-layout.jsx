@@ -1,16 +1,26 @@
-import React from 'react'
-import SidebarAdmin from '../components/sidebar-admin'
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
-import HeaderAdmin from '../components/header-admin'
-import { LayoutDashboard, Bell, NotebookPen, UsersRound, CircleUserRound, Mail, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from 'sonner';
-import { usePage } from '@inertiajs/react';
-import ChatWidget from '../components/chat/ChatWidget';
+import React from "react";
+import SidebarAdmin from "../components/sidebar-admin";
+import { SidebarProvider, SidebarInset } from "../components/ui/sidebar";
+import HeaderAdmin from "../components/header-admin";
+import {
+  LayoutDashboard,
+  Bell,
+  NotebookPen,
+  UsersRound,
+  CircleUserRound,
+  Mail,
+  FileChartColumn,
+  ChartNoAxesCombined,
+} from "lucide-react";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
+import { usePage } from "@inertiajs/react";
+import ChatWidget from "../components/chat/ChatWidget";
 
-export default function AdminLayout({children}) {
+export default function AdminLayout({ children }) {
   const { auth } = usePage().props;
-  const navItems = [
+
+   const navItems = [
     {
       id: "dashboard",
       name: "Dashboard",
@@ -60,13 +70,14 @@ export default function AdminLayout({children}) {
       icon: ChartNoAxesCombined
     }
   ]
+
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarAdmin navItems={navItems}/>
-          <SidebarInset>
+         <SidebarAdmin navItems={navItems}/>
+          <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
             <HeaderAdmin navItems={navItems}/>
-              <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
+              <main className="flex-1 min-h-0 flex items-start justify-center p-4 bg-app-bg overflow-hidden">
                   {children}
                 </main>
           </SidebarInset>
@@ -74,6 +85,5 @@ export default function AdminLayout({children}) {
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
     </ThemeProvider>
-  )
+  );
 }
-

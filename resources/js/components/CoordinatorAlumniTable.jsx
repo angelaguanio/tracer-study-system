@@ -24,7 +24,6 @@ const badgeColor = (course) => {
 export default function CoordinatorAlumniTable({ alumni, onView }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
-  const rowsPerPage = 10; 
   const alumniData = alumni?.data ?? [];
 
   const goToPage = (page) => {
@@ -71,21 +70,21 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex flex-col gap-3 w-full flex-1 min-h-0 h-full">
       
       {/* Outer Main Container Card */}
-      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full">
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full flex-1 min-h-0">
         
-        {/* FIXED HEADER ROW - Added dynamic right padding block to align layout column positions with body content scrolltracks */}
-        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
+        {/* FIXED HEADER ROW */}
+        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px] shrink-0">
           <div className="w-[40%] text-center">Alumni</div>
           <div className="w-[20%] text-center">Course</div>
           <div className="w-[20%] text-center">Year</div>
           <div className="w-[20%] text-center">Actions</div>
         </div>
 
-        {/* SCROLLABLE ROWS BODY - Standardized to native div elements to optimize flex positioning stability across columns */}
-        <div className="w-full max-h-[460px] overflow-y-scroll overflow-x-hidden">
+        {/* SCROLLABLE ROWS BODY */}
+        <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
           <div className="w-full flex flex-col">
             {alumniData.length > 0 ? (
               alumniData.map((item) => (
@@ -93,11 +92,9 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                   key={item.id}
                   className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-center w-full text-center"
                 >
-                  {/* ALUMNI CELL WITH MATCHING SEPARATED GAP STRUCTURE */}
+                  {/* ALUMNI CELL */}
                   <div className="w-[40%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
-                      
-                      {/* Profile Picture anchored on the left */}
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
                         {item.avatar ? (
                           <img 
@@ -114,14 +111,11 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                           <span>{getInitials(item.name)}</span>
                         )}
                       </div>
-
-                      {/* Name Text sitting centered independently */}
                       <div className="w-full text-center">
                         <span className="font-medium text-gray-800 ml-[-36px]">
                           {item.name}
                         </span>
                       </div>
-
                     </div>
                   </div>
 
@@ -150,41 +144,32 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                 No alumni found.
               </div>
             )}
-
-            {/* Dynamic empty filler spacing up to 10 entries */}
-            {Array.from({ length: Math.max(0, rowsPerPage - alumniData.length) }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-[64px] border-b border-gray-50/50 flex items-center w-full">
-                <div className="w-full" />
-              </div>
-            ))}
           </div>
         </div>
       </div>
 
-      {/* FIXED PAGES BUTTON BOX AT THE BASE */}
-      {lastPage > 1 && (
-        <div className="flex justify-end mt-1 pb-2">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            
-            {renderPageNumbers()}
-            
-            <button
-              onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
-              disabled={currentPage === lastPage}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+      {/* PAGINATION */}
+      <div className="flex justify-start mt-1 pb-2">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          
+          {renderPageNumbers()}
+          
+          <button
+            onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
+            disabled={currentPage === lastPage}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

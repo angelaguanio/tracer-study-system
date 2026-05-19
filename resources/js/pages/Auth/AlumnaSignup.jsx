@@ -226,12 +226,14 @@ const handleSubmit = (e) => {
   return (
     <Card className=" relative w-full max-w-lg gap-2 rounded-2xl bg-white px-4 py-6 shadow-lg sm:max-w-lg sm:px-6 sm:py-8 md:max-w-2xl md:px-8 md:py-10 max-h-[90vh]">
       <CardHeader className="relative flex flex-col items-center justify-center">
-        <Link
-          href={route('role.select')}
-          className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100"
-        >
-          <ArrowLeft className="h-5 w-5 text-gray-700" />
-        </Link>
+        {step === 1 && (
+          <Link
+            href={route('role.select')}
+            className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100"
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </Link>
+        )}
 
         <img src={logo} alt="Alumni Connect logo" className="h-16 sm:h-10 md:h-15" />
         <p className="text-base font-bruno text-center sm:text-sm">Alumni Connect</p>

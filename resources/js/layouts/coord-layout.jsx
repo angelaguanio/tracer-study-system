@@ -32,7 +32,7 @@ export default function CoordinatorLayout({ children }) {
     },
     {
       id: "survey-response",
-      name: "Survey Responses",
+      name: "Survey Response",
       href: "/coordinator/survey-response",
       icon: FileChartColumn
     }

@@ -5,11 +5,15 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
 
-      {/* HEADER (same style as SurveyIndex) */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">
-          List of Surveys
-        </h1>
+      {/* HEADER */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-bold text-gray-900">
+          Survey Responses
+        </h2>
+
+        <p className="text-sm text-gray-500">
+          Review survey submissions
+        </p>
       </div>
 
       {/* EMPTY STATE */}

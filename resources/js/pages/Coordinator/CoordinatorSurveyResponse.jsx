@@ -65,9 +65,9 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
 
 
   return (
-    <div className="w-full p-4 flex flex-col drop-shadow-sm">
+    <div className="w-full h-full p-4 flex flex-col drop-shadow-sm overflow-hidden">
       {/* Title block at Filters sa iisang main flex element */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 w-full">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 w-full mb-4">
         
         {/* Back Button + Survey Title */}
         <div className="flex items-center gap-3 shrink-0">
