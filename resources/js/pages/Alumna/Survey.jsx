@@ -1,6 +1,6 @@
+import  route  from "ziggy-js";
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
-import { route } from "ziggy-js";
 import logo from '../../assets/logo final.png';
 import wuplogo from '../../assets/wup.png';
 import cectlogo from '../../assets/wup_cect.png';

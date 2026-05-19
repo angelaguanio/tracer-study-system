@@ -2,39 +2,46 @@ import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
-import { LayoutDashboard, Bell, NotebookPen, CircleUserRound, LayoutList, FileChartColumn, ChartNoAxesCombined } from 'lucide-react';
+import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
 import ChatWidget from '../components/chat/ChatWidget';
 
-export default function CoordinatorLayout({children}) {
+export default function CoordinatorLayout({ children }) {
   const { auth } = usePage().props;
+  
   const navItemsCoord = [
     {
       id: "dashboard",
       name: "Dashboard",
-      href:"/coordinator/dashboard",
+      href: "/coordinator/dashboard",
       icon: LayoutDashboard
     },
     {
       id: "announcement",
-      name: "Announcement",
-      href:"/coordinator/announcement",
+      name: "Announcements",
+      href: "/coordinator/announcement",
       icon: Bell
     },
     {
       id: "alumni",
       name: "Alumni",
-      href:"/coordinator/alumni",
+      href: "/coordinator/alumni",
       icon: CircleUserRound
+    },
+    {
+      id: "survey-response",
+      name: "Survey Responses",
+      href: "/coordinator/survey-response",
+      icon: FileChartColumn
     }
-  ]
-  console.log('passing:', navItemsCoord.length, navItemsCoord)
+  ];
+
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <SidebarProvider>
-        <SidebarCoord navItemsCoord={navItemsCoord}/>
+          <SidebarCoord navItemsCoord={navItemsCoord}/>
           <SidebarInset>
             <HeaderCoord navItemsCoord={navItemsCoord}/>
               <main className="flex-1 flex items-center justify-center p-4 bg-app-bg">
@@ -47,4 +54,3 @@ export default function CoordinatorLayout({children}) {
     </ThemeProvider>
   )
 }
-

@@ -89,7 +89,7 @@ export default function AdminSurveyResponseFilter({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Years</SelectItem>
-            {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map((y) => (
+            {[2022, 2021, 2020, 2019, 2018].map((y) => (
               <SelectItem key={y} value={y.toString()}>
                 {y}
               </SelectItem>
