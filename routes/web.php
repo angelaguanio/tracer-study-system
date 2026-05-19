@@ -157,7 +157,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
         ->name('alumni.email.bulk');
 
-         //AdminSurveyResponse
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
+    //AdminSurveyResponse
     Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
         ->name('admin.survey-response.index');
 
@@ -173,8 +177,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('admin.survey-response.not-complete');
 
     Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
-        ->name('admin.survey-response.destroy');
+        ->name('survey-response.destroy');
 
+        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
+        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+
+        // Alumni
+        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+
+        // Individual email (modal-based, no GET form page needed)
+        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
+
+        // Bulk email
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
+  
         //Inquiries
         Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');

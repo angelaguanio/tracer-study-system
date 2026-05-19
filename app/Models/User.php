@@ -94,4 +94,10 @@ class User extends Authenticatable
     {
         return $this->user_role === 'coordinator';
     }
+
+    // ency - ni add ko kasi ayaw gumana saakin questionnaire.
+    public function isAlumna(): bool
+    {
+        return $this->user_role === 'alumna';
+    }
 }
