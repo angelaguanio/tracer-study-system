@@ -21,7 +21,8 @@ class QuestionnaireController extends Controller
             : false;
 
         return Inertia::render('Alumna/AlumnaQuestionnaire', [
-            'completed' => $completed,
+            'completed'       => $completed,
+            'hasActiveSurvey' => $survey !== null,
         ]);
     }
 
