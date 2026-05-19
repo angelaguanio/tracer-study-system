@@ -28,8 +28,8 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   }, [search]);
 
   return (
-    <div className="w-full flex flex-col p-4 gap-4">
-      <div>
+    <div className="w-full h-full flex flex-col p-4 gap-4 overflow-hidden">
+      <div className="shrink-0">
         <CoordinatorAlumniFilters 
           search={search} setSearch={setSearch} 
           year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
@@ -37,7 +37,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
         />
       </div>
 
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col">
         <CoordinatorAlumniTable alumni={alumni} onView={handleView} />
       </div>
     </div>

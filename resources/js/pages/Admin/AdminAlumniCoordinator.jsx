@@ -74,7 +74,7 @@ export default function AdminAlumniCoordinator({ coordinators }) {
                 setShowForm={setShowForm}
             />
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 flex flex-col">
                 <AdminAlumniCoordinatorTable
                     data={filtered}
                     setEditing={setEditing}

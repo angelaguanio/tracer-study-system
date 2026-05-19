@@ -64,7 +64,7 @@ export default function AdminAnnouncement({ announcements }) {
   const filteredAnnouncements = list;
 
   return (
-    <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+    <div className="w-full h-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
       {/* HEADER */}
       <div className="flex items-center justify-between">
@@ -165,14 +165,15 @@ export default function AdminAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <AdminAnnouncementCard
-        announcements={filteredAnnouncements}
-        onDeleteSuccess={() => setShowSuccess(true)}
-      />
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+        <AdminAnnouncementCard
+          announcements={filteredAnnouncements}
+          onDeleteSuccess={() => setShowSuccess(true)}
+        />
+      </div>
 
       {/* PAGINATION */}
-      {announcements?.links && (
-        <div className="flex justify-end items-center gap-1 mt-4">
+      <div className="flex justify-start items-center gap-1">
 
           {/* PREVIOUS */}
           <button
@@ -184,17 +185,15 @@ export default function AdminAnnouncement({ announcements }) {
                 { preserveState: true, preserveScroll: true }
               )
             }
-            className="w-12 h-8 flex items-center justify-center rounded-md border bg-white shadow-sm hover:shadow-md
-                      hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} />
           </button>
 
           {/* PAGE NUMBERS */}
           {Array.from({ length: announcements.last_page }, (_, i) => i + 1)
             .filter((page) => {
               const current = announcements.current_page;
-
               return (
                 page === 1 ||
                 page === announcements.last_page ||
@@ -203,16 +202,11 @@ export default function AdminAnnouncement({ announcements }) {
             })
             .map((page, index, arr) => {
               const prevPage = arr[index - 1];
-
               return (
                 <div key={page} className="flex items-center gap-1">
-
-                  {/* ELLIPSIS */}
                   {prevPage && page - prevPage > 1 && (
-                    <span className="px-2 text-gray-400">...</span>
+                    <span className="w-9 h-9 flex items-center justify-center text-gray-400">...</span>
                   )}
-
-                  {/* PAGE BUTTON */}
                   <button
                     onClick={() =>
                       router.get(
@@ -221,16 +215,14 @@ export default function AdminAnnouncement({ announcements }) {
                         { preserveState: true, preserveScroll: true }
                       )
                     }
-                    className={`w-8 h-8 flex items-center justify-center rounded-md border text-sm transition shadow-sm hover:shadow-md
-                      ${
-                        announcements.current_page === page
-                          ? "bg-[#3b82f6] text-white border-[#3b82f6]"
-                          : "bg-white hover:bg-gray-100"
-                      }`}
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg border text-sm font-medium transition ${
+                      announcements.current_page === page
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white hover:bg-gray-50 text-gray-600"
+                    }`}
                   >
                     {page}
                   </button>
-
                 </div>
               );
             })}
@@ -245,14 +237,12 @@ export default function AdminAnnouncement({ announcements }) {
                 { preserveState: true, preserveScroll: true }
               )
             }
-            className="w-12 h-8 flex items-center justify-center rounded-md border bg-white shadow-sm hover:shadow-md
-                      hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
           </button>
 
         </div>
-      )}
 
       {/* DELETE SUCCESS MODAL */}
       {showSuccess && (
