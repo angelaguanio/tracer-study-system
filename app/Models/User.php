@@ -79,6 +79,11 @@ class User extends Authenticatable
          return $this->hasMany(EmploymentHistory::class);
     }
 
+    public function responses()
+    {
+        return $this->hasMany(Response::class);
+    }
+
     /**
      * Check if the user is an administrator.
      */
@@ -93,5 +98,10 @@ class User extends Authenticatable
     public function isCoordinator(): bool
     {
         return $this->user_role === 'coordinator';
+    }
+
+    public function isAlumna(): bool
+    {
+        return $this->user_role === 'alumna';
     }
 }
