@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react"; // Optional: para sa icon ng add button
+import { Plus, Search } from "lucide-react";
 
 export default function AdminAlumniCoordinatorFilter({
   search,
@@ -22,12 +22,13 @@ export default function AdminAlumniCoordinatorFilter({
     <div className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       
       {/* SEARCH */}
-      <div className="w-full md:w-[250px]">
+      <div className="w-full md:w-[250px] relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search Alumni Coordinator..."
-          className="w-full px-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-400 outline-none h-10"
+          className="w-full pl-10 pr-3 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-400 outline-none h-10"
         />
       </div>
 

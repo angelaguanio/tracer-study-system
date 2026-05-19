@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Search } from "lucide-react";
 
 export default function AdminAlumniFilters({
   search,
@@ -18,12 +19,15 @@ export default function AdminAlumniFilters({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow mb-4">
       
-      <Input
-        placeholder="Search"
-        className="w-full md:w-[250px]"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div className="relative w-full md:w-[250px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <Input
+          placeholder="Search"
+          className="pl-10"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
       <div className="flex gap-2 w-full md:w-auto">
         <Select onValueChange={setYear} value={year}>

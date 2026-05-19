@@ -67,7 +67,7 @@ export default function NavbarAlumni({ children }) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="nav" className="py-6">
+            <Button variant="nav" className="py-6 ">
               <ProfileTemp user={user} />
             </Button>
           </DropdownMenuTrigger>

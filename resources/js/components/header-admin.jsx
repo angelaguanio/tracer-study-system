@@ -13,7 +13,7 @@ import ProfileTemp from './profile-temp'
 
 export default function HeaderAdmin({ navItems = [] }) {
   const { url, props } = usePage()
-  const user = props.auth?.user // ✅ get user
+  const user = props.auth?.user
   const activeItem = navItems.find((item) => url.startsWith(item.href))
 
   return (
@@ -28,21 +28,15 @@ export default function HeaderAdmin({ navItems = [] }) {
       <div className='flex flex-row items-center gap-2'>
         <ModeToggle />
 
-        {/* profile */}
+        {/* profile dropdown - only logout option for admin */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="nav" className="py-6">
+            <Button variant="nav" className="py-6 hover:bg-gray-300">
               <ProfileTemp user={user} />
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <Link>
-                Profile
-              </Link>
-            </DropdownMenuItem>
-
             <DropdownMenuItem asChild>
               <Link href={route('admin.logout')} className='w-full flex'>
                 Logout

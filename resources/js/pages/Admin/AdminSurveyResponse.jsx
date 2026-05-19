@@ -59,7 +59,7 @@ export default function AdminSurveyResponse({
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleBack}
-            className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 rounded-md"
+            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors shrink-0 p-1 rounded-md cursor-pointer"
           >
             <ArrowLeft size={24} className="stroke-[2]" />
           </button>
