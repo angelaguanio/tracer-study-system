@@ -24,7 +24,10 @@ class QuestionController extends Controller
     {
         $this->authorize('update', $section->survey);
 
-        $nextOrder = $section->questions()->max('display_order') + 1;
+        $nextOrder = max(
+            $section->questions()->max('display_order') ?? 0,
+            $section->subheadings()->max('display_order') ?? 0
+        ) + 1;
 
         $slug = $this->generateUniqueSlug($request->label, $section->survey_id);
 

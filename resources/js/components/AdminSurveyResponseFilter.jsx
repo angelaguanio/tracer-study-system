@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Search } from "lucide-react";
 
 export default function AdminSurveyResponseFilter({
   search,
@@ -20,12 +21,15 @@ export default function AdminSurveyResponseFilter({
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
 
         {/* SEARCH */}
-        <Input
-          placeholder="Search..."
-          className="h-10 w-full sm:w-[220px] bg-white"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="relative w-full sm:w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="Search..."
+            className="h-10 pl-10 bg-white"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         {/* COURSE */}
         <Select value={course} onValueChange={(val) => setCourse(val)}>

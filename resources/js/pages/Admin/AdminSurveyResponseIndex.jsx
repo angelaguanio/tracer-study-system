@@ -27,7 +27,7 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
           {surveys.map((survey) => (
             <div
               key={survey.id}
-              className="bg-white border rounded-lg p-5 shadow-sm flex items-center justify-between"
+              className="bg-white border rounded-lg p-6 shadow-sm flex items-center justify-between min-h-[120px]"
             >
 
               {/* LEFT */}
@@ -61,7 +61,7 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
                 onClick={() =>
                   router.get(`/admin/survey-response/${survey.id}`)
                 }
-                className="border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-4 py-2 rounded-md text-sm font-medium"
+                className="border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-3 py-1.5 rounded-md text-xs font-medium"
               >
                 View Survey Response
               </button>

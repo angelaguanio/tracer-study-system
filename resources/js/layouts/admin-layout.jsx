@@ -35,7 +35,7 @@ export default function AdminLayout({ children }) {
     },
     {
       id: "announcement",
-      name: "Announcement",
+      name: "Announcements",
       href:"/admin/announcement",
       icon: Bell
     },

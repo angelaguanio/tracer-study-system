@@ -19,7 +19,8 @@ class CoordUserSeeder extends Seeder
             'first_name' => 'Catalina',
             'password' => Hash::make('admin123'),
             'user_role' => 'coordinator',
-            'courses' => 'BSIT' 
+            'courses' => 'BSIT',
+            'department' => 'CECT'
         ]
     );
 }
