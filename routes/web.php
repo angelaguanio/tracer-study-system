@@ -146,20 +146,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
         ->name('admin.alumni.show');
 
+    // Admin alumni email routes
+    Route::post('/admin/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+        ->name('admin.alumni.email.send');
+
+    Route::post('/admin/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+        ->name('admin.alumni.email.bulk');
+
     Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
         ->name('alumni.show');
-
-        //Send email (individual — handled via modal, route kept for controller compatibility)
-    Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
-        ->name('alumni.email.send');
-
-        // Bulk email (selected IDs or all alumni)
-    Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
-        ->name('alumni.email.bulk');
-
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
     //AdminSurveyResponse
     Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
@@ -178,11 +173,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
         ->name('survey-response.destroy');
-
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
 
         // Alumni
         Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');

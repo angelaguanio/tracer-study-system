@@ -88,8 +88,16 @@ export default function AdminSurveyResponseTable({
                   {/* ALUMNI */}
                   <div className="w-[32%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
-                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0">
-                        {getInitials(res.name)}
+                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                        {res.avatar ? (
+                          <img
+                            src={res.avatar}
+                            alt={res.name || "avatar"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitials(res.name)
+                        )}
                       </div>
 
                       <div className="w-full text-center">
@@ -129,7 +137,7 @@ export default function AdminSurveyResponseTable({
                   <div className="w-[17%] flex items-center justify-center">
                     <button
                       onClick={() => handleView(res)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium cursor-pointer"
                     >
                       <Eye size={14} /> View
                     </button>
@@ -161,7 +169,7 @@ export default function AdminSurveyResponseTable({
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40"
+              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40 cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -175,7 +183,7 @@ export default function AdminSurveyResponseTable({
                 <button
                   key={item}
                   onClick={() => goToPage(item)}
-                  className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm ${
+                  className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm cursor-pointer ${
                     currentPage === item
                       ? "bg-blue-500 text-white border-blue-500"
                       : "bg-white text-gray-700"
@@ -189,7 +197,7 @@ export default function AdminSurveyResponseTable({
             <button
               onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
               disabled={currentPage === lastPage}
-              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40"
+              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40 cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

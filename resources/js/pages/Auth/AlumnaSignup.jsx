@@ -410,14 +410,19 @@ const handleSubmit = (e) => {
           )}
 
           {step === 4 && data.currently_employed === 'No' && (
+            <div className='flex flex-col gap-3 p-4'>
+            <h2 className="text-md text-center font-semibold text-slate-900">
+                What is your reason for not working at the moment?
+            </h2>
             <TextInput
               name="unemployment_reason"
               type="text"
               value={data.unemployment_reason}
               onChange={handleChange}
-              placeholder="What is your current status?"
+              placeholder="Please enter your answer"
               error={errors.unemployment_reason}
             />
+            </div>
           )}
 
         </form>
