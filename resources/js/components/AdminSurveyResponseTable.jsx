@@ -1,38 +1,25 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import { Button } from "@/components/ui/button";
-import { Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import React from "react";
+import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function AdminSurveyResponseTable({
   responses,
-  onDelete,
   surveyId,
 }) {
   const currentPage = responses?.current_page || 1;
   const lastPage = responses?.last_page || 1;
+  const rowsPerPage = 10;
+  const responseData = responses?.data || [];
 
-  // Pagination Logic
   const goToPage = (p) => {
     const params = new URLSearchParams(window.location.search);
     params.set("page", p);
 
-    router.get(
-      window.location.pathname,
-      Object.fromEntries(params),
-      {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-      }
-    );
+    router.get(window.location.pathname, Object.fromEntries(params), {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+    });
   };
 
   const getPaginationItems = () => {
@@ -54,14 +41,9 @@ export default function AdminSurveyResponseTable({
 
   const paginationItems = getPaginationItems();
 
-  // FIX: Dito ang logic para sa View Button
   const handleView = (res) => {
-    if (!res?.id || !surveyId) {
-        console.error("Missing ID or Survey ID");
-        return;
-    }
+    if (!res?.id || !surveyId) return;
 
-    // Kinon-construct ang URL base sa status ng response
     const url =
       res.status === "completed"
         ? `/admin/survey-response/${surveyId}/${res.id}`
@@ -70,51 +52,58 @@ export default function AdminSurveyResponseTable({
     router.get(url);
   };
 
-  const getInitials = (name = "") =>
-    name
-      .split(" ")
-      .filter(Boolean)
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
+  const getInitials = (name = "") => {
+    const parts = name.split(" ").filter(Boolean);
+    if (!parts.length) return "";
+    return parts.length >= 2
+      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+      : parts[0][0].toUpperCase();
+  };
 
   return (
-    <div className="bg-white rounded-xl shadow overflow-hidden">
-      <div className="h-[500px] overflow-y-auto">
-        <Table className="w-full text-sm">
-          <TableHeader className="bg-[#70CAFF] sticky top-0 z-10">
-            <TableRow>
-              <TableHead className="text-center font-bold text-gray-800">Alumni</TableHead>
-              <TableHead className="text-center font-bold text-gray-800">Status</TableHead>
-              <TableHead className="text-center font-bold text-gray-800">Course</TableHead>
-              <TableHead className="text-center font-bold text-gray-800">Year</TableHead>
-              <TableHead className="text-center font-bold text-gray-800">Action</TableHead>
-            </TableRow>
-          </TableHeader>
+    <div className="flex flex-col gap-3 w-full flex-1 min-h-0">
 
-          <TableBody>
-            {responses?.data?.length > 0 ? (
-              responses.data.map((res) => (
-                <TableRow key={res.id} className="hover:bg-gray-50 h-[60px]">
-                  {/* NAME WITH INITIALS */}
-                  <TableCell className="text-center">
+      {/* MAIN CARD */}
+      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full flex-1 min-h-0">
+
+        {/* HEADER (same as coordinator) */}
+        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
+          <div className="w-[32%] text-center">Alumni</div>
+          <div className="w-[17%] text-center">Status</div>
+          <div className="w-[17%] text-center">Course</div>
+          <div className="w-[17%] text-center">Year</div>
+          <div className="w-[17%] text-center">Action</div>
+        </div>
+
+        {/* SCROLLABLE BODY (IMPORTANT FIX HERE) */}
+        <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
+          <div className="w-full flex flex-col">
+
+            {responseData.length > 0 ? (
+              responseData.map((res) => (
+                <div
+                  key={res.id}
+                  className="h-[64px] border-b border-gray-100 hover:bg-gray-50 flex items-center w-full text-center"
+                >
+                  {/* ALUMNI */}
+                  <div className="w-[32%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0">
                         {getInitials(res.name)}
                       </div>
+
                       <div className="w-full text-center">
-                        <span className="font-medium text-gray-800 ml-[-36px]">
+                        <span className="font-medium text-gray-800 ml-[-36px] truncate block">
                           {res.name}
                         </span>
                       </div>
                     </div>
-                  </TableCell>
+                  </div>
 
                   {/* STATUS */}
-                  <TableCell className="text-center">
+                  <div className="w-[17%] flex items-center justify-center">
                     <span
-                      className={`px-3 py-1 text-[11px] font-semibold rounded-full tracking-wide ${
+                      className={`px-3 py-1 text-[11px] font-semibold rounded-full ${
                         res.status === "completed"
                           ? "bg-green-100 text-green-600 border border-green-200"
                           : "bg-red-100 text-red-600 border border-red-200"
@@ -124,62 +113,55 @@ export default function AdminSurveyResponseTable({
                         ? "Completed"
                         : "Not Completed"}
                     </span>
-                  </TableCell>
+                  </div>
 
                   {/* COURSE */}
-                  <TableCell className="text-center text-gray-600">
+                  <div className="w-[17%] text-gray-600 flex items-center justify-center">
                     {res.course ?? "-"}
-                  </TableCell>
+                  </div>
 
                   {/* YEAR */}
-                  <TableCell className="text-center text-gray-600">
+                  <div className="w-[17%] text-gray-600 flex items-center justify-center">
                     {res.year ?? "-"}
-                  </TableCell>
+                  </div>
 
                   {/* ACTION */}
-                  <TableCell className="text-center">
-                    <div className="flex justify-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleView(res)}
-                        className="border-[#9ECEFF] text-[#155DFC] hover:bg-blue-50 flex items-center gap-1"
-                      >
-                        <Eye size={14} />
-                        View
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        onClick={() => onDelete(res)}
-                        className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 flex items-center gap-1"
-                      >
-                        <Trash2 size={14} />
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                  <div className="w-[17%] flex items-center justify-center">
+                    <button
+                      onClick={() => handleView(res)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium"
+                    >
+                      <Eye size={14} /> View
+                    </button>
+                  </div>
+                </div>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-gray-500">
-                  No records found.
-                </TableCell>
-              </TableRow>
+              <div className="h-[64px] flex items-center justify-center w-full text-gray-500">
+                No records found.
+              </div>
             )}
-          </TableBody>
-        </Table>
+
+            {/* EMPTY ROWS  */}
+            {Array.from({ length: Math.max(0, rowsPerPage - responseData.length) }).map((_, i) => (
+              <div
+                key={`empty-${i}`}
+                className="h-[64px] border-b border-gray-50 flex items-center w-full"
+              />
+            ))}
+
+          </div>
+        </div>
       </div>
 
-      {/* PAGINATION */}
-      {lastPage > 1 && (
-        <div className="flex justify-end mt-4 px-4 pb-4 border-t pt-4">
-          <div className="flex items-center gap-2">
+      {/* PAGINATION (same style) */}
+      <div className="flex justify-start mt-1 pb-2">
+          <div className="flex items-center gap-1">
+
             <button
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -193,10 +175,10 @@ export default function AdminSurveyResponseTable({
                 <button
                   key={item}
                   onClick={() => goToPage(item)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
+                  className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm ${
                     currentPage === item
                       ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-600 hover:border-blue-300"
+                      : "bg-white text-gray-700"
                   }`}
                 >
                   {item}
@@ -207,13 +189,13 @@ export default function AdminSurveyResponseTable({
             <button
               onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
               disabled={currentPage === lastPage}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+              className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
+
           </div>
         </div>
-      )}
     </div>
   );
 }

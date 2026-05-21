@@ -67,7 +67,7 @@ export default function NavbarAlumni({ children }) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="nav" className="py-6">
+            <Button variant="nav" className="py-6 ">
               <ProfileTemp user={user} />
             </Button>
           </DropdownMenuTrigger>
@@ -76,7 +76,7 @@ export default function NavbarAlumni({ children }) {
               <Link href={route('alumna.profile')}>Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.logout')} method="post" as="button" className='w-full flex'>
+              <Link href={route('alumna.logout')} className='w-full flex'>
                 Logout
               </Link>
             </DropdownMenuItem>

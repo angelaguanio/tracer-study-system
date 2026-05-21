@@ -10,6 +10,9 @@ const __filename = fileURLToPath(import.meta.url); // get the resolved path to t
 const __dirname = path.dirname(__filename); // get the name of the directory
 
 export default defineConfig({
+    server: {
+        host: 'localhost',
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.jsx'],

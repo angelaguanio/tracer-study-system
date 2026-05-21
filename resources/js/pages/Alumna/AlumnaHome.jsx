@@ -32,7 +32,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
       <p className="text-gray-600 text-sm mb-4 h-[50px] overflow-hidden">{description}</p>
 
       <Link href={`/alumna/announcement/${id}`}>
-        <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto">
+        <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition mt-auto cursor-pointer">
           Read More
         </button>
       </Link>
@@ -48,10 +48,10 @@ export default function AlumnaHome({ announcements }) {
 
         {/* HERO SECTION */}
         <section
-          className="relative w-screen h-[450px] flex items-center overflow-hidden"
+          className="relative w-screen h-[600px] flex items-center overflow-hidden"
           style={{
             backgroundImage: `url(${alumniHomeImg})`,
-            backgroundSize: '115%',
+            backgroundSize: 'cover',
             backgroundPosition: '10% 42%',
             backgroundRepeat: 'no-repeat',
           }}
@@ -60,25 +60,36 @@ export default function AlumnaHome({ announcements }) {
             className="absolute inset-0 z-10"
             style={{
               background:
-                'linear-gradient(to right, rgba(6,51,167,0.7) 0%, rgba(0,0,0,0.3) 70%)',
+                'linear-gradient(to right, rgba(6,51,167,0.85) 0%, rgba(0,0,0,0.2) 70%)',
             }}
           ></div>
 
-          <div className="relative z-20 px-6 md:px-12 max-w-[700px]">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="relative z-20 px-12 md:px-20 max-w-[680px] flex flex-col gap-5">
+            <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
               Stay Connected <br />
               With Your Alumni <br />
               Community
             </h1>
-            <p className="text-white text-lg md:text-xl">
-              Share experiences, discover opportunities, and build lasting
-              relationships with fellow alumni from our institution.
+            <p className="text-blue-100 text-lg md:text-xl leading-relaxed">
+              Reconnect with fellow graduates, explore new opportunities,
+              and participate in our tracer survey to help improve the
+              future of our institution.
             </p>
+
+            <div>
+              <Link
+                href="/alumna/questionnaire"
+                className="inline-flex items-center gap-2 bg-white text-[#013A63] px-6 py-3 rounded-md text-sm font-semibold hover:bg-gray-200 transition shadow-sm"
+              >
+                Take the Survey
+                <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* WELCOME */}
-        <section className="border-t border-gray-200 py-20 px-6 text-center">
+        <section className="border-t border-gray-200 py-28 px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
               Welcome to Alumni Connect
@@ -93,14 +104,19 @@ export default function AlumnaHome({ announcements }) {
         </section>
 
         {/* ANNOUNCEMENTS */}
-        <section className="border-t border-gray-200 px-6 py-12">
+        <section className="px-6 py-16" style={{ background: 'linear-gradient(135deg, #001D4A 0%, #0042A8 60%, #014F86 100%)' }}>
           <div className="max-w-[1000px] mx-auto">
-            <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-2">
-              Latest Announcements
-            </h2>
-            <p className="text-gray-500 mb-10">
-              Stay updated with important news and events
-            </p>
+            <div className="text-center mb-12">
+              <span className="inline-block bg-white/10 text-white text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+                News & Updates
+              </span>
+              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-2">
+                Latest Announcements
+              </h2>
+              <p className="text-blue-200">
+                Stay updated with important news and events
+              </p>
+            </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {announcements.length > 0 ? (
@@ -118,16 +134,17 @@ export default function AlumnaHome({ announcements }) {
                   />
                 ))
               ) : (
-                <p className="col-span-3 text-center text-gray-500">
-                  No announcements available
-                </p>
+                <div className="col-span-3 flex flex-col items-center justify-center py-16 gap-3">
+                  <Megaphone size={48} className="text-white/30" />
+                  <p className="text-white/50 text-sm">No announcements available</p>
+                </div>
               )}
             </div>
           </div>
         </section>
 
         {/* WHY JOIN */}
-        <section className="border-t border-gray-200 px-6 py-12">
+        <section className="border-t border-gray-200 px-6 py-24">
           <div className="max-w-[1000px] mx-auto">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#001D4A] mb-4">
               Why Join Alumni Connect?
@@ -141,7 +158,7 @@ export default function AlumnaHome({ announcements }) {
                 <ReceiptText size={40} className="text-[#0042A8] mb-4" />
                 <h3 className="text-lg font-semibold text-[#0042A8] mb-2">Track</h3>
                 <p className="text-gray-600 text-sm">
-                  Participate in tracer studies and update your academic and employment information
+                  Participate in tracer studies and update <br /> your academic and employment information
                 </p>
               </div>
 
@@ -181,10 +198,13 @@ export default function AlumnaHome({ announcements }) {
             <p className="text-gray-200 text-lg mb-8">
               Contribute to institutional development by updating your records and responding to tracer study surveys.
             </p>
-            <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2">
+            <Link
+              href="/alumna/profile"
+              className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition inline-flex items-center gap-2"
+            >
               Proceed to Profile
               <ArrowRight size={18} />
-            </button>
+            </Link>
           </div>
         </div>
 

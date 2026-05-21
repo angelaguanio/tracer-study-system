@@ -146,7 +146,7 @@ export default function AdminAlumni({ alumni, filters }) {
   };
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full h-full p-4 flex flex-col overflow-hidden">
 
       {/* FILTERS */}
       <AdminAlumniFilters
@@ -181,7 +181,7 @@ export default function AdminAlumni({ alumni, filters }) {
       </div>
 
       {/* TABLE */}
-      <div className="mt-3">
+      <div className="mt-3 flex-1 min-h-0">
         <AdminAlumniTable
           alumni={alumni}
           selectedIds={selectedIds}

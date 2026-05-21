@@ -16,7 +16,7 @@ class AlumnaSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'first_name' => 'Angela',
+            'first_name' => 'Gaile',
             'last_name' => 'Guanio',
             'middle_name' => 'Parial',
             'email' => 'gg@gmail.com',
@@ -24,7 +24,7 @@ class AlumnaSeeder extends Seeder
             'user_role' => 'alumna',
             'address' => 'Gapan City',
             'contact_number' => '09123456789',
-            'courses' => 'Bachelor of Science in Information Technology',
+            'courses' => 'BSIT',
             'year_graduated' => '2022'
         ]);
 

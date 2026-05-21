@@ -31,6 +31,11 @@ class Section extends Model
         return $this->hasMany(Question::class)->orderBy('display_order');
     }
 
+    public function subheadings(): HasMany
+    {
+        return $this->hasMany(Subheading::class)->orderBy('display_order');
+    }
+
     public function responses(): HasManyThrough
     {
         return $this->hasManyThrough(Response::class, Question::class);

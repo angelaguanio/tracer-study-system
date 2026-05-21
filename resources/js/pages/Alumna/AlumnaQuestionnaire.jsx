@@ -1,12 +1,12 @@
 import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import AlumnaLayout from "@/layouts/alumna-layout";
-import { CircleCheck, SparkleIcon, PartyPopper } from 'lucide-react';
+import { CircleCheck, SparkleIcon, PartyPopper, ClipboardX } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link, usePage } from '@inertiajs/react';
 
 
-export default function AlumnaQuestionnaire({ completed }) {
+export default function AlumnaQuestionnaire({ completed, hasActiveSurvey }) {
   const { props } = usePage();
   const justCompleted = props.flash?.justCompleted;
 
@@ -64,6 +64,37 @@ export default function AlumnaQuestionnaire({ completed }) {
               <p className='text-lg font-medium'>You've already submitted this survey.</p>
               <p className='text-sm text-gray-500'>
                 Thank you for sharing your post-graduation experience. Your feedback helps us improve our programs for future students.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No active survey available
+  if (!hasActiveSurvey) {
+    return (
+      <div className='flex items-center justify-center w-full py-10'>
+        <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+          <CardHeader className="bg-gradient-to-r from-slate-500 to-slate-400 p-8 text-white space-y-4">
+            <div className='space-y-4'>
+              <div className='flex flex-row gap-2'>
+                <ClipboardX size={18} />
+                <span className='text-sm'>QUESTIONNAIRE</span>
+              </div>
+              <div>
+                <h1 className='text-3xl'>No Active Survey</h1>
+                <p>Check back later for upcoming surveys.</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+            <ClipboardX size={64} className='text-slate-300' />
+            <div className='space-y-2'>
+              <p className='text-lg font-medium text-gray-700'>There are no active surveys at the moment.</p>
+              <p className='text-sm text-gray-500'>
+                The alumni affairs office will notify you when a new survey becomes available. Please check back soon.
               </p>
             </div>
           </CardContent>

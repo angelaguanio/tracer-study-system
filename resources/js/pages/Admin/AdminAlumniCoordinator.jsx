@@ -61,7 +61,7 @@ export default function AdminAlumniCoordinator({ coordinators }) {
     };
 
     return (
-        <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6">
+        <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6 overflow-hidden">
 
             <AdminAlumniCoordinatorFilter
                 search={search}
@@ -74,7 +74,7 @@ export default function AdminAlumniCoordinator({ coordinators }) {
                 setShowForm={setShowForm}
             />
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 flex flex-col">
                 <AdminAlumniCoordinatorTable
                     data={filtered}
                     setEditing={setEditing}

@@ -27,6 +27,11 @@ class AdminAuthController extends Controller
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+            return redirect()
+                ->route('admin.login')
+                ->withErrors([
+                    'email' => 'Unauthorized access.'
+                ]);
         }
 
         return back()->withErrors(['email' => 'Invalid credentials']);
@@ -37,6 +42,6 @@ class AdminAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('role.select');
+        return Inertia::location(route('role.select'));
     }
 }

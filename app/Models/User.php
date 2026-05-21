@@ -14,7 +14,6 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
-     * Updated to include the profile_picture field.
      */
     protected $fillable = [
         'last_name', 
@@ -56,30 +55,13 @@ class User extends Authenticatable
 
     /**
      * Generate the full URL for the profile picture.
+     * Note: Run 'php artisan storage:link' for this to function properly.
      */
     public function getAvatarUrlAttribute() {
         if ($this->profile_picture) {
             return asset('storage/' . $this->profile_picture);
         }
         return null;
-    }
-
-    /**
-     * Role helper methods
-     */
-    public function isAlumna(): bool
-    {
-        return $this->user_role === 'alumna';
-    }
-
-    public function isCoordinator(): bool
-    {
-        return $this->user_role === 'coordinator';
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->user_role === 'admin';
     }
 
     /**
@@ -91,13 +73,35 @@ class User extends Authenticatable
     
     /**
      * Relationship: Multiple employment history records.
-     * This allows tracking changes over time.
      */
     public function employmentHistory(): HasMany
     {
          return $this->hasMany(EmploymentHistory::class);
     }
 
-    
+    public function responses()
+    {
+        return $this->hasMany(Response::class);
+    }
 
+    /**
+     * Check if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->user_role === 'admin';
+    }
+
+    /**
+     * Check if the user is a coordinator.
+     */
+    public function isCoordinator(): bool
+    {
+        return $this->user_role === 'coordinator';
+    }
+
+    public function isAlumna(): bool
+    {
+        return $this->user_role === 'alumna';
+    }
 }

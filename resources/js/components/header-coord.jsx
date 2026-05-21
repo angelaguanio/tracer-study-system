@@ -31,7 +31,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
         {/* profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="nav" className="py-6">
+            <Button variant="nav" className="py-6 hover:bg-gray-300">
               <ProfileTemp user={user} /> 
             </Button>
           </DropdownMenuTrigger>
@@ -44,7 +44,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-                <Link href={route('coordinator.logout')} method="post" as="button" className='w-full flex'>
+                <Link href={route('coordinator.logout')} className='w-full flex'>
                   Logout
                 </Link>
             </DropdownMenuItem>

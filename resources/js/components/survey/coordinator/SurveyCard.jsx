@@ -22,7 +22,7 @@ export default function SurveyCard({ survey }) {
 
     return (
         <Card className="bg-white border shadow-sm">
-            <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
+            <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 px-6">
                 <div className="flex flex-col gap-1">
                     <h2 className="font-semibold text-gray-800">{survey.title}</h2>
                     <div className="flex items-center gap-2 text-sm text-gray-500">

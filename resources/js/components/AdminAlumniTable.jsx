@@ -22,7 +22,6 @@ export default function AdminAlumniTable({
 }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
-  const rowsPerPage = 6;
 
   const goToPage = (page) => {
     if (!page || page === "...") return;
@@ -78,10 +77,11 @@ export default function AdminAlumniTable({
   const alumniData = alumni?.data ?? [];
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 flex-1 min-h-0 h-full">
       {/* TABLE */}
-      <div className="rounded-xl shadow overflow-hidden bg-white border border-gray-100">
-        <div className="overflow-x-auto">
+      <div className="rounded-xl shadow overflow-hidden bg-white border border-gray-100 flex flex-col flex-1 min-h-0">
+        {/* Fixed header */}
+        <div className="overflow-x-auto shrink-0">
           <Table className="w-full table-fixed min-w-[700px]">
             <TableHeader>
               <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
@@ -92,25 +92,26 @@ export default function AdminAlumniTable({
                     className="bg-white h-5 w-5 shadow-sm"
                   />
                 </TableHead>
-
                 <TableHead className="w-[35%] text-left text-gray-800 font-semibold pl-4">
                   Alumni
                 </TableHead>
-
                 <TableHead className="w-[18%] text-center text-gray-800 font-semibold">
                   Course
                 </TableHead>
-
                 <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
                   Year
                 </TableHead>
-
                 <TableHead className="w-[24%] text-center text-gray-800 font-semibold">
                   Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
+          </Table>
+        </div>
 
+        {/* Scrollable body */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+          <Table className="w-full table-fixed min-w-[700px]">
             <TableBody>
               {alumniData.map((item) => (
                 <TableRow
@@ -120,7 +121,7 @@ export default function AdminAlumniTable({
                   }`}
                 >
                   {/* CHECKBOX */}
-                  <TableCell className="text-center">
+                  <TableCell className="w-12 text-center">
                     <Checkbox
                       checked={selectedIds.includes(item.id)}
                       onCheckedChange={() => onToggleOne(item.id)}
@@ -129,7 +130,7 @@ export default function AdminAlumniTable({
                   </TableCell>
 
                   {/* NAME */}
-                  <TableCell className="pl-4">
+                  <TableCell className="w-[35%] pl-4">
                     <div className="flex items-center gap-3">
                       <div className="shrink-0 w-9 h-9 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs font-semibold overflow-hidden border border-gray-100">
                         {item.avatar ? (
@@ -142,7 +143,6 @@ export default function AdminAlumniTable({
                           getInitials(item.name)
                         )}
                       </div>
-
                       <span className="font-medium text-gray-800 truncate">
                         {item.name ?? "Unknown"}
                       </span>
@@ -150,46 +150,33 @@ export default function AdminAlumniTable({
                   </TableCell>
 
                   {/* COURSE */}
-                  <TableCell className="text-center">
-                    <span
-                      className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(
-                        item.course
-                      )}`}
-                    >
+                  <TableCell className="w-[18%] text-center">
+                    <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                       {item.course ?? "N/A"}
                     </span>
                   </TableCell>
 
                   {/* YEAR */}
-                  <TableCell className="text-center text-gray-600 font-medium">
+                  <TableCell className="w-[15%] text-center text-gray-600 font-medium">
                     {item.year ?? "N/A"}
                   </TableCell>
 
                   {/* ACTIONS */}
-                  <TableCell className="text-center">
+                  <TableCell className="w-[24%] text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         size="sm"
                         variant="outline"
                         className="border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center gap-1"
-                        onClick={() =>
-                          router.visit(route("admin.alumni.show", item.id))
-                        }
+                        onClick={() => router.visit(route("admin.alumni.show", item.id))}
                       >
                         <Eye size={14} /> View
                       </Button>
-
                       <Button
                         size="sm"
                         variant="outline"
                         className="border-green-500 text-green-600 hover:bg-green-50 flex items-center gap-1"
-                        onClick={() =>
-                          onSendEmail({
-                            id: item.id,
-                            name: item.name,
-                            email: item.email,
-                          })
-                        }
+                        onClick={() => onSendEmail({ id: item.id, name: item.name, email: item.email })}
                       >
                         <Mail size={14} /> Send Email
                       </Button>
@@ -198,25 +185,20 @@ export default function AdminAlumniTable({
                 </TableRow>
               ))}
 
-              {/* EMPTY ROWS */}
-              {alumniData.length < rowsPerPage &&
-                Array.from({
-                  length: rowsPerPage - alumniData.length,
-                }).map((_, i) => (
-                  <TableRow
-                    key={`empty-${i}`}
-                    className="h-[64px] border-b border-gray-50"
-                  >
-                    <TableCell colSpan={5} />
-                  </TableRow>
-                ))}
+              {alumniData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-[64px] text-center text-gray-500">
+                    No records found.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
       </div>
 
       {/* PAGINATION */}
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-start mt-1 pb-2">
         <div className="flex items-center gap-1">
           <button
             onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
@@ -247,9 +229,7 @@ export default function AdminAlumniTable({
           )}
 
           <button
-            onClick={() =>
-              currentPage < lastPage && goToPage(currentPage + 1)
-            }
+            onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
             disabled={currentPage === lastPage}
             className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
           >

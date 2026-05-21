@@ -5,11 +5,15 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
 
-      {/* HEADER (same style as SurveyIndex) */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">
-          List of Surveys
-        </h1>
+      {/* HEADER */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-bold text-gray-900">
+          Survey Responses
+        </h2>
+
+        <p className="text-sm text-gray-500">
+          Review survey submissions
+        </p>
       </div>
 
       {/* EMPTY STATE */}
@@ -23,7 +27,7 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
           {surveys.map((survey) => (
             <div
               key={survey.id}
-              className="bg-white border rounded-lg p-5 shadow-sm flex items-center justify-between"
+              className="bg-white border rounded-lg p-6 shadow-sm flex items-center justify-between min-h-[120px]"
             >
 
               {/* LEFT */}
@@ -57,7 +61,7 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
                 onClick={() =>
                   router.get(`/admin/survey-response/${survey.id}`)
                 }
-                className="bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-3 py-1.5 rounded-md text-xs font-medium"
               >
                 View Survey Response
               </button>

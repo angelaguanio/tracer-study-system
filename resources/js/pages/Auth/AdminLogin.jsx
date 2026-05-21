@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
@@ -8,6 +8,7 @@ import { useForm } from '@inertiajs/react'
 import { UserRound, Lock } from 'lucide-react';
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@inertiajs/react";
+import axios from 'axios';
 
 
 export default function AdminLogin() {
@@ -16,6 +17,14 @@ export default function AdminLogin() {
     email: "",
     password: "",
   });
+
+  // Ensure fresh CSRF token on mount
+  useEffect(() => {
+    const csrfToken = document.head.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content;
+    }
+  }, []);
 
   //form change
   function handleChange(e) {

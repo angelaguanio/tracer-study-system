@@ -39,6 +39,9 @@ class SurveyResponseController extends Controller
                     'questions' => function ($q) {
                         $q->orderBy('display_order');
                     },
+                    'subheadings' => function ($q) {
+                        $q->orderBy('display_order');
+                    },
                 ]);
             },
         ]);
@@ -107,7 +110,12 @@ class SurveyResponseController extends Controller
                 ->where('survey_id', $survey->id)
                 ->firstOrFail();
 
-            foreach ($draft->answers as $questionId => $answerValue) {
+            // Subheadings are in a separate table, so draft answers should only contain question responses
+            // No need to filter since subheadings don't generate form inputs
+            $filteredAnswers = $draft->answers;
+
+            // Create Response records only for actual input questions
+            foreach ($filteredAnswers as $questionId => $answerValue) {
                 Response::create([
                     'survey_id'    => $survey->id,
                     'user_id'      => $user->id,
