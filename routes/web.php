@@ -135,55 +135,47 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
             ->name('announcement.reject');
 
-    //AdminAlumni
-    Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
+        //AdminAlumni
+        Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
 
-    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
-    Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
-        ->name('admin.alumni.index');
+        Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
+            ->name('admin.alumni.index');
 
-    Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
-        ->name('admin.alumni.show');
+        Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
+            ->name('admin.alumni.show');
 
-    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
-        ->name('alumni.show');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
+            ->name('alumni.show');
 
-        //Send email (individual — handled via modal, route kept for controller compatibility)
-    Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
-        ->name('alumni.email.send');
+            //Send email (individual — handled via modal, route kept for controller compatibility)
+        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+            ->name('alumni.email.send');
 
-        // Bulk email (selected IDs or all alumni)
-    Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
-        ->name('alumni.email.bulk');
+            // Bulk email (selected IDs or all alumni)
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+            ->name('alumni.email.bulk');
 
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
+        //AdminSurveyResponse
+        Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
+            ->name('admin.survey-response.index');
 
-    //AdminSurveyResponse
-    Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
-        ->name('admin.survey-response.index');
+        Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
+            ->name('admin.survey-response.show');
 
-    Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
-        ->name('admin.survey-response.show');
+        // Route para sa COMPLETED response
+        Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
+            ->name('admin.survey-response.view');
 
-    // Route para sa COMPLETED response
-    Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
-        ->name('admin.survey-response.view');
+        // Route para sa NOT COMPLETED response
+        Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+            ->name('admin.survey-response.not-complete');
 
-    // Route para sa NOT COMPLETED response
-    Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
-        ->name('admin.survey-response.not-complete');
+        Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
+            ->name('survey-response.destroy');
 
-    Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
-        ->name('survey-response.destroy');
-
-        Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-        // Route::get('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('logout');
-
+ 
         // Alumni
         Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
