@@ -16,15 +16,13 @@ class QuestionFactory extends Factory
         $type = $this->faker->randomElement($types);
         
         return [
-            'section_id' => Section::factory(),
+            'section_id' => 1, // Default to 1, should be overridden
             'question_identifier' => $this->faker->unique()->bothify('Q##'),
             'label' => $type === 'subheading' ? $this->faker->sentence(4) : $this->faker->sentence(6) . '?',
             'type' => $type,
             'options' => $this->getOptionsForType($type),
             'display_order' => $this->faker->numberBetween(1, 20),
             'is_required' => $type === 'subheading' ? false : $this->faker->boolean(70),
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 

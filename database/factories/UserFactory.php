@@ -24,12 +24,51 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'middle_name' => fake()->optional()->firstName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'user_role' => 'alumna',
+            'year_graduated' => fake()->year(),
+            'courses' => fake()->randomElement(['Computer Science', 'Information Technology', 'Engineering', 'Business Administration']),
+            'department' => fake()->randomElement(['IT', 'Engineering', 'Business', 'Arts']),
+            'address' => fake()->address(),
+            'contact_number' => fake()->phoneNumber(),
+            'profile_picture' => null,
         ];
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'user_role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a coordinator.
+     */
+    public function coordinator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'user_role' => 'coordinator',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an alumna.
+     */
+    public function alumna(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'user_role' => 'alumna',
+        ]);
     }
 
     /**

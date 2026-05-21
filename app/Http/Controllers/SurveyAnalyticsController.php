@@ -715,4 +715,194 @@ class SurveyAnalyticsController extends Controller
 
         return ucwords($words[0] ?? 'Unknown');
     }
+
+    /**
+     * Download survey analytics as CSV
+     */
+    public function downloadAnalytics(Survey $survey, Request $request)
+    {
+        $this->authorize('viewAny', Survey::class);
+
+        // Get the same data as the show method
+        $yearGraduated = $request->query('year_graduated');
+        $from          = $request->query('from');
+        $to            = $request->query('to');
+
+        $validYears = ['2018','2019','2020','2021','2022','2023','2024','2025'];
+        $applyYear  = $yearGraduated && in_array($yearGraduated, $validYears);
+
+        $survey->load([
+            'sections' => fn($q) => $q->orderBy('display_order')->with([
+                'questions' => fn($q) => $q->orderBy('display_order'),
+            ]),
+        ]);
+
+        $respondentQuery = Response::where('survey_id', $survey->id)
+            ->when($from, fn($q) => $q->where('submitted_at', '>=', $from))
+            ->when($to,   fn($q) => $q->where('submitted_at', '<=', $to))
+            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) =>
+                $u->where('year_graduated', $yearGraduated)
+            ));
+
+        $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
+        $totalRespondents = $respondentIds->count();
+        $respondents = User::whereIn('id', $respondentIds)->get();
+
+        // Prepare CSV content
+        $filename = 'survey_analytics_' . $survey->id . '_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($survey, $totalRespondents, $respondents, $respondentIds) {
+            $file = fopen('php://output', 'w');
+
+            // Survey Header
+            fputcsv($file, ['Survey Analytics Report']);
+            fputcsv($file, ['Survey Title', $survey->title]);
+            fputcsv($file, ['Generated On', date('Y-m-d H:i:s')]);
+            fputcsv($file, ['Total Respondents', $totalRespondents]);
+            fputcsv($file, []);
+
+            // Degree Distribution
+            fputcsv($file, ['Degree Distribution']);
+            fputcsv($file, ['Degree', 'Count', 'Percentage']);
+            $degreeDistribution = $respondents->groupBy('courses')->map(fn($g) => $g->count())->sortDesc();
+            foreach ($degreeDistribution as $degree => $count) {
+                $pct = $totalRespondents > 0 ? round(($count / $totalRespondents) * 100, 1) : 0;
+                fputcsv($file, [$degree ?: 'Unknown', $count, $pct . '%']);
+            }
+            fputcsv($file, []);
+
+            // Year Distribution
+            fputcsv($file, ['Year Graduated Distribution']);
+            fputcsv($file, ['Year', 'Count', 'Percentage']);
+            $yearDistribution = $respondents->groupBy('year_graduated')->map(fn($g) => $g->count())->sortKeys();
+            foreach ($yearDistribution as $year => $count) {
+                $pct = $totalRespondents > 0 ? round(($count / $totalRespondents) * 100, 1) : 0;
+                fputcsv($file, [$year, $count, $pct . '%']);
+            }
+            fputcsv($file, []);
+
+            // Employment Analysis
+            $employmentAnswers = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%employ%'))
+                ->pluck('answer_value', 'user_id');
+
+            $employedKeywords   = ['employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
+            $unemployedKeywords = ['unemployed', 'not employed', 'no job'];
+
+            $employedCount = 0;
+            $unemployedCount = 0;
+            foreach ($employmentAnswers as $ans) {
+                $lower = strtolower(trim($ans ?? ''));
+                $isUnemployed = false;
+                foreach ($unemployedKeywords as $kw) {
+                    if (str_contains($lower, $kw)) { $isUnemployed = true; break; }
+                }
+                if ($lower === 'no') $isUnemployed = true;
+                $isUnemployed ? $unemployedCount++ : $employedCount++;
+            }
+
+            $employmentRate = $totalRespondents > 0 ? round(($employedCount / $totalRespondents) * 100, 1) : 0;
+
+            fputcsv($file, ['Employment Statistics']);
+            fputcsv($file, ['Metric', 'Value']);
+            fputcsv($file, ['Employment Rate', $employmentRate . '%']);
+            fputcsv($file, ['Employed', $employedCount]);
+            fputcsv($file, ['Unemployed', $unemployedCount]);
+            fputcsv($file, []);
+
+            // Salary Statistics
+            $salaryAnswers = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%salary%')->orWhere('label', 'like', '%income%'))
+                ->pluck('answer_value')
+                ->map(fn($v) => is_numeric($v) ? (float)$v : null)
+                ->filter()
+                ->values();
+
+            if ($salaryAnswers->count() > 0) {
+                fputcsv($file, ['Salary Statistics']);
+                fputcsv($file, ['Metric', 'Value']);
+                fputcsv($file, ['Minimum Salary', number_format($salaryAnswers->min(), 2)]);
+                fputcsv($file, ['Maximum Salary', number_format($salaryAnswers->max(), 2)]);
+                fputcsv($file, ['Average Salary', number_format($salaryAnswers->avg(), 2)]);
+                fputcsv($file, ['Respondents with Salary Data', $salaryAnswers->count()]);
+                fputcsv($file, []);
+            }
+
+            // Likert Scale Analysis
+            foreach ($survey->sections as $section) {
+                $scale = $section->likert_scale ?? [];
+                if (empty($scale)) continue;
+
+                $scoreMap = [];
+                foreach ($scale as $i => $label) {
+                    $scoreMap[strtolower(trim($label))] = $i + 1;
+                }
+                $maxScore = count($scale);
+
+                fputcsv($file, ['Section: ' . $section->title]);
+                fputcsv($file, ['Question', 'Average Score', 'Max Score', 'Response Count']);
+
+                foreach ($section->questions as $question) {
+                    $answers = Response::where('survey_id', $survey->id)
+                        ->whereIn('user_id', $respondentIds)
+                        ->where('question_id', $question->id)
+                        ->pluck('answer_value');
+
+                    $scores = $answers->map(function($a) use ($scoreMap) {
+                        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $a ?? '')));
+                        if (isset($scoreMap[$normalized])) return $scoreMap[$normalized];
+                        foreach ($scoreMap as $key => $score) {
+                            if (str_contains($normalized, $key) || str_contains($key, $normalized)) {
+                                return $score;
+                            }
+                        }
+                        return null;
+                    })->filter()->values();
+
+                    if ($scores->count() > 0) {
+                        fputcsv($file, [
+                            $question->label,
+                            round($scores->avg(), 2),
+                            $maxScore,
+                            $scores->count()
+                        ]);
+                    }
+                }
+                fputcsv($file, []);
+            }
+
+            // Question Responses
+            fputcsv($file, ['Question Response Summary']);
+            fputcsv($file, ['Section', 'Question', 'Answer', 'Count']);
+
+            $chartQuery = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea']))
+                ->select('question_id', 'answer_value', DB::raw('COUNT(*) as count'))
+                ->groupBy('question_id', 'answer_value')
+                ->with('question.section')
+                ->get();
+
+            foreach ($chartQuery as $row) {
+                $question = $row->question;
+                if (!$question) continue;
+                fputcsv($file, [
+                    $question->section?->title ?? 'N/A',
+                    $question->label,
+                    $row->answer_value,
+                    $row->count
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
