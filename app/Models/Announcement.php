@@ -29,19 +29,40 @@ class Announcement extends Model
     protected static function booted()
     {
         // Clear cache when announcement is created, updated, or deleted
-        static::created(function () {
+        static::created(function ($announcement) {
             Cache::forget('admin_dashboard_metrics');
             Cache::forget('admin_dashboard_recent_activity');
+            
+            // Clear coordinator dashboard cache for the announcement creator
+            if ($announcement->user_id) {
+                Cache::forget("coordinator_dashboard_metrics_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_recent_activity_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_announcement_distribution_{$announcement->user_id}");
+            }
         });
 
-        static::updated(function () {
+        static::updated(function ($announcement) {
             Cache::forget('admin_dashboard_metrics');
             Cache::forget('admin_dashboard_recent_activity');
+            
+            // Clear coordinator dashboard cache for the announcement creator
+            if ($announcement->user_id) {
+                Cache::forget("coordinator_dashboard_metrics_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_recent_activity_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_announcement_distribution_{$announcement->user_id}");
+            }
         });
 
-        static::deleted(function () {
+        static::deleted(function ($announcement) {
             Cache::forget('admin_dashboard_metrics');
             Cache::forget('admin_dashboard_recent_activity');
+            
+            // Clear coordinator dashboard cache for the announcement creator
+            if ($announcement->user_id) {
+                Cache::forget("coordinator_dashboard_metrics_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_recent_activity_{$announcement->user_id}");
+                Cache::forget("coordinator_dashboard_announcement_distribution_{$announcement->user_id}");
+            }
         });
     }
 

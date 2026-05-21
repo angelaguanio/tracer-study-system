@@ -48,7 +48,7 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
               <BarChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
-                  dataKey="survey_title" 
+                  dataKey={data[0]?.survey_title ? "survey_title" : data[0]?.year ? "year" : data[0]?.course ? "course" : "name"}
                   angle={-45} 
                   textAnchor="end" 
                   height={100}
@@ -65,9 +65,9 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
                 />
                 <Legend />
                 <Bar 
-                  dataKey="completion_rate" 
+                  dataKey={data[0]?.completion_rate !== undefined ? "completion_rate" : "count"}
                   fill="#3b82f6" 
-                  name="Completion Rate (%)"
+                  name={data[0]?.completion_rate !== undefined ? "Completion Rate (%)" : "Number of Alumni"}
                   radius={[8, 8, 0, 0]}
                 />
               </BarChart>

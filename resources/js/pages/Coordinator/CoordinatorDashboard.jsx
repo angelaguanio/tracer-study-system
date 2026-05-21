@@ -15,7 +15,9 @@ import { Separator } from '@/components/ui/separator';
  * @param {object} metrics - Coordinator-specific metrics
  * @param {array} survey_overview - Survey response overview
  * @param {object} announcement_distribution - Announcement status distribution
+ * @param {array} recent_inquiries - Recent inquiries list
  * @param {array} recent_announcements - Recent announcements list
+ * @param {array} recent_responses - Recent survey responses list
  * @param {array} alumni_by_year - Alumni grouped by graduation year
  * @param {array} alumni_by_course - Alumni grouped by course
  * @param {string} error - Error message if data loading failed
@@ -24,17 +26,19 @@ export default function CoordinatorDashboard({
   metrics = {}, 
   survey_overview = [],
   announcement_distribution = {},
+  recent_inquiries = [],
   recent_announcements = [],
+  recent_responses = [],
   alumni_by_year = [],
   alumni_by_course = [],
   error 
 }) {
   return (
-    <div className="flex w-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="flex w-full min-h-screen ">
       <div className="w-full space-y-8 p-8">
         {/* Header Section */}
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold tracking-tight text-blue-800 font-inter">
             Coordinator Dashboard
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -71,10 +75,10 @@ export default function CoordinatorDashboard({
               color="blue"
             />
             <MetricCard 
-              title="Active Surveys" 
-              value={metrics.active_surveys} 
+              title="Pending Inquiries" 
+              value={metrics.pending_inquiries} 
               icon={FileText}
-              color="green"
+              color="orange"
             />
             <MetricCard 
               title="Pending Announcements" 
@@ -142,7 +146,7 @@ export default function CoordinatorDashboard({
           <div className="grid gap-6 lg:grid-cols-2">
             <ChartWidget 
               title="Alumni by Graduation Year" 
-              description="Last 5 years of graduates"
+              description="Distribution of alumni by graduation year"
               data={alumni_by_year}
               type="bar"
               height={350}
@@ -161,46 +165,61 @@ export default function CoordinatorDashboard({
 
         <Separator />
 
-        {/* Recent Activity & Quick Actions Section */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <div className="h-8 w-1 bg-primary rounded-full" />
-              Recent Activity
-            </h2>
+        {/* Recent Activity Section */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <div className="h-8 w-1 bg-primary rounded-full" />
+            Recent Activity
+          </h2>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <RecentActivityList 
+              title="Recent Inquiries" 
+              items={recent_inquiries}
+              linkPattern="/coordinator/inquiries"
+              emptyMessage="No recent inquiries"
+            />
             <RecentActivityList 
               title="My Recent Announcements" 
               items={recent_announcements}
               linkPattern="/coordinator/announcement/{id}"
               emptyMessage="No recent announcements"
             />
+            <RecentActivityList 
+              title="Recent Survey Responses" 
+              items={recent_responses}
+              linkPattern="/coordinator/survey-response/{survey_id}/{user_id}"
+              emptyMessage="No recent responses"
+            />
           </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <div className="h-8 w-1 bg-primary rounded-full" />
-              Quick Actions
-            </h2>
-            <div className="grid gap-4">
-              <QuickActionButton 
-                label="Create Announcement" 
-                href="/coordinator/announcement/create" 
-                icon={Plus}
-                variant="default"
-              />
-              <QuickActionButton 
-                label="View Alumni" 
-                href="/coordinator/alumni" 
-                icon={Eye}
-                variant="outline"
-              />
-              <QuickActionButton 
-                label="View Survey Responses" 
-                href="/coordinator/survey-response" 
-                icon={FileText}
-                variant="outline"
-              />
-            </div>
+        </div>
+
+        <Separator />
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <div className="h-8 w-1 bg-primary rounded-full" />
+            Quick Actions
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3 bg-white p-6 rounded-xl shadow">
+            <QuickActionButton 
+              label="Create Announcement" 
+              href="/coordinator/announcement/create" 
+              icon={Plus}
+              variant="default"
+            />
+            <QuickActionButton 
+              label="View Alumni" 
+              href="/coordinator/alumni" 
+              icon={Eye}
+              variant="outline"
+            />
+            <QuickActionButton 
+              label="View Survey Responses" 
+              href="/coordinator/survey-response" 
+              icon={FileText}
+              variant="outline"
+            />
           </div>
         </div>
       </div>

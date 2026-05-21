@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Survey;
 use App\Models\Response;
 use App\Models\Announcement;
+use App\Models\Inquiries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -29,18 +30,22 @@ class CoordinatorDashboardController extends Controller
 
         // Calculate announcement distribution and recent announcements
         $announcementDistribution = $this->calculateAnnouncementDistributionWithErrorHandling();
-        $recentAnnouncements = $this->getRecentAnnouncementsWithErrorHandling();
 
         // Calculate alumni distribution by year and course
         $alumniByYear = $this->getAlumniByYearWithErrorHandling();
         $alumniByCourse = $this->getAlumniByCourseWithErrorHandling();
+
+        // Get recent activity with error handling
+        $recentActivity = $this->getRecentActivityWithErrorHandling();
 
         return Inertia::render('Coordinator/CoordinatorDashboard', [
             'error' => $error,
             'metrics' => $metrics,
             'survey_overview' => $surveyOverview,
             'announcement_distribution' => $announcementDistribution,
-            'recent_announcements' => $recentAnnouncements,
+            'recent_inquiries' => $recentActivity['recent_inquiries'],
+            'recent_announcements' => $recentActivity['recent_announcements'],
+            'recent_responses' => $recentActivity['recent_responses'],
             'alumni_by_year' => $alumniByYear,
             'alumni_by_course' => $alumniByCourse,
         ]);
@@ -70,7 +75,7 @@ class CoordinatorDashboardController extends Controller
             // Return default values for all metrics
             return [
                 'total_alumni' => 'N/A',
-                'active_surveys' => 'N/A',
+                'pending_inquiries' => 'N/A',
                 'my_pending_announcements' => 'N/A',
                 'my_approved_announcements' => 'N/A',
                 'my_rejected_announcements' => 'N/A',
@@ -91,8 +96,8 @@ class CoordinatorDashboardController extends Controller
         // 6.1: Total alumni count where user_role='alumna'
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
-        // 6.2: Active surveys count where status='active'
-        $activeSurveys = Survey::where('status', 'active')->count();
+        // 6.2: Pending inquiries count where status in ['pending', 'open']
+        $pendingInquiries = Inquiries::whereIn('status', ['pending', 'open'])->count();
 
         // 6.3: My pending announcements where user_id=auth()->id() and status='pending'
         $myPendingAnnouncements = Announcement::where('user_id', $userId)
@@ -115,7 +120,7 @@ class CoordinatorDashboardController extends Controller
 
         return [
             'total_alumni' => $totalAlumni,
-            'active_surveys' => $activeSurveys,
+            'pending_inquiries' => $pendingInquiries,
             'my_pending_announcements' => $myPendingAnnouncements,
             'my_approved_announcements' => $myApprovedAnnouncements,
             'my_rejected_announcements' => $myRejectedAnnouncements,
@@ -158,12 +163,12 @@ class CoordinatorDashboardController extends Controller
         // Get total alumni count for completion rate calculation
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
-        // Query all active surveys
-        $activeSurveys = Survey::where('status', 'active')->get();
+        // Query ALL surveys (not just active ones)
+        $allSurveys = Survey::orderBy('created_at', 'desc')->get();
 
         $surveyOverview = [];
 
-        foreach ($activeSurveys as $survey) {
+        foreach ($allSurveys as $survey) {
             // 7.3: Calculate completed responses per survey (distinct users with submitted_at not null)
             $completedResponses = Response::where('survey_id', $survey->id)
                 ->whereNotNull('submitted_at')
@@ -262,54 +267,106 @@ class CoordinatorDashboardController extends Controller
     }
 
     /**
-     * Get recent announcements with caching and error handling.
+     * Get recent activity with caching and error handling.
      * Cache for 5 minutes (300 seconds).
      * 
      * Requirements: 10.1, 13.4, 15.1, 15.2
      */
-    private function getRecentAnnouncementsWithErrorHandling(): array
+    private function getRecentActivityWithErrorHandling(): array
     {
         try {
             $userId = auth()->id();
-            return Cache::remember("coordinator_dashboard_recent_announcements_{$userId}", 300, function () {
-                return $this->getRecentAnnouncements();
+            return Cache::remember("coordinator_dashboard_recent_activity_{$userId}", 300, function () {
+                return $this->getRecentActivity();
             });
         } catch (\Exception $e) {
-            Log::error('Coordinator dashboard recent announcements query failed', [
+            Log::error('Coordinator dashboard recent activity query failed', [
                 'user_id' => auth()->id(),
-                'metric' => 'recent_announcements',
+                'metric' => 'recent_activity',
                 'exception' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
             
-            // Return empty array on failure
-            return [];
+            // Return empty arrays on failure
+            return [
+                'recent_inquiries' => [],
+                'recent_announcements' => [],
+                'recent_responses' => [],
+            ];
         }
     }
 
     /**
-     * Get 5 most recent announcements created by current user.
+     * Get recent activity data.
      * 
-     * Requirements: 8.2
+     * Requirements: 8.2, 8.3, 8.4
      */
-    private function getRecentAnnouncements(): array
+    private function getRecentActivity(): array
     {
         $userId = auth()->id();
 
-        // Query 5 most recent announcements created by current user ordered by created_at DESC
-        $announcements = Announcement::where('user_id', $userId)
+        // 8.2: Query 5 most recent inquiries directed to this coordinator ordered by created_at DESC with eager loading of alumni relationship
+        $recentInquiries = Inquiries::with('alumni')
+            ->where('recipient_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
-            ->get(['id', 'title', 'status', 'created_at']);
+            ->get()
+            ->map(function ($inquiry) {
+                return [
+                    'id' => $inquiry->id,
+                    'title' => $inquiry->title,
+                    'sender_name' => $inquiry->alumni 
+                        ? $inquiry->alumni->first_name . ' ' . $inquiry->alumni->last_name 
+                        : 'Unknown',
+                    'created_at' => $inquiry->created_at->format('M d, Y'),
+                ];
+            })
+            ->toArray();
 
-        return $announcements->map(function ($announcement) {
-            return [
-                'id' => $announcement->id,
-                'title' => $announcement->title,
-                'status' => $announcement->status,
-                'created_at' => $announcement->created_at->format('M d, Y'),
-            ];
-        })->toArray();
+        // 8.3: Query 5 most recent announcements created by current user ordered by created_at DESC
+        $recentAnnouncements = Announcement::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get(['id', 'title', 'status', 'created_at'])
+            ->map(function ($announcement) {
+                return [
+                    'id' => $announcement->id,
+                    'title' => $announcement->title,
+                    'status' => $announcement->status,
+                    'created_at' => $announcement->created_at->format('M d, Y'),
+                ];
+            })
+            ->toArray();
+
+        // 8.4: Query 5 most recent survey responses ordered by submitted_at DESC with eager loading of user and survey relationships
+        $recentResponses = Response::with(['user', 'survey'])
+            ->whereNotNull('submitted_at')
+            ->orderBy('submitted_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->unique(function ($response) {
+                return $response->user_id . '-' . $response->survey_id;
+            })
+            ->take(5)
+            ->map(function ($response) {
+                return [
+                    'survey_id' => $response->survey_id,
+                    'user_id' => $response->user_id,
+                    'alumna_name' => $response->user 
+                        ? $response->user->first_name . ' ' . $response->user->last_name 
+                        : 'Unknown',
+                    'survey_title' => $response->survey ? $response->survey->title : 'Unknown Survey',
+                    'submitted_at' => $response->submitted_at->format('M d, Y'),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        return [
+            'recent_inquiries' => $recentInquiries,
+            'recent_announcements' => $recentAnnouncements,
+            'recent_responses' => $recentResponses,
+        ];
     }
 
     /**
@@ -339,22 +396,16 @@ class CoordinatorDashboardController extends Controller
 
     /**
      * Query alumni grouped by year_graduated with counts.
-     * Filter to last 5 years for year distribution chart.
+     * Shows all graduation years.
      * 
      * Requirements: 9.2, 9.4
      */
     private function getAlumniByYear(): array
     {
-        // Calculate the year 5 years ago from current year
-        $currentYear = (int) date('Y');
-        $fiveYearsAgo = $currentYear - 4; // Last 5 years includes current year
-
         // Query alumni grouped by year_graduated with counts
-        // Filter to last 5 years
+        // Show all years
         $alumniByYear = User::where('user_role', 'alumna')
             ->whereNotNull('year_graduated')
-            ->where('year_graduated', '>=', $fiveYearsAgo)
-            ->where('year_graduated', '<=', $currentYear)
             ->select('year_graduated', DB::raw('count(*) as count'))
             ->groupBy('year_graduated')
             ->orderBy('year_graduated', 'asc')
