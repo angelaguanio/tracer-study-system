@@ -135,45 +135,47 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
             ->name('announcement.reject');
 
-    //AdminAlumni
-    Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
+        //AdminAlumni
+        Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
 
-    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
 
-    Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
-        ->name('admin.alumni.index');
+        Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
+            ->name('admin.alumni.index');
 
-    Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
-        ->name('admin.alumni.show');
+        Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
+            ->name('admin.alumni.show');
 
-    // Admin alumni email routes
-    Route::post('/admin/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
-        ->name('admin.alumni.email.send');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
+            ->name('alumni.show');
 
-    Route::post('/admin/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
-        ->name('admin.alumni.email.bulk');
+            //Send email (individual — handled via modal, route kept for controller compatibility)
+        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
+            ->name('alumni.email.send');
 
-    Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
-        ->name('alumni.show');
+            // Bulk email (selected IDs or all alumni)
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
+            ->name('alumni.email.bulk');
 
-    //AdminSurveyResponse
-    Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
-        ->name('admin.survey-response.index');
+        //AdminSurveyResponse
+        Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
+            ->name('admin.survey-response.index');
 
-    Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
-        ->name('admin.survey-response.show');
+        Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
+            ->name('admin.survey-response.show');
 
-    // Route para sa COMPLETED response
-    Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
-        ->name('admin.survey-response.view');
+        // Route para sa COMPLETED response
+        Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
+            ->name('admin.survey-response.view');
 
-    // Route para sa NOT COMPLETED response
-    Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
-        ->name('admin.survey-response.not-complete');
+        // Route para sa NOT COMPLETED response
+        Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
+            ->name('admin.survey-response.not-complete');
 
-    Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
-        ->name('survey-response.destroy');
+        Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
+            ->name('survey-response.destroy');
 
+ 
         // Alumni
         Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
@@ -304,6 +306,9 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // DELETE
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
             ->name('announcement.destroy');
+
+        Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries');
+        Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
     });
 });
 

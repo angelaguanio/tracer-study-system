@@ -85,7 +85,7 @@ class InquiriesController extends Controller
         ]);
     }
 
-    // app/Http/Controllers/AdminController.php
+    
 
     public function update(Request $request, $id)
     {
@@ -100,4 +100,43 @@ class InquiriesController extends Controller
 
         return redirect()->back();
     }
+
+    //-------coord------------------
+    public function coordIndex(Request $request) {
+        $coordinatorId = Auth::id();
+        
+        $query = Inquiries::with('alumni:id,first_name,last_name,email,profile_picture')
+            ->where('recipient_type', 'coordinator')
+            ->where('recipient_id', $coordinatorId);
+
+        // Search across all fields
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%")
+                  ->orWhere('department', 'like', "%{$search}%")
+                  ->orWhereHas('alumni', function($q) use ($search) {
+                      $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status) {
+            $statuses = explode(',', $request->status);
+            $query->whereIn('status', $statuses);
+        }
+
+        return Inertia::render('Coordinator/CoordinatorInquiries', [
+            'inquiries' => $query->latest()->paginate(10)->withQueryString(),
+            'filters' => [
+                'search' => $request->search,
+                'status' => $request->status,
+            ]
+        ]);
+    }
 }
+

@@ -15,7 +15,7 @@ import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
 
-export default function InquiryContent({inquiry, onUpdateStatus}) {
+export default function InquiryContent({inquiry, onUpdateStatus, userRole = 'admin'}) {
     const statusItems = [
         {
             value: 'pending',
@@ -33,18 +33,22 @@ export default function InquiryContent({inquiry, onUpdateStatus}) {
     ]
 
     const updateStatus = (newStatus) => {
-    router.patch(route('admin.inquiries.update', inquiry.id), {
-        status: newStatus
-    }, {
-        // Keeps the scroll position so the admin doesn't lose their place
-        preserveScroll: true, 
-        onStart: () => console.log('Updating...'),
-        onSuccess: () => {
-            toast.success(`Inquiry marked as ${newStatus}`);
-            onUpdateStatus(inquiry.id, newStatus);  
-        }
-    });
-};
+        const routeName = userRole === 'coordinator' 
+            ? 'coordinator.inquiries.update' 
+            : 'admin.inquiries.update';
+            
+        router.patch(route(routeName, inquiry.id), {
+            status: newStatus
+        }, {
+            // Keeps the scroll position so the admin doesn't lose their place
+            preserveScroll: true, 
+            onStart: () => console.log('Updating...'),
+            onSuccess: () => {
+                toast.success(`Inquiry marked as ${newStatus}`);
+                onUpdateStatus(inquiry.id, newStatus);  
+            }
+        });
+    };
 
     if (!inquiry) {
     return (
