@@ -90,11 +90,11 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
   console.log("All Coordinators:", coordinators);
   console.log("Filtered Coordinators:", filteredCoordinators);
   return (
-    <Card className='w-1/2 px-4 shadow-xl'>
-        <CardHeader>
-            <div className='flex flex-col items-center justify-center py-4'>
-                <h1 className='text-2xl'>Send us a Message</h1>
-                <p>Fill out the form below and we will get back to you as soon as possible.</p>
+    <Card className='w-full max-w-3xl px-6 shadow-2xl border-0 rounded-3xl bg-white'>
+        <CardHeader className='pb-6'>
+            <div className='flex flex-col items-center justify-center py-6 space-y-3'>
+                <h1 className='text-3xl font-bold text-gray-800'>Send us a Message</h1>
+                <p className='text-gray-600 text-center max-w-xl'>Fill out the form below and we will get back to you as soon as possible.</p>
             </div>
         </CardHeader>
 

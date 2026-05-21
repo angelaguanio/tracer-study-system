@@ -57,7 +57,7 @@ const lastPage = announcements?.last_page ?? 1;
                   </p>
 
                   <Link href={`/alumna/announcement/${ann.id}`}>
-                    <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition">
+                    <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition cursor-pointer">
                       Read more
                     </button>
                   </Link>

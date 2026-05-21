@@ -10,7 +10,7 @@ export default function AlumnaAnnouncementView({ announcement }) {
         {/* BACK BUTTON */}
         <Link
           href="/alumna/announcements"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-4"
+          className="inline-flex items-center gap-1 text-md text-gray-500 hover:text-gray-800 mb-4"
         >
           <ArrowLeft size={16} /> Back to Announcements
         </Link>

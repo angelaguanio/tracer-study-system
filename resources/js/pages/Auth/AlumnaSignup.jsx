@@ -28,6 +28,7 @@ import logo from '../../assets/logotracer.png';
 
 export default function AlumnaSignup() {
   const [step, setStep] = useState(1);
+  const [passwordErrors, setPasswordErrors] = useState([]);
 
 
   const { props } = usePage();
@@ -179,6 +180,34 @@ const handleSubmit = (e) => {
 
   const handleChange = ({ target: { name, value } }) => {
     setData(name, value);
+    
+    // Validate password on change
+    if (name === 'password') {
+      validatePassword(value);
+    }
+  };
+
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one capital letter');
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+    
+    if (!/[!@#$%^&*(),.?":{}|<>_]/.test(password)) {
+      errors.push('Password must contain at least one symbol (!@#$%^&*(),.?":{}|<>_)');
+    }
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    }
+    
+    setPasswordErrors(errors);
+    return errors.length === 0;
   };
 
   const handleSelectChange = (name, value) => {
@@ -193,7 +222,7 @@ const handleSubmit = (e) => {
     data.password_confirmation,
     data.year_graduated,
     data.courses,
-  ].every(Boolean);
+  ].every(Boolean) && passwordErrors.length === 0;
 
   const nextStep = () => {
     if (step === 1 && isStepOneComplete) {
@@ -275,6 +304,17 @@ const handleSubmit = (e) => {
                 error={errors.password}
                 className="text-black border-gray-400 w-full text-sm sm:text-base"
               />
+              
+              {passwordErrors.length > 0 && (
+                <div className="text-xs text-red-600 space-y-1 mt-1">
+                  {passwordErrors.map((error, index) => (
+                    <div key={index} className="flex items-start gap-1">
+                      <span>•</span>
+                      <span>{error}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <TextInput
                 name="password_confirmation"

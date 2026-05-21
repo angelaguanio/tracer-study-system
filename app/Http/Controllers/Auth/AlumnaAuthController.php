@@ -37,7 +37,15 @@ class AlumnaAuthController extends Controller
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',      // At least one uppercase letter
+                'regex:/[0-9]/',      // At least one number
+                'regex:/[!@#$%^&*(),.?":{}|<>_]/', // At least one symbol (including underscore)
+            ],
             'year_graduated' => 'nullable|integer|between:2010,2030',
             'courses' => 'nullable|string',
             
@@ -54,6 +62,8 @@ class AlumnaAuthController extends Controller
             'location' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'monthly_salary' => ['nullable'], // Removed 'numeric' to handle commas manually
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one number, and one symbol (!@#$%^&*(),.?":{}|<>_)',
         ]);
 
 
