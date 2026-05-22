@@ -2,6 +2,44 @@ import { Mail, Phone, MapPin, Clock } from 'lucide-react'
 import AlumnaLayout from "@/layouts/alumna-layout";
 import contact from '../../assets/contact.jpg';
 import ContactForm from '../../components/ContactForm';
+import { Card, CardContent } from '@/components/ui/card';
+
+const contactInfo = [
+  {
+    id: 'email',
+    icon: Mail,
+    title: 'Email',
+    content: 'alumni@wesleyan.edu.ph',
+    description: 'Send us a message',
+    href: 'mailto:alumni@wesleyan.edu.ph',
+    isLink: true
+  },
+  {
+    id: 'address',
+    icon: MapPin,
+    title: 'Address',
+    content: 'Mabini Extension Cabanatuan City',
+    description: 'Visit us in person',
+    isLink: false
+  },
+  {
+    id: 'phone',
+    icon: Phone,
+    title: 'Phone',
+    content: '(044) 960-7110 to 14 local 109',
+    description: 'Call us during office hours',
+    href: 'tel:044-960-7110',
+    isLink: true
+  },
+  {
+    id: 'hours',
+    icon: Clock,
+    title: 'Office Hours',
+    content: 'Monday – Friday: 8:00 AM - 5:00 PM',
+    description: 'Saturday - Sunday: Closed',
+    isLink: false
+  }
+];
 
 export default function ContactUs({auth, userEmail, userName, coordinators, departments}) {
   return (
@@ -28,6 +66,41 @@ export default function ContactUs({auth, userEmail, userName, coordinators, depa
           departments={departments}
           auth={auth}
         />
+      </div>
+
+      {/* Contact Information Cards */}
+      <div className='py-16 px-4 bg-gradient-to-r from-[#4284DB] to-[#29EAC4]'>
+        <div className='max-w-7xl mx-auto'>
+          <div className='text-center mb-12'>
+            <h2 className='text-4xl font-bold text-white mb-4'>Get in Touch</h2>
+            <p className='text-lg text-white max-w-2xl mx-auto'>
+              Need help with records, events, or alumni concerns? Reach out through any of the channels below.
+            </p>
+          </div>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
+            {contactInfo.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Card key={item.id} className='hover:shadow-lg transition-shadow'>
+                  <CardContent className='flex flex-col items-center text-center p-6'>
+                    <div className='bg-blue-100 p-3 rounded-full mb-4'>
+                      <Icon className='w-6 h-6 text-blue-600' />
+                    </div>
+                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>{item.title}</h3>
+                    {item.isLink ? (
+                      <a href={item.href} className='text-blue-600 hover:underline mb-1'>
+                        {item.content}
+                      </a>
+                    ) : (
+                      <p className='text-blue-600 mb-1'>{item.content}</p>
+                    )}
+                    <p className='text-sm text-gray-500'>{item.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   )
