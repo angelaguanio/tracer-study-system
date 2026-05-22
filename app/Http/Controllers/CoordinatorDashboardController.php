@@ -96,8 +96,10 @@ class CoordinatorDashboardController extends Controller
         // 6.1: Total alumni count where user_role='alumna'
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
-        // 6.2: Pending inquiries count where status in ['pending', 'open']
-        $pendingInquiries = Inquiries::whereIn('status', ['pending', 'open'])->count();
+        // 6.2: Pending inquiries count where status='pending' and recipient_id=auth()->id()
+        $pendingInquiries = Inquiries::where('status', 'pending')
+            ->where('recipient_id', $userId)
+            ->count();
 
         // 6.3: My pending announcements where user_id=auth()->id() and status='pending'
         $myPendingAnnouncements = Announcement::where('user_id', $userId)

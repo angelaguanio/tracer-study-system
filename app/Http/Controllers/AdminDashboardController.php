@@ -96,8 +96,10 @@ class AdminDashboardController extends Controller
         $completedResponses = DB::table(DB::raw('(SELECT DISTINCT user_id, survey_id FROM responses WHERE submitted_at IS NOT NULL) as distinct_responses'))
             ->count();
 
-        // 1.4: Pending inquiries count where status IN ('pending', 'open')
-        $pendingInquiries = Inquiries::whereIn('status', ['pending', 'open'])->count();
+        // 1.4: Pending inquiries count where status='pending' and recipient_type='admin'
+        $pendingInquiries = Inquiries::where('status', 'pending')
+            ->where('recipient_type', 'admin')
+            ->count();
 
         // 1.5: Pending announcements count where status='pending'
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
