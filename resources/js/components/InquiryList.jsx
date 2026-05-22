@@ -129,8 +129,8 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                                 )}
                             </Avatar>
                             <div className='flex flex-col min-w-0 flex-1'>
-                                <CardTitle className='text-sm truncate'>{data.title} {data.alumni.first_name} {data.alumni.last_name}</CardTitle>
-                                <CardDescription className='text-xs truncate'>{data.alumni.email}</CardDescription>
+                                <CardTitle className='text-sm truncate break-words'>{data.title} {data.alumni.first_name} {data.alumni.last_name}</CardTitle>
+                                <CardDescription className='text-xs truncate break-words'>{data.alumni.email}</CardDescription>
                             </div>
                             <div className='ml-auto shrink-0'>
                                 <Badge className={`${getStatusColor(data.status)} px-2 py-1 capitalize`}>{data.status}</Badge>
@@ -138,9 +138,9 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                         </div>
                     </CardHeader>
 
-                    <CardContent className='flex flex-col line-clamp-2 '>
-                        <h2 className='text-md font-black'>{data.subject}</h2>
-                        <p className='text-sm truncate'>
+                    <CardContent className='flex flex-col line-clamp-2'>
+                        <h2 className='text-md font-black break-words'>{data.subject}</h2>
+                        <p className='text-sm truncate break-words'>
                             {data.message}
                         </p>
                     </CardContent>

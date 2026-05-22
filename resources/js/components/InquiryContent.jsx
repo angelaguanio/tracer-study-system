@@ -115,11 +115,11 @@ export default function InquiryContent({inquiry, onUpdateStatus, userRole = 'adm
             </div>
         </header>
 
-        <div className='flex flex-col bg-blue-100/30 h-full overflow-y-auto'>
-            <div className='px-5 py-4'>
-                <h2 className='text-xl font-inter font-semibold text-slate-800'>{inquiry.subject}</h2>
+        <div className='flex flex-col bg-blue-100/30 h-full overflow-y-auto overflow-x-hidden'>
+            <div className='px-5 py-4 overflow-hidden'>
+                <h2 className='text-xl font-inter font-semibold text-slate-800' style={{wordBreak: 'break-all', overflowWrap: 'break-word'}}>{inquiry.subject}</h2>
                 <hr className='my-3 border-blue-300'/>
-                <p className=''>{inquiry.message}</p>
+                <p style={{wordBreak: 'break-all', overflowWrap: 'break-word'}}>{inquiry.message}</p>
             </div>
         </div>
     </main>

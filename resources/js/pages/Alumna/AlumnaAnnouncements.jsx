@@ -8,16 +8,16 @@ export default function AlumnaAnnouncements({ announcements }) {
   const list = announcements?.data ?? [];
 
   const currentPage = announcements?.current_page ?? 1;
-const lastPage = announcements?.last_page ?? 1;
+  const lastPage = announcements?.last_page ?? 1;
 
   return (
-    <div className="min-h-screen w-screen bg-sky-50 ">
+    <div className="min-h-screen w-screen bg-sky-50">
       
       {/* CENTER CONTAINER */}
-      <div className="w-full max-w-5xl mx-auto px-6 py-10">
+      <div className="w-full max-w-[1400px] mx-auto px-6 py-10">
 
-        <h2 className="text-[#7B7B7B] text-lg font-semibold mb-6 text-center">
-          Recent Announcements
+        <h2 className="text-[#7B7B7B] text-xl font-semibold mb-6 text-center">
+          News & Announcements
         </h2>
 
         {list.length === 0 ? (
@@ -25,55 +25,9 @@ const lastPage = announcements?.last_page ?? 1;
             No announcements available
           </p>
         ) : (
-          <div className="space-y-8 flex flex-col items-center">
-
-            {list.map((ann) => (
-              <div
-                key={ann.id}
-                className="w-full max-w-5xl bg-white rounded-xl shadow-md overflow-hidden"
-              >
-                
-                {/* IMAGE */}
-                {ann.image ? (
-                  <img
-                  src={Array.isArray(ann.image) ? ann.image[0] : ann.image}
-                  alt={ann.title}
-                  className="w-full h-80 object-cover"
-                />
-                ) : (
-                  <div className="w-full h-80 flex items-center justify-center text-gray-400">
-                    <ImageOff size={100} className="text-[#2859C5]" />
-                  </div>
-                )}
-
-                {/* CONTENT */}
-                <div className="p-6">
-                  <h3 className="text-[#0042A8] text-xl font-bold mb-3 text-center">
-                    {ann.title}
-                  </h3>
-
-                  <p className="text-[#000000] text-lg leading-relaxed mb-6 text-center line-clamp-3">
-                    {ann.details}
-                  </p>
-
-                  <Link href={`/alumna/announcement/${ann.id}`}>
-                    <button className="w-full bg-[#014F86] text-white py-3 rounded-lg font-semibold hover:bg-[#013A63] transition cursor-pointer">
-                      Read more
-                    </button>
-                  </Link>
-                </div>
-
-              </div>
-            ))}
-
-          </div>
-        )}
-        
-        {/* PAGINATION */}
-        {lastPage > 1 && (
-          <div className="flex justify-center items-center gap-1 mt-10">
-
-            {/* PREVIOUS */}
+          <div className="relative flex items-center gap-4">
+            
+            {/* LEFT ARROW */}
             <button
               disabled={currentPage === 1}
               onClick={() =>
@@ -83,54 +37,55 @@ const lastPage = announcements?.last_page ?? 1;
                   { preserveState: true, preserveScroll: true }
                 )
               }
-              className="w-12 h-8 flex items-center justify-center rounded-md border
-                        hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-white border-2 border-gray-300 shadow-md
+                        hover:bg-gray-100 hover:border-gray-400 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={24} className="text-gray-700" />
             </button>
 
-            {/* PAGE NUMBERS */}
-            {Array.from({ length: lastPage }, (_, i) => i + 1)
-              .filter((page) => {
-                return (
-                  page === 1 ||
-                  page === lastPage ||
-                  (page >= currentPage - 1 && page <= currentPage + 1)
-                );
-              })
-              .map((page, index, arr) => {
-                const prevPage = arr[index - 1];
+            {/* CARDS GRID */}
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 p-3">
+              {list.map((ann) => (
+                <div
+                  key={ann.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[420px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
+                >
+                  
+                  {/* IMAGE */}
+                  {ann.image && (Array.isArray(ann.image) ? ann.image.length > 0 : ann.image) ? (
+                    <img
+                      src={Array.isArray(ann.image) ? ann.image[0] : ann.image}
+                      alt={ann.title}
+                      className="w-full h-56 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-56 flex items-center justify-center bg-gray-100">
+                      <ImageOff size={48} className="text-blue-800" />
+                    </div>
+                  )}
 
-                return (
-                  <div key={page} className="flex items-center gap-1">
+                  {/* CONTENT */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-[#0042A8] text-base font-bold mb-2 line-clamp-2">
+                      {ann.title}
+                    </h3>
 
-                    {prevPage && page - prevPage > 1 && (
-                      <span className="px-2 text-gray-400">...</span>
-                    )}
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
+                      {ann.details}
+                    </p>
 
-                    <button
-                      onClick={() =>
-                        router.get(
-                          '/alumna/announcements',
-                          { page },
-                          { preserveState: true, preserveScroll: true }
-                        )
-                      }
-                      className={`w-8 h-8 flex items-center justify-center rounded-md border text-sm transition
-                        ${
-                          currentPage === page
-                            ? "bg-[#3b82f6] text-white border-[#3b82f6]"
-                            : "bg-white hover:bg-gray-100"
-                        }`}
-                    >
-                      {page}
-                    </button>
-
+                    <Link href={`/alumna/announcement/${ann.id}`}>
+                      <button className="w-full cursor-pointer bg-[#014F86] text-white py-2 rounded-md text-sm font-semibold hover:bg-[#013A63] transition">
+                        Read more
+                      </button>
+                    </Link>
                   </div>
-                );
-              })}
 
-            {/* NEXT */}
+                </div>
+              ))}
+            </div>
+
+            {/* RIGHT ARROW */}
             <button
               disabled={currentPage === lastPage}
               onClick={() =>
@@ -140,12 +95,35 @@ const lastPage = announcements?.last_page ?? 1;
                   { preserveState: true, preserveScroll: true }
                 )
               }
-              className="w-12 h-8 flex items-center justify-center rounded-md border
-                        hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-white border-2 border-gray-300 shadow-md
+                        hover:bg-gray-100 hover:border-gray-400 cursor-pointer transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={24} className="text-gray-700" />
             </button>
 
+          </div>
+        )}
+
+        {/* PAGE INDICATOR */}
+        {lastPage > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-6">
+            {Array.from({ length: lastPage }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() =>
+                  router.get(
+                    '/alumna/announcements',
+                    { page },
+                    { preserveState: true, preserveScroll: true }
+                  )
+                }
+                className={`w-2 h-2 rounded-full transition ${
+                  currentPage === page
+                    ? "bg-[#014F86] w-8"
+                    : "bg-gray-300 hover:bg-gray-400"
+                }`}
+              />
+            ))}
           </div>
         )}
 

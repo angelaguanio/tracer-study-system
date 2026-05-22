@@ -1,6 +1,6 @@
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { Link } from "@inertiajs/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImageOff } from "lucide-react";
 
 export default function AlumnaAnnouncementView({ announcement }) {
   return (
@@ -37,7 +37,7 @@ export default function AlumnaAnnouncementView({ announcement }) {
         </p>
 
         {/* IMAGE (ONLY IF AVAILABLE) */}
-        {announcement?.image && (
+        {announcement?.image && (Array.isArray(announcement.image) ? announcement.image.length > 0 : announcement.image) ? (
             <img
               src={
                 Array.isArray(announcement.image)
@@ -47,6 +47,10 @@ export default function AlumnaAnnouncementView({ announcement }) {
               alt={announcement.title}
               className="w-full max-h-[500px] object-contain mb-6"
             />
+        ) : (
+          <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg mb-6">
+            <ImageOff size={64} className="text-gray-400" />
+          </div>
         )}
 
         {/* CONTENT */}
