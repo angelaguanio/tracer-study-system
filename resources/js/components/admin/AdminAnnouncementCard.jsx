@@ -234,7 +234,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
   });
 
   return (
-    <div className="rounded-md border bg-white shadow-sm flex flex-col h-full overflow-hidden">
+    <div className="rounded-md border bg-white shadow-sm flex flex-col h-full">
       <div className="flex-1 overflow-auto">
         <Table className="w-full" style={{ tableLayout: 'fixed' }}>
           <colgroup>
@@ -243,13 +243,13 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
             <col style={{ width: '20%' }} />
             <col style={{ width: '20%' }} />
           </colgroup>
-          <TableHeader className="sticky top-0 z-10">
+          <TableHeader className="sticky top-0 z-10 bg-sky-300">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="bg-sky-300">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={`p-4 font-bold text-black text-sm sm:text-base ${
+                    className={`p-4 font-bold text-black text-sm sm:text-base bg-sky-300 ${
                       header.id === "actions"
                         ? "text-right pr-18"
                         : header.id === "created_at"

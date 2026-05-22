@@ -20,7 +20,8 @@ class AdminAuthController extends Controller
         if (Auth::attempt($credentials)) {
             if (Auth::user()->user_role === 'admin') {
                 $request->session()->regenerate();
-                return redirect()->intended(route('admin.dashboard'));
+                // Use Inertia::location() to force full page reload with fresh CSRF token
+                return Inertia::location(route('admin.dashboard'));
             }
 
             // Logged in but wrong role — log them back out

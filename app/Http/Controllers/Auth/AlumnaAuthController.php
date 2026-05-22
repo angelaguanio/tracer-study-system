@@ -135,7 +135,8 @@ class AlumnaAuthController extends Controller
             $request->session()->regenerate();
 
             if (Auth::user()->user_role === 'alumna') { 
-                return redirect()->intended(route('alumna.home'));
+                // Use Inertia::location() to force full page reload with fresh CSRF token
+                return Inertia::location(route('alumna.home'));
             }
 
             Auth::logout();

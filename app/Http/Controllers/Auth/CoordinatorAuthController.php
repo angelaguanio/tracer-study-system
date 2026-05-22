@@ -18,7 +18,8 @@ class CoordinatorAuthController extends Controller
         if (Auth::attempt($credentials)) {
             if (Auth::user()->user_role === 'coordinator') {
                 $request->session()->regenerate();
-                return redirect()->intended(route('coordinator.dashboard'));
+                // Use Inertia::location() to force full page reload with fresh CSRF token
+                return Inertia::location(route('coordinator.dashboard'));
             }
 
             // Logged in but wrong role — log them back out

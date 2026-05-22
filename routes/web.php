@@ -28,6 +28,11 @@ use Inertia\Inertia;
 // Broadcasting auth route is registered via withBroadcasting() in bootstrap/app.php
 // with ['middleware' => ['web', 'auth']] to ensure unauthenticated requests are rejected.
 
+// Session keep-alive endpoint
+Route::get('/api/keep-alive', function () {
+    return response()->json(['status' => 'ok']);
+})->middleware('web');
+
 // Role-select / root — redirect authenticated users to their dashboard
 Route::get('/', function () {
     if (auth()->check()) {
