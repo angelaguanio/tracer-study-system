@@ -14,8 +14,7 @@ export default function QuestionRenderer({ question, value, onChange, error }) {
     if (question.type === "subheading") {
         return (
             <div className="flex flex-col gap-2 px-4 py-3 rounded-lg bg-blue-50 border-l-4 border-blue-500">
-                <div className="flex items-center gap-2">
-                    <Heading2 size={18} className="text-blue-700" />
+                <div className="flex items-start">
                     <span className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Section Information</span>
                 </div>
                 <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{question.label}</p>
