@@ -20,7 +20,17 @@ export default function SidebarAdmin({ navItems = [] }) {
           <SidebarMenu>
             {navItems.map((item)=> (
               <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton asChild isActive={url === item.href || url.startsWith(item.href + '/')} className='[&>svg]:size-5 py-5 my-1'>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={
+                    item.id === 'analytics' 
+                      ? url.includes('/analytics')
+                      : item.id === 'surveys'
+                        ? url === item.href || (url.startsWith(item.href + '/') && !url.includes('/analytics'))
+                        : url === item.href || url.startsWith(item.href + '/')
+                  } 
+                  className='[&>svg]:size-5 py-5 my-1'
+                >
                   <Link href={item.href}>
                     <item.icon/>
                     <span>{item.name}</span>
