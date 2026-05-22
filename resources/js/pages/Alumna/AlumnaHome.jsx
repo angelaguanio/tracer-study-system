@@ -105,7 +105,7 @@ export default function AlumnaHome({ announcements }) {
 
         {/* ANNOUNCEMENTS */}
         <section className="px-6 py-16" style={{ background: 'linear-gradient(135deg, #001D4A 0%, #0042A8 60%, #014F86 100%)' }}>
-          <div className="max-w-[1000px] mx-auto">
+          <div className="max-w-full mx-auto">
             <div className="text-center mb-12">
               <span className="inline-block bg-white/10 text-white text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
                 News & Updates

@@ -74,25 +74,6 @@ export default function AlumnaAssociation() {
         </div>
       </section>
 
-      {/* ================= FOOTER ================= */}
-      <section className="w-full bg-[#013A63]">
-        <div className="max-w-7xl mx-auto text-center text-white py-20 px-4">
-
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Get Involved with the Alumni Network
-          </h2>
-
-          <p className="text-gray-200 text-lg mb-8 max-w-2xl mx-auto">
-            Connect with fellow alumni leaders and help shape the future.
-          </p>
-
-          <button className="bg-gray-200 text-[#013A63] px-6 py-3 rounded-lg font-semibold hover:bg-white transition">
-            Join the Community
-          </button>
-
-        </div>
-      </section>
-
     </div>
   );
 }

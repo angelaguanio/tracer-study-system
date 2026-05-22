@@ -258,10 +258,10 @@ class AnnouncementController extends Controller
     public function alumna()
     {
 
-        // ONLY APPROVED SHOWN
+        // ONLY APPROVED SHOWN - 4 per page
         $announcements = Announcement::where('status', 'approved')
             ->latest()
-            ->paginate(10)
+            ->paginate(4)
             ->withQueryString();
 
         return Inertia::render('Alumna/AlumnaAnnouncements', [
