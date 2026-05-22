@@ -1,5 +1,5 @@
 import { router } from "@inertiajs/react";
-import { Pencil, Trash2, ChevronUp, ChevronDown, Rows3, Rows4, Hash, CircleChevronDown, CircleDashed, SquareCheck, Heading2 } from "lucide-react";
+import { Pencil, Trash2, ChevronUp, ChevronDown, Rows3, Rows4, Hash, CircleChevronDown, CircleDashed, SquareCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { route } from "ziggy-js";
@@ -12,7 +12,7 @@ const TYPE_MAP = {
     radio:      { label: "Multiple Choice", icon: CircleDashed },
     checkbox:   { label: "Checkboxes",      icon: SquareCheck },
     likert:     { label: "Likert Scale",    icon: CircleDashed },
-    subheading: { label: "Subheading",      icon: Heading2 },
+    subheading: { label: "Subheading"},
 };
 
 export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast }) {
@@ -33,8 +33,7 @@ export default function QuestionItem({ question, onEdit, onReorder, isFirst, isL
             <div className="flex flex-col gap-1 px-4 py-3 rounded-lg border-2 border-dashed bg-amber-50 border-amber-300 hover:bg-amber-100 transition">
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Heading2 size={16} className="text-amber-700" />
+                        <div className="flex items-start mb-1">
                             <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">Section Description</span>
                         </div>
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{question.label}</p>

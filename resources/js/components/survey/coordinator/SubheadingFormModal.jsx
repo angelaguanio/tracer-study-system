@@ -3,7 +3,6 @@ import { router } from "@inertiajs/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Heading2 } from 'lucide-react';
 import { route } from "ziggy-js";
 
 export default function SubheadingFormModal({ open, onClose, sectionId, subheading = null }) {
@@ -58,8 +57,7 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-lg">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Heading2 size={18} className="text-amber-700" />
+                    <DialogTitle className="flex items-start">
                         {isEdit ? "Edit Subheading" : "Add Subheading"}
                     </DialogTitle>
                 </DialogHeader>
@@ -84,8 +82,7 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
                     </div>
 
                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Heading2 size={14} className="text-amber-700" />
+                        <div className="flex items-start mb-1">
                             <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">Preview</span>
                         </div>
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
