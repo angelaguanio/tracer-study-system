@@ -29,6 +29,14 @@ router.on('finish', () => {
     updateCsrfToken();
 });
 
+// Handle 419 CSRF token mismatch errors globally
+router.on('error', (event) => {
+    if (event.detail.response?.status === 419) {
+        // Reload the page to get a fresh CSRF token
+        window.location.reload();
+    }
+});
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -39,4 +47,5 @@ createInertiaApp({
 
         root.render(<App {...props} />);
     },
+   
 });

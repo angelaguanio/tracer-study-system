@@ -15,8 +15,9 @@ class SendAlumniBroadcastJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 3;
+    public int $tries = 5; // Retry up to 5 times
     public int $timeout = 120;
+    public int $backoff = 15; // Wait 15 seconds between retries
 
     /**
      * @param array<int>|null $userIds  Specific IDs, or null to send to all alumni
@@ -29,19 +30,39 @@ class SendAlumniBroadcastJob implements ShouldQueue
 
     public function handle(): void
     {
+        \Log::info('SendAlumniBroadcastJob started', [
+            'subject' => $this->subject,
+            'userIds' => $this->userIds,
+            'userIdsCount' => $this->userIds ? count($this->userIds) : 0
+        ]);
+
         $query = User::where('user_role', 'alumna')
-            ->select('email');
+            ->select('id', 'email', 'first_name', 'last_name');
 
         if ($this->userIds !== null) {
             $query->whereIn('id', $this->userIds);
         }
 
-        // chunk(100) keeps memory flat regardless of alumni count
-        $query->chunk(100, function ($users) {
-            foreach ($users as $user) {
+        $emailsSent = 0;
+
+        // Get users and send emails
+        $users = $query->get();
+        
+        foreach ($users as $user) {
+            try {
+                // Add a 2-second delay before sending to ensure we don't hit rate limits
+                // even if multiple jobs somehow run close together
+                sleep(2);
+                
                 Mail::to($user->email)
-                    ->queue(new AlumniBroadcastEmail($this->subject, $this->body));
+                    ->send(new AlumniBroadcastEmail($this->subject, $this->body));
+                $emailsSent++;
+                \Log::info("Email sent to: {$user->email}");
+            } catch (\Exception $e) {
+                \Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
             }
-        });
+        }
+
+        \Log::info("SendAlumniBroadcastJob completed. Total emails sent: {$emailsSent}");
     }
 }

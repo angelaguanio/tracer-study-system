@@ -209,13 +209,21 @@ class AdminAlumniController extends Controller
             'user_ids.*' => 'exists:users,id',
         ]);
 
-        // Dispatch the job with correct parameters: subject, body (message), userIds
-        SendAlumniBroadcastJob::dispatch(
-            $request->subject,
-            $request->message,
-            $request->user_ids
-        );
+       
 
-        return back()->with('success', 'Bulk email queued successfully for ' . count($request->user_ids) . ' recipients.');
+        // Dispatch individual jobs for each user with delays
+        // Start with 60 seconds for first email, then add 60 seconds for each subsequent email
+        // This ensures we stay well under Mailtrap's rate limit
+        foreach ($request->user_ids as $index => $userId) {
+            $delaySeconds = 60 + ($index * 60); // 60, 120, 180, 240, etc. (1 min intervals)
+            
+            SendAlumniBroadcastJob::dispatch(
+                $request->subject,
+                $request->message,
+                [$userId] // Send to one user at a time
+            )->delay(now()->addSeconds($delaySeconds));
+        }
+
+        return back()->with('success', 'Bulk email queued successfully' . count($request->user_ids));
     }
 }

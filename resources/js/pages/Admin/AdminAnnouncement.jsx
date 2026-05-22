@@ -64,12 +64,7 @@ export default function AdminAnnouncement({ announcements }) {
   const filteredAnnouncements = list;
 
   return (
-    <div className="w-full h-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4 overflow-hidden">
-
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Announcements</h1>
-      </div>
+    <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
       {/* INFO BANNER */}
       <div className="bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -82,7 +77,7 @@ export default function AdminAnnouncement({ announcements }) {
 
         <Link
           href="/admin/announcement/create"
-          className="flex items-center justify-center gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+          className="flex items-center justify-center text-sm gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
         >
           <Plus size={18} />
           Add Announcement
