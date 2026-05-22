@@ -450,8 +450,7 @@ class SurveyAnalyticsController extends Controller
     {
         $users = User::whereIn('id', $respondentIds)
             ->whereHas('employment', function($q) {
-                $q->where('currently_employed', 'Yes')
-                  ->whereNotNull('location')
+                $q->whereNotNull('location')
                   ->where('location', '!=', '');
             })
             ->whereNotNull('address')
@@ -492,8 +491,7 @@ class SurveyAnalyticsController extends Controller
         // Get all employed alumni with both address and location data
         $employedUsers = User::where('user_role', 'alumna')
             ->whereHas('employment', function($q) {
-                $q->where('currently_employed', 'Yes')
-                  ->whereNotNull('location')
+                $q->whereNotNull('location')
                   ->where('location', '!=', '');
             })
             ->whereNotNull('address')
@@ -510,7 +508,7 @@ class SurveyAnalyticsController extends Controller
             $homeAddress = strtolower(trim($user->address));
             $companyLocation = strtolower(trim($user->employment->location));
 
-            // Extract city/area from addresses (simple keyword matching)
+            // Check if same area (now uses normalized addresses internally)
             $isLocal = $this->isSameArea($homeAddress, $companyLocation);
 
             if ($isLocal) {
@@ -519,7 +517,7 @@ class SurveyAnalyticsController extends Controller
                 $externalCount++;
             }
 
-            // Track city distribution
+            // Track city distribution (now uses normalized addresses)
             $companyCity = $this->extractCity($companyLocation);
             $homeCity = $this->extractCity($homeAddress);
 
@@ -610,12 +608,20 @@ class SurveyAnalyticsController extends Controller
      */
     private function isSameArea(string $address1, string $address2): bool
     {
+        // Normalize addresses by removing barangay prefixes
+        $address1 = $this->normalizeAddress($address1);
+        $address2 = $this->normalizeAddress($address2);
+
         // Common city/area keywords to check
         $cities = [
-            'cabanatuan', 'manila', 'quezon', 'makati', 'taguig', 'pasig', 'mandaluyong',
-            'san juan', 'caloocan', 'malabon', 'navotas', 'valenzuela', 'marikina', 'pasay',
-            'paranaque', 'las pinas', 'muntinlupa', 'pateros', 'cebu', 'davao', 'baguio',
-            'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan', 'bataan', 'zambales',
+            'cabanatuan', 'cabanatuan city', 'manila', 'quezon', 'quezon city', 'makati', 'makati city',
+            'taguig', 'taguig city', 'pasig', 'pasig city', 'mandaluyong', 'mandaluyong city',
+            'san juan', 'san juan city', 'caloocan', 'caloocan city', 'malabon', 'malabon city',
+            'navotas', 'navotas city', 'valenzuela', 'valenzuela city', 'marikina', 'marikina city',
+            'pasay', 'pasay city', 'paranaque', 'paranaque city', 'las pinas', 'las pinas city',
+            'muntinlupa', 'muntinlupa city', 'pateros', 'cebu', 'cebu city', 'davao', 'davao city',
+            'baguio', 'baguio city', 'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan',
+            'bataan', 'zambales', 'laguna', 'cavite', 'rizal', 'batangas', 'iloilo', 'bacolod',
         ];
 
         foreach ($cities as $city) {
@@ -628,11 +634,44 @@ class SurveyAnalyticsController extends Controller
         }
 
         // Fallback: check if they share significant common words (3+ chars)
-        $words1 = array_filter(explode(' ', $address1), fn($w) => strlen($w) > 3);
-        $words2 = array_filter(explode(' ', $address2), fn($w) => strlen($w) > 3);
+        // Exclude common address words
+        $excludeWords = ['city', 'street', 'road', 'avenue', 'barangay', 'brgy', 'subdivision', 'subd', 'village', 'phase', 'block', 'lot'];
+        $words1 = array_filter(explode(' ', $address1), fn($w) => strlen($w) > 3 && !in_array($w, $excludeWords));
+        $words2 = array_filter(explode(' ', $address2), fn($w) => strlen($w) > 3 && !in_array($w, $excludeWords));
         $common = array_intersect($words1, $words2);
 
         return count($common) >= 2; // At least 2 common significant words
+    }
+
+    /**
+     * Normalize address by removing barangay prefixes and common noise
+     */
+    private function normalizeAddress(string $address): string
+    {
+        $address = strtolower(trim($address));
+
+        // Remove barangay prefixes (case-insensitive)
+        $barangayPrefixes = [
+            'barangay ',
+            'brgy. ',
+            'brgy ',
+            'bgy. ',
+            'bgy ',
+            'bgry. ',
+            'bgry ',
+        ];
+
+        foreach ($barangayPrefixes as $prefix) {
+            if (str_starts_with($address, $prefix)) {
+                $address = substr($address, strlen($prefix));
+                break;
+            }
+        }
+
+        // Remove multiple spaces
+        $address = preg_replace('/\s+/', ' ', $address);
+
+        return trim($address);
     }
 
     /**
@@ -640,12 +679,27 @@ class SurveyAnalyticsController extends Controller
      */
     private function extractCity(string $address): string
     {
+        // Normalize address first (remove barangay prefixes)
+        $address = $this->normalizeAddress($address);
+
+        // Comprehensive list of cities and municipalities
         $cities = [
-            'cabanatuan', 'manila', 'quezon city', 'makati', 'taguig', 'pasig', 'mandaluyong',
-            'san juan', 'caloocan', 'malabon', 'navotas', 'valenzuela', 'marikina', 'pasay',
-            'paranaque', 'las pinas', 'muntinlupa', 'pateros', 'cebu', 'davao', 'baguio',
-            'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan', 'bataan', 'zambales',
+            'cabanatuan city', 'cabanatuan',
+            'quezon city', 'manila', 'makati city', 'makati', 'taguig city', 'taguig',
+            'pasig city', 'pasig', 'mandaluyong city', 'mandaluyong',
+            'san juan city', 'san juan', 'caloocan city', 'caloocan',
+            'malabon city', 'malabon', 'navotas city', 'navotas',
+            'valenzuela city', 'valenzuela', 'marikina city', 'marikina',
+            'pasay city', 'pasay', 'paranaque city', 'paranaque',
+            'las pinas city', 'las pinas', 'muntinlupa city', 'muntinlupa',
+            'pateros', 'cebu city', 'cebu', 'davao city', 'davao',
+            'baguio city', 'baguio', 'iloilo city', 'iloilo', 'bacolod city', 'bacolod',
+            'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan',
+            'bataan', 'zambales', 'laguna', 'cavite', 'rizal', 'batangas',
         ];
+
+        // Check for city matches (prioritize longer matches first)
+        usort($cities, fn($a, $b) => strlen($b) - strlen($a));
 
         foreach ($cities as $city) {
             if (str_contains($address, $city)) {
@@ -653,8 +707,202 @@ class SurveyAnalyticsController extends Controller
             }
         }
 
-        // Fallback: return first significant word
-        $words = array_filter(explode(' ', $address), fn($w) => strlen($w) > 3);
+        // Fallback: extract first significant word after removing common prefixes
+        $words = array_filter(
+            explode(' ', $address),
+            fn($w) => strlen($w) > 3 && !in_array($w, ['city', 'street', 'road', 'avenue', 'subdivision', 'subd', 'village', 'phase', 'block', 'lot'])
+        );
+
         return ucwords($words[0] ?? 'Unknown');
+    }
+
+    /**
+     * Download survey analytics as CSV
+     */
+    public function downloadAnalytics(Survey $survey, Request $request)
+    {
+        $this->authorize('viewAny', Survey::class);
+
+        // Get the same data as the show method
+        $yearGraduated = $request->query('year_graduated');
+        $from          = $request->query('from');
+        $to            = $request->query('to');
+
+        $validYears = ['2018','2019','2020','2021','2022','2023','2024','2025'];
+        $applyYear  = $yearGraduated && in_array($yearGraduated, $validYears);
+
+        $survey->load([
+            'sections' => fn($q) => $q->orderBy('display_order')->with([
+                'questions' => fn($q) => $q->orderBy('display_order'),
+            ]),
+        ]);
+
+        $respondentQuery = Response::where('survey_id', $survey->id)
+            ->when($from, fn($q) => $q->where('submitted_at', '>=', $from))
+            ->when($to,   fn($q) => $q->where('submitted_at', '<=', $to))
+            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) =>
+                $u->where('year_graduated', $yearGraduated)
+            ));
+
+        $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
+        $totalRespondents = $respondentIds->count();
+        $respondents = User::whereIn('id', $respondentIds)->get();
+
+        // Prepare CSV content
+        $filename = 'survey_analytics_' . $survey->id . '_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($survey, $totalRespondents, $respondents, $respondentIds) {
+            $file = fopen('php://output', 'w');
+
+            // Survey Header
+            fputcsv($file, ['Survey Analytics Report']);
+            fputcsv($file, ['Survey Title', $survey->title]);
+            fputcsv($file, ['Generated On', date('Y-m-d H:i:s')]);
+            fputcsv($file, ['Total Respondents', $totalRespondents]);
+            fputcsv($file, []);
+
+            // Degree Distribution
+            fputcsv($file, ['Degree Distribution']);
+            fputcsv($file, ['Degree', 'Count', 'Percentage']);
+            $degreeDistribution = $respondents->groupBy('courses')->map(fn($g) => $g->count())->sortDesc();
+            foreach ($degreeDistribution as $degree => $count) {
+                $pct = $totalRespondents > 0 ? round(($count / $totalRespondents) * 100, 1) : 0;
+                fputcsv($file, [$degree ?: 'Unknown', $count, $pct . '%']);
+            }
+            fputcsv($file, []);
+
+            // Year Distribution
+            fputcsv($file, ['Year Graduated Distribution']);
+            fputcsv($file, ['Year', 'Count', 'Percentage']);
+            $yearDistribution = $respondents->groupBy('year_graduated')->map(fn($g) => $g->count())->sortKeys();
+            foreach ($yearDistribution as $year => $count) {
+                $pct = $totalRespondents > 0 ? round(($count / $totalRespondents) * 100, 1) : 0;
+                fputcsv($file, [$year, $count, $pct . '%']);
+            }
+            fputcsv($file, []);
+
+            // Employment Analysis
+            $employmentAnswers = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%employ%'))
+                ->pluck('answer_value', 'user_id');
+
+            $employedKeywords   = ['employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
+            $unemployedKeywords = ['unemployed', 'not employed', 'no job'];
+
+            $employedCount = 0;
+            $unemployedCount = 0;
+            foreach ($employmentAnswers as $ans) {
+                $lower = strtolower(trim($ans ?? ''));
+                $isUnemployed = false;
+                foreach ($unemployedKeywords as $kw) {
+                    if (str_contains($lower, $kw)) { $isUnemployed = true; break; }
+                }
+                if ($lower === 'no') $isUnemployed = true;
+                $isUnemployed ? $unemployedCount++ : $employedCount++;
+            }
+
+            $employmentRate = $totalRespondents > 0 ? round(($employedCount / $totalRespondents) * 100, 1) : 0;
+
+            fputcsv($file, ['Employment Statistics']);
+            fputcsv($file, ['Metric', 'Value']);
+            fputcsv($file, ['Employment Rate', $employmentRate . '%']);
+            fputcsv($file, ['Employed', $employedCount]);
+            fputcsv($file, ['Unemployed', $unemployedCount]);
+            fputcsv($file, []);
+
+            // Salary Statistics
+            $salaryAnswers = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%salary%')->orWhere('label', 'like', '%income%'))
+                ->pluck('answer_value')
+                ->map(fn($v) => is_numeric($v) ? (float)$v : null)
+                ->filter()
+                ->values();
+
+            if ($salaryAnswers->count() > 0) {
+                fputcsv($file, ['Salary Statistics']);
+                fputcsv($file, ['Metric', 'Value']);
+                fputcsv($file, ['Minimum Salary', number_format($salaryAnswers->min(), 2)]);
+                fputcsv($file, ['Maximum Salary', number_format($salaryAnswers->max(), 2)]);
+                fputcsv($file, ['Average Salary', number_format($salaryAnswers->avg(), 2)]);
+                fputcsv($file, ['Respondents with Salary Data', $salaryAnswers->count()]);
+                fputcsv($file, []);
+            }
+
+            // Likert Scale Analysis
+            foreach ($survey->sections as $section) {
+                $scale = $section->likert_scale ?? [];
+                if (empty($scale)) continue;
+
+                $scoreMap = [];
+                foreach ($scale as $i => $label) {
+                    $scoreMap[strtolower(trim($label))] = $i + 1;
+                }
+                $maxScore = count($scale);
+
+                fputcsv($file, ['Section: ' . $section->title]);
+                fputcsv($file, ['Question', 'Average Score', 'Max Score', 'Response Count']);
+
+                foreach ($section->questions as $question) {
+                    $answers = Response::where('survey_id', $survey->id)
+                        ->whereIn('user_id', $respondentIds)
+                        ->where('question_id', $question->id)
+                        ->pluck('answer_value');
+
+                    $scores = $answers->map(function($a) use ($scoreMap) {
+                        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $a ?? '')));
+                        if (isset($scoreMap[$normalized])) return $scoreMap[$normalized];
+                        foreach ($scoreMap as $key => $score) {
+                            if (str_contains($normalized, $key) || str_contains($key, $normalized)) {
+                                return $score;
+                            }
+                        }
+                        return null;
+                    })->filter()->values();
+
+                    if ($scores->count() > 0) {
+                        fputcsv($file, [
+                            $question->label,
+                            round($scores->avg(), 2),
+                            $maxScore,
+                            $scores->count()
+                        ]);
+                    }
+                }
+                fputcsv($file, []);
+            }
+
+            // Question Responses
+            fputcsv($file, ['Question Response Summary']);
+            fputcsv($file, ['Section', 'Question', 'Answer', 'Count']);
+
+            $chartQuery = Response::where('survey_id', $survey->id)
+                ->whereIn('user_id', $respondentIds)
+                ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea']))
+                ->select('question_id', 'answer_value', DB::raw('COUNT(*) as count'))
+                ->groupBy('question_id', 'answer_value')
+                ->with('question.section')
+                ->get();
+
+            foreach ($chartQuery as $row) {
+                $question = $row->question;
+                if (!$question) continue;
+                fputcsv($file, [
+                    $question->section?->title ?? 'N/A',
+                    $question->label,
+                    $row->answer_value,
+                    $row->count
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

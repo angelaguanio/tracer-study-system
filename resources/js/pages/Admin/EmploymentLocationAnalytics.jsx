@@ -48,9 +48,9 @@ export default function EmploymentLocationAnalytics({
                         variant="ghost"
                         size="sm"
                         onClick={() => router.visit(route("admin.analytics"))}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-gray-500 hover:text-gray-800 cursor-pointer"
                     >
-                        <ArrowLeft size={16} className="mr-1" /> Back
+                        <ArrowLeft size={16} className="mr-1" /> 
                     </Button>
                     <div>
                         <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -77,20 +77,20 @@ export default function EmploymentLocationAnalytics({
                     label="Local Employment"
                     value={summary.local_count}
                     sub={`${summary.local_percentage}%`}
-                    color="bg-green-50"
+                    color="bg-green-100"
                 />
                 <SummaryCard
                     icon={<Building2 size={18} className="text-blue-600" />}
                     label="External Employment"
                     value={summary.external_count}
                     sub={`${summary.external_percentage}%`}
-                    color="bg-blue-50"
+                    color="bg-blue-100"
                 />
                 <SummaryCard
                     icon={<TrendingUp size={18} className="text-purple-600" />}
                     label="Cities Tracked"
                     value={cityDistribution.length}
-                    color="bg-purple-50"
+                    color="bg-purple-100"
                 />
             </div>
 
@@ -100,7 +100,7 @@ export default function EmploymentLocationAnalytics({
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
+                        className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px cursor-pointer ${
                             activeTab === tab
                                 ? "border-blue-600 text-blue-600"
                                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -259,7 +259,7 @@ export default function EmploymentLocationAnalytics({
                                         size="sm"
                                         variant={tableFilter === f ? "default" : "outline"}
                                         onClick={() => setTableFilter(f)}
-                                        className="capitalize text-xs"
+                                        className="capitalize text-xs cursor-pointer"
                                     >
                                         {f}
                                     </Button>
@@ -317,7 +317,7 @@ EmploymentLocationAnalytics.layout = (page) => <AdminLayout>{page}</AdminLayout>
 
 function SummaryCard({ icon, label, value, sub, color }) {
     return (
-        <Card className={`${color} border-0 shadow-sm`}>
+        <Card className={`${color} border-gray-300 shadow-sm`}>
             <CardContent className="p-4 flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase tracking-wide">
                     {icon} {label}

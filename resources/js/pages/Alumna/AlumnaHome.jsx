@@ -14,7 +14,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
     : image;
 
   return (
-    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col h-[420px]">      
+    <div className="bg-white border rounded-2xl p-6 shadow-md hover:shadow-md transition hover:scale-105 flex flex-col h-[420px] w-full max-w-[350px]">      
       {imgSrc ? (
         <img
           src={imgSrc}
@@ -118,7 +118,7 @@ export default function AlumnaHome({ announcements }) {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {announcements.length > 0 ? (
                 announcements.map((announcement) => (
                   <AnnouncementCard
@@ -134,7 +134,7 @@ export default function AlumnaHome({ announcements }) {
                   />
                 ))
               ) : (
-                <div className="col-span-3 flex flex-col items-center justify-center py-16 gap-3">
+                <div className="w-full flex flex-col items-center justify-center py-16 gap-3">
                   <Megaphone size={48} className="text-white/30" />
                   <p className="text-white/50 text-sm">No announcements available</p>
                 </div>

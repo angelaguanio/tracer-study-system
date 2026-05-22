@@ -13,12 +13,10 @@ class SectionFactory extends Factory
     public function definition(): array
     {
         return [
-            'survey_id' => Survey::factory(),
+            'survey_id' => 1, // Default to 1, should be overridden
             'title' => $this->faker->sentence(2),
             'description' => $this->faker->paragraph(),
             'display_order' => $this->faker->numberBetween(1, 10),
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }

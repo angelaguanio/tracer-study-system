@@ -90,14 +90,32 @@ export default function SurveyAnalytics({
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
 
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <Link href={route("admin.analytics")}>
-                    <button className="p-2 rounded hover:bg-gray-200 text-gray-600"><ArrowLeft size={18} /></button>
-                </Link>
-                <div>
-                    <h1 className="text-xl font-bold text-gray-800">{survey.title} — Analytics</h1>
-                    <p className="text-sm text-gray-500">Total respondents: <span className="font-semibold text-gray-800">{totalRespondents}</span></p>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Link href={route("admin.analytics")}>
+                        <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer"><ArrowLeft size={18} /></button>
+                    </Link>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800">{survey.title} — Analytics</h1>
+                        <p className="text-sm text-gray-500">Total respondents: <span className="font-semibold text-gray-800">{totalRespondents}</span></p>
+                    </div>
                 </div>
+                <a
+                    href={route("admin.surveys.analytics.download", {
+                        survey: survey.id,
+                        year_graduated: localFilters.year_graduated || undefined,
+                        from: localFilters.from || undefined,
+                        to: localFilters.to || undefined,
+                    })}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download Report
+                </a>
             </div>
 
             {/* Filters */}

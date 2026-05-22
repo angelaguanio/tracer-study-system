@@ -14,9 +14,28 @@ class SurveyFactory extends Factory
         return [
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'status' => $this->faker->randomElement(['active', 'inactive', 'draft']),
         ];
+    }
+
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'active',
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'inactive',
+        ]);
+    }
+
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'draft',
+        ]);
     }
 }

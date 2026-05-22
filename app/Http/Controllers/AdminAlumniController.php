@@ -7,6 +7,9 @@ use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AlumniBroadcastEmail;
+use App\Jobs\SendAlumniBroadcastJob;
 
 class AdminAlumniController extends Controller
 {
@@ -173,4 +176,54 @@ class AdminAlumniController extends Controller
 
     return back()->with('success', 'Employment updated successfully.');
 }
+
+    /**
+     * Send email to individual alumni
+     */
+    public function sendEmail(Request $request, $id)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        Mail::to($user->email)->send(new AlumniBroadcastEmail(
+            $request->subject,
+            $request->message
+        ));
+
+        return back()->with('success', 'Email sent successfully to ' . $user->first_name . ' ' . $user->last_name);
+    }
+
+    /**
+     * Send bulk email to selected alumni
+     */
+    public function sendBulkEmail(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+        ]);
+
+       
+
+        // Dispatch individual jobs for each user with delays
+        // Start with 60 seconds for first email, then add 60 seconds for each subsequent email
+        // This ensures we stay well under Mailtrap's rate limit
+        foreach ($request->user_ids as $index => $userId) {
+            $delaySeconds = 60 + ($index * 60); // 60, 120, 180, 240, etc. (1 min intervals)
+            
+            SendAlumniBroadcastJob::dispatch(
+                $request->subject,
+                $request->message,
+                [$userId] // Send to one user at a time
+            )->delay(now()->addSeconds($delaySeconds));
+        }
+
+        return back()->with('success', 'Bulk email queued successfully' . count($request->user_ids));
+    }
 }

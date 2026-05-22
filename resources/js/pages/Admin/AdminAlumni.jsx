@@ -294,7 +294,7 @@ export default function AdminAlumni({ alumni, filters }) {
               disabled={bulkSending}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {bulkSending ? "Queuing..." : "Send Email"}
+              {bulkSending ? "Sending..." : "Send Email"}
             </Button>
           </DialogFooter>
         </DialogContent>

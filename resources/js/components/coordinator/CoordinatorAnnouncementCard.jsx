@@ -259,53 +259,58 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
   });
 
   return (
-    <div className="rounded-md border bg-white shadow-sm overflow-x-auto">
-      <Table>
-
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-sky-300">
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className={`p-4 font-bold text-black text-sm sm:text-base ${
-                    header.id === "actions"
-                      ? "text-right pr-6"
-                      : header.id === "created_at"
-                      ? "text-center px-20"
-                      : header.id === "updated_at"
-                      ? "text-center px-20"
-                      : ""
-                  }`}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="p-4">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+    <div className="rounded-md border bg-white shadow-sm flex flex-col h-full overflow-hidden">
+      <div className="flex-1 overflow-auto">
+        <Table className="w-full" style={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+          </colgroup>
+          <TableHeader className="sticky top-0 z-10">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="bg-sky-300">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={`p-4 font-bold text-black text-sm sm:text-base ${
+                      header.id === "actions"
+                        ? "text-right pr-6"
+                        : header.id === "created_at"
+                        ? "text-center"
+                        : header.id === "updated_at"
+                        ? "text-center"
+                        : ""
+                    }`}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell className="text-center p-6" colSpan={columns.length}>
-                No announcements found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="p-2">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell className="text-center p-4" colSpan={columns.length}>
+                  No announcements found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

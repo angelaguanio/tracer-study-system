@@ -74,6 +74,9 @@ class AdminOfSurveyResponseController extends Controller
                 'status' => $hasResponse ? 'completed' : 'incomplete',
                 'course' => $user->courses ?? '-',
                 'year' => $user->year_graduated ?? '-',
+                'avatar' => $user->profile_picture 
+                    ? asset('storage/' . $user->profile_picture) 
+                    : null,
             ];
         });
 

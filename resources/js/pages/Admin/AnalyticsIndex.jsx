@@ -48,7 +48,7 @@ export default function AnalyticsIndex({ surveys }) {
                                 <h2 className="font-semibold text-gray-800">{survey.title}</h2>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <Badge className={survey.status === "active" ? "bg-green-100 text-green-700 border-green-300" : "bg-gray-100 text-gray-500 border-gray-300"}>
-                                        {survey.status === "active" ? "Active" : survey.status}
+                                        {survey.status === "active" ? "Active" : "Inactive"}
                                     </Badge>
                                     <span>{survey.sections_count} section{survey.sections_count !== 1 ? "s" : ""}</span>
                                 </div>

@@ -76,7 +76,7 @@ export default function AdminAlumniCoordinatorTable({
 
         {/* Scrollable body */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
-          <Table className="min-w-[800px] w-full table-fixed">
+          <Table className="min-w-[800px] w-full table-fixed border-b">
             <colgroup>
               <col className="w-[28%]" />
               <col className="w-[22%]" />
