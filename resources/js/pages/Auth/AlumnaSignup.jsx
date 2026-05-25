@@ -454,14 +454,29 @@ const handleSubmit = (e) => {
             <h2 className="text-md text-center font-semibold text-slate-900">
                 What is your reason for not working at the moment?
             </h2>
-            <TextInput
-              name="unemployment_reason"
-              type="text"
+            <Select
               value={data.unemployment_reason}
-              onChange={handleChange}
-              placeholder="Please enter your answer"
-              error={errors.unemployment_reason}
-            />
+              onValueChange={(value) => handleSelectChange('unemployment_reason', value)}
+            >
+              <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                <SelectValue placeholder="Select your reason" />
+              </SelectTrigger>
+              <SelectContent className="max-h-64">
+                <SelectItem value="Studying">Studying</SelectItem>
+                <SelectItem value="Job Hunting">Job Hunting</SelectItem>
+                <SelectItem value="Family Reasons">Family Reasons</SelectItem>
+                <SelectItem value="Health Reasons">Health Reasons</SelectItem>
+                <SelectItem value="Personal Reasons">Personal Reasons</SelectItem>
+                <SelectItem value="Career Break">Career Break</SelectItem>
+                <SelectItem value="Recently Resigned">Recently Resigned</SelectItem>
+                <SelectItem value="Laid Off">Laid Off</SelectItem>
+                <SelectItem value="Relocating">Relocating</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.unemployment_reason && (
+              <p className="text-xs text-red-600">{errors.unemployment_reason}</p>
+            )}
             </div>
           )}
 

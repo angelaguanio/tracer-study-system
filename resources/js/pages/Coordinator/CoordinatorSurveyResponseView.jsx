@@ -35,7 +35,7 @@ export default function CoordinatorSurveyResponseView({ response, survey }) {
       </div>
 
       {/* Profile/Personal Information Wrapper */}
-      <div className="bg-white p-6 lg:p-8 rounded-xl shadow mb-6">
+      {/* <div className="bg-white p-6 lg:p-8 rounded-xl shadow mb-6">
         <div className="flex items-center gap-2 mb-4">
           <User size={20} className="text-gray-700" />
           <h2 className="text-lg font-semibold text-gray-800">Personal Information</h2>
@@ -52,7 +52,7 @@ export default function CoordinatorSurveyResponseView({ response, survey }) {
             <p className="font-semibold text-gray-900">{response?.email || "-"}</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Questionnaire Data Presentation Block */}
       <div className="bg-white p-6 lg:p-8 rounded-xl shadow">

@@ -37,6 +37,9 @@ class AdminAlumniController extends Controller
             $query->whereRaw('TRIM(courses) = ?', [$request->course]);
         }
 
+        // Order by newest account created first
+        $query->orderBy('created_at', 'desc');
+
         $users = $query->paginate(6)->appends($request->query());
 
         $users->getCollection()->transform(function ($user) {
