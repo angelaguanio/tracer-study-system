@@ -25,7 +25,9 @@ return new class extends Migration
 
             // Role & academic info
             $table->string('user_role');
-            $table->smallInteger('year_graduated')->nullable(); // smallInteger is sufficient for a 4-digit year
+            $table->smallInteger('start_year')->nullable(); // smallInteger is sufficient for a 4-digit year
+            $table->smallInteger('end_year')->nullable();
+            $table->string('semester')->nullable(); // smallInteger is sufficient for a 4-digit year
             $table->string('courses')->nullable();
             $table->string('department')->nullable();          // used by AdminAlumniController
 

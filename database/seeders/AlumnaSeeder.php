@@ -25,7 +25,10 @@ class AlumnaSeeder extends Seeder
             'address' => 'Gapan City',
             'contact_number' => '09123456789',
             'courses' => 'BSIT',
-            'year_graduated' => '2022'
+            'start_year' => '2017',
+            'end_year' => '2018',
+            'semester' => '2nd Semester'
+
         ]);
 
     }
