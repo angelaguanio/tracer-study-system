@@ -39,7 +39,7 @@ export default function AdminSurveyResponseView({ response, survey }) {
 
             </div>
 
-            {/* PERSONAL INFORMATION */}
+            {/* PERSONAL INFORMATION
             <div className="bg-white p-6 lg:p-8 rounded-xl shadow mb-6">
 
                 <div className="flex items-center gap-2 mb-4">
@@ -66,7 +66,7 @@ export default function AdminSurveyResponseView({ response, survey }) {
                     </div>
 
                 </div>
-            </div>
+            </div> */}
 
             {/* SURVEY ANSWERS */}
             <div className="bg-white p-6 lg:p-8 rounded-xl shadow mb-10">

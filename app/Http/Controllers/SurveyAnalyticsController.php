@@ -61,14 +61,14 @@ class SurveyAnalyticsController extends Controller
         };
 
         // --- 2. Employment Analysis ---
-        // Find employment status question (looks for "employ" in label)
+        // Find employment status from "Are you currently employed?" question specifically
         $employmentAnswers = Response::where('survey_id', $survey->id)
             ->whereIn('user_id', $respondentIds)
-            ->whereHas('question', fn($q) => $q->where('label', 'like', '%employ%'))
+            ->whereHas('question', fn($q) => $q->where('label', 'like', '%currently employed%'))
             ->pluck('answer_value', 'user_id');
 
-        $employedKeywords   = ['employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
-        $unemployedKeywords = ['unemployed', 'not employed', 'no job'];
+        $employedKeywords   = ['yes', 'employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
+        $unemployedKeywords = ['unemployed', 'not employed', 'no job', 'no'];
 
         $employedCount   = 0;
         $unemployedCount = 0;
@@ -76,17 +76,20 @@ class SurveyAnalyticsController extends Controller
 
         foreach ($employmentAnswers as $ans) {
             $lower = strtolower(trim($ans ?? ''));
-            $isUnemployed = false;
-            foreach ($unemployedKeywords as $kw) {
-                if (str_contains($lower, $kw)) { $isUnemployed = true; break; }
+            $isEmployed = false;
+            
+            // Check if answer indicates employment
+            foreach ($employedKeywords as $kw) {
+                if (str_contains($lower, $kw)) { 
+                    $isEmployed = true; 
+                    break; 
+                }
             }
-            // Also treat bare "no" as unemployed
-            if ($lower === 'no') $isUnemployed = true;
 
-            if ($isUnemployed) {
-                $unemployedCount++;
-            } else {
+            if ($isEmployed) {
                 $employedCount++;
+            } else {
+                $unemployedCount++;
             }
             $employmentBreakdown[$ans] = ($employmentBreakdown[$ans] ?? 0) + 1;
         }
@@ -289,7 +292,7 @@ class SurveyAnalyticsController extends Controller
             $yrUserIds = $respondents->where('year_graduated', $yr)->pluck('id');
             $yrEmpAnswers = Response::where('survey_id', $survey->id)
                 ->whereIn('user_id', $yrUserIds)
-                ->whereHas('question', fn($q) => $q->where('label', 'like', '%employ%'))
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%currently employed%'))
                 ->pluck('answer_value', 'user_id');
 
             $yrEmpCount = 0;
@@ -788,22 +791,21 @@ class SurveyAnalyticsController extends Controller
             // Employment Analysis
             $employmentAnswers = Response::where('survey_id', $survey->id)
                 ->whereIn('user_id', $respondentIds)
-                ->whereHas('question', fn($q) => $q->where('label', 'like', '%employ%'))
+                ->whereHas('question', fn($q) => $q->where('label', 'like', '%currently employed%'))
                 ->pluck('answer_value', 'user_id');
 
-            $employedKeywords   = ['employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
-            $unemployedKeywords = ['unemployed', 'not employed', 'no job'];
+            $employedKeywords   = ['yes', 'employed', 'permanent', 'probationary', 'contractual', 'part-time', 'self-employed'];
+            $unemployedKeywords = ['unemployed', 'not employed', 'no job', 'no'];
 
             $employedCount = 0;
             $unemployedCount = 0;
             foreach ($employmentAnswers as $ans) {
                 $lower = strtolower(trim($ans ?? ''));
-                $isUnemployed = false;
-                foreach ($unemployedKeywords as $kw) {
-                    if (str_contains($lower, $kw)) { $isUnemployed = true; break; }
+                $isEmployed = false;
+                foreach ($employedKeywords as $kw) {
+                    if (str_contains($lower, $kw)) { $isEmployed = true; break; }
                 }
-                if ($lower === 'no') $isUnemployed = true;
-                $isUnemployed ? $unemployedCount++ : $employedCount++;
+                $isEmployed ? $employedCount++ : $unemployedCount++;
             }
 
             $employmentRate = $totalRespondents > 0 ? round(($employedCount / $totalRespondents) * 100, 1) : 0;

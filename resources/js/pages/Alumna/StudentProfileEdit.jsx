@@ -184,7 +184,27 @@ export default function StudentProfileEdit() {
                         )}
 
                         {data.is_employed === 'no' && (
-                            <div><label className={labelClass}>Reason for Unemployment</label><input type="text" required value={data.reason_unemployed} onChange={e => setData('reason_unemployed', e.target.value)} className={inputClass} placeholder="State reason" /></div>
+                            <div>
+                                <label className={labelClass}>Reason for Unemployment</label>
+                                <select 
+                                    required 
+                                    value={data.reason_unemployed} 
+                                    onChange={e => setData('reason_unemployed', e.target.value)} 
+                                    className={inputClass}
+                                >
+                                    <option value="" disabled>Please select your reason</option>
+                                    <option value="Studying">Studying</option>
+                                    <option value="Job Hunting">Job Hunting</option>
+                                    <option value="Family Reasons">Family Reasons</option>
+                                    <option value="Health Reasons">Health Reasons</option>
+                                    <option value="Personal Reasons">Personal Reasons</option>
+                                    <option value="Career Break">Career Break</option>
+                                    <option value="Recently Resigned">Recently Resigned</option>
+                                    <option value="Laid Off">Laid Off</option>
+                                    <option value="Relocating">Relocating</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
                         )}
                     </div>
                 </section>

@@ -65,14 +65,16 @@ export default function AlumnaAnnouncements({ announcements }) {
                   )}
 
                   {/* CONTENT */}
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-[#0042A8] text-base font-bold mb-2 line-clamp-2">
-                      {ann.title}
-                    </h3>
+                  <div className="p-4 flex flex-col flex-1 justify-between">
+                    <div>
+                      <h3 className="text-[#0042A8] text-base font-bold mb-2 line-clamp-1 break-words">
+                        {ann.title}
+                      </h3>
 
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
-                      {ann.details}
-                    </p>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 break-words">
+                        {ann.details}
+                      </p>
+                    </div>
 
                     <Link href={`/alumna/announcement/${ann.id}`}>
                       <button className="w-full cursor-pointer bg-[#014F86] text-white py-2 rounded-md text-sm font-semibold hover:bg-[#013A63] transition">

@@ -37,11 +37,6 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <Link >
-                Profile
-              </Link>
-            </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
                 <Link href={route('coordinator.logout')} className='w-full flex'>
