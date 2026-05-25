@@ -44,7 +44,10 @@ export default function AlumnaSignup() {
   password: '',
   password_confirmation: '',
   courses: '',
-  year_graduated: '',
+  school_year: '',
+  start_year: '',
+  end_year: '',
+  semester:'',
   user_role: '',
 
   currently_employed: '',
@@ -53,12 +56,14 @@ export default function AlumnaSignup() {
   position: '',
   location: '',
   monthly_salary: '',
-
+  employment_start_year: '',
+  employment_end_year: '',
+  is_current: true,
   unemployment_reason: '',
 };
 
 //useform
-  const { data, setData, post, errors, processing } = useForm(INITIAL_FORM);
+  const { data, setData, post, errors, processing, transform } = useForm(INITIAL_FORM);
 
   //returns the user to the error field
   useEffect(() => {
@@ -66,24 +71,36 @@ export default function AlumnaSignup() {
         'last_name',
         'first_name',
         'middle_name',
+        'address',
+        'contact_number',
+        
+      ];
+
+      const step2Fields = [
+        'courses',
+        'start_year',
+        'end_year',
+        'semester',
+      ]
+
+      const step3Fields = [
         'email',
         'password',
         'password_confirmation',
-        'year_graduated',
-        'courses',
-      ];
+      ]
+      const step4Fields = ['currently_employed'];
 
-      const step2Fields = ['currently_employed'];
-
-      const step3Fields = [
+      const step5Fields = [
         'employment_type',
         'company_name',
         'position',
         'location',
         'monthly_salary',
+        'employment_start_year',
+        'employment_end_year',
       ];
 
-      const step4Fields = ['unemployment_reason'];
+      const step6Fields = ['unemployment_reason'];
 
       if (step1Fields.some((field) => errors[field])) {
         setStep(1);
@@ -102,6 +119,16 @@ export default function AlumnaSignup() {
 
       if (step4Fields.some((field) => errors[field])) {
         setStep(4);
+        return;
+      }
+
+      if (step5Fields.some((field) => errors[field])) {
+        setStep(5);
+        return;
+      }
+
+      if (step6Fields.some((field) => errors[field])) {
+        setStep(6);
       }
     }, [errors]);
 
@@ -157,24 +184,80 @@ const COURSE_OPTIONS = [
   },
 ];
 
-const START_YEAR = 2018;
-const END_YEAR = 2022;
+const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();
+const EMPLOYMENT_START_YEAR = 2018;
+const GRADUATED_START_YEAR = 2017;
+const GRADUATED_END_YEAR = 2022;
 
 //year options
-  const yearOptions = useMemo(
-    () =>
-      Array.from({ length: END_YEAR - START_YEAR + 1 }, (_, index) => {
-        const year = END_YEAR - index;
-        return { value: String(year), label: String(year) };
-      }),
-    []
-  );
+const yearOptions = useMemo(
+  () =>
+    Array.from({ length: GRADUATED_END_YEAR - GRADUATED_START_YEAR }, (_, index) => {
+      const startYear = GRADUATED_START_YEAR + index;
+      const endYear = startYear + 1;
+
+      return {
+        value: `${startYear}-${endYear}`,
+        label: `${startYear}-${endYear}`,
+      };
+    }),
+  []
+);
+
+
+const employmentYearOptions = useMemo(
+  () =>
+    Array.from(
+      { length: EMPLOYMENT_CURRENT_YEAR - EMPLOYMENT_START_YEAR + 1 },
+      (_, index) => {
+        const year = EMPLOYMENT_CURRENT_YEAR - index;
+
+        return {
+          value: String(year),
+          label: String(year),
+        };
+      }
+    ),
+  [EMPLOYMENT_CURRENT_YEAR]
+);
+
+const SEMESTER = [
+  {
+    value: '1st Semester',
+    label: '1st Semester',
+  },
+  {
+    value: '2nd Semester',
+    label: '2nd Semester',
+  },
+  {
+    value: '3rd Semester',
+    label: '3rd Semester',
+  },
+  {
+    value: 'Summer',
+    label: 'Summer',
+  },
+]
 
 //submit
 const handleSubmit = (e) => {
   e.preventDefault();
+
+  const [start_year, end_year] = data.school_year.split('-');
+
   post('/alumna/signup', {
     preserveScroll: true,
+    data: {
+      ...data,
+      start_year,
+      end_year,
+      employment_end_year: data.is_current ? null : data.employment_end_year,
+    },
+    onSuccess: () => {
+      setData(INITIAL_FORM);
+      setStep(1);            
+    },
   });
 };
 
@@ -211,38 +294,64 @@ const handleSubmit = (e) => {
   };
 
   const handleSelectChange = (name, value) => {
-    setData(name, value);
+    if (name === 'employment_end_year') {
+    if (value === 'current') {
+      setData({ ...data, is_current: true, employment_end_year: 'current' });
+    } else {
+      setData({ ...data, is_current: false, employment_end_year: value });
+    }
+    return;
+  }
+  setData(name, value);
   };
 
   const isStepOneComplete = [
     data.last_name,
     data.first_name,
+    data.address,
+    data.contact_number,
+  ].every(Boolean);
+
+  const isStepTwoComplete = [
+    data.courses,
+    data.school_year,
+    data.semester,
+  ].every(Boolean);
+
+  const isStepThreeComplete = [
     data.email,
     data.password,
     data.password_confirmation,
-    data.year_graduated,
-    data.courses,
   ].every(Boolean) && passwordErrors.length === 0;
 
   const nextStep = () => {
-    if (step === 1 && isStepOneComplete) {
-      setStep(2);
-      return;
-    }
+  if (step === 1 && isStepOneComplete) {
+    setStep(2);
+    return;
+  }
 
-    if (step === 2) {
-      if (data.currently_employed === 'Yes') {
-        setStep(3);
-      } else if (data.currently_employed === 'No') {
-        setStep(4);
-      }
+  if (step === 2 && isStepTwoComplete) {
+    setStep(3);
+    return;
+  }
+
+  if (step === 3 && isStepThreeComplete) {
+    setStep(4);
+    return;
+  }
+
+  if (step === 4) {
+    if (data.currently_employed === 'Yes') {
+      setStep(5);
+    } else if (data.currently_employed === 'No') {
+      setStep(6);
     }
-  };
+  }
+};
 
   const prevStep = () => {
-    if (step === 3 || step === 4) {
-      setStep(2);
-      return;
+    if (step === 5 || step === 6) {
+      setStep(4);
     }
 
     if (step > 1) {
@@ -264,14 +373,17 @@ const handleSubmit = (e) => {
           </Link>
         )}
 
-        <img src={logo} alt="Alumni Connect logo" className="h-16 sm:h-10 md:h-15" />
-        <p className="text-base font-bruno text-center sm:text-sm">Alumni Connect</p>
+        {/* <img src={logo} alt="Alumni Connect logo" className="h-16 sm:h-10 md:h-15" />
+        <p className="text-base font-bruno text-center sm:text-sm">Alumni Connect</p> */}
       </CardHeader>
 
       <CardContent className="custom-scrollbar overflow-y-auto px-3 py-2">
         <form id="signupForm" className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
           {step === 1 && (
             <>
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800"> Personal Information</h3>
+            </div>
                 {PERSONAL_FIELDS.map((field) => (
                   <TextInput
                     key={field.name}
@@ -284,8 +396,76 @@ const handleSubmit = (e) => {
                     className="text-black border-gray-400 w-full text-sm sm:text-base"
                   />
                 ))}
+                </>
+          )}
 
-              <TextInput
+          {step === 2 && (
+            <>
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800"> Academic Information</h3>
+            </div>
+            <Select
+                value={data.courses}
+                onValueChange={(value) => handleSelectChange('courses', value)}
+              >
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                  <SelectValue placeholder="Course" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48">
+                  <SelectGroup>
+                    {COURSE_OPTIONS.map((course) => (
+                      <SelectItem key={course.value} value={course.value}>
+                        {course.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+            </Select>
+
+            <Select
+                value={data.school_year}
+                onValueChange={(value) => handleSelectChange('school_year', value)}>
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                  <SelectValue placeholder="Year Graduated" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48" >
+                  <SelectGroup >
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year.value} value={year.value} >
+                        {year.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={data.semester}
+                onValueChange={(value) => handleSelectChange('semester', value)}
+              >
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                  <SelectValue placeholder="Semester" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48">
+                  <SelectGroup>
+                    {SEMESTER.map((sem) => (
+                      <SelectItem key={sem.value} value={sem.value}>
+                        {sem.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800"> Account Information</h3>
+            </div>
+             <TextInput
                 name="email"
                 type="email"
                 value={data.email}
@@ -326,46 +506,11 @@ const handleSubmit = (e) => {
                 className="text-black border-gray-400 w-full text-sm sm:text-base"
               />
 
-              <Select
-                value={data.year_graduated}
-                onValueChange={(value) => handleSelectChange('year_graduated', value)}
-                
-              >
-                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
-                  <SelectValue placeholder="Year Graduated" />
-                </SelectTrigger>
-                <SelectContent className="max-h-48" >
-                  <SelectGroup >
-                    {yearOptions.map((year) => (
-                      <SelectItem key={year.value} value={year.value} >
-                        {year.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={data.courses}
-                onValueChange={(value) => handleSelectChange('courses', value)}
-              >
-                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
-                  <SelectValue placeholder="Course" />
-                </SelectTrigger>
-                <SelectContent className="max-h-48">
-                  <SelectGroup>
-                    {COURSE_OPTIONS.map((course) => (
-                      <SelectItem key={course.value} value={course.value}>
-                        {course.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
             </>
           )}
 
-          {step === 2 && (
+
+          {step === 4 && (
             <div className="flex w-full flex-col items-center gap-8">
               <div className="w-full">
                 <p className="text-center text-[15px] text-slate-600">
@@ -411,7 +556,7 @@ const handleSubmit = (e) => {
             </div>
           )}
 
-          {step === 3 && data.currently_employed === 'Yes' && (
+          {step === 5 && data.currently_employed === 'Yes' && (
             <div className="flex flex-col gap-4">
               <div className="p-2">
                 <p>Employment Status</p>
@@ -433,6 +578,43 @@ const handleSubmit = (e) => {
                 ))}
               </div>
 
+              <div className='flex flex-col gap-3'>
+              <Select
+                value={data.employment_start_year}
+                onValueChange={(value) => handleSelectChange('employment_start_year', value)}>
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                  <SelectValue placeholder="Start Year" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48" >
+                  <SelectGroup >
+                    {employmentYearOptions.map((year) => (
+                      <SelectItem key={year.value} value={year.value} >
+                        {year.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={data.is_current ? 'current' : data.employment_end_year}
+                onValueChange={(value) => handleSelectChange('employment_end_year', value)}>
+                <SelectTrigger className="w-full text-black border-gray-400 text-sm">
+                  <SelectValue placeholder="End Year" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48" >
+                  <SelectGroup >
+                    <SelectItem value="current">Present/Current</SelectItem>
+                    {employmentYearOptions.map((year) => (
+                      <SelectItem key={year.value} value={year.value} >
+                        {year.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              </div>
+
               <div className="flex flex-col gap-3 py-3">
                 {EMPLOYED_FIELDS.map((field) => (
                   <TextInput
@@ -446,10 +628,11 @@ const handleSubmit = (e) => {
                   />
                 ))}
               </div>
+
             </div>
           )}
 
-          {step === 4 && data.currently_employed === 'No' && (
+          {step === 6 && data.currently_employed === 'No' && (
             <div className='flex flex-col gap-3 p-4'>
             <h2 className="text-md text-center font-semibold text-slate-900">
                 What is your reason for not working at the moment?
@@ -496,13 +679,15 @@ const handleSubmit = (e) => {
               Back
             </Button>
 
-            {step < 3 && (
+            {step < 5 && (
               <Button
                 type="button"
                 onClick={nextStep}
                 disabled={
                   (step === 1 && !isStepOneComplete) ||
-                  (step === 2 && !data.currently_employed)
+                  (step === 2 && !isStepTwoComplete) ||
+                  (step === 3 && !isStepThreeComplete) ||
+                  (step === 4 && !data.currently_employed)
                 }
                 className="w-1/4"
               >
@@ -511,7 +696,7 @@ const handleSubmit = (e) => {
             )}
           </div>
 
-          {(step === 3 || step === 4) && (
+          {(step === 5 || step === 6) && (
             <Button
               form="signupForm"
               variant="blue"

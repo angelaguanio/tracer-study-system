@@ -32,6 +32,17 @@ class AlumnaAuthController extends Controller
      */
     public function signupAlumna(Request $request) 
     {
+        // Extract start_year and end_year from school_year if provided
+        if ($request->has('school_year') && $request->school_year) {
+            $years = explode('-', $request->school_year);
+            if (count($years) === 2) {
+                $request->merge([
+                    'start_year' => trim($years[0]),
+                    'end_year' => trim($years[1])
+                ]);
+            }
+        }
+
         $validation = $request->validate([
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -46,7 +57,9 @@ class AlumnaAuthController extends Controller
                 'regex:/[0-9]/',      // At least one number
                 'regex:/[!@#$%^&*(),.?":{}|<>_]/', // At least one symbol (including underscore)
             ],
-            'year_graduated' => 'nullable|integer|between:2010,2030',
+            'start_year' => 'required|integer|digits:4',
+            'end_year' => 'required|integer|digits:4|gt:start_year',
+            'semester' => 'required|string',
             'courses' => 'nullable|string',
             
             // Address and Contact Number to validation
@@ -61,6 +74,9 @@ class AlumnaAuthController extends Controller
             'position' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'location' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'monthly_salary' => ['nullable'], // Removed 'numeric' to handle commas manually
+            'employment_start_year' => 'required_if:currently_employed,Yes|nullable|integer',
+            'employment_end_year' => 'required_if:is_current,false|nullable|integer',
+            'is_current' => 'required_if:currently_employed,Yes|boolean',
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one number, and one symbol (!@#$%^&*(),.?":{}|<>_)',
@@ -88,7 +104,9 @@ class AlumnaAuthController extends Controller
             'middle_name' => $validation['middle_name'] ?? null,
             'email' => $validation['email'],
             'password' => Hash::make($validation['password']),
-            'year_graduated' => $validation['year_graduated'] ?? null,
+            'start_year' => $validation['start_year'] ?? null,
+            'end_year' => $validation['end_year'] ?? null,
+            'semester' => $validation['semester'] ?? null,
             'courses' => $validation['courses'] ?? null,
             'user_role' => 'alumna',
             // FIX: Ensure these are saved to the users table
@@ -97,7 +115,7 @@ class AlumnaAuthController extends Controller
         ]);
 
         // Create Employment Record
-        Employment::create([
+        $employmentData = [
             'user_id' => $user->id,
             'currently_employed' => $validation['currently_employed'],
             'employment_type' => $validation['currently_employed'] === 'Yes' ? $validation['employment_type'] : null,
@@ -105,8 +123,21 @@ class AlumnaAuthController extends Controller
             'position' => $validation['currently_employed'] === 'Yes' ? $validation['position'] : null,
             'location' => $validation['currently_employed'] === 'Yes' ? $validation['location'] : null,
             'monthly_salary' => $validation['currently_employed'] === 'Yes' ? $salary : null,
+            'employment_start_year' => $validation['currently_employed'] === 'Yes' ? $validation['employment_start_year'] : null,
             'unemployment_reason' => $validation['currently_employed'] === 'No' ? $validation['unemployment_reason'] : null,
-        ]);
+        ];
+
+        // Handle employment_end_year and is_current properly
+        if ($validation['currently_employed'] === 'Yes') {
+            $isCurrent = isset($validation['is_current']) && ($validation['is_current'] === true || $validation['is_current'] === 'true' || $validation['is_current'] === 1);
+            $employmentData['is_current'] = $isCurrent;
+            $employmentData['employment_end_year'] = $isCurrent ? null : (isset($validation['employment_end_year']) ? (int) $validation['employment_end_year'] : null);
+        } else {
+            $employmentData['is_current'] = false;
+            $employmentData['employment_end_year'] = null;
+        }
+
+        Employment::create($employmentData);
 
         Auth::login($user);
         
