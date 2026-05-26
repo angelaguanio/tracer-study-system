@@ -27,7 +27,7 @@ export default function AdminDashboard({
         {/* Header Section */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-blue-800 font-inter">
-            Welcome back, Admin!
+            Welcome, Admin!
           </h1>
           <p className="text-muted-foreground text-lg">
             Monitor system health, track activity, and manage your alumni network
