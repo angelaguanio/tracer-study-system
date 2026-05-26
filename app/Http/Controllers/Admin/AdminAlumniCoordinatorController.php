@@ -46,13 +46,14 @@ class AdminAlumniCoordinatorController extends Controller
         $this->checkAdmin();
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string'],
-            'last_name'  => ['required', 'string'],
-            'middle_name'=> ['nullable', 'string'],
-            'email'      => ['required', 'email', 'unique:users,email'],
-            'password'   => ['required', 'min:6'],
-            'department' => ['required', 'string'],
-            'courses'    => ['required', 'string'],
+            'first_name'  => ['required', 'string'],
+            'last_name'   => ['required', 'string'],
+            'middle_name' => ['nullable', 'string'],
+            'email'       => ['required', 'email', 'unique:users,email'],
+            'password'    => ['required', 'min:6'],
+            'department'  => ['required', 'string'],
+            'courses'     => ['required', 'string'],
+            'status'      => ['required', 'in:active,inactive'],
         ]);
 
         User::create([
@@ -63,10 +64,10 @@ class AdminAlumniCoordinatorController extends Controller
             'password'    => Hash::make($validated['password']),
             'department'  => $validated['department'],
             'courses'     => $validated['courses'],
+            'status'      => $validated['status'],
             'user_role'   => 'coordinator',
         ]);
 
-  
         return back();
     }
 
@@ -79,17 +80,14 @@ class AdminAlumniCoordinatorController extends Controller
         }
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string'],
-            'last_name'  => ['required', 'string'],
-            'middle_name'=> ['nullable', 'string'],
-            'email'      => [
-                'required',
-                'email',
-                'unique:users,email,' . $alumni_coordinator->id
-            ],
-            'department' => ['nullable', 'string'],
-            'courses'    => ['nullable', 'string'],
-            'password'   => ['nullable', 'min:6'],
+            'first_name'  => ['required', 'string'],
+            'last_name'   => ['required', 'string'],
+            'middle_name' => ['nullable', 'string'],
+            'email'       => ['required', 'email','unique:users,email,' . $alumni_coordinator->id],
+            'department'  => ['required', 'string'],
+            'courses'     => ['required', 'string'],
+            'status'      => ['required', 'in:active,inactive'],
+            'password'    => ['nullable', 'min:6'],
         ]);
 
         $updateData = [
@@ -97,26 +95,17 @@ class AdminAlumniCoordinatorController extends Controller
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
             'email'       => $validated['email'],
+            'department'  => $validated['department'],
+            'courses'     => $validated['courses'],
+            'status'      => $validated['status'],
         ];
 
-        // Only update department if provided
-        if (!empty($validated['department'])) {
-            $updateData['department'] = $validated['department'];
-        }
-
-        // Only update courses if provided
-        if (!empty($validated['courses'])) {
-            $updateData['courses'] = $validated['courses'];
-        }
-
-        // Only update password if provided
         if (!empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
 
         $alumni_coordinator->update($updateData);
 
-       
         return back();
     }
 

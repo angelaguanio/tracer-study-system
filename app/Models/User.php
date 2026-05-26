@@ -26,6 +26,7 @@ class User extends Authenticatable
         'end_year', 
         'semester', 
         'courses', 
+        'status', 
         'department',
         'address',       
         'contact_number',
