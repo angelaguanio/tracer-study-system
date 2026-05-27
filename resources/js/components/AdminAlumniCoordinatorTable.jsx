@@ -69,16 +69,18 @@ export default function AdminAlumniCoordinatorTable({
 
       <div className="bg-white rounded-xl shadow flex flex-col flex-1 min-h-0 overflow-hidden">
 
+        {/* TABLE HEADER */}
         <div className="shrink-0">
           <Table className="w-full table-fixed">
 
             <colgroup>
-              <col className="w-[24%]" />
-              <col className="w-[24%]" />
-              <col className="w-[12%]" />
-              <col className="w-[12%]" />
-              <col className="w-[10%]" />
               <col className="w-[18%]" />
+              <col className="w-[20%]" />
+              <col className="w-[10%]" />
+              <col className="w-[12%]" />
+              <col className="w-[14%]" />
+              <col className="w-[10%]" />
+              <col className="w-[16%]" />
             </colgroup>
 
             <TableHeader className="bg-[#70CAFF] hover:bg-transparent">
@@ -101,6 +103,10 @@ export default function AdminAlumniCoordinatorTable({
                 </TableHead>
 
                 <TableHead className="text-center font-semibold text-gray-700">
+                  Year 
+                </TableHead>
+
+                <TableHead className="text-center font-semibold text-gray-700">
                   Status
                 </TableHead>
 
@@ -110,29 +116,35 @@ export default function AdminAlumniCoordinatorTable({
 
               </TableRow>
             </TableHeader>
+
           </Table>
         </div>
 
+        {/* TABLE BODY */}
         <div className="flex-1 min-h-0 overflow-y-auto">
           <Table className="w-full table-fixed border-b">
 
             <colgroup>
-              <col className="w-[24%]" />
-              <col className="w-[24%]" />
-              <col className="w-[12%]" />
-              <col className="w-[12%]" />
-              <col className="w-[10%]" />
               <col className="w-[18%]" />
+              <col className="w-[20%]" />
+              <col className="w-[10%]" />
+              <col className="w-[12%]" />
+              <col className="w-[14%]" />
+              <col className="w-[10%]" />
+              <col className="w-[16%]" />
             </colgroup>
 
             <TableBody>
+
               {data?.length > 0 ? (
                 data.map((c) => (
+
                   <TableRow
                     key={c.id}
                     className="h-[72px] hover:bg-gray-50 border-b border-gray-100"
                   >
 
+                    {/* NAME */}
                     <TableCell className="text-center">
                       <div className="relative w-full flex items-center px-3">
 
@@ -147,19 +159,29 @@ export default function AdminAlumniCoordinatorTable({
                       </div>
                     </TableCell>
 
+                    {/* EMAIL */}
                     <TableCell className="text-center text-gray-600 truncate px-2">
                       {c.email}
                     </TableCell>
 
+                    {/* DEPARTMENT */}
                     <TableCell className="text-center text-gray-700">
                       {c.department}
                     </TableCell>
 
+                    {/* PROGRAM */}
                     <TableCell className="text-center text-gray-700">
                       {c.courses}
                     </TableCell>
 
-                    {/* STATUS FIXED ONLY */}
+                    {/* YEAR  */}
+                    <TableCell className="text-center text-gray-700">
+                      {c.start_year && c.end_year
+                        ? `${c.start_year} - ${c.end_year}`
+                        : "No Year"}
+                    </TableCell>
+
+                    {/* STATUS */}
                     <TableCell className="text-center">
 
                       <span
@@ -177,6 +199,7 @@ export default function AdminAlumniCoordinatorTable({
 
                     </TableCell>
 
+                    {/* ACTIONS */}
                     <TableCell>
                       <div className="flex justify-center gap-2 flex-wrap">
 
@@ -209,23 +232,28 @@ export default function AdminAlumniCoordinatorTable({
                     </TableCell>
 
                   </TableRow>
+
                 ))
               ) : (
+
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="h-[64px] text-center text-gray-500"
                   >
                     No records found.
                   </TableCell>
                 </TableRow>
+
               )}
+
             </TableBody>
 
           </Table>
         </div>
       </div>
 
+      {/* PAGINATION */}
       <div className="flex justify-start mt-1 pb-2">
 
         <div className="flex items-center gap-1">

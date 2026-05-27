@@ -78,21 +78,38 @@ export default function AdminAlumniCoordinatorView({
                                         {coordinator.last_name}
                                     </h1>
 
-                                    <div className="flex items-center gap-3 mt-2">
+                                    <div className="mt-2">
 
-                                        <p className="text-gray-500">
-                                            Alumni Coordinator
-                                        </p>
+                                        {/* ROLE + STATUS */}
+                                        <div className="flex items-center gap-3">
 
-                                        {/* STATUS BADGE */}
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            coordinator.status === "inactive"
-                                            ? "bg-red-100 text-red-700"
-                                            : "bg-green-100 text-green-700"}`}>
+                                            <p className="text-gray-500">
+                                                Alumni Coordinator
+                                            </p>
+
+                                            {/* STATUS BADGE */}
+                                            <span
+                                                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                    coordinator.status === "inactive"
+                                                        ? "bg-red-100 text-red-700"
+                                                        : "bg-green-100 text-green-700"
+                                                }`}
+                                            >
                                                 {coordinator.status
-                                                ? coordinator.status.charAt(0).toUpperCase() +
-                                                coordinator.status.slice(1): "Active"}
-                                        </span>
+                                                    ? coordinator.status.charAt(0).toUpperCase() +
+                                                      coordinator.status.slice(1)
+                                                    : "Active"}
+                                            </span>
+
+                                        </div>
+
+                                        {/* YEAR */}
+                                        <p className="text-sm text-gray-600 font-medium mt-2">
+                                            {coordinator.start_year &&
+                                            coordinator.end_year
+                                                ? `${coordinator.start_year} - ${coordinator.end_year}`
+                                                : "No Year Assigned"}
+                                        </p>
 
                                     </div>
 
@@ -166,7 +183,7 @@ export default function AdminAlumniCoordinatorView({
                                         {coordinator.courses}
                                     </p>
 
-                                </div>
+                                </div>     
 
                             </div>
 

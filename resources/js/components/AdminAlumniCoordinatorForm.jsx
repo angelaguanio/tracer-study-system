@@ -20,6 +20,12 @@ export default function AdminAlumniCoordinatorForm({
 
     const [showPassword, setShowPassword] = useState(false);
 
+    // YEAR OPTIONS
+    const years = Array.from(
+        { length: 2026 - 2017 + 1 },
+        (_, i) => (2017 + i).toString()
+    );
+
     const {
         data,
         setData,
@@ -35,6 +41,8 @@ export default function AdminAlumniCoordinatorForm({
         email: "",
         department: "CECT",
         courses: "",
+        start_year: "",
+        end_year: "",
         status: "active",
         password: "",
     });
@@ -51,6 +59,12 @@ export default function AdminAlumniCoordinatorForm({
                 email: editing.email || "",
                 department: editing.department || "CECT",
                 courses: editing.courses || "",
+                start_year: editing.start_year
+                    ? editing.start_year.toString()
+                    : "",
+                end_year: editing.end_year
+                    ? editing.end_year.toString()
+                    : "",
                 status: editing.status || "active",
                 password: "",
             });
@@ -278,6 +292,70 @@ export default function AdminAlumniCoordinatorForm({
 
                     </div>
 
+                    {/* START YEAR + END YEAR */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        {/* START YEAR */}
+                        <div className="space-y-1">
+                            <label className="text-sm font-medium text-gray-700">
+                                Start Year
+                            </label>
+
+                           <Select
+                           value={data.start_year || ""}
+                           onValueChange={(val) => setData("start_year", val)}
+                           >
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select start year" />
+                            </SelectTrigger>
+                            
+                            <SelectContent position="popper" side="bottom" align="start">
+                                {years.map((year) => (
+                                    <SelectItem key={year} value={year}>
+                                        {year}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.start_year && (
+                            <p className="text-red-500 text-xs">
+                                {errors.start_year}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* END YEAR */}
+                        <div className="space-y-1">
+                            <label className="text-sm font-medium text-gray-700">
+                                End Year
+                            </label>
+
+                            <Select
+                            value={data.end_year || ""}
+                            onValueChange={(val) => setData("end_year", val)}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select end year" />
+                                </SelectTrigger>
+
+                                <SelectContent position="popper" side="bottom" align="start">
+                                    {years.map((year) => (
+                                        <SelectItem key={year} value={year}>
+                                            {year}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                     
+                            {errors.end_year && (
+                                <p className="text-red-500 text-xs">
+                                    {errors.end_year}
+                                </p>
+                            )}
+                        </div>
+
+                    </div>
+
                     {/* STATUS */}
                     <div className="space-y-1">
 
@@ -391,3 +469,4 @@ export default function AdminAlumniCoordinatorForm({
         </div>
     );
 }
+
