@@ -49,23 +49,50 @@ class AdminAlumniCoordinatorController extends Controller
             'first_name'  => ['required', 'string'],
             'last_name'   => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
-            'email'       => ['required', 'email', 'unique:users,email'],
-            'password'    => ['required', 'min:6'],
-            'department'  => ['required', 'string'],
-            'courses'     => ['required', 'string'],
-            'status'      => ['required', 'in:active,inactive'],
+
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+            ],
+
+            'password' => [
+                'required',
+                'min:6',
+            ],
+
+            'department' => [
+                'required',
+                'string',
+            ],
+
+            'courses' => [
+                'nullable',
+                'string',
+            ],
+
+            'status' => [
+                'required',
+                'in:active,inactive',
+            ],
         ]);
 
         User::create([
             'first_name'  => $validated['first_name'],
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
-            'email'       => $validated['email'],
-            'password'    => Hash::make($validated['password']),
-            'department'  => $validated['department'],
-            'courses'     => $validated['courses'],
-            'status'      => $validated['status'],
-            'user_role'   => 'coordinator',
+
+            'email' => $validated['email'],
+
+            'password' => Hash::make($validated['password']),
+
+            'department' => $validated['department'],
+
+            'courses' => $validated['courses'] ?? null,
+
+            'status' => $validated['status'],
+
+            'user_role' => 'coordinator',
         ]);
 
         return back();
@@ -83,23 +110,64 @@ class AdminAlumniCoordinatorController extends Controller
             'first_name'  => ['required', 'string'],
             'last_name'   => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
-            'email'       => ['required', 'email','unique:users,email,' . $alumni_coordinator->id],
-            'department'  => ['required', 'string'],
-            'courses'     => ['required', 'string'],
-            'status'      => ['required', 'in:active,inactive'],
-            'password'    => ['nullable', 'min:6'],
+
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email,' . $alumni_coordinator->id,
+            ],
+
+            'department' => [
+                'required',
+                'string',
+            ],
+
+            'courses' => [
+                'nullable',
+                'string',
+            ],
+
+            'status' => [
+                'required',
+                'in:active,inactive',
+            ],
+
+            'password' => [
+                'nullable',
+                'min:6',
+            ],
         ]);
+
+        /**
+         * IMPORTANT FIX:
+         * KEEP OLD COURSES IF EMPTY
+         */
+        $courses = $validated['courses'];
+
+        if (
+            $request->filled('status') &&
+            !$request->filled('courses')
+        ) {
+            $courses = $alumni_coordinator->courses;
+        }
 
         $updateData = [
             'first_name'  => $validated['first_name'],
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
-            'email'       => $validated['email'],
-            'department'  => $validated['department'],
-            'courses'     => $validated['courses'],
-            'status'      => $validated['status'],
+
+            'email' => $validated['email'],
+
+            'department' => $validated['department'],
+
+            'courses' => $courses,
+
+            'status' => $validated['status'],
         ];
 
+        /**
+         * UPDATE PASSWORD ONLY IF FILLED
+         */
         if (!empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
