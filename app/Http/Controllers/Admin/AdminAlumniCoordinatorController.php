@@ -21,17 +21,13 @@ class AdminAlumniCoordinatorController extends Controller
     }
 
     /**
-     * CHECK COORDINATOR VALIDITY (ROLE + STATUS)
+     * CHECK ONLY ROLE (NO STATUS BLOCKING)
+     * Admin must be able to edit inactive users
      */
     private function checkCoordinator(User $user)
     {
         if ($user->user_role !== 'coordinator') {
             abort(403);
-        }
-
-        // ❌ BLOCK INACTIVE COORDINATORS FROM ADMIN ACTIONS
-        if ($user->status === 'inactive') {
-            abort(403, 'This coordinator is inactive.');
         }
     }
 
@@ -124,7 +120,7 @@ class AdminAlumniCoordinatorController extends Controller
             'status'      => $validated['status'],
         ];
 
-        // password update only if filled
+        // update password only if filled
         if (!empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
