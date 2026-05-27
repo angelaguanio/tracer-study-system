@@ -31,11 +31,11 @@ class AnnouncementController extends Controller
 
         $announcements = Announcement::query()
 
-            ->where('status', '!=', 'rejected')
+            ->whereIn('status', ['approved','pending','revise'])
 
             // STATUS FILTER
-            ->when($status && $status !== 'All', function ($q) use ($status) {
-                $q->where('status', strtolower($status));
+            ->when($status, function ($q) use ($status) {
+                $q->where('status', $status);
             })
 
             // SEARCH
@@ -123,7 +123,7 @@ class AnnouncementController extends Controller
             ->with('success', 'Announcement created successfully!');
     }
 
-    /* ================= APPROVE / REJECT ================= */
+    /* ================= APPROVE / REVISE ================= */
     public function approve(Announcement $announcement)
     {
         $announcement->update([
@@ -135,15 +135,20 @@ class AnnouncementController extends Controller
             ->with('success', 'Announcement approved successfully!');
     }
 
-    public function reject(Announcement $announcement)
+    public function reject(Request $request, Announcement $announcement)
     {
+        $request->validate([
+            'note' => 'required|string'
+        ]);
+
         $announcement->update([
-            'status' => 'rejected'
+            'status' => 'revise',
+            'revision_note' => $request->note,
         ]);
 
         return redirect()
             ->route('admin.announcement.index')
-            ->with('success', 'Announcement rejected successfully!');
+            ->with('success', 'Marked for revision');
     }
 
     /* ================= VIEW ================= */

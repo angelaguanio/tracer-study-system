@@ -34,7 +34,6 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
   const ActionCell = ({ data }) => {
     const isPending = data.status === "pending";
     const isApproved = data.status === "approved";
-    const isRejected = data.status === "rejected";
     const isAdmin = data.user_role === "admin";
 
     const [open, setOpen] = useState(false);
@@ -54,90 +53,100 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     return (
         <div className="flex items-center justify-end w-full relative gap-2 min-h-[40px]" ref={ref}>
     
-          <div className="flex items-center justify-end gap-2 w-full">
+          <div className="flex items-center justify-end gap-2 w-full pr-2">
 
-            {/* PREVIEW */}
-            {(isApproved || isRejected) ? (
-              <>
-    
-                <div className="w-9 h-9 invisible" />
-    
+            {/* VIEW BUTTON (ALL STATUS) */}
+            <button
+              onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition"
+            >
+              <Eye size={16} />
+              <span className="hidden sm:inline">View</span>
+            </button>
+
+            {/* 3 DOTS ONLY IF NOT APPROVED */}
+            {!isApproved && (
+              <div className="relative">
                 <button
-                  onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
-                  className={`flex items-center gap-1 px-3 py-2 rounded-xl border transition mr-10
-                    ${
-                    isApproved
-                      ? "border-green-400 text-green-600 hover:bg-green-100"
-                      : "border-red-400 text-red-600 hover:bg-red-100"
-                  }`}
-              >
-                  <Eye size={16} />
-                  <span className="hidden sm:inline">Preview</span>
-                </button>
-              </>
-            ) : (
-              <>
-                {/* VIEW */}
-                <button
-                  onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition"
+                  onClick={() => setOpen(!open)}
+                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
                 >
-                  <Eye size={16} />
-                  <span className="hidden sm:inline">View</span>
+                  <Ellipsis size={18} />
                 </button>
-    
-                {/* 3 DOTS */}
-                <div className="relative">
-                  <button
-                    onClick={() => setOpen(!open)}
-                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                  >
-                    <Ellipsis size={18} />
-                  </button>
-    
-                  {open && (
-                    <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
-    
-                      <button
-                        onClick={() => {
-                          setOpen(false);
-                          router.get(`/admin/announcement/${data.id}/edit`);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
-                      >
-                        <Pencil size={14} />
-                        Edit
+
+                {open && (
+                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
+
+                    <button
+                      onClick={() => {
+                        setOpen(false);
+                        router.get(`/admin/announcement/${data.id}/edit`);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
+                    >
+                      <Pencil size={14} />
+                      Edit
+                    </button>
+
+                    <CoordinatorAnnouncementDeletePrompt
+                      announcementId={data.id}
+                      onSuccess={() => {
+                        setOpen(false);
+                        onDeleteSuccess?.();
+                      }}
+                    >
+                      <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
+                        <Trash2 size={14} />
+                        Delete
                       </button>
-    
-                      <CoordinatorAnnouncementDeletePrompt
-                        announcementId={data.id}
-                        onSuccess={() => {
-                          setOpen(false);
-                          onDeleteSuccess?.();
-                        }}
-                      >
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
-                          <Trash2 size={14} />
-                          Delete
-                        </button>
-                      </CoordinatorAnnouncementDeletePrompt>
-    
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-    
+                    </CoordinatorAnnouncementDeletePrompt>
+
+                  </div>
+                )}
+              </div>
+            )}    
           </div>
         </div>
       );
     }
 
   const columns = [
+    /* DATE */
+    {
+      accessorKey: "created_at",
+      header: () => (
+        <div className="text-left w-full pl-6">
+          Date
+        </div>
+      ),
+      cell: ({ row }) => {
+        const date = new Date(row.original.created_at);
+
+        return (
+          <div className="flex flex-col items-start justify-start text-left leading-tight pl-3">
+            <div className="text-sm text-gray-800 font-medium">
+              {date.toLocaleDateString(undefined,{
+                year:"numeric",
+                month:"short",
+                day:"numeric"
+              })}
+            </div>
+
+            <div className="text-xs text-gray-500">
+              {date.toLocaleTimeString([],{
+                hour:"2-digit",
+                minute:"2-digit"
+              })}
+            </div>
+          </div>
+        );
+      },
+    },
+
     {
       accessorKey: "title",
       header: () => (
-        <div className="text-left w-full">
+        <div className="text-left w-full pl-14">
           Announcement
         </div>
       ),
@@ -145,97 +154,42 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
         const data = row.original;
 
         return (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-h-[70px]">
 
-            <div className="flex items-center gap-4">
-
-              <div className="w-20 h-20 flex-shrink-0 rounded-md flex items-center justify-center overflow-hidden">
-
-                {Array.isArray(data.image) && data.image.length > 0 ? (
-                  <img
-                    src={data.image[0]}
-                    alt={data.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : typeof data.image === "string" ? (
-                  <img
-                    src={data.image}
-                    alt={data.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center text-[#2859C5]">
-                    <ImageOff size={40} />
-                  </div>
-                )}
-
-              </div>
-
-              <h2 className="font-semibold text-gray-800 text-sm sm:text-base">
+              <h2 className="font-semibold text-gray-800 text-sm sm:text-base text-center">
                 {data.title}
               </h2>
 
             </div>
-          </div>
         );
       },
     },
 
     {
-      accessorKey: "created_at",
+      accessorKey: "status",
       header: () => (
         <div className="text-center w-full">
-          Created On
+          Status
         </div>
       ),
       cell: ({ row }) => {
-        const date = new Date(row.original.created_at);
+        const status = row.original.status;
 
         return (
-          <div className="flex flex-col items-center justify-center text-center leading-tight">
-            <div className="text-sm text-gray-800 font-medium">
-              {date.toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </div>
-            <div className="text-xs text-gray-500">
-              {date.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </div>
-          </div>
-        );
-      },
-    },
-
-    {
-      accessorKey: "updated_at",
-      header: () => (
-        <div className="text-center w-full">
-          Updated At
-        </div>
-      ),
-      cell: ({ row }) => {
-        const date = new Date(row.original.updated_at);
-
-        return (
-          <div className="flex flex-col items-center justify-center text-center leading-tight">
-            <div className="text-sm text-gray-800 font-medium">
-              {date.toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </div>
-            <div className="text-xs text-gray-500">
-              {date.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </div>
+          <div className="flex justify-center">
+            <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize
+              ${
+                status === "approved"
+                  ? "bg-green-100 text-green-700"
+                  : status === "pending"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : status === "revise"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {status}
+            </span>
           </div>
         );
       },
@@ -244,7 +198,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     {
       id: "actions",
       header: () => (
-        <div className="text-right pr-12 w-full">
+        <div className="text-right w-full">
           Actions
         </div>
       ),
@@ -263,10 +217,10 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
       <div className="flex-1 overflow-auto">
         <Table className="w-full" style={{ tableLayout: 'fixed' }}>
           <colgroup>
+            <col style={{ width: '20%' }} />
             <col style={{ width: '40%' }} />
-            <col style={{ width: '20%' }} />
-            <col style={{ width: '20%' }} />
-            <col style={{ width: '20%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '25%' }} />
           </colgroup>
           <TableHeader className="sticky top-0 z-10 bg-sky-300">
             {table.getHeaderGroups().map((headerGroup) => (

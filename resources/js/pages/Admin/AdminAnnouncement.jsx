@@ -6,10 +6,11 @@ import { useState, useEffect } from "react";
 
 export default function AdminAnnouncement({ announcements }) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
 
@@ -47,7 +48,7 @@ export default function AdminAnnouncement({ announcements }) {
         "/admin/announcement",
         {
           search,
-          status: activeTab,
+          status: statusFilter,
           sort: sortOrder,
         },
         {
@@ -58,7 +59,7 @@ export default function AdminAnnouncement({ announcements }) {
     }, 300);
 
     return () => clearTimeout(delay);
-  }, [search, activeTab, sortOrder]);
+  }, [search, statusFilter, sortOrder]);
 
   const list = announcements?.data ?? [];
   const filteredAnnouncements = list;
@@ -84,28 +85,11 @@ export default function AdminAnnouncement({ announcements }) {
         </Link>
       </div>
 
-      {/* TABS + SEARCH + SORT */}
+      {/* FILTERS (RIGHT SIDE ALIGNED) */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-        {/* TABS */}
-        <div className="flex gap-2">
-          {["All", "Pending", "Approved"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-md text-sm font-medium border hover:cursor-pointer transition ${
-                activeTab === tab
-                  ? "bg-[#008236] text-white hover:bg-green-800"
-                  : "bg-blue-500 text-white  hover:bg-blue-800"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* SEARCH + SORT */}
-        <div className="flex gap-2 items-center">
+        {/* RIGHT SIDE CONTROLS */}
+        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto ml-auto">
 
           {/* SEARCH */}
           <div className="relative w-full sm:w-64 bg-white">
@@ -121,6 +105,71 @@ export default function AdminAnnouncement({ announcements }) {
             />
           </div>
 
+          {/* STATUS FILTER */}
+          <div className="relative">
+
+            <button
+              onClick={() => setStatusOpen(!statusOpen)}
+              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
+            >
+              Status: {
+                statusFilter === ""
+                  ? "All"
+                  : statusFilter.charAt(0).toUpperCase() +
+                    statusFilter.slice(1)
+              }
+
+              <ChevronDown size={16} />
+            </button>
+
+            {statusOpen && (
+              <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-28">
+
+                <button
+                  onClick={() => {
+                    setStatusFilter("");
+                    setStatusOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                >
+                  All
+                </button>
+
+                <button
+                  onClick={() => {
+                    setStatusFilter("approved");
+                    setStatusOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                >
+                  Approved
+                </button>
+
+                <button
+                  onClick={() => {
+                    setStatusFilter("pending");
+                    setStatusOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                >
+                  Pending
+                </button>
+
+                <button
+                  onClick={() => {
+                    setStatusFilter("revise");
+                    setStatusOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                >
+                  Revise
+                </button>
+
+              </div>
+            )}
+
+          </div>
+
           {/* SORT */}
           <div className="relative">
             <button
@@ -133,6 +182,7 @@ export default function AdminAnnouncement({ announcements }) {
 
             {sortOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-32">
+
                 <button
                   onClick={() => {
                     setSortOrder("newest");
@@ -152,11 +202,13 @@ export default function AdminAnnouncement({ announcements }) {
                 >
                   Oldest
                 </button>
+
               </div>
             )}
           </div>
 
         </div>
+
       </div>
 
       {/* TABLE */}

@@ -1,15 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { router } from "@inertiajs/react";
 import { Pencil, Check, X } from "lucide-react";
 
 export default function AdminAnnouncementViewCard({ announcement }) {
   if (!announcement) return null;
 
-  const { id, title, details, image, created_at, status } = announcement;
+  const { id, title, details, image, created_at, status, revision_note } = announcement;
 
   const isPending = status === "pending";
+
+  const [openModal, setOpenModal] = useState(false);
+  const [note, setNote] = useState("");
 
   // FORMAT DATE
   const formattedDate = new Date(created_at).toLocaleString("en-US", {
@@ -29,51 +32,49 @@ export default function AdminAnnouncementViewCard({ announcement }) {
     });
   };
 
-  // REJECT FUNCTION
-  const handleReject = () => {
-    router.put(`/admin/announcement/${id}/reject`, {}, {
-      preserveScroll: true,
-      onSuccess: () => router.reload({ preserveScroll: true }),
-    });
+  // OPEN MODAL
+  const openReviseModal = () => {
+    setOpenModal(true);
   };
 
-  // EDIT FUNCTION
-  const handleEdit = () => {
-    router.get(`/admin/announcement/${id}/edit`);
+  // SUBMIT REVISION
+  const submitRevision = () => {
+    if (!note.trim()) return;
+
+    router.put(
+      `/admin/announcement/${id}/reject`,
+      { note },
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          setOpenModal(false);
+          setNote("");
+          router.reload({ preserveScroll: true });
+        },
+      }
+    );
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full flex flex-col lg:flex-row gap-6">
 
-      {/* ================= TITLE + DATE ================= */}
-      <div className="flex flex-col items-center md:items-start space-y-3 w-full">
+      {/* ================= LEFT SIDE (MAIN CONTENT) ================= */}
+      <div className="flex-1 space-y-6">
 
-        <div className="text-center md:text-left w-full">
-
-          {/* TITLE */}
+        {/* TITLE + DATE */}
+        <div className="text-center lg:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold text-blue-800 mb-1">
             {title}
           </h1>
 
-          {/* DATE */}
           <p className="text-gray-600">
             {formattedDate}
           </p>
 
-          {/* ================= ACTION BUTTONS ================= */}
+          {/* ACTION BUTTONS */}
           {isPending && (
-            <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-end">
+            <div className="flex flex-wrap gap-2 mt-3 justify-center lg:justify-end">
 
-              {/* EDIT */}
-              <button
-                onClick={handleEdit}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-green-600 text-green-700 bg-green-100 hover:bg-green-200 transition"
-              >
-                <Pencil size={16} />
-                Edit
-              </button>
-
-              {/* APPROVE */}
               <button
                 onClick={handleApprove}
                 className="flex items-center gap-1 px-3 py-2 rounded-xl border border-blue-600 text-blue-700 bg-blue-100 hover:bg-blue-200 transition"
@@ -82,23 +83,21 @@ export default function AdminAnnouncementViewCard({ announcement }) {
                 Approve
               </button>
 
-              {/* REJECT */}
               <button
-                onClick={handleReject}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-red-600 text-red-700 bg-red-100 hover:bg-red-200 transition"
+                onClick={openReviseModal}
+                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-yellow-600 text-yellow-700 bg-yellow-100 hover:bg-yellow-200 transition"
               >
                 <X size={16} />
-                Reject
+                Revise
               </button>
 
             </div>
           )}
-
         </div>
 
         {/* IMAGE */}
         {Array.isArray(image) && image.length > 0 ? (
-          <div className="flex flex-wrap justify-center gap-3 w-full">
+          <div className="flex flex-wrap justify-center lg:justify-start gap-3 w-full">
             {image.map((img, index) => (
               <img
                 key={index}
@@ -108,20 +107,76 @@ export default function AdminAnnouncementViewCard({ announcement }) {
             ))}
           </div>
         ) : typeof image === "string" ? (
-          <div className="flex justify-center w-full">
+          <div className="flex justify-center lg:justify-start w-full">
             <img src={image} className="max-w-[250px] rounded shadow" />
           </div>
         ) : null}
 
+        {/* DESCRIPTION */}
+        <div className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base space-y-4">
+          {details.split("\n").map((line, idx) => (
+            <p key={idx}>{line}</p>
+          ))}
+        </div>
       </div>
 
-      {/* DESCRIPTION (FULL WIDTH) */}
-      <div className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base space-y-4">
-        {details.split("\n").map((line, idx) => (
-          <p key={idx}>{line}</p>
-        ))}
-      </div>
+      {/* ================= RIGHT SIDE (REVISION BOX) ================= */}
+      {status === "revise" && revision_note && (
+        <div className="w-full lg:w-[320px]">
+          <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 shadow-sm sticky top-6">
 
+            <h3 className="text-sm font-semibold text-yellow-800 mb-2">
+              Revision Note
+            </h3>
+
+            <p className="text-sm text-yellow-700 leading-relaxed">
+              {revision_note}
+            </p>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL ================= */}
+      {openModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-5 rounded-lg shadow-lg">
+
+            <h2 className="text-lg font-semibold mb-3">
+              Revision Note
+            </h2>
+
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Write reason for revision..."
+              className="w-full border rounded-md p-3 text-sm h-32 resize-none"
+            />
+
+            <div className="flex justify-end gap-2 mt-4">
+
+              <button
+                onClick={() => {
+                  setOpenModal(false);
+                  setNote("");
+                }}
+                className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={submitRevision}
+                className="px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
+              >
+                Submit
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

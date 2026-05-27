@@ -3,7 +3,7 @@ import React from "react";
 export default function CoordinatorAnnouncementViewCard({ announcement }) {
   if (!announcement) return null;
 
-  const { title, details, image, created_at } = announcement;
+  const { title, details, image, created_at, status, revision_note } = announcement;
 
   // FORMAT DATE
   const formattedDate = new Date(created_at).toLocaleString("en-US", {
@@ -29,6 +29,7 @@ export default function CoordinatorAnnouncementViewCard({ announcement }) {
           <p className="text-gray-600">
             {formattedDate}
           </p>
+
         </div>
 
         {/* IMAGE */}
@@ -56,6 +57,13 @@ export default function CoordinatorAnnouncementViewCard({ announcement }) {
           <p key={idx}>{line}</p>
         ))}
       </div>
+
+      {/* REVISION NOTE DISPLAY */}
+          {status === "revise" && revision_note && (
+            <div className="text-xs text-yellow-700 bg-yellow-100 px-3 py-2 rounded-md mt-2 w-fit">
+              Reason: {revision_note}
+            </div>
+          )}
 
     </div>
   );
