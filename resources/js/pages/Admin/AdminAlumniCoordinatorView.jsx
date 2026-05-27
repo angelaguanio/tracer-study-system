@@ -176,7 +176,7 @@ export default function AdminAlumniCoordinatorView({
                                 <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
 
                                     <p className="text-sm text-gray-500 mb-2">
-                                        Course
+                                        Program
                                     </p>
 
                                     <p className="text-gray-800 font-medium">
