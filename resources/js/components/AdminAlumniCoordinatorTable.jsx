@@ -69,48 +69,48 @@ export default function AdminAlumniCoordinatorTable({
 
       <div className="bg-white rounded-xl shadow flex flex-col flex-1 min-h-0 overflow-hidden">
 
-        {/* TABLE HEADER */}
-        <div className="shrink-0">
+        {/* HEADER */}
+        <div className="shrink-0 overflow-hidden">
           <Table className="w-full table-fixed">
 
             <colgroup>
               <col className="w-[18%]" />
-              <col className="w-[20%]" />
+              <col className="w-[22%]" />
               <col className="w-[10%]" />
               <col className="w-[12%]" />
               <col className="w-[14%]" />
               <col className="w-[10%]" />
-              <col className="w-[16%]" />
+              <col className="w-[14%]" />
             </colgroup>
 
-            <TableHeader className="bg-[#70CAFF] hover:bg-transparent">
+            <TableHeader className="bg-[#70CAFF]">
               <TableRow className="h-[56px]">
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Alumni Coordinator
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Email
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Department
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Program
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
-                  Year 
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+                  Year
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Status
                 </TableHead>
 
-                <TableHead className="text-center font-semibold text-gray-700">
+                <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
                   Actions
                 </TableHead>
 
@@ -120,39 +120,38 @@ export default function AdminAlumniCoordinatorTable({
           </Table>
         </div>
 
-        {/* TABLE BODY */}
+        {/* BODY */}
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <Table className="w-full table-fixed border-b">
+          <Table className="w-full table-fixed">
 
             <colgroup>
               <col className="w-[18%]" />
-              <col className="w-[20%]" />
+              <col className="w-[22%]" />
               <col className="w-[10%]" />
               <col className="w-[12%]" />
               <col className="w-[14%]" />
               <col className="w-[10%]" />
-              <col className="w-[16%]" />
+              <col className="w-[14%]" />
             </colgroup>
 
             <TableBody>
 
               {data?.length > 0 ? (
                 data.map((c) => (
-
                   <TableRow
                     key={c.id}
-                    className="h-[72px] hover:bg-gray-50 border-b border-gray-100"
+                    className="h-[70px] border-b hover:bg-gray-50"
                   >
 
-                    {/* NAME */}
-                    <TableCell className="text-center">
-                      <div className="relative w-full flex items-center px-3">
+                    {/* NAME - FIXED AVATAR LEFT */}
+                    <TableCell className="text-left">
+                      <div className="flex items-center gap-3">
 
-                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm shrink-0 absolute left-3">
+                        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
                           {getInitials(c.first_name, c.last_name)}
                         </div>
 
-                        <span className="font-medium text-gray-800 w-full text-center truncate">
+                        <span className="truncate max-w-[140px]">
                           {c.first_name} {c.last_name}
                         </span>
 
@@ -160,30 +159,29 @@ export default function AdminAlumniCoordinatorTable({
                     </TableCell>
 
                     {/* EMAIL */}
-                    <TableCell className="text-center text-gray-600 truncate px-2">
+                    <TableCell className="text-center text-gray-600 truncate whitespace-nowrap">
                       {c.email}
                     </TableCell>
 
-                    {/* DEPARTMENT */}
-                    <TableCell className="text-center text-gray-700">
+                    {/* DEPT */}
+                    <TableCell className="text-center whitespace-nowrap">
                       {c.department}
                     </TableCell>
 
                     {/* PROGRAM */}
-                    <TableCell className="text-center text-gray-700">
+                    <TableCell className="text-center truncate whitespace-nowrap">
                       {c.courses}
                     </TableCell>
 
-                    {/* YEAR  */}
-                    <TableCell className="text-center text-gray-700">
+                    {/* YEAR */}
+                    <TableCell className="text-center whitespace-nowrap">
                       {c.start_year && c.end_year
                         ? `${c.start_year} - ${c.end_year}`
                         : "No Year"}
                     </TableCell>
 
                     {/* STATUS */}
-                    <TableCell className="text-center">
-
+                    <TableCell className="text-center whitespace-nowrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           c.status === "inactive"
@@ -196,12 +194,11 @@ export default function AdminAlumniCoordinatorTable({
                             c.status.slice(1)
                           : "Active"}
                       </span>
-
                     </TableCell>
 
                     {/* ACTIONS */}
-                    <TableCell>
-                      <div className="flex justify-center gap-2 flex-wrap">
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-2">
 
                         <Button
                           size="sm"
@@ -232,56 +229,46 @@ export default function AdminAlumniCoordinatorTable({
                     </TableCell>
 
                   </TableRow>
-
                 ))
               ) : (
-
                 <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="h-[64px] text-center text-gray-500"
-                  >
+                  <TableCell colSpan={7} className="text-center py-6 text-gray-500">
                     No records found.
                   </TableCell>
                 </TableRow>
-
               )}
 
             </TableBody>
-
           </Table>
         </div>
       </div>
 
       {/* PAGINATION */}
-      <div className="flex justify-start mt-1 pb-2">
+      <div className="flex justify-start">
 
         <div className="flex items-center gap-1">
 
           <button
             disabled={currentPage === 1}
             onClick={() => goToPage(currentPage - 1)}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
+            className="w-9 h-9 flex items-center justify-center rounded border bg-white disabled:opacity-40"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
           {paginationItems.map((item, index) =>
             item === "..." ? (
-              <div
-                key={`dots-${index}`}
-                className="w-9 h-9 flex items-center justify-center text-gray-400"
-              >
+              <div key={index} className="w-9 text-center text-gray-400">
                 ...
               </div>
             ) : (
               <button
                 key={item}
                 onClick={() => goToPage(item)}
-                className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium transition ${
+                className={`w-9 h-9 rounded border text-sm ${
                   currentPage === item
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white hover:bg-gray-50 text-gray-600"
+                    ? "bg-blue-500 text-white"
+                    : "bg-white"
                 }`}
               >
                 {item}
@@ -292,13 +279,14 @@ export default function AdminAlumniCoordinatorTable({
           <button
             disabled={currentPage === lastPage}
             onClick={() => goToPage(currentPage + 1)}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
+            className="w-9 h-9 flex items-center justify-center rounded border bg-white disabled:opacity-40"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
 
         </div>
       </div>
+
     </div>
   );
 }
