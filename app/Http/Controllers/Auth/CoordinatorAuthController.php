@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,27 +9,29 @@ use Inertia\Inertia;
 
 class CoordinatorAuthController extends Controller
 {
-     public function showLogin() {
+    public function showLogin() {
         return Inertia::render('Auth/CoordinatorLogin');
     }
 
     public function loginCoordinator(Request $request) {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()->user_role === 'coordinator') {
-                $request->session()->regenerate();
-                // Use Inertia::location() to force full page reload with fresh CSRF token
-                return Inertia::location(route('coordinator.dashboard'));
-            }
+        if (
+            Auth::attempt([
+                'email' => $credentials['email'],
+                'password' => $credentials['password'],
+                'user_role' => 'coordinator',
+                'status' => 'active', // 🔥 BLOCK INACTIVE
+            ])
+        ) {
+            $request->session()->regenerate();
 
-            // Logged in but wrong role — log them back out
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            return redirect()->intended('/coordinator/dashboard');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials']);
+        return back()->withErrors([
+            'email' => 'Invalid credentials or account inactive.',
+        ]);
     }
 
     public function logoutCoordinator(Request $request) {
