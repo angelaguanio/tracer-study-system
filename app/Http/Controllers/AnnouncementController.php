@@ -203,9 +203,20 @@ class AnnouncementController extends Controller
         ]);
 
         $existing = json_decode($request->existing_images, true) ?? [];
-        $newFiles = $request->file('images', []);
 
-        // MAX 10 TOTAL IMAGES (existing + new)
+        // MAX 10 TOTAL IMAGES (existing + new) (para di null)
+        $newFiles = $request->file('images', []) ?? [];
+
+        // RESET STATUS LOGIC
+        $newStatus = $announcement->status === 'revise'
+            ? 'pending'   // resubmit -> balik pending
+            : $announcement->status;
+
+        $newRevisionNote = $announcement->status === 'revise'
+            ? null        // alisin note after resubmit
+            : $announcement->revision_note;
+
+        // IMAGE LIMIT CHECKS
         if (count($existing) + count($newFiles) > 10) {
             abort(422, 'Maximum of 10 images only.');
         }
@@ -214,12 +225,12 @@ class AnnouncementController extends Controller
         $totalSize = 0;
 
         foreach ($existing as $imageUrl) {
-        $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
+            $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
 
-        if (Storage::disk('public')->exists($path)) {
-            $totalSize += Storage::disk('public')->size($path);
+            if (Storage::disk('public')->exists($path)) {
+                $totalSize += Storage::disk('public')->size($path);
+            }
         }
-    }
 
         // NEW FILES SIZE
         foreach ($newFiles as $file) {
@@ -228,9 +239,10 @@ class AnnouncementController extends Controller
 
         // FINAL CHECK (10MB TOTAL)
         if (($totalSize / 1024 / 1024) > 10) {
-            abort(422, 'Total image size (existing + new) must not exceed 10MB.');
+            abort(422, 'Total image size must not exceed 10MB.');
         }
 
+        // SAVE IMAGES
         $imagePaths = $existing;
 
         foreach ($newFiles as $file) {
@@ -238,10 +250,17 @@ class AnnouncementController extends Controller
             $imagePaths[] = Storage::url($path);
         }
 
+        // FINAL UPDATE
         $announcement->update([
             'title'   => $request->title,
             'details' => $request->details,
             'image'   => $imagePaths,
+
+            // status reset
+            'status' => $newStatus,
+
+            // clear revision note
+            'revision_note' => $newRevisionNote,
         ]);
 
         return redirect()

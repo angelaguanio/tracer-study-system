@@ -59,11 +59,19 @@ export default function CoordinatorAnnouncementViewCard({ announcement }) {
       </div>
 
       {/* REVISION NOTE DISPLAY */}
-          {status === "revise" && revision_note && (
-            <div className="text-xs text-yellow-700 bg-yellow-100 px-3 py-2 rounded-md mt-2 w-fit">
-              Reason: {revision_note}
-            </div>
-          )}
+        {status === "revise" && revision_note && (
+        <div className="mt-4 rounded-xl border-l-4 border-yellow-400 bg-white p-4 shadow-sm">
+
+          <h3 className="text-sm font-semibold text-gray-800 mb-1">
+            Revision Note
+          </h3>
+
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {revision_note}
+          </p>
+
+        </div>
+        )}
 
     </div>
   );

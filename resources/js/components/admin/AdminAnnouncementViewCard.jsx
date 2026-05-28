@@ -97,12 +97,12 @@ export default function AdminAnnouncementViewCard({ announcement }) {
 
         {/* IMAGE */}
         {Array.isArray(image) && image.length > 0 ? (
-          <div className="flex flex-wrap justify-center lg:justify-start gap-3 w-full">
+          <div className="flex flex-wrap justify-center gap-3 w-full">
             {image.map((img, index) => (
               <img
                 key={index}
                 src={img}
-                className="max-w-[250px] max-h-60 object-contain rounded-md shadow"
+                className="max-w-[250px] max-h-[250px] object-contain rounded-md shadow"
               />
             ))}
           </div>
@@ -118,24 +118,22 @@ export default function AdminAnnouncementViewCard({ announcement }) {
             <p key={idx}>{line}</p>
           ))}
         </div>
-      </div>
 
-      {/* ================= RIGHT SIDE (REVISION BOX) ================= */}
-      {status === "revise" && revision_note && (
-        <div className="w-full lg:w-[320px]">
-          <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 shadow-sm sticky top-6">
+        {/* REVISION NOTE DISPLAY */}
+        {status === "revise" && revision_note && (
+        <div className="mt-4 rounded-xl border-l-4 border-yellow-400 bg-white p-4 shadow-sm">
 
-            <h3 className="text-sm font-semibold text-yellow-800 mb-2">
-              Revision Note
-            </h3>
+          <h3 className="text-sm font-semibold text-gray-800 mb-1">
+            Revision Note
+          </h3>
 
-            <p className="text-sm text-yellow-700 leading-relaxed">
-              {revision_note}
-            </p>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {revision_note}
+          </p>
 
-          </div>
         </div>
-      )}
+        )}
+      </div>
 
       {/* ================= MODAL ================= */}
       {openModal && (
