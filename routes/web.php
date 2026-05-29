@@ -204,6 +204,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
           // Analytics
         Route::get('/analytics', function () {
+            // Only admins can access analytics
+            if (!auth()->user()->isAdmin()) {
+                abort(403, 'Only admins can access survey analytics.');
+            }
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
             return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys]);
         })->name('analytics');
@@ -314,6 +318,32 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
         Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
+
+        // Survey Builder for Coordinators
+        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+        Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+        Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+        Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
+
+        // Sections
+        Route::post('/surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
+        Route::put('/surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
+        Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
+        Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+
+        // Questions
+        Route::post('/sections/{section}/questions', [QuestionController::class, 'store'])->name('questions.store');
+        Route::put('/sections/{section}/questions/reorder', [QuestionController::class, 'reorder'])->name('questions.reorder');
+        Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+        Route::put('/questions/{question}/move', [QuestionController::class, 'move'])->name('questions.move');
+        Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+
+        // Subheadings
+        Route::post('/sections/{section}/subheadings', [SubheadingController::class, 'store'])->name('subheadings.store');
+        Route::put('/sections/{section}/subheadings/reorder', [SubheadingController::class, 'reorder'])->name('subheadings.reorder');
+        Route::put('/subheadings/{subheading}', [SubheadingController::class, 'update'])->name('subheadings.update');
+        Route::delete('/subheadings/{subheading}', [SubheadingController::class, 'destroy'])->name('subheadings.destroy');
     });
 });
 

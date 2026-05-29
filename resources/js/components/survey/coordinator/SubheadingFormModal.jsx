@@ -41,11 +41,16 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
             onClose();
         };
 
+        // Determine route prefix from current route name
+        const currentRoute = route().current();
+        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
+        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
+
         try {
             if (isEdit) {
-                router.put(route("admin.subheadings.update", subheading.id), payload, { onError, onSuccess });
+                router.put(route(`${routePrefix}.subheadings.update`, subheading.id), payload, { onError, onSuccess });
             } else {
-                router.post(route("admin.subheadings.store", sectionId), payload, { onError, onSuccess });
+                router.post(route(`${routePrefix}.subheadings.store`, sectionId), payload, { onError, onSuccess });
             }
         } catch (error) {
             console.error('Route error:', error);

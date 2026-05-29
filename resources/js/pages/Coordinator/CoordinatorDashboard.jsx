@@ -4,7 +4,7 @@ import MetricCard from '@/components/dashboard/MetricCard';
 import ChartWidget from '@/components/dashboard/ChartWidget';
 import RecentActivityList from '@/components/dashboard/RecentActivityList';
 import QuickActionButton from '@/components/dashboard/QuickActionButton';
-import { Users, FileText, Clock, CheckCircle, XCircle, Bell, Plus, Eye, AlertCircle, GraduationCap, BookOpen } from 'lucide-react';
+import { Users, FileText, Clock, Plus, Eye, AlertCircle, GraduationCap, BookOpen } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 /**
@@ -85,24 +85,6 @@ export default function CoordinatorDashboard({
               value={metrics.my_pending_announcements} 
               icon={Clock}
               color="yellow"
-            />
-            <MetricCard 
-              title="Approved Announcements" 
-              value={metrics.my_approved_announcements} 
-              icon={CheckCircle}
-              color="green"
-            />
-            <MetricCard 
-              title="Rejected Announcements" 
-              value={metrics.my_rejected_announcements} 
-              icon={XCircle}
-              color="red"
-            />
-            <MetricCard 
-              title="Completed Responses" 
-              value={metrics.completed_responses} 
-              icon={Bell}
-              color="purple"
             />
           </div>
         </div>

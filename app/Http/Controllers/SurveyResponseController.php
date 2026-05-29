@@ -18,10 +18,10 @@ class SurveyResponseController extends Controller
 
     public function index()
     {
-        $survey = Survey::active()->first();
+        $survey = Survey::tracerStudy()->first();
 
         if (!$survey) {
-            return back()->withErrors(['survey' => 'No active survey available at this time.']);
+            return back()->withErrors(['survey' => 'No tracer study survey available at this time.']);
         }
 
         return redirect()->route('alumna.surveys.show', $survey->id);

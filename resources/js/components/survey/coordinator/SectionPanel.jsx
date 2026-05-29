@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 
 export default function SectionPanel({ section, surveyId, isFirst, isLast, isActive, onClick, onReorder, onEdit }) {
     const handleDelete = () => {
-        router.delete(route("admin.sections.destroy", section.id));
+        // Determine route prefix from current route name
+        const currentRoute = route().current();
+        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
+        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
+        
+        router.delete(route(`${routePrefix}.sections.destroy`, section.id));
     };
 
     return (

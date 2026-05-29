@@ -10,6 +10,13 @@ class SurveyPolicy
 {
     public function viewAny(User $user): Response
     {
+        return ($user->isCoordinator() || $user->isAdmin())
+            ? Response::allow()
+            : Response::deny('Only coordinators and admins can access surveys.');
+    }
+
+    public function viewAnalytics(User $user): Response
+    {
         return $user->isAdmin()
             ? Response::allow()
             : Response::deny('Only admins can access survey analytics.');
@@ -17,13 +24,16 @@ class SurveyPolicy
 
     public function view(User $user, Survey $survey): Response
     {
-        // Admins can view any survey
-        if ($user->isAdmin()) {
-            return Response::allow();
+        // Both admins and coordinators can only view surveys they created
+        if ($user->isAdmin() || $user->isCoordinator()) {
+            if ($survey->created_by === $user->id) {
+                return Response::allow();
+            }
+            return Response::deny('You can only view surveys you created.');
         }
 
-        // Alumni can view active surveys (for taking them)
-        if ($user->isAlumna() && $survey->status === 'active') {
+        // Alumni can view tracer study surveys or active surveys
+        if ($user->isAlumna() && ($survey->is_tracer_study || $survey->status === 'active')) {
             return Response::allow();
         }
 
@@ -39,35 +49,47 @@ class SurveyPolicy
 
     public function update(User $user, Survey $survey): Response
     {
-        return ($user->isCoordinator() || $user->isAdmin())
-            ? Response::allow()
-            : Response::deny('Only coordinators can update surveys.');
+        // Both admins and coordinators can only update surveys they created
+        if ($user->isAdmin() || $user->isCoordinator()) {
+            if ($survey->created_by === $user->id) {
+                return Response::allow();
+            }
+            return Response::deny('You can only update surveys you created.');
+        }
+
+        return Response::deny('Only coordinators and admins can update surveys.');
     }
 
     public function delete(User $user, Survey $survey): Response
     {
-        if (!$user->isCoordinator() && !$user->isAdmin()) {
-            return Response::deny('Only coordinators can delete surveys.');
+        // Both admins and coordinators can only delete surveys they created
+        if ($user->isAdmin() || $user->isCoordinator()) {
+            if ($survey->created_by !== $user->id) {
+                return Response::deny('You can only delete surveys you created.');
+            }
+            if ($survey->responses()->exists()) {
+                return Response::deny('Cannot delete a survey that already has responses.');
+            }
+            return Response::allow();
         }
 
-        if ($survey->responses()->exists()) {
-            return Response::deny('Cannot delete a survey that already has responses.');
-        }
-
-        return Response::allow();
+        return Response::deny('Only coordinators and admins can delete surveys.');
     }
 
     public function activate(User $user, Survey $survey): Response
     {
-        if (!$user->isCoordinator() && !$user->isAdmin()) {
-            return Response::deny('Only coordinators can activate surveys.');
+        // Both admins and coordinators can only activate surveys they created
+        if ($user->isAdmin() || $user->isCoordinator()) {
+            if ($survey->created_by !== $user->id) {
+                return Response::deny('You can only activate surveys you created.');
+            }
+            if (!$survey->sections()->exists()) {
+                return Response::deny('A survey must have at least one section before it can be activated.');
+            }
+            return Response::allow();
         }
 
-        if (!$survey->sections()->exists()) {
-            return Response::deny('A survey must have at least one section before it can be activated.');
-        }
-
-        return Response::allow();
+        return Response::deny('Only coordinators and admins can activate surveys.');
     }
 
     public function submit(User $user, Survey $survey): Response
@@ -76,8 +98,9 @@ class SurveyPolicy
             return Response::deny('Only alumni can submit survey responses.');
         }
 
-        if ($survey->status !== 'active') {
-            return Response::deny('This survey is not currently active.');
+        // Alumni can submit tracer study surveys or active surveys
+        if (!$survey->is_tracer_study && $survey->status !== 'active') {
+            return Response::deny('This survey is not available for submission.');
         }
 
         $alreadySubmitted = $survey->responses()

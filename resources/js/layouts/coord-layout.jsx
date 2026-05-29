@@ -2,7 +2,7 @@ import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
-import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail } from 'lucide-react';
+import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail, FileText } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
@@ -19,16 +19,28 @@ export default function CoordinatorLayout({ children }) {
       icon: LayoutDashboard
     },
     {
+      id: "announcement",
+      name: "Announcements",
+      href: "/coordinator/announcement",
+      icon: Bell
+    },
+    {
       id: "inquiries",
       name: "Inquiries",
       href:"/coordinator/inquiries",
       icon: Mail
     },
     {
-      id: "announcement",
-      name: "Announcements",
-      href: "/coordinator/announcement",
-      icon: Bell
+      id: "surveys",
+      name: "Surveys",
+      href: "/coordinator/surveys",
+      icon: FileText
+    },    
+    {
+      id: "survey-response",
+      name: "Survey Response",
+      href: "/coordinator/survey-response",
+      icon: FileChartColumn
     },
     {
       id: "alumni",
@@ -36,12 +48,6 @@ export default function CoordinatorLayout({ children }) {
       href: "/coordinator/alumni",
       icon: CircleUserRound
     },
-    {
-      id: "survey-response",
-      name: "Survey Response",
-      href: "/coordinator/survey-response",
-      icon: FileChartColumn
-    }
   ];
 
   return (

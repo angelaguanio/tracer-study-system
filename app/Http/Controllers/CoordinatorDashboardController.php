@@ -77,9 +77,6 @@ class CoordinatorDashboardController extends Controller
                 'total_alumni' => 'N/A',
                 'pending_inquiries' => 'N/A',
                 'my_pending_announcements' => 'N/A',
-                'my_approved_announcements' => 'N/A',
-                'my_rejected_announcements' => 'N/A',
-                'completed_responses' => 'N/A',
             ];
         }
     }
@@ -87,7 +84,7 @@ class CoordinatorDashboardController extends Controller
     /**
      * Calculate coordinator-specific metrics.
      * 
-     * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6
+     * Requirements: 6.1, 6.2, 6.3
      */
     private function calculateCoordinatorMetrics(): array
     {
@@ -106,27 +103,10 @@ class CoordinatorDashboardController extends Controller
             ->where('status', 'pending')
             ->count();
 
-        // 6.4: My approved announcements where user_id=auth()->id() and status='approved'
-        $myApprovedAnnouncements = Announcement::where('user_id', $userId)
-            ->where('status', 'approved')
-            ->count();
-
-        // 6.5: My rejected announcements where user_id=auth()->id() and status='rejected'
-        $myRejectedAnnouncements = Announcement::where('user_id', $userId)
-            ->where('status', 'rejected')
-            ->count();
-
-        // 6.6: Completed responses count (distinct user-survey pairs with submitted_at not null)
-        $completedResponses = DB::table(DB::raw('(SELECT DISTINCT user_id, survey_id FROM responses WHERE submitted_at IS NOT NULL) as distinct_responses'))
-            ->count();
-
         return [
             'total_alumni' => $totalAlumni,
             'pending_inquiries' => $pendingInquiries,
             'my_pending_announcements' => $myPendingAnnouncements,
-            'my_approved_announcements' => $myApprovedAnnouncements,
-            'my_rejected_announcements' => $myRejectedAnnouncements,
-            'completed_responses' => $completedResponses,
         ];
     }
 

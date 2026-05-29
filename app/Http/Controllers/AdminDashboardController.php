@@ -70,11 +70,8 @@ class AdminDashboardController extends Controller
             return [
                 'total_alumni' => 'N/A',
                 'active_surveys' => 'N/A',
-                'completed_responses' => 'N/A',
                 'pending_inquiries' => 'N/A',
                 'pending_announcements' => 'N/A',
-                'employed_alumni' => 'N/A',
-                'unemployed_alumni' => 'N/A',
             ];
         }
     }
@@ -82,7 +79,7 @@ class AdminDashboardController extends Controller
     /**
      * Calculate overview metrics for admin dashboard.
      * 
-     * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7
+     * Requirements: 1.1, 1.2, 1.3, 1.4
      */
     private function calculateOverviewMetrics(): array
     {
@@ -92,32 +89,19 @@ class AdminDashboardController extends Controller
         // 1.2: Active surveys count where status='active'
         $activeSurveys = Survey::where('status', 'active')->count();
 
-        // 1.3: Completed responses count (distinct user-survey pairs with submitted_at not null)
-        $completedResponses = DB::table(DB::raw('(SELECT DISTINCT user_id, survey_id FROM responses WHERE submitted_at IS NOT NULL) as distinct_responses'))
-            ->count();
-
-        // 1.4: Pending inquiries count where status='pending' and recipient_type='admin'
+        // 1.3: Pending inquiries count where status='pending' and recipient_type='admin'
         $pendingInquiries = Inquiries::where('status', 'pending')
             ->where('recipient_type', 'admin')
             ->count();
 
-        // 1.5: Pending announcements count where status='pending'
+        // 1.4: Pending announcements count where status='pending'
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
-
-        // 1.6: Employed alumni count (currently_employed = 'Yes')
-        $employedAlumni = Employment::where('currently_employed', 'Yes')->count();
-
-        // 1.7: Unemployed alumni count (currently_employed = 'No')
-        $unemployedAlumni = Employment::where('currently_employed', 'No')->count();
 
         return [
             'total_alumni' => $totalAlumni,
             'active_surveys' => $activeSurveys,
-            'completed_responses' => $completedResponses,
             'pending_inquiries' => $pendingInquiries,
             'pending_announcements' => $pendingAnnouncements,
-            'employed_alumni' => $employedAlumni,
-            'unemployed_alumni' => $unemployedAlumni,
         ];
     }
 
@@ -148,7 +132,7 @@ class AdminDashboardController extends Controller
 
     /**
      * Calculate survey analytics aggregation.
-     * Track ALL surveys (active and inactive) since only one can be active at a time.
+     * Track ONLY the tracer study survey completion rates.
      * 
      * Requirements: 2.1, 2.2, 2.3, 2.4
      */
@@ -157,48 +141,39 @@ class AdminDashboardController extends Controller
         // Get total alumni count for completion rate calculation
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
-        // Query ALL surveys (not just active ones)
-        $allSurveys = Survey::orderBy('created_at', 'desc')->get();
+        // Get only the tracer study survey
+        $tracerStudySurvey = Survey::where('is_tracer_study', true)
+            ->where('status', 'active')
+            ->first();
 
-        $surveyAnalytics = [];
-
-        foreach ($allSurveys as $survey) {
-            // 2.2: Calculate completed responses per survey (distinct users with submitted_at not null)
-            $completedResponses = Response::where('survey_id', $survey->id)
-                ->whereNotNull('submitted_at')
-                ->distinct('user_id')
-                ->count('user_id');
-
-            // 2.3: Calculate in-progress responses per survey
-            // Users with drafts but no submission
-            $inProgressResponses = DB::table('survey_drafts')
-                ->where('survey_id', $survey->id)
-                ->whereNotExists(function ($query) use ($survey) {
-                    $query->select(DB::raw(1))
-                        ->from('responses')
-                        ->whereColumn('responses.user_id', 'survey_drafts.user_id')
-                        ->where('responses.survey_id', $survey->id)
-                        ->whereNotNull('responses.submitted_at');
-                })
-                ->distinct('user_id')
-                ->count('user_id');
-
-            // 2.4: Calculate completion rate as (completed / total_alumni) * 100
-            $completionRate = $totalAlumni > 0 
-                ? ($completedResponses / $totalAlumni) * 100 
-                : 0.0;
-
-            $surveyAnalytics[] = [
-                'survey_id' => $survey->id,
-                'survey_title' => $survey->title,
-                'total_responses' => $completedResponses + $inProgressResponses,
-                'completed_responses' => $completedResponses,
-                'in_progress_responses' => $inProgressResponses,
-                'completion_rate' => (float) round($completionRate, 2),
+        if (!$tracerStudySurvey || $totalAlumni === 0) {
+            return [
+                'completed' => 0,
+                'not_completed' => $totalAlumni,
+                'completed_percentage' => 0.0,
+                'not_completed_percentage' => 100.0,
             ];
         }
 
-        return $surveyAnalytics;
+        // Calculate completed responses for tracer study survey
+        $completedResponses = Response::where('survey_id', $tracerStudySurvey->id)
+            ->whereNotNull('submitted_at')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        // Calculate not completed
+        $notCompleted = $totalAlumni - $completedResponses;
+
+        // Calculate percentages
+        $completedPercentage = ($completedResponses / $totalAlumni) * 100;
+        $notCompletedPercentage = ($notCompleted / $totalAlumni) * 100;
+
+        return [
+            'completed' => $completedResponses,
+            'not_completed' => $notCompleted,
+            'completed_percentage' => round($completedPercentage, 2),
+            'not_completed_percentage' => round($notCompletedPercentage, 2),
+        ];
     }
 
     /**
@@ -238,11 +213,21 @@ class AdminDashboardController extends Controller
      */
     private function calculateEmploymentDistribution(): array
     {
+        // Get total alumni count
+        $totalAlumni = User::where('user_role', 'alumna')->count();
+        
         // Count employed alumni (currently_employed = 'Yes')
         $employed = Employment::where('currently_employed', 'Yes')->count();
 
         // Count unemployed alumni (currently_employed = 'No')
         $unemployed = Employment::where('currently_employed', 'No')->count();
+        
+        // Count alumni without employment records (assume they haven't provided employment info)
+        $noEmploymentData = $totalAlumni - ($employed + $unemployed);
+        
+        // For chart purposes, treat alumni without employment data as a separate category
+        // or include them in unemployed if you prefer
+        $unemployed += $noEmploymentData;
 
         // Calculate total for percentage calculation
         $total = $employed + $unemployed;

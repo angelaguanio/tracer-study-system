@@ -16,7 +16,7 @@ class SurveyAnalyticsController extends Controller
 
     public function show(Survey $survey, Request $request)
     {
-        $this->authorize('viewAny', Survey::class);
+        $this->authorize('viewAnalytics', Survey::class);
 
         $yearGraduated = $request->query('year_graduated');
         $from          = $request->query('from');
@@ -489,7 +489,7 @@ class SurveyAnalyticsController extends Controller
      */
     public function employmentLocationAnalytics()
     {
-        $this->authorize('viewAny', Survey::class);
+        $this->authorize('viewAnalytics', Survey::class);
 
         // Get all employed alumni with both address and location data
         $employedUsers = User::where('user_role', 'alumna')
@@ -724,7 +724,7 @@ class SurveyAnalyticsController extends Controller
      */
     public function downloadAnalytics(Survey $survey, Request $request)
     {
-        $this->authorize('viewAny', Survey::class);
+        $this->authorize('viewAnalytics', Survey::class);
 
         // Get the same data as the show method
         $yearGraduated = $request->query('year_graduated');

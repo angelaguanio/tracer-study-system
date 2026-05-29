@@ -28,28 +28,16 @@ export default function AdminLayout({ children }) {
       icon: LayoutDashboard
     },
     {
-      id: "inquiries",
-      name: "Inquiries",
-      href:"/admin/inquiries",
-      icon: Mail
-    },
-    {
       id: "announcement",
       name: "Announcements",
       href:"/admin/announcement",
       icon: Bell
     },
     {
-      id: "alumni-coordinator",
-      name: "Alumni Coordinator",
-      href: "/admin/alumni-coordinators",
-      icon: UsersRound
-    },
-    {
-      id: "alumni",
-      name: "Alumni",
-      href:"/admin/alumni",
-      icon: CircleUserRound
+      id: "inquiries",
+      name: "Inquiries",
+      href:"/admin/inquiries",
+      icon: Mail
     },
     {
       id: "surveys",
@@ -68,7 +56,23 @@ export default function AdminLayout({ children }) {
       name: "Analytics",
       href:"/admin/analytics",
       icon: ChartNoAxesCombined
+    },
+    {
+      id: "alumni",
+      name: "Alumni",
+      href:"/admin/alumni",
+      icon: CircleUserRound
+    },
+    {
+      id: "alumni-coordinator",
+      name: "Alumni Coordinator",
+      href: "/admin/alumni-coordinators",
+      icon: UsersRound
     }
+    
+    
+    
+    
   ]
 
   return (

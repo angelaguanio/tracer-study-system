@@ -2,7 +2,7 @@ import  {route}  from "ziggy-js";
 import { useState, useEffect } from "react";
 import { router, usePage, Link, useForm } from "@inertiajs/react";
 import { Plus, ArrowLeft, Pencil, Check } from "lucide-react";
-import AdminLayout from "@/layouts/admin-layout";
+import CoordinatorLayout from "@/layouts/coord-layout";
 import SectionPanel from "@/components/survey/coordinator/SectionPanel";
 import QuestionItem from "@/components/survey/coordinator/QuestionItem";
 import SectionFormModal from "@/components/survey/coordinator/SectionFormModal";
@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function SurveyBuilder({ survey }) {
+export default function CoordinatorSurveyBuilder({ survey }) {
     const { props } = usePage();
     const [localSections, setLocalSections] = useState(survey.sections ?? []);
     const [activeSectionId, setActiveSectionId] = useState((survey.sections ?? [])[0]?.id ?? null);
@@ -64,7 +64,7 @@ export default function SurveyBuilder({ survey }) {
         [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
         setLocalSections(reordered);
 
-        router.put(route("admin.sections.reorder", survey.id), {
+        router.put(route("coordinator.sections.reorder", survey.id), {
             sections: reordered.map((s, idx) => ({ id: s.id, display_order: idx + 1 })),
         }, {
             preserveScroll: true,
@@ -72,15 +72,11 @@ export default function SurveyBuilder({ survey }) {
     };
 
     const handleStatusToggle = (checked) => {
-        router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
-    };
-
-    const handleTracerStudyToggle = (checked) => {
-        router.put(route("admin.surveys.update", survey.id), { is_tracer_study: checked });
+        router.put(route("coordinator.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
     };
 
     const handleSaveHeader = () => {
-        put(route("admin.surveys.update", survey.id), {
+        put(route("coordinator.surveys.update", survey.id), {
             preserveScroll: true,
             onSuccess: () => {
                 setIsEditingHeader(false);
@@ -117,7 +113,7 @@ export default function SurveyBuilder({ survey }) {
         ));
 
         // Send reorder request with mixed items
-        router.put(route("admin.subheadings.reorder", activeSectionId), {
+        router.put(route("coordinator.subheadings.reorder", activeSectionId), {
             items: reordered.map((item, i) => ({ 
                 id: item.id, 
                 type: item.itemType === 'subheading' ? 'subheading' : 'question',
@@ -133,7 +129,7 @@ export default function SurveyBuilder({ survey }) {
                 <div className="flex items-start justify-between gap-4">
                     {/* Left: Back button + Title/Description */}
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <Link href={route("admin.surveys.index")}>
+                        <Link href={route("coordinator.surveys.index")}>
                             <Button variant="ghost" size="sm" className=" text-gray-400 hover:text-gray-600 hover:bg-gray-100 px-2 mt-1">
                                 <ArrowLeft size={18} />
                             </Button>
@@ -220,23 +216,6 @@ export default function SurveyBuilder({ survey }) {
                                     }`}
                                 >
                                     {survey.status === "active" ? "Active" : "Inactive"}
-                                </Label>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1.5 border border-blue-200 ">
-                                <Switch
-                                    id="tracer-study-toggle"
-                                    checked={survey.is_tracer_study || false}
-                                    onCheckedChange={handleTracerStudyToggle}
-                                    className="data-[state=checked]:bg-blue-600"
-                                />
-                                <Label 
-                                    htmlFor="tracer-study-toggle" 
-                                    className={`text-sm font-medium cursor-pointer ${
-                                        survey.is_tracer_study ? "text-blue-700" : "text-gray-500"
-                                    }`}
-                                >
-                                    Tracer Study
                                 </Label>
                             </div>
                         </div>
@@ -353,4 +332,4 @@ export default function SurveyBuilder({ survey }) {
     );
 }
 
-SurveyBuilder.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+CoordinatorSurveyBuilder.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;
