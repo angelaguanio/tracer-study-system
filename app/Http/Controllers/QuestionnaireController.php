@@ -12,26 +12,42 @@ class QuestionnaireController extends Controller
     public function showQuestionnaire()
     {
         $user = Auth::user();
-        $survey = \App\Models\Survey::active()->first();
-
-        $completed = $survey
+        
+        // Get the tracer study survey
+        $tracerStudySurvey = \App\Models\Survey::tracerStudy()->first();
+        $tracerStudyCompleted = $tracerStudySurvey
             ? \App\Models\Response::where('user_id', $user->id)
-                ->where('survey_id', $survey->id)
+                ->where('survey_id', $tracerStudySurvey->id)
                 ->exists()
             : false;
 
+        // Get CECT surveys (active surveys that are not tracer study)
+        $cectSurveys = \App\Models\Survey::where('status', 'active')
+            ->where('is_tracer_study', false)
+            ->withCount(['questions'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($survey) use ($user) {
+                $survey->completed = \App\Models\Response::where('user_id', $user->id)
+                    ->where('survey_id', $survey->id)
+                    ->exists();
+                return $survey;
+            });
+
         return Inertia::render('Alumna/AlumnaQuestionnaire', [
-            'completed'       => $completed,
-            'hasActiveSurvey' => $survey !== null,
+            'tracerStudySurvey' => $tracerStudySurvey,
+            'tracerStudyCompleted' => $tracerStudyCompleted,
+            'cectSurveys' => $cectSurveys,
+            'hasTracerStudy' => $tracerStudySurvey !== null,
         ]);
     }
 
     public function btnStartSurvey()
     {
-        $survey = Survey::where('status', 'active')->first();
+        $survey = Survey::tracerStudy()->first();
 
         if (!$survey) {
-            return back()->withErrors(['survey' => 'No active survey available at this time.']);
+            return back()->withErrors(['survey' => 'No tracer study survey available at this time.']);
         }
 
         return redirect()->route('alumna.surveys.show', $survey->id);

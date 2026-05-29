@@ -9,19 +9,15 @@ export default function AnalyticsIndex({ surveys }) {
     return (
         <div className="w-full max-w-4xl px-4 py-6 flex flex-col gap-4 self-start">
             <h1 className="text-xl font-bold text-gray-800">Analytics</h1>
-            <p className="text-sm text-gray-500">Select a survey to view its response analytics.</p>
 
             {/* EMPLOYMENT LOCATION ANALYTICS CARD */}
             <Card className="bg-white border shadow-sm">
                 <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 pl-2">
                         <h2 className="font-semibold text-gray-800 flex items-center gap-2">
-                            <MapPin size={16} className="text-blue-600" />
+                            <MapPin size={20} className="text-blue-600" />
                             Employment Location Analytics
                         </h2>
-                        <p className="text-sm text-gray-500">
-                            Local vs. external employment based on home address and company location.
-                        </p>
                     </div>
                     <Button
                         size="sm"
@@ -43,7 +39,7 @@ export default function AnalyticsIndex({ surveys }) {
             ) : (
                 surveys.map((survey) => (
                     <Card key={survey.id} className="bg-white border shadow-sm">
-                        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
+                        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 pl-6">
                             <div className="flex flex-col gap-1">
                                 <h2 className="font-semibold text-gray-800">{survey.title}</h2>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">

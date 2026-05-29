@@ -15,11 +15,23 @@ class SurveyController extends Controller
     {
         $this->authorize('viewAny', Survey::class);
 
-        $surveys = Survey::withCount('sections')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Survey::withCount('sections')
+            ->orderBy('created_at', 'desc');
 
-        return Inertia::render('Admin/SurveyIndex', [
+        // Filter surveys based on user role - both admins and coordinators only see their own surveys
+        $user = auth()->user();
+        if ($user->user_role === 'coordinator' || $user->user_role === 'admin') {
+            // Both coordinators and admins can only see surveys they created
+            $query->where('created_by', $user->id);
+        }
+
+        $surveys = $query->get();
+
+        // Determine the correct view based on the current route name
+        $routeName = request()->route()->getName();
+        $viewPath = strpos($routeName, 'coordinator.') === 0 ? 'Coordinator/CoordinatorSurveyIndex' : 'Admin/SurveyIndex';
+
+        return Inertia::render($viewPath, [
             'surveys' => $surveys,
         ]);
     }
@@ -32,9 +44,14 @@ class SurveyController extends Controller
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => $request->input('status', 'inactive'),
+            'created_by'  => auth()->id(),
         ]);
 
-        return redirect()->route('admin.surveys.builder', $survey);
+        // Determine the correct redirect route based on the current route name
+        $routeName = request()->route()->getName();
+        $redirectRoute = strpos($routeName, 'coordinator.') === 0 ? 'coordinator.surveys.builder' : 'admin.surveys.builder';
+
+        return redirect()->route($redirectRoute, $survey);
     }
 
     public function update(UpdateSurveyRequest $request, Survey $survey)
@@ -43,10 +60,15 @@ class SurveyController extends Controller
 
         if ($request->input('status') === 'active') {
             $this->authorize('activate', $survey);
-            // Deactivate all other surveys
+            // Multiple surveys can now be active at the same time
+            // No need to deactivate other surveys
+        }
+
+        // Handle tracer study designation
+        if ($request->has('is_tracer_study') && $request->input('is_tracer_study')) {
+            // Only one survey can be the tracer study at a time
             Survey::where('id', '!=', $survey->id)
-                ->where('status', 'active')
-                ->update(['status' => 'inactive']);
+                ->update(['is_tracer_study' => false]);
         }
 
         $survey->update($request->validated());
@@ -60,7 +82,11 @@ class SurveyController extends Controller
 
         $survey->delete();
 
-        return redirect()->route('admin.surveys.index');
+        // Determine the correct redirect route based on the current route name
+        $routeName = request()->route()->getName();
+        $redirectRoute = strpos($routeName, 'coordinator.') === 0 ? 'coordinator.surveys.index' : 'admin.surveys.index';
+
+        return redirect()->route($redirectRoute);
     }
 
     public function builder(Survey $survey)
@@ -80,7 +106,11 @@ class SurveyController extends Controller
             },
         ]);
 
-        return Inertia::render('Admin/SurveyBuilder', [
+        // Determine the correct view based on the current route name
+        $routeName = request()->route()->getName();
+        $viewPath = strpos($routeName, 'coordinator.') === 0 ? 'Coordinator/CoordinatorSurveyBuilder' : 'Admin/SurveyBuilder';
+
+        return Inertia::render($viewPath, [
             'survey' => $survey,
         ]);
     }

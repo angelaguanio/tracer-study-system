@@ -11,9 +11,9 @@ import { Button } from './ui/button'
 import ProfileTemp from './profile-temp'
 
 const navBtns = [
-  { id: "home", name: "Home", href:"/alumna/home" },
-  { id: "announcements", name: "Announcements", href: "/alumna/announcements" },
   { id: "questionnaire", name: "Questionnaire", href:"/alumna/questionnaire" },
+  { id: "announcements", name: "Announcements", href: "/alumna/announcements" },
+  { id: "home", name: "Home", href:"/alumna/home" },
   { id: "about", name: "About", href:"/alumna/about" },
   { id: "contact", name: "Contact us", href:"/alumna/contact" }
 ]

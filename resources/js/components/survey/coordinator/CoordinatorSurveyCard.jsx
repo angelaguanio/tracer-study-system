@@ -15,23 +15,16 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export default function SurveyCard({ survey }) {
+export default function CoordinatorSurveyCard({ survey }) {
     const handleDelete = () => {
-        router.delete(route("admin.surveys.destroy", survey.id));
+        router.delete(route("coordinator.surveys.destroy", survey.id));
     };
 
     return (
         <Card className="bg-white border shadow-sm">
             <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 px-6">
                 <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <h2 className="font-semibold text-gray-800">{survey.title}</h2>
-                        {survey.is_tracer_study && (
-                            <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
-                                Tracer Study
-                            </Badge>
-                        )}
-                    </div>
+                    <h2 className="font-semibold text-gray-800">{survey.title}</h2>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                         <Badge
                             className={
@@ -53,7 +46,7 @@ export default function SurveyCard({ survey }) {
                         variant="outline"
                         size="sm"
                         className="border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10"
-                        onClick={() => router.get(route("admin.surveys.builder", survey.id))}
+                        onClick={() => router.get(route("coordinator.surveys.builder", survey.id))}
                     >
                         <Pencil size={14} />
                         Edit
