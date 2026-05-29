@@ -6,18 +6,29 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema; // Crucial for discovering actual database columns dynamically
 use App\Models\EmploymentHistory;
 use App\Models\User;
 
 class StudentProfileController extends Controller
 {
     public function show() {
-        $user = Auth::user()->fresh()->load(['employment', 'employmentHistory' => function($query) {
-            $query->latest(); 
-        }]);
+        $user = Auth::user()->fresh()->load(['employment']);
         
+        // Dynamic payload mapping to guarantee the frontend React table receives start_year and end_year properties
+        $history = EmploymentHistory::where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                $item->start_year = $item->employment_start_year ?? $item->start_year ?? $item->year_started ?? null;
+                $item->end_year = $item->employment_end_year ?? $item->end_year ?? $item->year_ended ?? null;
+                return $item;
+            });
+            
         return Inertia::render('Alumna/StudentProfile', [
-            'profile' => $user
+            'profile' => array_merge($user->toArray(), [
+                'employment_history' => $history
+            ])
         ]);
     }
 
@@ -32,7 +43,7 @@ class StudentProfileController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // --- PROFILE PICTURE LOGIC ---
+        // --- PROFILE PICTURE PROCESSING ---
         if ($request->hasFile('profile_picture')) {
             $picture = $request->file('profile_picture');
             if ($picture->isValid()) {
@@ -44,7 +55,7 @@ class StudentProfileController extends Controller
             }
         }
 
-        // --- UPDATE PERSONAL INFO & EXACT EDUCATION LAYERS ---
+        // --- UPDATE PERSONAL INFORMATION & EDUCATION ---
         $user->fill([
             'first_name'     => $request->first_name,
             'middle_name'    => $request->middle_name ?? '',
@@ -53,7 +64,6 @@ class StudentProfileController extends Controller
             'address'        => $request->address,
             'email'          => $request->email,
             
-            // FIXED: Using the exact schema column names from your User Model
             'courses'        => $request->courses ?? $request->course,
             'end_year'       => $request->end_year ?? $request->year_graduated,
             'semester'       => $request->semester ?? $request->semester_graduated,
@@ -61,59 +71,86 @@ class StudentProfileController extends Controller
         $user->save();
 
         // --- EMPLOYMENT DATA PREPARATION ---
-        $isEmployed = (strtolower($request->is_employed) === 'yes' || strtolower($request->currently_employed) === 'yes') ? 'Yes' : 'No';
+        $oldEmployment = $user->employment;
+        $isCurrentlyEmployed = (strtolower($request->is_employed) === 'yes' || strtolower($request->currently_employed) === 'yes') ? 'Yes' : 'No';
         
         $salaryValue = $request->monthly_salary;
-        if ($isEmployed === 'Yes' && $salaryValue !== null && $salaryValue !== '') {
+        if ($isCurrentlyEmployed === 'Yes' && $salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
         } else {
-            $salaryValue = 0.00; // Safe fallback for Unemployed status
+            $salaryValue = 0.00;
         }
 
-        $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? $request->unemployment_reason ?? 'Career Break') : null;
+        // --- ARCHIVE ENGINE: Triggered only when transitioning from an active job by providing an End Year ---
+        if ($oldEmployment && $oldEmployment->currently_employed === 'Yes' && !empty($request->employment_end_year)) {
+            
+            // Read actual physical table columns dynamically at runtime to completely prevent SQL 1054 exceptions
+            $databaseColumns = Schema::getColumnListing('employment_history');
+            
+            $historyPayload = [
+                'currently_employed'  => 'Yes', 
+                'employment_type'     => $oldEmployment->employment_type,
+                'company_name'        => $oldEmployment->company_name ?? '—',
+                'position'            => $oldEmployment->position ?? '—',
+                'location'            => $oldEmployment->location,
+                'monthly_salary'      => $oldEmployment->monthly_salary,
+                'unemployment_reason' => 'Job Transition / Relocation',
+                'created_at'          => $oldEmployment->updated_at, 
+            ];
 
-        // --- ARCHIVE OLD DATA IF CHANGED ---
-        $oldEmp = $user->employment;
-        if ($oldEmp) {
-            $hasEmploymentChanged = (
-                $oldEmp->currently_employed  !== $isEmployed ||
-                $oldEmp->company_name        !== $request->company ||
-                $oldEmp->position            !== $request->position ||
-                $oldEmp->employment_type     !== $request->employment_type ||
-                $oldEmp->location            !== $request->location ||
-                $oldEmp->monthly_salary      !=  $salaryValue || 
-                $oldEmp->unemployment_reason !== $unemploymentReason
+            // Inspect and auto-assign whichever Start Year variation exists in your database table schema
+            if (in_array('employment_start_year', $databaseColumns)) {
+                $historyPayload['employment_start_year'] = $oldEmployment->employment_start_year;
+            } elseif (in_array('start_year', $databaseColumns)) {
+                $historyPayload['start_year'] = $oldEmployment->employment_start_year;
+            } elseif (in_array('year_started', $databaseColumns)) {
+                $historyPayload['year_started'] = $oldEmployment->employment_start_year;
+            }
+
+            // Inspect and auto-assign whichever End Year variation exists in your database table schema
+            if (in_array('employment_end_year', $databaseColumns)) {
+                $historyPayload['employment_end_year'] = $request->employment_end_year;
+            } elseif (in_array('end_year', $databaseColumns)) {
+                $historyPayload['end_year'] = $request->employment_end_year;
+            } elseif (in_array('year_ended', $databaseColumns)) {
+                $historyPayload['year_ended'] = $request->employment_end_year;
+            }
+
+            // 1. Safely store the historical job entry without mapping structural mismatches
+            $user->employmentHistory()->create($historyPayload);
+
+            // 2. Flush operational variables in the active placeholder profile to receive the next career record
+            $user->employment()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'currently_employed'    => 'No',
+                    'employment_type'       => null,
+                    'company_name'          => null,
+                    'position'              => null,
+                    'location'              => null,
+                    'monthly_salary'        => 0.00,
+                    'unemployment_reason'   => 'Job Hunting', 
+                    'employment_start_year' => 0,
+                    'employment_end_year'   => null,
+                ]
             );
 
-            // 🔥 FIXED LOGIC: Only archive if changes happened AND the old status was actively employed ('Yes')
-            if ($hasEmploymentChanged && $oldEmp->currently_employed === 'Yes') {
-                $user->employmentHistory()->create([
-                    'currently_employed'  => $oldEmp->currently_employed,
-                    'employment_type'     => $oldEmp->employment_type,
-                    'company_name'        => $oldEmp->company_name,
-                    'position'            => $oldEmp->position,
-                    'location'            => $oldEmp->location,
-                    'monthly_salary'      => $oldEmp->monthly_salary,
-                    'unemployment_reason' => $oldEmp->unemployment_reason,
-                    'created_at'          => $oldEmp->updated_at, 
-                ]);
-            }
+            return redirect()->route('alumna.profile')->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
         }
 
-        // --- UPDATE CURRENT RECORD WITH NULLABLE FALLBACKS ---
+        // --- STANDARD PROFILE UPDATE FLOW ---
+        // Normal profile updates or switching to 'No' (Unemployed) completely avoids history table logs
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
-                'currently_employed'    => $isEmployed,
-                'employment_type'       => $isEmployed === 'Yes' ? $request->employment_type : null,
-                'company_name'          => $isEmployed === 'Yes' ? ($request->company ?? $request->company_name) : null,
-                'position'              => $isEmployed === 'Yes' ? $request->position : null,
-                'location'              => $isEmployed === 'Yes' ? $request->location : null,
+                'currently_employed'    => $isCurrentlyEmployed,
+                'employment_type'       => $isCurrentlyEmployed === 'Yes' ? $request->employment_type : null,
+                'company_name'          => $isCurrentlyEmployed === 'Yes' ? ($request->company ?? $request->company_name) : null,
+                'position'              => $isCurrentlyEmployed === 'Yes' ? $request->position : null,
+                'location'              => $isCurrentlyEmployed === 'Yes' ? $request->location : null,
                 'monthly_salary'        => $salaryValue,
-                'unemployment_reason'   => $unemploymentReason,
-                
-                // CRITICAL SQL FIX: Forces 0 instead of null if Unemployed to pass data integrity validation checks
-                'employment_start_year' => $isEmployed === 'Yes' ? ($request->employment_start_year ?? 0) : 0,
+                'unemployment_reason'   => ($isCurrentlyEmployed === 'No') ? ($request->reason_unemployed ?? 'Career Break') : null,
+                'employment_start_year' => $isCurrentlyEmployed === 'Yes' ? ($request->employment_start_year ?? 0) : 0,
                 'employment_end_year'   => null,
             ]
         );
@@ -123,7 +160,9 @@ class StudentProfileController extends Controller
 
     public function showHistory($id) {
         $history = \App\Models\EmploymentHistory::findOrFail($id);
-        if ($history->user_id !== Auth::id()) { abort(403); }
+        if ($history->user_id !== Auth::id()) { 
+            abort(403); 
+        }
 
         return Inertia::render('Alumna/HistoryDetail', [
             'history' => $history,

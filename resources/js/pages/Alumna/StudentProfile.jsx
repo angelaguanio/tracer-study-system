@@ -116,7 +116,7 @@ export default function StudentProfile() {
                         <div className="grid grid-cols-2 gap-y-6">
                             <InfoItem label="Position" value={emp.position} />
                             <InfoItem label="Location" value={emp.location} />
-                            <InfoItem label="Start Year" value={emp.employment_start_year} />
+                            <InfoItem label="Start Year" value={emp.employment_start_year || emp.start_year} />
                             <div>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
@@ -149,7 +149,7 @@ export default function StudentProfile() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="pb-3 font-bold pl-2">Date Logged</th>
+                                    <th className="pb-3 font-bold pl-2">Range</th>
                                     <th className="pb-3 font-bold text-center">Company</th>
                                     <th className="pb-3 font-bold text-center">Position</th>
                                     <th className="pb-3 font-bold text-center">Status</th>
@@ -162,8 +162,15 @@ export default function StudentProfile() {
 
                                     return (
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-2 pl-2 text-gray-600">
-                                                {new Date(history.created_at).toLocaleDateString()}
+                                            {/* 💡 PINALITAN ANG LOGIC PARA SA "START_YEAR-END_YEAR" */}
+                                            <td className="py-2 pl-2 text-gray-600 font-medium">
+                                                {!isUnemployed && history.start_year ? (
+                                                    history.end_year ? `${history.start_year}-${history.end_year}` : `${history.start_year} - Present`
+                                                ) : !isUnemployed && history.employment_start_year ? (
+                                                    history.employment_end_year ? `${history.employment_start_year}-${history.employment_end_year}` : `${history.employment_start_year} - Present`
+                                                ) : (
+                                                    '—'
+                                                )}
                                             </td>
                                             <td className="py-2 font-bold text-gray-800 text-center">
                                                 {isUnemployed ? '—' : history.company_name}

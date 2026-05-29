@@ -9,18 +9,12 @@ class EmploymentHistory extends Model
 {
     use HasFactory;
 
-    /**
-     * Laravel would pluralize this to 'employment_histories' by default.
-     * Explicitly set to match the migration table name.
-     */
     protected $table = 'employment_history';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Dapat tumugma ito sa totoong structure ng table mo sa MySQL workbench/phpMyAdmin!
      */
-
     protected $fillable = [
         'user_id',
         'currently_employed',
@@ -30,11 +24,10 @@ class EmploymentHistory extends Model
         'location',
         'monthly_salary',
         'unemployment_reason',
+        'employment_start_year', // Binalik sa totoong column name ng DB mo
+        'employment_end_year',   // Binalik sa totoong column name ng DB mo
     ];
 
-    /**
-     * Get the user that owns the history record.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
