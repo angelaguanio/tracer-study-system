@@ -8,7 +8,7 @@ const IconSave = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IconArrow = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>;
 const IconImage = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>;
 
-const inputClass = "w-full border border-gray-200 rounded-md px-4 py-3 text-[14px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008542] focus:border-[#008542] transition shadow-sm bg-white";
+const inputClass = "w-full border border-gray-200 rounded-md px-4 py-3 text-[14px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008542] focus:border-[#008542] transition shadow-sm bg-white appearance-none";
 const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2";
 
 export default function StudentProfileEdit() {
@@ -20,20 +20,29 @@ export default function StudentProfileEdit() {
     );
 
     const { data, setData, post, processing } = useForm({
-        last_name:          profile?.last_name || '',
-        first_name:         profile?.first_name || '',
-        middle_name:        profile?.middle_name || '',
-        address:            profile?.address || '',
-        contact_number:     profile?.contact_number || '',
-        email:              profile?.email || '',
-        is_employed:        profile?.employment?.currently_employed?.toLowerCase() || '',
-        employment_type:    profile?.employment?.employment_type || '',
-        company:            profile?.employment?.company_name || '',
-        position:           profile?.employment?.position || '',
-        location:           profile?.employment?.location || '',
-        monthly_salary:     profile?.employment?.monthly_salary || '',
-        reason_unemployed:  profile?.employment?.unemployment_reason || '',
-        profile_picture:    null,
+        last_name:             profile?.last_name || '',
+        first_name:            profile?.first_name || '',
+        middle_name:           profile?.middle_name || '',
+        address:               profile?.address || '',
+        contact_number:        profile?.contact_number || '',
+        email:                 profile?.email || '',
+        
+        courses:               profile?.courses || '',
+        end_year:              profile?.end_year || '',
+        semester:              profile?.semester || '',
+
+        is_employed:           profile?.employment?.currently_employed?.toLowerCase() || '',
+        employment_type:       profile?.employment?.employment_type || '',
+        company:               profile?.employment?.company_name || '',
+        position:              profile?.employment?.position || '',
+        location:              profile?.employment?.location || '',
+        
+        // 🔥 ADDED START YEAR VARIABLE HERE
+        employment_start_year: profile?.employment?.employment_start_year || '',
+        
+        monthly_salary:        profile?.employment?.monthly_salary || '',
+        reason_unemployed:     profile?.employment?.unemployment_reason || '',
+        profile_picture:       null,
     });
 
     const handleFileChange = (e) => {
@@ -54,7 +63,6 @@ export default function StudentProfileEdit() {
         });
     };
 
-    // This logic ensures all fields are cleared when switching status
     const handleStatusChange = (newStatus) => {
         setData({
             ...data,
@@ -63,6 +71,7 @@ export default function StudentProfileEdit() {
             position: '',
             location: '',
             employment_type: '',
+            employment_start_year: '',
             monthly_salary: '',
             reason_unemployed: ''
         });
@@ -170,40 +179,66 @@ export default function StudentProfileEdit() {
                             <>
                                 <div className="flex flex-col gap-2">
                                     <label className={labelClass}>Employment Type</label>
-                                    <select required value={data.employment_type} onChange={e => setData('employment_type', e.target.value)} className={inputClass}>
-                                        <option value="">Select Type</option>
-                                        <option value="Permanent/Regular">Permanent/Regular</option>
-                                        <option value="Probationary">Probationary</option>
-                                    </select>
+                                    <div className="relative w-full">
+                                        <select required value={data.employment_type} onChange={e => setData('employment_type', e.target.value)} className={inputClass}>
+                                            <option value="">Select Type</option>
+                                            <option value="Permanent/Regular">Permanent/Regular</option>
+                                            <option value="Probationary">Probationary</option>
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" className="text-gray-500"><polyline points="6 9 12 15 18 9"/></svg>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={e => setData('company', e.target.value)} className={inputClass} placeholder="Company Name" /></div>
                                 <div><label className={labelClass}>Position</label><input type="text" required value={data.position} onChange={e => setData('position', e.target.value)} className={inputClass} placeholder="Position" /></div>
                                 <div><label className={labelClass}>Location</label><input type="text" required value={data.location} onChange={e => setData('location', e.target.value)} className={inputClass} placeholder="Location" /></div>
+                                
+                                {/* 🔥 NEW: START YEAR INPUT FIELD */}
+                                <div>
+                                    <label className={labelClass}>Start Year</label>
+                                    <input 
+                                        type="number" 
+                                        required 
+                                        min="1900" 
+                                        max="2099" 
+                                        value={data.employment_start_year} 
+                                        onChange={e => setData('employment_start_year', e.target.value)} 
+                                        className={inputClass} 
+                                        placeholder="Year when you started working" 
+                                    />
+                                </div>
+                                
                                 <div><label className={labelClass}>Monthly Salary (Optional)</label><input type="number" value={data.monthly_salary} onChange={e => setData('monthly_salary', e.target.value)} className={inputClass} placeholder="Monthly Salary" /></div>
                             </>
                         )}
 
                         {data.is_employed === 'no' && (
-                            <div>
+                            <div className="flex flex-col gap-2">
                                 <label className={labelClass}>Reason for Unemployment</label>
-                                <select 
-                                    required 
-                                    value={data.reason_unemployed} 
-                                    onChange={e => setData('reason_unemployed', e.target.value)} 
-                                    className={inputClass}
-                                >
-                                    <option value="" disabled>Please select your reason</option>
-                                    <option value="Studying">Studying</option>
-                                    <option value="Job Hunting">Job Hunting</option>
-                                    <option value="Family Reasons">Family Reasons</option>
-                                    <option value="Health Reasons">Health Reasons</option>
-                                    <option value="Personal Reasons">Personal Reasons</option>
-                                    <option value="Career Break">Career Break</option>
-                                    <option value="Recently Resigned">Recently Resigned</option>
-                                    <option value="Laid Off">Laid Off</option>
-                                    <option value="Relocating">Relocating</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                                <div className="relative w-full">
+                                    <select 
+                                        required 
+                                        value={data.reason_unemployed} 
+                                        onChange={e => setData('reason_unemployed', e.target.value)} 
+                                        className={inputClass}
+                                    >
+                                        <option value="" disabled>Please select your reason</option>
+                                        <option value="Studying">Studying</option>
+                                        <option value="Job Hunting">Job Hunting</option>
+                                        <option value="Family Reasons">Family Reasons</option>
+                                        <option value="Health Reasons">Health Reasons</option>
+                                        <option value="Personal Reasons">Personal Reasons</option>
+                                        <option value="Career Break">Career Break</option>
+                                        <option value="Recently Resigned">Recently Resigned</option>
+                                        <option value="Laid Off">Laid Off</option>
+                                        <option value="Relocating">Relocating</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" className="text-gray-500"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

@@ -18,7 +18,7 @@ class CoordinatorAlumniController extends Controller
                   ->orWhere('last_name', 'like', "%{$search}%");
             })
             ->when($request->year && $request->year !== 'all', function ($q) use ($request) {
-                $q->where('year_graduated', $request->year);
+                $q->where('end_year', $request->year);
             })
             ->when($request->course && $request->course !== 'all', function ($q) use ($request) {
                 $q->where('courses', $request->course);
@@ -32,7 +32,7 @@ class CoordinatorAlumniController extends Controller
             'id' => $user->id,
             'name' => "{$user->first_name} {$user->last_name}",
             'course' => $user->courses,
-            'year' => $user->year_graduated,
+            'year' => $user->end_year, 
             'avatar' => $user->avatar_url,
             'survey_status' => 'Not Completed', 
         ]);
@@ -45,8 +45,6 @@ class CoordinatorAlumniController extends Controller
 
     public function show($id)
     {
-        // Much simpler: Fetch the user with relationships and pass it directly.
-        // Laravel handles mapping this to your frontend automatically!
         $user = User::with(['employment', 'employmentHistory'])->findOrFail($id);
 
         return Inertia::render('Coordinator/CoordinatorViewProfile', [

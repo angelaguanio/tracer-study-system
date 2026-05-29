@@ -68,13 +68,26 @@ export default function StudentProfile() {
                     <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
                     <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
                     <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
-                    <InfoItem
-                        icon={<IconGrad />}
-                        label="Course & Year"
-                        value={profile.courses && profile.year_graduated
-                            ? `${profile.courses} (${profile.year_graduated})`
-                            : null
-                        }
+                    
+                    {/* LAYER 1: Course Detail */}
+                    <InfoItem 
+                        icon={<IconGrad />} 
+                        label="Course" 
+                        value={profile.courses ?? profile.course} 
+                    />
+                    
+                    {/* LAYER 2: Year Graduated */}
+                    <InfoItem 
+                        icon={<IconGrad />} 
+                        label="Year Graduated" 
+                        value={profile.year_graduated ?? profile.end_year ?? profile.year} 
+                    />
+                    
+                    {/* LAYER 3: Semester Graduated */}
+                    <InfoItem 
+                        icon={<IconGrad />} 
+                        label="Semester Graduated" 
+                        value={profile.semester_graduated ?? profile.semester} 
                     />
                 </div>
             </section>
@@ -90,16 +103,20 @@ export default function StudentProfile() {
                     </span>
                 </div>
 
+                {/* LOGIC FOR EMPLOYED STATUS */}
                 {emp?.currently_employed === 'Yes' ? (
                     <div className="mt-4">
                         <div className="flex items-center gap-2 mb-6">
                             <IconBuilding />
-                            <span className="font-bold text-gray-800 text-base">{emp.company_name}</span>
-                            <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
+                            <span className="font-bold text-gray-800 text-base">{emp.company_name || '—'}</span>
+                            {emp.employment_type && (
+                                <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
+                            )}
                         </div>
                         <div className="grid grid-cols-2 gap-y-6">
                             <InfoItem label="Position" value={emp.position} />
                             <InfoItem label="Location" value={emp.location} />
+                            <InfoItem label="Start Year" value={emp.employment_start_year} />
                             <div>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
@@ -111,9 +128,12 @@ export default function StudentProfile() {
                         </div>
                     </div>
                 ) : (
+                    /* LOGIC FOR UNEMPLOYED STATUS */
                     <div className="py-4 flex flex-col gap-2">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reason for Unemployment</p>
-                        <p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'No details provided.'}</p>
+                        <p className="text-[13px] font-bold text-[#343a40] italic">
+                            {emp?.unemployment_reason || 'Career Break'}
+                        </p>
                     </div>
                 )}
             </section>
@@ -121,7 +141,7 @@ export default function StudentProfile() {
             {/* Employment History Logs */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                    <IconHistory /> Employment History Logs
+                    <IconHistory /> Employment History 
                 </div>
 
                 {profile.employment_history?.length > 0 ? (
@@ -130,7 +150,6 @@ export default function StudentProfile() {
                             <thead>
                                 <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
                                     <th className="pb-3 font-bold pl-2">Date Logged</th>
-                                    {/* Centered Headers */}
                                     <th className="pb-3 font-bold text-center">Company</th>
                                     <th className="pb-3 font-bold text-center">Position</th>
                                     <th className="pb-3 font-bold text-center">Status</th>
@@ -146,11 +165,9 @@ export default function StudentProfile() {
                                             <td className="py-2 pl-2 text-gray-600">
                                                 {new Date(history.created_at).toLocaleDateString()}
                                             </td>
-                                            {/* Centered Company Dash/Value */}
                                             <td className="py-2 font-bold text-gray-800 text-center">
                                                 {isUnemployed ? '—' : history.company_name}
                                             </td>
-                                            {/* Centered Position Dash/Value */}
                                             <td className="py-2 text-gray-600 text-center">
                                                 {isUnemployed ? '—' : (history.position || '—')}
                                             </td>
@@ -189,10 +206,9 @@ function InfoItem({ icon, label, value }) {
     return (
         <div className="flex items-start gap-3">
             {icon && <div className="text-gray-400 mt-1">{icon}</div>}
-            <div className="flex flex-col">
+            <div className="flex flex-col text-left">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
-                {/* Applied a flex container to center the fallback dash if value is missing */}
-                <span className={`text-[13px] font-bold text-[#343a40] ${!value ? 'flex justify-center' : ''}`}>
+                <span className="text-[13px] font-bold text-[#343a40]">
                     {value || '—'}
                 </span>
             </div>

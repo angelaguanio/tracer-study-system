@@ -91,12 +91,14 @@ class AdminOfSurveyResponseController extends Controller
     }
 
     /**
-     * PAGE 3: Completed User Response View (WITH SECTION GROUPING FIX)
+     * PAGE 3: Completed User Response View
      */
     public function viewUserResponse($surveyId, $userId)
     {
         $survey = Survey::with('sections.questions')->findOrFail($surveyId);
-        $user = User::findOrFail($userId);
+        
+        // Eager load the employment relationships
+        $user = User::with(['employment', 'employmentHistory'])->findOrFail($userId);
 
         $responses = Response::with(['question.section'])
             ->where('survey_id', $surveyId)
@@ -126,7 +128,22 @@ class AdminOfSurveyResponseController extends Controller
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'email' => $user->email,
-                'sections' => $sections, // ✅ FIXED STRUCTURE
+                'sections' => $sections,
+            ],
+            'user' => [
+                'id' => $user->id,
+                'name' => trim($user->first_name . ' ' . $user->last_name), // Dagdag para sa uniform template naming
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'contact_number' => $user->contact_number,
+                'address' => $user->address,
+                'courses' => $user->courses,
+                'course' => $user->courses, // Fallback alias para sa frontend single property
+                'year_graduated' => $user->year_graduated, 
+                'semester_graduated' => $user->semester_graduated,
+                'employment' => $user->employment,
+                'employment_history' => $user->employmentHistory,
             ],
             'survey' => [
                 'id' => $survey->id,
@@ -141,7 +158,9 @@ class AdminOfSurveyResponseController extends Controller
     public function notComplete($surveyId, $userId)
     {
         $survey = Survey::findOrFail($surveyId);
-        $user = User::findOrFail($userId);
+        
+        // Eager load the employment relationships here too
+        $user = User::with(['employment', 'employmentHistory'])->findOrFail($userId);
 
         return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
             'survey' => [
@@ -151,6 +170,17 @@ class AdminOfSurveyResponseController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => trim($user->first_name . ' ' . $user->last_name),
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'contact_number' => $user->contact_number,
+                'address' => $user->address,
+                'courses' => $user->courses,
+                'course' => $user->courses, // Fallback alias para sa frontend single property
+                'year_graduated' => $user->year_graduated, 
+                'semester_graduated' => $user->semester_graduated,
+                'employment' => $user->employment,
+                'employment_history' => $user->employmentHistory,
             ]
         ]);
     }

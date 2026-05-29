@@ -44,7 +44,7 @@ class StudentProfileController extends Controller
             }
         }
 
-        // --- UPDATE PERSONAL INFO ---
+        // --- UPDATE PERSONAL INFO & EXACT EDUCATION LAYERS ---
         $user->fill([
             'first_name'     => $request->first_name,
             'middle_name'    => $request->middle_name ?? '',
@@ -52,56 +52,69 @@ class StudentProfileController extends Controller
             'contact_number' => $request->contact_number,
             'address'        => $request->address,
             'email'          => $request->email,
+            
+            // FIXED: Using the exact schema column names from your User Model
+            'courses'        => $request->courses ?? $request->course,
+            'end_year'       => $request->end_year ?? $request->year_graduated,
+            'semester'       => $request->semester ?? $request->semester_graduated,
         ]);
         $user->save();
 
         // --- EMPLOYMENT DATA PREPARATION ---
+        $isEmployed = (strtolower($request->is_employed) === 'yes' || strtolower($request->currently_employed) === 'yes') ? 'Yes' : 'No';
+        
         $salaryValue = $request->monthly_salary;
-        if ($salaryValue !== null && $salaryValue !== '') {
+        if ($isEmployed === 'Yes' && $salaryValue !== null && $salaryValue !== '') {
             $salaryValue = preg_replace('/[^\d.]/', '', $salaryValue);
+        } else {
+            $salaryValue = 0.00; // Safe fallback for Unemployed status
         }
 
-        $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
-        $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? null) : null;
+        $unemploymentReason = ($isEmployed === 'No') ? ($request->reason_unemployed ?? $request->unemployment_reason ?? 'Career Break') : null;
 
         // --- ARCHIVE OLD DATA IF CHANGED ---
         $oldEmp = $user->employment;
         if ($oldEmp) {
             $hasEmploymentChanged = (
-                $oldEmp->currently_employed !== $isEmployed ||
-                $oldEmp->company_name       !== $request->company ||
-                $oldEmp->position           !== $request->position ||
-                $oldEmp->employment_type    !== $request->employment_type ||
-                $oldEmp->location           !== $request->location ||
-                $oldEmp->monthly_salary     !=  $salaryValue || 
+                $oldEmp->currently_employed  !== $isEmployed ||
+                $oldEmp->company_name        !== $request->company ||
+                $oldEmp->position            !== $request->position ||
+                $oldEmp->employment_type     !== $request->employment_type ||
+                $oldEmp->location            !== $request->location ||
+                $oldEmp->monthly_salary      !=  $salaryValue || 
                 $oldEmp->unemployment_reason !== $unemploymentReason
             );
 
-            if ($hasEmploymentChanged) {
+            // 🔥 FIXED LOGIC: Only archive if changes happened AND the old status was actively employed ('Yes')
+            if ($hasEmploymentChanged && $oldEmp->currently_employed === 'Yes') {
                 $user->employmentHistory()->create([
-                    'currently_employed' => $oldEmp->currently_employed,
-                    'employment_type'    => $oldEmp->employment_type,
-                    'company_name'       => $oldEmp->company_name,
-                    'position'           => $oldEmp->position,
-                    'location'           => $oldEmp->location,
-                    'monthly_salary'     => $oldEmp->monthly_salary,
+                    'currently_employed'  => $oldEmp->currently_employed,
+                    'employment_type'     => $oldEmp->employment_type,
+                    'company_name'        => $oldEmp->company_name,
+                    'position'            => $oldEmp->position,
+                    'location'            => $oldEmp->location,
+                    'monthly_salary'      => $oldEmp->monthly_salary,
                     'unemployment_reason' => $oldEmp->unemployment_reason,
-                    'created_at'         => $oldEmp->updated_at, 
+                    'created_at'          => $oldEmp->updated_at, 
                 ]);
             }
         }
 
-        // --- UPDATE CURRENT RECORD ---
+        // --- UPDATE CURRENT RECORD WITH NULLABLE FALLBACKS ---
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
-                'currently_employed' => $isEmployed,
-                'employment_type'    => $request->employment_type,
-                'company_name'       => $request->company,
-                'position'           => $request->position,
-                'location'           => $request->location,
-                'monthly_salary'     => $salaryValue,
-                'unemployment_reason' => $unemploymentReason,
+                'currently_employed'    => $isEmployed,
+                'employment_type'       => $isEmployed === 'Yes' ? $request->employment_type : null,
+                'company_name'          => $isEmployed === 'Yes' ? ($request->company ?? $request->company_name) : null,
+                'position'              => $isEmployed === 'Yes' ? $request->position : null,
+                'location'              => $isEmployed === 'Yes' ? $request->location : null,
+                'monthly_salary'        => $salaryValue,
+                'unemployment_reason'   => $unemploymentReason,
+                
+                // CRITICAL SQL FIX: Forces 0 instead of null if Unemployed to pass data integrity validation checks
+                'employment_start_year' => $isEmployed === 'Yes' ? ($request->employment_start_year ?? 0) : 0,
+                'employment_end_year'   => null,
             ]
         );
 
