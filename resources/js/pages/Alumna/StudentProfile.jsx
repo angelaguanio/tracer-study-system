@@ -2,6 +2,7 @@ import React from 'react';
 import { usePage, Link } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 
+// ICONS
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
 const IconMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>;
 const IconPhone = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 013.1 4.2 2 2 0 015.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2L9.1 9.9a16 16 0 006.9 6.9l1.3-1.3a2 2 0 012-.5c.9.3 1.9.6 2.9.7a2 2 0 011.8 2z"/></svg>;
@@ -15,15 +16,10 @@ const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 export default function StudentProfile() {
     const { profile, flash } = usePage().props;
     const emp = profile.employment;
-
     const fullName = `${profile.first_name} ${profile.middle_name ? profile.middle_name + ' ' : ''}${profile.last_name}`;
 
     const avatarElement = profile.profile_picture ? (
-        <img
-            src={`/storage/${profile.profile_picture}`}
-            alt={`${profile.first_name}'s profile`}
-            className="w-full h-full object-cover"
-        />
+        <img src={`/storage/${profile.profile_picture}`} alt={`${profile.first_name}'s profile`} className="w-full h-full object-cover" />
     ) : (
         <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl font-bold">
             {profile.initials}
@@ -31,28 +27,27 @@ export default function StudentProfile() {
     );
 
     return (
-        <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
+        <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5 relative z-10">
             {flash?.success && (
                 <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">
                     {flash.success}
                 </div>
             )}
 
-            <div className="flex justify-end">
-                <Link
-                    href={route('alumna.profile.edit')}
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors"
-                >
-                    <IconEdit /> Edit Profile
-                </Link>
-            </div>
+            {/* Elevated containment structure to prevent layout overlay interceptions */}
+            <div className="flex justify-end relative z-[9999] isolation-auto w-full">
+    <Link
+        href={route('alumna.profile.edit')}
+        className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors cursor-pointer select-none"
+    >
+        <IconEdit /> Edit Profile
+    </Link>
+</div>
 
-            {/* Personal Information */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
                     <IconUser /> Personal Information
                 </div>
-
                 <div className="flex items-center gap-5 mb-8">
                     <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white">
                         {avatarElement}
@@ -61,34 +56,14 @@ export default function StudentProfile() {
                         <h3 className="text-2xl font-bold text-[#343a40] leading-tight">{fullName}</h3>
                     </div>
                 </div>
-
                 <hr className="border-gray-100 mb-6" />
-
                 <div className="grid grid-cols-2 gap-y-6">
                     <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
                     <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
                     <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
-                    
-                    {/* LAYER 1: Course Detail */}
-                    <InfoItem 
-                        icon={<IconGrad />} 
-                        label="Course" 
-                        value={profile.courses ?? profile.course} 
-                    />
-                    
-                    {/* LAYER 2: Year Graduated */}
-                    <InfoItem 
-                        icon={<IconGrad />} 
-                        label="Year Graduated" 
-                        value={profile.year_graduated ?? profile.end_year ?? profile.year} 
-                    />
-                    
-                    {/* LAYER 3: Semester Graduated */}
-                    <InfoItem 
-                        icon={<IconGrad />} 
-                        label="Semester Graduated" 
-                        value={profile.semester_graduated ?? profile.semester} 
-                    />
+                    <InfoItem icon={<IconGrad />} label="Course" value={profile.course ?? profile.courses ?? '—'} />
+                    <InfoItem icon={<IconGrad />} label="Year Graduated" value={profile.start_year && profile.end_year ? `${profile.start_year}-${profile.end_year}` : (profile.year_graduated ?? profile.end_year ?? profile.year ?? '—')} />
+                    <InfoItem icon={<IconGrad />} label="Semester Graduated" value={profile.semester ?? profile.semester_graduated ?? '—'} />
                 </div>
             </section>
 
@@ -162,7 +137,6 @@ export default function StudentProfile() {
 
                                     return (
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            {/* 💡 PINALITAN ANG LOGIC PARA SA "START_YEAR-END_YEAR" */}
                                             <td className="py-2 pl-2 text-gray-600 font-medium">
                                                 {!isUnemployed && history.start_year ? (
                                                     history.end_year ? `${history.start_year}-${history.end_year}` : `${history.start_year} - Present`

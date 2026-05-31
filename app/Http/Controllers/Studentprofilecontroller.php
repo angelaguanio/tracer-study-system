@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Schema; // Crucial for discovering actual database columns dynamically
+use Illuminate\Support\Facades\Schema; 
 use App\Models\EmploymentHistory;
 use App\Models\User;
 
@@ -22,18 +22,22 @@ class StudentProfileController extends Controller
             ->map(function ($item) {
                 $item->start_year = $item->employment_start_year ?? $item->start_year ?? $item->year_started ?? null;
                 $item->end_year = $item->employment_end_year ?? $item->end_year ?? $item->year_ended ?? null;
+                $item->return_item = $item; // Fallback mapping containment layer
                 return $item;
             });
             
         return Inertia::render('Alumna/StudentProfile', [
             'profile' => array_merge($user->toArray(), [
                 'employment_history' => $history
-            ])
+            ]),
+            'flash' => [
+                'success' => session('success')
+            ]
         ]);
     }
 
     public function edit() {
-        $user = Auth::user()->load('employment');
+        $user = Auth::user()->fresh()->load('employment');
         return Inertia::render('Alumna/StudentProfileEdit', [
             'profile' => $user
         ]);
@@ -135,11 +139,10 @@ class StudentProfileController extends Controller
                 ]
             );
 
-            return redirect()->route('alumna.profile')->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
+            return redirect()->to('/alumna/profile')->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
         }
 
         // --- STANDARD PROFILE UPDATE FLOW ---
-        // Normal profile updates or switching to 'No' (Unemployed) completely avoids history table logs
         $user->employment()->updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -155,7 +158,7 @@ class StudentProfileController extends Controller
             ]
         );
 
-        return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
+        return redirect()->to('/alumna/profile')->with('success', 'Profile updated successfully!');
     }
 
     public function showHistory($id) {

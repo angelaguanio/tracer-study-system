@@ -13,6 +13,12 @@ export default function HistoryDetail({ history, profile }) {
         year: 'numeric',
     });
 
+    // ─── ROBUST YEAR EXTRACTION ──────────────────────────────────────────
+    // Checks all possible variations coming from the backend payload structure
+    const startYear = history.employment_start_year ?? history.start_year ?? history.year_started ?? history.start;
+    const endYear = history.employment_end_year ?? history.end_year ?? history.year_ended ?? history.end;
+    const employmentRange = startYear && endYear ? `${startYear}-${endYear}` : (startYear ? `${startYear} - Present` : '—');
+
     return (
         <div className="w-full max-w-[700px] mx-auto px-4 py-10 flex flex-col gap-6">
             <Head title="Employment History Detail" />
@@ -48,17 +54,13 @@ export default function HistoryDetail({ history, profile }) {
                             <DetailItem label="Email Address" value={profile.email} />
                             <DetailItem label="Contact Number" value={profile.contact_number} />
                             <DetailItem label="Address" value={profile.address} />
-                            <DetailItem
-                                label="Course & Year"
-                                value={profile.courses && profile.year_graduated
-                                    ? `${profile.courses} (${profile.year_graduated})`
-                                    : null
-                                }
-                            />
+                            <DetailItem label="Course" value={profile.courses ?? profile.course} />
+                            <DetailItem label="Year Graduated" value={profile.end_year ?? profile.year_graduated} />
+                            <DetailItem label="Semester Graduated" value={profile.semester ?? profile.semester_graduated} />
                         </div>
                     </div>
 
-                    <hr className="border-gray-50" />
+                    <hr className="border-gray-100" />
 
                     {/* Employment Status */}
                     <div>
@@ -73,19 +75,21 @@ export default function HistoryDetail({ history, profile }) {
                             />
 
                             {history.currently_employed === 'Yes' ? (
-                                <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                                <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-100">
                                     <DetailItem label="Company Name" value={history.company_name} />
                                     <DetailItem label="Position" value={history.position} />
                                     <DetailItem label="Employment Type" value={history.employment_type} />
                                     <DetailItem label="Location" value={history.location} />
+                                    <DetailItem label="Employment Range" value={employmentRange} />
                                     <DetailItem
                                         label="Monthly Salary"
-                                        value={history.monthly_salary ? `₱${parseFloat(history.monthly_salary).toLocaleString()}` : '—'}
+                                        value={history.monthly_salary && parseFloat(history.monthly_salary) > 0 ? `₱${parseFloat(history.monthly_salary).toLocaleString()}` : '—'}
                                     />
                                 </div>
                             ) : (
-                                <div className="pt-4 border-t border-gray-50">
-                                    <DetailItem label="Reason for Unemployment" value={history.unemployment_reason} />
+                                <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-100">
+                                    <DetailItem label="Reason for Unemployment" value={history.unemployment_reason ?? 'Job Hunting'} />
+                                    <DetailItem label="Employment Range" value="—" />
                                 </div>
                             )}
                         </div>
@@ -99,12 +103,12 @@ export default function HistoryDetail({ history, profile }) {
 HistoryDetail.layout = (page) => <AlumnaLayout>{page}</AlumnaLayout>;
 
 function DetailItem({ label, value, isStatus = false }) {
-    const finalValue = (value === null || value === undefined || value === "null" || value === "null (null)") ? " — " : value;
+    const finalValue = (value === null || value === undefined || value === "null" || value === "" || value === "null (null)") ? "—" : value;
 
     return (
         <div className="flex flex-col gap-1.5">
             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
-            <span className={`text-[14px] font-bold ${isStatus && finalValue === 'Employed' ? 'text-green-600' : 'text-gray-800'}`}>
+            <span className={`text-[14px] font-bold ${isStatus && finalValue === 'Employed' ? 'text-green-600' : (isStatus && finalValue === 'Unemployed' ? 'text-gray-500' : 'text-gray-800')}`}>
                 {finalValue}
             </span>
         </div>
