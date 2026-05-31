@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
+use App\Services\NotificationService;
 
 class AlumnaAuthController extends Controller
 {
@@ -140,6 +141,7 @@ class AlumnaAuthController extends Controller
         Employment::create($employmentData);
 
         Auth::login($user);
+        NotificationService::alumniRegistered($user->id, $user->name);
         
         return redirect()->route('alumna.home')->with('success', 'Account created successfully!');
     }

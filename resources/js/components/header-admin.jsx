@@ -10,6 +10,7 @@ import {
 } from "../components/ui/dropdown-menu"
 import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp'
+import NotificationBell from './NotificationBell'
 
 export default function HeaderAdmin({ navItems = [] }) {
   const { url, props } = usePage()
@@ -28,6 +29,8 @@ export default function HeaderAdmin({ navItems = [] }) {
       <div className='flex flex-row items-center gap-2'>
         <ModeToggle />
 
+        <NotificationBell/>
+        
         {/* profile dropdown - only logout option for admin */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

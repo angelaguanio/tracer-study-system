@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Storage;
+use App\Services\NotificationService;
+
 
 class AnnouncementController extends Controller
 {
@@ -110,7 +112,7 @@ class AnnouncementController extends Controller
             $imageUrls[] = Storage::url($path);
         }
 
-        Announcement::create([
+        $announcement = Announcement::create([
             'title'   => $request->title,
             'details' => $request->details,
             'image'   => $imageUrls,
@@ -118,6 +120,15 @@ class AnnouncementController extends Controller
             'user_id' => auth()->id(),
         ]);
 
+        // Only send notification if it's pending (coordinator created it)
+        if ($announcement->status === 'pending') {
+            NotificationService::announcementPendingReview(
+                $announcement->id,
+                $announcement->title,
+                auth()->id(),
+                auth()->user()->name
+            );
+        }
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Announcement created successfully!');
@@ -130,6 +141,12 @@ class AnnouncementController extends Controller
             'status' => 'approved'
         ]);
 
+        NotificationService::announcementApproved(
+            $announcement->id,
+            $announcement->title,
+            $announcement->user_id   // coordinator's user_id
+        );
+
         return redirect()
             ->route('admin.announcement.index')
             ->with('success', 'Announcement approved successfully!');
@@ -140,6 +157,13 @@ class AnnouncementController extends Controller
         $announcement->update([
             'status' => 'rejected'
         ]);
+
+        NotificationService::announcementRejected(
+            $announcement->id,
+            $announcement->title,
+            $announcement->user_id,   // coordinator's user_id
+            'Announcement did not meet approval criteria.'  // default reason
+        );
 
         return redirect()
             ->route('admin.announcement.index')

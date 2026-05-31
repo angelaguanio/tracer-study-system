@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\InquiriesController;
 use App\Http\Controllers\CoordinatorAlumniController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -354,4 +355,12 @@ Route::middleware(['auth', 'chat.participant'])->group(function () {
     Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages']);
     Route::post('/chat/messages', [ChatController::class, 'store']);
     Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
+});
+
+// routes/web.php (Inertia uses web routes)
+Route::middleware(['auth'])->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);         // paginated list
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/{id}/read', [NotificationController::class, 'markRead']);
+    Route::post('/read-all', [NotificationController::class, 'markAllRead']);
 });
