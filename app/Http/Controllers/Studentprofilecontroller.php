@@ -123,7 +123,7 @@ class StudentProfileController extends Controller
             // 1. Safely store the historical job entry without mapping structural mismatches
             $user->employmentHistory()->create($historyPayload);
 
-            // 2. Flush operational variables in the active placeholder profile to receive the next career record
+           
             $user->employment()->updateOrCreate(
                 ['user_id' => $user->id],
                 [
@@ -139,7 +139,7 @@ class StudentProfileController extends Controller
                 ]
             );
 
-            // GINAWANG LIGTAS PARA SA INERTIA: Gagamit ng back() o redirect()->back() para hindi mag-white screen
+           
             return redirect()->back()->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
         }
 
@@ -159,7 +159,6 @@ class StudentProfileController extends Controller
             ]
         );
 
-        // GINAWANG LIGTAS PARA SA INERTIA: redirect()->back() para pilitin si Inertia na i-refresh ang state nang maayos
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
