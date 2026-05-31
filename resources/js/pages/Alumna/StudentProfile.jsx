@@ -15,14 +15,32 @@ const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 
 export default function StudentProfile() {
     const { profile, flash } = usePage().props;
-    const emp = profile.employment;
-    const fullName = `${profile.first_name} ${profile.middle_name ? profile.middle_name + ' ' : ''}${profile.last_name}`;
+    const emp = profile?.employment;
+    const fullName = `${profile?.first_name} ${profile?.middle_name ? profile.middle_name + ' ' : ''}${profile?.last_name}`;
 
-    const avatarElement = profile.profile_picture ? (
+    // INAYOS NA FALLBACK LOGIC: Unang titingnan ang 'end_year' (mula sa iyong controller update logic)
+    let displayedYear = '—';
+    if (profile?.end_year) {
+        displayedYear = profile.end_year;
+    } else if (profile?.start_year && profile?.end_year) {
+        displayedYear = `${profile.start_year}-${profile.end_year}`;
+    } else if (profile?.school_year) {
+        displayedYear = profile.school_year;
+    } else if (profile?.year_graduated) {
+        displayedYear = profile.year_graduated;
+    }
+
+    // INAYOS NA COURSE CHECK: Unang titingnan ang 'courses' (mula sa iyong controller update logic)
+    const displayedCourse = profile?.courses || profile?.course || profile?.course_name || '—';
+
+    // INAYOS NA SEMESTER CHECK: Unang titingnan ang 'semester' (mula sa iyong controller update logic)
+    const displayedSemester = profile?.semester || profile?.semester_graduated || '—';
+
+    const avatarElement = profile?.profile_picture ? (
         <img src={`/storage/${profile.profile_picture}`} alt={`${profile.first_name}'s profile`} className="w-full h-full object-cover" />
     ) : (
         <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl font-bold">
-            {profile.initials}
+            {profile?.initials || 'RR'}
         </div>
     );
 
@@ -34,15 +52,14 @@ export default function StudentProfile() {
                 </div>
             )}
 
-            {/* Elevated containment structure to prevent layout overlay interceptions */}
             <div className="flex justify-end relative z-[9999] isolation-auto w-full">
-    <Link
-        href={route('alumna.profile.edit')}
-        className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors cursor-pointer select-none"
-    >
-        <IconEdit /> Edit Profile
-    </Link>
-</div>
+                <Link
+                    href={route('alumna.profile.edit')}
+                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-colors cursor-pointer select-none"
+                >
+                    <IconEdit /> Edit Profile
+                </Link>
+            </div>
 
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
@@ -58,12 +75,14 @@ export default function StudentProfile() {
                 </div>
                 <hr className="border-gray-100 mb-6" />
                 <div className="grid grid-cols-2 gap-y-6">
-                    <InfoItem icon={<IconMail />} label="Email" value={profile.email} />
-                    <InfoItem icon={<IconPhone />} label="Contact Number" value={profile.contact_number} />
-                    <InfoItem icon={<IconPin />} label="Address" value={profile.address} />
-                    <InfoItem icon={<IconGrad />} label="Course" value={profile.course ?? profile.courses ?? '—'} />
-                    <InfoItem icon={<IconGrad />} label="Year Graduated" value={profile.start_year && profile.end_year ? `${profile.start_year}-${profile.end_year}` : (profile.year_graduated ?? profile.end_year ?? profile.year ?? '—')} />
-                    <InfoItem icon={<IconGrad />} label="Semester Graduated" value={profile.semester ?? profile.semester_graduated ?? '—'} />
+                    <InfoItem icon={<IconMail />} label="Email" value={profile?.email} />
+                    <InfoItem icon={<IconPhone />} label="Contact Number" value={profile?.contact_number} />
+                    <InfoItem icon={<IconPin />} label="Address" value={profile?.address} />
+                    
+                    {/* Gumagana na gamit ang bagong checked fallbacks */}
+                    <InfoItem icon={<IconGrad />} label="Course" value={displayedCourse} />
+                    <InfoItem icon={<IconGrad />} label="Year Graduated" value={displayedYear} />
+                    <InfoItem icon={<IconGrad />} label="Semester Graduated" value={displayedSemester} />
                 </div>
             </section>
 
@@ -78,7 +97,6 @@ export default function StudentProfile() {
                     </span>
                 </div>
 
-                {/* LOGIC FOR EMPLOYED STATUS */}
                 {emp?.currently_employed === 'Yes' ? (
                     <div className="mt-4">
                         <div className="flex items-center gap-2 mb-6">
@@ -103,7 +121,6 @@ export default function StudentProfile() {
                         </div>
                     </div>
                 ) : (
-                    /* LOGIC FOR UNEMPLOYED STATUS */
                     <div className="py-4 flex flex-col gap-2">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reason for Unemployment</p>
                         <p className="text-[13px] font-bold text-[#343a40] italic">
@@ -119,7 +136,7 @@ export default function StudentProfile() {
                     <IconHistory /> Employment History 
                 </div>
 
-                {profile.employment_history?.length > 0 ? (
+                {profile?.employment_history?.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
