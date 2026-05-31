@@ -19,7 +19,6 @@ export default function StudentProfileEdit() {
         profile?.profile_picture ? `/storage/${profile.profile_picture}` : null
     );
 
-    // Dynamic dynamic year constraints copied directly from your signup file logic
     const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();
     const EMPLOYMENT_START_YEAR = 2018;
 
@@ -38,26 +37,30 @@ export default function StudentProfileEdit() {
         [EMPLOYMENT_CURRENT_YEAR]
     );
 
+    // Initial value layer mapping optimization
+    const initialEndYear = profile?.employment?.employment_end_year 
+        ? String(profile.employment.employment_end_year) 
+        : (profile?.employment?.currently_employed === 'Yes' ? 'current' : '');
+
     const { data, setData, post, processing } = useForm({
-        last_name:              profile?.last_name || '',
-        first_name:             profile?.first_name || '',
-        middle_name:            profile?.middle_name || '',
-        address:                profile?.address || '',
-        contact_number:         profile?.contact_number || '',
-        email:                  profile?.email || '',
-        is_employed:            profile?.employment?.currently_employed?.toLowerCase() || '',
-        employment_type:        profile?.employment?.employment_type || '',
-        company:                profile?.employment?.company_name || '',
+        _method: 'PUT', // Method spoofing setup allows files to safely pass via multipart architecture
+        last_name:             profile?.last_name || '',
+        first_name:            profile?.first_name || '',
+        middle_name:           profile?.middle_name || '',
+        address:               profile?.address || '',
+        contact_number:        profile?.contact_number || '',
+        email:                 profile?.email || '',
         
-        // Dynamic automatic value assignment matching structural schema
-        employment_start_year:  profile?.employment?.employment_start_year || '',
-        employment_end_year:    profile?.employment?.employment_end_year || '',
-        
-        position:               profile?.employment?.position || '',
-        location:               profile?.employment?.location || '',
-        monthly_salary:         profile?.employment?.monthly_salary || '',
-        reason_unemployed:      profile?.employment?.unemployment_reason || '',
-        profile_picture:        null,
+        is_employed:           profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
+        employment_type:       profile?.employment?.employment_type || '',
+        company:               profile?.employment?.company_name || '',
+        employment_start_year: profile?.employment?.employment_start_year || '',
+        employment_end_year:   initialEndYear,
+        position:              profile?.employment?.position || '',
+        location:              profile?.employment?.location || '',
+        monthly_salary:        profile?.employment?.monthly_salary || '',
+        reason_unemployed:     profile?.employment?.unemployment_reason || '',
+        profile_picture:       null,
     });
 
     const handleFileChange = (e) => {
@@ -72,6 +75,14 @@ export default function StudentProfileEdit() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // INTERCEPTOR LOGIC: Kung ang halaga ay "current", binabago nito ang payload string sa empty space bago maipasa sa backend
+        const submissionData = { ...data };
+        if (submissionData.employment_end_year === 'current') {
+            submissionData.employment_end_year = '';
+        }
+
+        // Standard post call containing programmatic payload redirection configuration
         post(route('alumna.profile.update'), {
             forceFormData: true,
             preserveScroll: true,
@@ -84,7 +95,7 @@ export default function StudentProfileEdit() {
             is_employed: newStatus,
             company: '',
             employment_start_year: '',
-            employment_end_year: '',
+            employment_end_year: newStatus === 'yes' ? 'current' : '',
             position: '',
             location: '',
             employment_type: '',

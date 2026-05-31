@@ -139,7 +139,8 @@ class StudentProfileController extends Controller
                 ]
             );
 
-            return redirect()->to('/alumna/profile')->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
+            // GINAWANG LIGTAS PARA SA INERTIA: Gagamit ng back() o redirect()->back() para hindi mag-white screen
+            return redirect()->back()->with('success', 'Your previous job has been successfully archived. You can now add your new employment details!');
         }
 
         // --- STANDARD PROFILE UPDATE FLOW ---
@@ -158,7 +159,8 @@ class StudentProfileController extends Controller
             ]
         );
 
-        return redirect()->to('/alumna/profile')->with('success', 'Profile updated successfully!');
+        // GINAWANG LIGTAS PARA SA INERTIA: redirect()->back() para pilitin si Inertia na i-refresh ang state nang maayos
+        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
     public function showHistory($id) {
