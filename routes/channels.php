@@ -33,7 +33,7 @@ Broadcast::channel('chat.{minId}.{maxId}', function (User $user, $minId, $maxId)
     return false;
 });
 
-// Global presence channel for all chat users
+// Global presence channel for all chat users - converted to regular channel for Pusher
 Broadcast::channel('chat.presence', function (User $user) {
     if ($user->user_role === 'admin' || $user->user_role === 'coordinator') {
         return [

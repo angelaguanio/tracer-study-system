@@ -1,20 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import Pusher from 'pusher-js';
+import echo from '@/echo';
 import axios from 'axios';
 
-let pusherInstance = null;
-
-function getPusher() {
-    if (!pusherInstance) {
-        pusherInstance = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-        });
-    }
-    return pusherInstance;
-}
-
-
-export function useNotifications(userRole,userId) {
+export function useNotifications(userRole, userId) {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -57,27 +45,23 @@ export function useNotifications(userRole,userId) {
     useEffect(() => {
         fetchUnreadCount();
 
-        const pusher = getPusher();
-
-        // Role channel (admin or coordinator)
-        const roleChannel = pusher.subscribe(`role.${userRole}`);
-        roleChannel.bind('notification.created', (data) => {
+        // Use Echo for notifications (now using Pusher)
+        const roleChannel = echo.channel(`role.${userRole}`);
+        roleChannel.listen('notification.created', (data) => {
             fetchNotifications();
             setUnreadCount(prev => prev + 1);
         });
 
         // User-specific channel (for coordinator approval/rejection notifs)
-        const userChannel = pusher.subscribe(`user.${userId}`);
-        userChannel.bind('notification.created', (data) => {
+        const userChannel = echo.channel(`user.${userId}`);
+        userChannel.listen('notification.created', (data) => {
             fetchNotifications();
             setUnreadCount(prev => prev + 1);
         });
 
         return () => {
-            roleChannel.unbind_all();
-            userChannel.unbind_all();
-            pusher.unsubscribe(`role.${userRole}`);
-            pusher.unsubscribe(`user.${userId}`);
+            echo.leaveChannel(`role.${userRole}`);
+            echo.leaveChannel(`user.${userId}`);
         };
     }, [userRole, userId]);
 
