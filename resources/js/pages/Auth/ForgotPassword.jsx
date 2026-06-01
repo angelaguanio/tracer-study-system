@@ -4,11 +4,10 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { ArrowLeft, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logotracer.png'
 
 export default function ForgotPassword({status}) {
@@ -37,12 +36,14 @@ export default function ForgotPassword({status}) {
             
             <div className='justify-center w-full'>
             <h2 className="text-xl font-bold text-gray-900 mt-4">Forgot Password</h2>
-            <p className="text-gray-600 text-start mt-2">Enter your email to receive a reset link</p>
+            <p className="text-gray-600 text-start mt-2 text-sm">Enter your email to receive a reset link</p>
             </div>
 
+            {/* Success Message */}
             {status && (
-                <div className="bg-green-100 text-green-700 p-3 rounded-lg text-sm mt-4 w-full text-center">
-                    {status}
+                <div className="bg-green-100 border border-green-300 text-green-700 p-3 rounded-lg text-sm mt-4 w-full flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{status}</span>
                 </div>
             )}
         </CardHeader>
@@ -56,13 +57,17 @@ export default function ForgotPassword({status}) {
                         value={data.email}
                         onChange={e => setData('email', e.target.value)}
                         placeholder="Enter your registered email"
-                        className="pl-10 text-black border-gray-300 w-full"
+                        className={`pl-10 text-black border-gray-300 w-full ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                         required
                     />
                 </div>
                 
+                {/* Error Message */}
                 {errors.email && (
-                    <p className="text-red-600 text-sm mt-1">{errors.email}</p>
+                    <div className="bg-red-100 border border-red-300 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                        <span>{errors.email}</span>
+                    </div>
                 )}
 
                 <Button 

@@ -99,7 +99,9 @@ export default function AlumnaLogin({ status }) {
           icon={Lock}
           className="pl-10 text-black border-gray-400 w-full text-sm sm:text-base"
         />
-
+        <div className='text-end text-[12px] -mt-2 underline'>
+          <Link href={route('alumna.forgot-password')} >Forgot Password?</Link>
+        </div>
         <Button 
           variant="blue" 
           size="login2" 
@@ -112,7 +114,8 @@ export default function AlumnaLogin({ status }) {
     </CardContent>
 
     <CardFooter className="flex flex-col items-center justify-center gap-1 text-black text-sm sm:text-base text-center">
-      <div className='flex flex-row gap-1'>
+      
+      <div className='flex flex-row gap-1 text-sm'>
         <p>Don't have an account?</p> 
         <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
       </div>

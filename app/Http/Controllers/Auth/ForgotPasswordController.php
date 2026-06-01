@@ -4,15 +4,43 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use App\Notifications\ResetPasswordNotification;
 
 class ForgotPasswordController extends Controller
 {
     public function store(Request $request) {
-    $request->validate(['email' => 'required|email']);
+        $request->validate(['email' => 'required|email']);
 
-    Password::sendResetLink($request->only('email'));
+        // Check if user exists with this email
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'We could not find a user with that email address.'
+            ]);
+        }
 
-    return back()->with('status', 'If your email exists, a reset link was sent.');
-}
+        // Generate password reset token
+        $token = Str::random(64);
+        
+        // Store token in password_reset_tokens table
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]);
+
+        // Send reset email
+        try {
+            $user->notify(new ResetPasswordNotification($token));
+            return back()->with('status', 'Password reset link sent to your email!');
+        } catch (\Exception) {
+            return back()->withErrors(['email' => 'Unable to send reset link. Please try again.']);
+        }
+    }
 }
