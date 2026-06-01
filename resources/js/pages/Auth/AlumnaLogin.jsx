@@ -13,7 +13,7 @@ import axios from 'axios';
 
 
 
-export default function AlumnaLogin() {
+export default function AlumnaLogin({ status }) {
 
   //form
   const { data, setData, post, processing, errors } = useForm({
@@ -68,6 +68,12 @@ export default function AlumnaLogin() {
     <CardContent>
       <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
         
+        {status && (
+          <div className="bg-green-100 text-green-700 p-2 rounded text-sm sm:text-base">
+            {status}
+          </div>
+        )}
+
         {errors.credentials && (
           <div className="bg-red-100 text-red-700 p-2 rounded text-sm sm:text-base">
             {errors.credentials}
@@ -105,9 +111,13 @@ export default function AlumnaLogin() {
       </form>
     </CardContent>
 
-    <CardFooter className="flex flex-col sm:flex-row items-center justify-center gap-1 text-black text-sm sm:text-base text-center">
-      <p>Don't have an account?</p> 
-      <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
+    <CardFooter className="flex flex-col items-center justify-center gap-1 text-black text-sm sm:text-base text-center">
+      <div className='flex flex-row gap-1'>
+        <p>Don't have an account?</p> 
+        <TextLink routeName="alumna.signup" linkName="Sign up Here"/>
+      </div>
+      
+      
     </CardFooter>
 
   </Card>
