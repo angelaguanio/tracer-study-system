@@ -11,6 +11,13 @@ use App\Models\EmploymentHistory;
 
 class StudentProfileController extends Controller
 {
+    public function edit() {
+        $user = Auth::user()->fresh()->load('employment');
+        return Inertia::render('Alumna/StudentProfileEdit', [
+            'profile' => $user
+        ]);
+    }
+
     public function show() {
         $user = Auth::user()->fresh()->load(['employment']);
         
@@ -59,7 +66,7 @@ class StudentProfileController extends Controller
         ]);
         $user->save();
 
-        // 3. Archive Engine (Move old job to history if ending current job)
+        // 3. Archive Engine
         $oldEmployment = $user->employment;
         if ($oldEmployment && $oldEmployment->currently_employed === 'Yes' && $request->is_employed === 'no' && !empty($request->employment_end_year)) {
             
@@ -75,7 +82,6 @@ class StudentProfileController extends Controller
                 'created_at'          => now(),
             ];
 
-            // Mapping logic for dynamic column names
             if (in_array('employment_start_year', $databaseColumns)) $historyPayload['employment_start_year'] = $oldEmployment->employment_start_year;
             if (in_array('employment_end_year', $databaseColumns)) $historyPayload['employment_end_year'] = $request->employment_end_year;
 
@@ -97,7 +103,7 @@ class StudentProfileController extends Controller
                 'monthly_salary'        => $isCurrentlyEmployed === 'Yes' ? $salaryValue : 0.00,
                 'unemployment_reason'   => $isCurrentlyEmployed === 'No' ? $request->reason_unemployed : null,
                 'employment_start_year' => $isCurrentlyEmployed === 'Yes' ? $request->employment_start_year : null,
-                'employment_end_year'   => null, // Reset to null for current
+                'employment_end_year'   => null,
             ]
         );
 
