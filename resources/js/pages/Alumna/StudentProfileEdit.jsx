@@ -215,42 +215,46 @@ export default function StudentProfileEdit() {
                                 
                                 <div><label className={labelClass}>Company Name</label><input type="text" required value={data.company} onChange={e => setData('company', e.target.value)} className={inputClass} placeholder="Company Name" /></div>
                                 
-                                {/* START YEAR DROPDOWN */}
-                                <div className="flex flex-col gap-2">
-                                    <label className={labelClass}>Start Year</label>
-                                    <select 
-                                        required 
-                                        value={data.employment_start_year} 
-                                        onChange={e => setData('employment_start_year', e.target.value)} 
-                                        className={inputClass}
-                                    >
-                                        <option value="" disabled>Select Start Year</option>
-                                        {employmentYearOptions.map((year) => (
-                                            <option key={year.value} value={year.value}>
-                                                {year.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                                {/* START YEAR AT END YEAR SA ISANG ROW */}
+<div className="grid grid-cols-2 gap-4">
+    
+    {/* START YEAR DROPDOWN */}
+    <div className="flex flex-col gap-2">
+        <label className={labelClass}>Start Year</label>
+        <select 
+            required 
+            value={data.employment_start_year} 
+            onChange={e => setData('employment_start_year', e.target.value)} 
+            className={inputClass}
+        >
+            <option value="" disabled>Select Start Year</option>
+            {employmentYearOptions.map((year) => (
+                <option key={year.value} value={year.value}>
+                    {year.label}
+                </option>
+            ))}
+        </select>
+    </div>
 
-                                {/* END YEAR DROPDOWN */}
-                                <div className="flex flex-col gap-2">
-                                    <label className={labelClass}>End Year</label>
-                                    <select 
-                                        required 
-                                        value={data.employment_end_year} 
-                                        onChange={e => setData('employment_end_year', e.target.value)} 
-                                        className={inputClass}
-                                    >
-                                        <option value="" disabled>Select End Year</option>
-                                        <option value="current">Present/Current</option>
-                                        {employmentYearOptions.map((year) => (
-                                            <option key={year.value} value={year.value}>
-                                                {year.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+    {/* END YEAR DROPDOWN */}
+    <div className="flex flex-col gap-2">
+        <label className={labelClass}>End Year</label>
+        <select 
+            required 
+            value={data.employment_end_year} 
+            onChange={e => setData('employment_end_year', e.target.value)} 
+            className={inputClass}
+        >
+            <option value="" disabled>Select End Year</option>
+            <option value="current">Present/Current</option>
+            {employmentYearOptions.map((year) => (
+                <option key={year.value} value={year.value}>
+                    {year.label}
+                </option>
+            ))}
+        </select>
+    </div>
+</div>
 
                                 <div><label className={labelClass}>Position</label><input type="text" required value={data.position} onChange={e => setData('position', e.target.value)} className={inputClass} placeholder="Position" /></div>
                                 <div><label className={labelClass}>Location</label><input type="text" required value={data.location} onChange={e => setData('location', e.target.value)} className={inputClass} placeholder="Location" /></div>

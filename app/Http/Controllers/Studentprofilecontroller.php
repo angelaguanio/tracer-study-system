@@ -6,107 +6,123 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Schema; 
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\EmploymentHistory;
 
 class StudentProfileController extends Controller
 {
-    public function edit() {
-        $user = Auth::user()->fresh()->load('employment');
+    // Para sa "View Profile" page
+    public function show() 
+    {
+        $user = Auth::user()->load(['employment', 'employmentHistory' => function($query) {
+            $query->latest(); 
+        }]);
+        
+        return Inertia::render('Alumna/StudentProfile', [
+            'profile' => $user
+        ]);
+    }
+
+    // Para sa "View History Details"
+   public function showHistory($id)
+{
+  
+    $history = \App\Models\EmploymentHistory::findOrFail($id);
+    
+  
+    return Inertia::render('Alumna/HistoryDetails', [
+        'history' => $history
+    ]);
+}
+
+    // Para sa "Edit Profile" page
+    public function edit() 
+    {
+        $user = Auth::user()->load('employment');
         return Inertia::render('Alumna/StudentProfileEdit', [
             'profile' => $user
         ]);
     }
 
-    public function show() {
-        $user = Auth::user()->fresh()->load(['employment']);
-        
-        $history = EmploymentHistory::where('user_id', $user->id)
-            ->latest()
-            ->get()
-            ->map(function ($item) {
-                $item->start_year = $item->employment_start_year ?? $item->start_year ?? $item->year_started ?? null;
-                $item->end_year = $item->employment_end_year ?? $item->end_year ?? $item->year_ended ?? null;
-                return $item;
-            });
-            
-        return Inertia::render('Alumna/StudentProfile', [
-            'profile' => array_merge($user->toArray(), [
-                'employment_history' => $history
-            ]),
-            'flash' => [
-                'success' => session('success')
-            ]
-        ]);
-    }
-
-    public function update(Request $request) {
+    // "Save Changes" logic
+    public function update(Request $request) 
+    {
         $user = Auth::user();
 
-        // 1. Profile Picture Processing
-        if ($request->hasFile('profile_picture')) {
-            $picture = $request->file('profile_picture');
-            if ($user->profile_picture) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
-            $user->profile_picture = $picture->store('avatars', 'public');
-        }
-
-        // 2. Update Personal Information
-        $user->fill([
-            'first_name'     => $request->first_name,
-            'middle_name'    => $request->middle_name ?? '',
-            'last_name'      => $request->last_name,
-            'contact_number' => $request->contact_number,
-            'address'        => $request->address,
-            'email'          => $request->email,
-            'courses'        => $request->courses ?? $request->course,
-            'end_year'       => $request->end_year ?? $request->year_graduated,
-            'semester'       => $request->semester ?? $request->semester_graduated,
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
         ]);
-        $user->save();
 
-        // 3. Archive Engine
-        $oldEmployment = $user->employment;
-        if ($oldEmployment && $oldEmployment->currently_employed === 'Yes' && $request->is_employed === 'no' && !empty($request->employment_end_year)) {
+        try {
+            DB::transaction(function () use ($request, $user) {
+                if ($request->hasFile('profile_picture')) {
+                    if ($user->profile_picture) {
+                        Storage::disk('public')->delete($user->profile_picture);
+                    }
+                    $path = $request->file('profile_picture')->store('avatars', 'public');
+                    $user->profile_picture = $path;
+                }
+
+                $user->update([
+                    'first_name'     => $request->first_name,
+                    'middle_name'    => $request->middle_name ?? null,
+                    'last_name'      => $request->last_name,
+                    'contact_number' => $request->contact_number,
+                    'address'        => $request->address,
+                    'email'          => $request->email,
+                ]);
+
+               $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
+
+// ... (existing update logic para sa main user profile)
+
+$oldEmp = $user->employment;
+
+// PAGBABAGO DITO:
+// 1. Siguraduhin na ang status ay 'Yes' (Employed) bago mag-create sa history
+// 2. I-check din kung may pagbabago (hasChanged)
+if ($isEmployed === 'Yes' && $oldEmp) {
+    
+    $hasChanged = (
+        $oldEmp->company_name !== $request->company ||
+        $oldEmp->position !== $request->position
+    );
+
+    if ($hasChanged) {
+        $user->employmentHistory()->create([
+            'user_id'            => $user->id,
+            'currently_employed' => 'Yes',
+            'employment_type'    => $request->employment_type,
+            'company_name'       => $request->company,
+            'position'           => $request->position,
+            'location'           => $request->location,
+            'monthly_salary'     => $salaryValue,
+            'unemployment_reason'=> null, // Explicitly null
+        ]);
+    }
+}
+
+                $user->employment()->updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'currently_employed'  => $isEmployed,
+                        'employment_type'     => $isEmployed === 'Yes' ? $request->employment_type : null,
+                        'company_name'        => $isEmployed === 'Yes' ? $request->company : null,
+                        'position'            => $isEmployed === 'Yes' ? $request->position : null,
+                        'location'            => $isEmployed === 'Yes' ? $request->location : null,
+                        'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
+                        'unemployment_reason' => $unemploymentReason,
+                    ]
+                );
+            });
+
+            return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
             
-            $databaseColumns = Schema::getColumnListing('employment_history');
-            $historyPayload = [
-                'currently_employed'  => 'Yes', 
-                'employment_type'     => $oldEmployment->employment_type,
-                'company_name'        => $oldEmployment->company_name ?? '—',
-                'position'            => $oldEmployment->position ?? '—',
-                'location'            => $oldEmployment->location,
-                'monthly_salary'      => $oldEmployment->monthly_salary,
-                'unemployment_reason' => 'Job Transition',
-                'created_at'          => now(),
-            ];
-
-            if (in_array('employment_start_year', $databaseColumns)) $historyPayload['employment_start_year'] = $oldEmployment->employment_start_year;
-            if (in_array('employment_end_year', $databaseColumns)) $historyPayload['employment_end_year'] = $request->employment_end_year;
-
-            $user->employmentHistory()->create($historyPayload);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
         }
-
-        // 4. Update Current Employment Status
-        $isCurrentlyEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
-        $salaryValue = preg_replace('/[^\d.]/', '', $request->monthly_salary ?? 0);
-
-        $user->employment()->updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'currently_employed'    => $isCurrentlyEmployed,
-                'employment_type'       => $isCurrentlyEmployed === 'Yes' ? $request->employment_type : null,
-                'company_name'          => $isCurrentlyEmployed === 'Yes' ? $request->company : null,
-                'position'              => $isCurrentlyEmployed === 'Yes' ? $request->position : null,
-                'location'              => $isCurrentlyEmployed === 'Yes' ? $request->location : null,
-                'monthly_salary'        => $isCurrentlyEmployed === 'Yes' ? $salaryValue : 0.00,
-                'unemployment_reason'   => $isCurrentlyEmployed === 'No' ? $request->reason_unemployed : null,
-                'employment_start_year' => $isCurrentlyEmployed === 'Yes' ? $request->employment_start_year : null,
-                'employment_end_year'   => null,
-            ]
-        );
-
-        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 }
