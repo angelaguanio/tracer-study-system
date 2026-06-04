@@ -43,25 +43,23 @@ export default function StudentProfileEdit() {
         : (profile?.employment?.currently_employed === 'Yes' ? 'current' : '');
 
     const { data, setData, post, processing } = useForm({
-        _method: 'PUT', // Method spoofing setup allows files to safely pass via multipart architecture
-        last_name:             profile?.last_name || '',
-        first_name:            profile?.first_name || '',
-        middle_name:           profile?.middle_name || '',
-        address:               profile?.address || '',
-        contact_number:        profile?.contact_number || '',
-        email:                 profile?.email || '',
-        
-        is_employed:           profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
-        employment_type:       profile?.employment?.employment_type || '',
-        company:               profile?.employment?.company_name || '',
-        employment_start_year: profile?.employment?.employment_start_year || '',
-        employment_end_year:   initialEndYear,
-        position:              profile?.employment?.position || '',
-        location:              profile?.employment?.location || '',
-        monthly_salary:        profile?.employment?.monthly_salary || '',
-        reason_unemployed:     profile?.employment?.unemployment_reason || '',
-        profile_picture:       null,
-    });
+    last_name:           profile?.last_name || '',
+    first_name:          profile?.first_name || '',
+    middle_name:         profile?.middle_name || '',
+    address:             profile?.address || '',
+    contact_number:      profile?.contact_number || '',
+    email:               profile?.email || '',
+    is_employed:         profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
+    employment_type:     profile?.employment?.employment_type || '',
+    company:             profile?.employment?.company_name || '',
+    employment_start_year: profile?.employment?.employment_start_year || '',
+    employment_end_year: initialEndYear,
+    position:            profile?.employment?.position || '',
+    location:            profile?.employment?.location || '',
+    monthly_salary:      profile?.employment?.monthly_salary || '',
+    reason_unemployed:   profile?.employment?.unemployment_reason || '',
+    profile_picture:     null,
+});
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -73,21 +71,21 @@ export default function StudentProfileEdit() {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        // INTERCEPTOR LOGIC: Kung ang halaga ay "current", binabago nito ang payload string sa empty space bago maipasa sa backend
-        const submissionData = { ...data };
-        if (submissionData.employment_end_year === 'current') {
-            submissionData.employment_end_year = '';
-        }
-
-        // Standard post call containing programmatic payload redirection configuration
-        post(route('alumna.profile.update'), {
-            forceFormData: true,
-            preserveScroll: true,
-        });
-    };
+   const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Explicitly define the post parameters
+    post(route('alumna.profile.update'), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            console.log("Success!");
+        },
+        onError: (errors) => {
+            console.log("Errors:", errors); // Check your browser console!
+        },
+    });
+};
 
     const handleStatusChange = (newStatus) => {
         setData({

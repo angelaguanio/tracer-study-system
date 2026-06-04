@@ -92,12 +92,12 @@ export default function StudentProfile() {
                                 <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 gap-y-6">
-                            <InfoItem label="Position" value={emp.position} />
-                            <InfoItem label="Location" value={emp.location} />
-                            <InfoItem label="Start Year" value={emp.employment_start_year || emp.start_year} />
-                            <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
+                       <div className="grid grid-cols-2 gap-y-6">
+    <InfoItem label="Position" value={emp.position} />
+    <InfoItem label="Location" value={emp.location} />
+    <InfoItem label="Start Year" value={emp.employment_start_year || '—'} />
+    <div>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
                                     ₱{emp?.monthly_salary ?
                                         parseFloat(emp.monthly_salary.toString().replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'

@@ -12,7 +12,6 @@ use App\Models\EmploymentHistory;
 
 class StudentProfileController extends Controller
 {
-    // Para sa "View Profile" page
     public function show() 
     {
         $user = Auth::user()->load(['employment', 'employmentHistory' => function($query) {
@@ -24,19 +23,14 @@ class StudentProfileController extends Controller
         ]);
     }
 
-    // Para sa "View History Details"
-   public function showHistory($id)
-{
-  
-    $history = \App\Models\EmploymentHistory::findOrFail($id);
-    
-  
-    return Inertia::render('Alumna/HistoryDetails', [
-        'history' => $history
-    ]);
-}
+    public function showHistory($id)
+    {
+        $history = EmploymentHistory::findOrFail($id);
+        return Inertia::render('Alumna/HistoryDetails', [
+            'history' => $history
+        ]);
+    }
 
-    // Para sa "Edit Profile" page
     public function edit() 
     {
         $user = Auth::user()->load('employment');
@@ -45,19 +39,25 @@ class StudentProfileController extends Controller
         ]);
     }
 
-    // "Save Changes" logic
     public function update(Request $request) 
     {
         $user = Auth::user();
 
         $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|max:255',
         ]);
 
+        // 1. Define variables clearly before usage to prevent crashes
+        $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
+        $salaryValue = $request->monthly_salary ?? null;
+        $unemploymentReason = ($isEmployed === 'No') ? $request->reason_unemployed : null;
+
         try {
-            DB::transaction(function () use ($request, $user) {
+            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason) {
+                
+                // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
                     if ($user->profile_picture) {
                         Storage::disk('public')->delete($user->profile_picture);
@@ -66,6 +66,7 @@ class StudentProfileController extends Controller
                     $user->profile_picture = $path;
                 }
 
+                // Update User Basic Info
                 $user->update([
                     'first_name'     => $request->first_name,
                     'middle_name'    => $request->middle_name ?? null,
@@ -75,36 +76,30 @@ class StudentProfileController extends Controller
                     'email'          => $request->email,
                 ]);
 
-               $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
+                $oldEmp = $user->employment;
 
-// ... (existing update logic para sa main user profile)
+                // Create History Entry if status is Yes and details changed
+                if ($isEmployed === 'Yes' && $oldEmp) {
+                    $hasChanged = (
+                        $oldEmp->company_name !== $request->company ||
+                        $oldEmp->position !== $request->position
+                    );
 
-$oldEmp = $user->employment;
+                    if ($hasChanged) {
+                        $user->employmentHistory()->create([
+                            'user_id'            => $user->id,
+                            'currently_employed' => 'Yes',
+                            'employment_type'    => $request->employment_type,
+                            'company_name'       => $request->company,
+                            'position'           => $request->position,
+                            'location'           => $request->location,
+                            'monthly_salary'     => $salaryValue,
+                            'unemployment_reason'=> null,
+                        ]);
+                    }
+                }
 
-// PAGBABAGO DITO:
-// 1. Siguraduhin na ang status ay 'Yes' (Employed) bago mag-create sa history
-// 2. I-check din kung may pagbabago (hasChanged)
-if ($isEmployed === 'Yes' && $oldEmp) {
-    
-    $hasChanged = (
-        $oldEmp->company_name !== $request->company ||
-        $oldEmp->position !== $request->position
-    );
-
-    if ($hasChanged) {
-        $user->employmentHistory()->create([
-            'user_id'            => $user->id,
-            'currently_employed' => 'Yes',
-            'employment_type'    => $request->employment_type,
-            'company_name'       => $request->company,
-            'position'           => $request->position,
-            'location'           => $request->location,
-            'monthly_salary'     => $salaryValue,
-            'unemployment_reason'=> null, // Explicitly null
-        ]);
-    }
-}
-
+                // Update Current Employment
                 $user->employment()->updateOrCreate(
                     ['user_id' => $user->id],
                     [
@@ -115,6 +110,8 @@ if ($isEmployed === 'Yes' && $oldEmp) {
                         'location'            => $isEmployed === 'Yes' ? $request->location : null,
                         'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
                         'unemployment_reason' => $unemploymentReason,
+                        'employment_start_year'=> $isEmployed === 'Yes' ? $request->employment_start_year : null,
+                        'employment_end_year'  => $isEmployed === 'Yes' ? ($request->employment_end_year === 'current' ? null : $request->employment_end_year) : null,
                     ]
                 );
             });
