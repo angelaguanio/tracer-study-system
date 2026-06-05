@@ -179,21 +179,20 @@
 
                 {/* REVISION BANNER */}
                 {isRevise && (
-                <div className="mx-6 mt-3 mb-2 p-4 rounded-lg bg-yellow-50 border border-yellow-200 flex gap-3">
+                  <div className="mx-6 mt-3 mb-2 p-4 bg-white border-l-4 border-yellow-400 rounded-md shadow-sm">
 
-                  <AlertCircle className="text-yellow-500 mt-0.5" size={18} />
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertCircle className="text-yellow-500" size={18} />
+                      <p className="font-semibold text-yellow-700 text-sm">
+                        Revision Note
+                      </p>
+                    </div>
 
-                  <div>
-                    <p className="font-semibold text-yellow-700 text-sm">
-                      Revision Required
+                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                      {announcement?.revision_note}
                     </p>
 
-                    <p className="text-xs text-yellow-600 mt-1">
-                      Please update the announcement based on admin feedback and resubmit.
-                    </p>
                   </div>
-
-                </div>
                 )}
 
                 {/* INFO TEXT (only shows kapag may image na) */}

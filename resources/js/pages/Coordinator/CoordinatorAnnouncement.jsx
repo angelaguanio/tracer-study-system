@@ -92,15 +92,16 @@ export default function CoordinatorAnnouncement({ announcements }) {
         </Link>
       </div>
 
-      {/* FILTERS (RIGHT SIDE ALIGNED) */}
+      {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-        {/* RIGHT SIDE CONTROLS */}
-        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto ml-auto">
-
-          {/* SEARCH */}
+        {/* ================= LEFT SIDE (SEARCH) ================= */}
+        <div className="w-full sm:w-auto">
           <div className="relative w-full sm:w-64 bg-white">
-            <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+            <Search
+              size={16}
+              className="absolute left-3 top-2.5 text-gray-400"
+            />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -108,10 +109,13 @@ export default function CoordinatorAnnouncement({ announcements }) {
               className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
             />
           </div>
+        </div>
+
+        {/* ================= RIGHT SIDE (FILTERS) ================= */}
+        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto">
 
           {/* STATUS FILTER */}
           <div className="relative">
-
             <button
               onClick={() => setStatusOpen(!statusOpen)}
               className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
@@ -119,59 +123,29 @@ export default function CoordinatorAnnouncement({ announcements }) {
               Status: {
                 statusFilter === ""
                   ? "All"
-                  : statusFilter.charAt(0).toUpperCase() +
-                    statusFilter.slice(1)
+                  : statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)
               }
-
               <ChevronDown size={16} />
             </button>
 
             {statusOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-28">
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  All
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("approved");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Approved
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("pending");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Pending
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("revise");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Revise
-                </button>
-
+                {["", "approved", "pending", "revise"].map((status) => (
+                  <button
+                    key={status || "all"}
+                    onClick={() => {
+                      setStatusFilter(status);
+                      setStatusOpen(false);
+                    }}
+                    className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                  >
+                    {status === ""
+                      ? "All"
+                      : status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
               </div>
             )}
-
           </div>
 
           {/* SORT */}
@@ -186,7 +160,6 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
             {sortOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-32">
-
                 <button
                   onClick={() => {
                     setSortOrder("newest");
@@ -206,7 +179,6 @@ export default function CoordinatorAnnouncement({ announcements }) {
                 >
                   Oldest
                 </button>
-
               </div>
             )}
           </div>

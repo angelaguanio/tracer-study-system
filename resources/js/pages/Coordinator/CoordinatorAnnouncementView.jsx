@@ -1,20 +1,58 @@
 import React from "react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import { Link } from "@inertiajs/react";
-import { ArrowLeft } from "lucide-react";
+import { Link, router } from "@inertiajs/react";
+import { ArrowLeft, Pencil, RefreshCw } from "lucide-react";
 import CoordinatorAnnouncementViewCard from "../../components/coordinator/CoordinatorAnnouncementViewCard";
 
 function CoordinatorAnnouncementView({ announcement }) {
+  const isPending = announcement?.status === "pending";
+  const isRevise = announcement?.status === "revise";
+
   return (
     <div className="min-h-screen w-full bg-[#f0faff]">
-      
-      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6">
-        <Link href="/coordinator/announcement" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4">
-          <ArrowLeft size={16} /> Back
-        </Link>
-        <CoordinatorAnnouncementViewCard announcement={announcement} />
-      </div>
+      <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 space-y-4">
 
+        {/* ================= HEADER ================= */}
+        <div className="flex items-center justify-between">
+
+          {/* BACK */}
+          <Link
+            href="/coordinator/announcement"
+            className="inline-flex items-center gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft size={20} />
+            Back
+          </Link>
+
+          {/* ACTION BUTTON */}
+          {(isPending || isRevise) && (
+            <button
+              onClick={() =>
+                router.get(`/coordinator/announcement/${announcement.id}/edit`)
+              }
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition whitespace-nowrap
+                ${isRevise
+                  ? "bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200"
+                  : "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
+                }
+              `}
+            >
+              {isRevise ? (
+                <RefreshCw size={16} />
+              ) : (
+                <Pencil size={16} />
+              )}
+
+              {isRevise ? "Resubmit" : "Edit"}
+            </button>
+          )}
+
+        </div>
+
+        {/* ================= CONTENT ================= */}
+        <CoordinatorAnnouncementViewCard announcement={announcement} />
+
+      </div>
     </div>
   );
 }

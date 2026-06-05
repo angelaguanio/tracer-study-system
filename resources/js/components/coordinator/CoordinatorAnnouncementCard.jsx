@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Pencil, Trash2, ImageOff, Ellipsis } from "lucide-react";
+import { Eye, ImageOff } from "lucide-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CoordinatorAnnouncementDeletePrompt from "./CoordinatorAnnouncementDeletePromptandConfirmation";
@@ -31,85 +31,6 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     });
   };
 
-  const ActionCell = ({ data }) => {
-    const isPending = data.status === "pending";
-    const isApproved = data.status === "approved";
-    const isAdmin = data.user_role === "admin";
-
-    const [open, setOpen] = useState(false);
-    const ref = useRef(null);
-
-    useEffect(() => {
-      const handleClickOutside = (e) => {
-        if (ref.current && !ref.current.contains(e.target)) {
-          setOpen(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
-        <div className="flex items-center justify-end w-full relative gap-2 min-h-[40px]" ref={ref}>
-    
-          <div className="flex items-center justify-end gap-2 w-full pr-2">
-
-            {/* VIEW BUTTON (ALL STATUS) */}
-            <button
-              onClick={() => router.get(`/coordinator/announcement/${data.id}`)}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition"
-            >
-              <Eye size={16} />
-              <span className="hidden sm:inline">View</span>
-            </button>
-
-            {/* 3 DOTS ONLY IF NOT APPROVED */}
-            {!isApproved && (
-              <div className="relative">
-                <button
-                  onClick={() => setOpen(!open)}
-                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                >
-                  <Ellipsis size={18} />
-                </button>
-
-                {open && (
-                  <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-50 py-1 min-w-max">
-
-                    <button
-                      onClick={() => {
-                        setOpen(false);
-                        router.get(`/admin/announcement/${data.id}/edit`);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#008236] w-full"
-                    >
-                      <Pencil size={14} />
-                      Edit
-                    </button>
-
-                    <CoordinatorAnnouncementDeletePrompt
-                      announcementId={data.id}
-                      onSuccess={() => {
-                        setOpen(false);
-                        onDeleteSuccess?.();
-                      }}
-                    >
-                      <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-[#E70813] w-full">
-                        <Trash2 size={14} />
-                        Delete
-                      </button>
-                    </CoordinatorAnnouncementDeletePrompt>
-
-                  </div>
-                )}
-              </div>
-            )}    
-          </div>
-        </div>
-      );
-    }
-
   const columns = [
     /* DATE */
     {
@@ -132,7 +53,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
               })}
             </div>
 
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 w-full text-center pr-35">
               {date.toLocaleTimeString([],{
                 hour:"2-digit",
                 minute:"2-digit"
@@ -146,7 +67,7 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
     {
       accessorKey: "title",
       header: () => (
-        <div className="text-left w-full pl-14">
+        <div className="text-center w-full">
           Announcement
         </div>
       ),
@@ -154,13 +75,11 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
         const data = row.original;
 
         return (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-h-[70px]">
-
-              <h2 className="font-semibold text-gray-800 text-sm sm:text-base text-center">
-                {data.title}
-              </h2>
-
-            </div>
+          <div className="flex items-center justify-center min-h-[70px] w-full px-2">
+            <h2 className="font-semibold text-gray-800 text-sm sm:text-base text-center break-words whitespace-normal max-w-full">
+              {data.title}
+            </h2>
+          </div>
         );
       },
     },
@@ -199,10 +118,24 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
       id: "actions",
       header: () => (
         <div className="text-right w-full">
-          Actions
+          Action
         </div>
       ),
-      cell: ({ row }) => <ActionCell data={row.original} />,
+      cell: ({ row }) => (
+        <div className="flex justify-end pr-13">
+          <button
+            onClick={() =>
+              router.get(`/coordinator/announcement/${row.original.id}`)
+            }
+            className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition hover:cursor-pointer"
+          >
+            <Eye size={16} />
+            <span className="hidden sm:inline">
+              View
+            </span>
+          </button>
+        </div>
+      ),
     },
   ];
 

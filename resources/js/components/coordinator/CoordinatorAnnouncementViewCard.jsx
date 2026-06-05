@@ -1,9 +1,14 @@
 import React from "react";
+import { router } from "@inertiajs/react";
+import { Pencil, RefreshCw } from "lucide-react";
 
 export default function CoordinatorAnnouncementViewCard({ announcement }) {
   if (!announcement) return null;
 
-  const { title, details, image, created_at, status, revision_note } = announcement;
+  const { id, title, details, image, created_at, status, revision_note } = announcement;
+
+  const isPending = status === "pending";
+  const isRevise = status === "revise";
 
   // FORMAT DATE
   const formattedDate = new Date(created_at).toLocaleString("en-US", {
@@ -18,19 +23,21 @@ export default function CoordinatorAnnouncementViewCard({ announcement }) {
   return (
     <div className="w-full space-y-6">
 
-      {/* LEFT SIDE: TITLE + DATE ABOVE IMAGE */}
-      <div className="flex flex-col items-center md:items-start space-y-4">
+      {/* HEADER */}
+      <div className="w-full flex items-center justify-between gap-3">
 
-        {/* TITLE + DATE */}
-        <div className="text-center md:text-left">
-          <h1 className="text-2xl sm:text-3xl font-bold text-blue-800 mb-1">
+        {/* TITLE + DATE (LEFT) */}
+        <div className="flex flex-col w-[80%]">
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">
             {title}
           </h1>
-          <p className="text-gray-600">
+
+          <p className="text-gray-600 text-sm">
             {formattedDate}
           </p>
-
         </div>
+
+      </div>
 
         {/* IMAGE */}
         {Array.isArray(image) && image.length > 0 ? (
@@ -48,8 +55,6 @@ export default function CoordinatorAnnouncementViewCard({ announcement }) {
             <img src={image} className="max-w-[250px] rounded shadow" />
           </div>
         ) : null}
-
-      </div>
 
       {/* DESCRIPTION (FULL WIDTH) */}
       <div className="text-gray-800 leading-relaxed text-justify text-sm sm:text-base space-y-4">

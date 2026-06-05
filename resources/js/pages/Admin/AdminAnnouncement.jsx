@@ -1,7 +1,7 @@
 import AdminLayout from "@/layouts/admin-layout";
 import AdminAnnouncementCard from "@/components/admin/AdminAnnouncementCard";
 import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
 export default function AdminAnnouncement({ announcements }) {
@@ -13,6 +13,8 @@ export default function AdminAnnouncement({ announcements }) {
   const [statusOpen, setStatusOpen] = useState(false);
 
   const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
+
+  const { props } = usePage();
 
   // auto-hide modal after 3 seconds
   useEffect(() => {
@@ -40,6 +42,18 @@ export default function AdminAnnouncement({ announcements }) {
       }, 2500);
     }
   }, []);
+
+  useEffect(() => {
+    if (props.flash?.success === "Deleted") {
+      setShowSuccess(true);
+
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [props.flash?.success]);
 
   // GLOBAL SEARCH
   useEffect(() => {
@@ -85,13 +99,11 @@ export default function AdminAnnouncement({ announcements }) {
         </Link>
       </div>
 
-      {/* FILTERS (RIGHT SIDE ALIGNED) */}
+      {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-        {/* RIGHT SIDE CONTROLS */}
-        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto ml-auto">
-
-          {/* SEARCH */}
+        {/* ================= LEFT SIDE (SEARCH) ================= */}
+        <div className="w-full sm:w-auto">
           <div className="relative w-full sm:w-64 bg-white">
             <Search
               size={16}
@@ -104,10 +116,13 @@ export default function AdminAnnouncement({ announcements }) {
               className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
             />
           </div>
+        </div>
+
+        {/* ================= RIGHT SIDE (FILTERS) ================= */}
+        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto">
 
           {/* STATUS FILTER */}
           <div className="relative">
-
             <button
               onClick={() => setStatusOpen(!statusOpen)}
               className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
@@ -118,56 +133,28 @@ export default function AdminAnnouncement({ announcements }) {
                   : statusFilter.charAt(0).toUpperCase() +
                     statusFilter.slice(1)
               }
-
               <ChevronDown size={16} />
             </button>
 
             {statusOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-28">
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  All
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("approved");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Approved
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("pending");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Pending
-                </button>
-
-                <button
-                  onClick={() => {
-                    setStatusFilter("revise");
-                    setStatusOpen(false);
-                  }}
-                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
-                >
-                  Revise
-                </button>
-
+                {["", "approved", "pending", "revise"].map((status) => (
+                  <button
+                    key={status || "all"}
+                    onClick={() => {
+                      setStatusFilter(status);
+                      setStatusOpen(false);
+                    }}
+                    className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                  >
+                    {status === ""
+                      ? "All"
+                      : status.charAt(0).toUpperCase() + 
+                        status.slice(1)}
+                  </button>
+                ))}
               </div>
             )}
-
           </div>
 
           {/* SORT */}
@@ -182,7 +169,6 @@ export default function AdminAnnouncement({ announcements }) {
 
             {sortOpen && (
               <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-32">
-
                 <button
                   onClick={() => {
                     setSortOrder("newest");
@@ -202,13 +188,11 @@ export default function AdminAnnouncement({ announcements }) {
                 >
                   Oldest
                 </button>
-
               </div>
             )}
           </div>
 
         </div>
-
       </div>
 
       {/* TABLE */}
