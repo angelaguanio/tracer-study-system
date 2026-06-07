@@ -28,7 +28,7 @@ export default function AdminAlumniCoordinatorForm({
 
     // DEPARTMENT TO PROGRAM MAPPING
     const programOptions = {
-        CECT: ["BSIT", "BSECE & BSCpE"],
+        CECT: ["BSIT", "BSCpE & BSEcE"],
         COED: ["BEEd", "BPEd", "BSEd"],
         CAS: ["AB Psychology", "BS Psychology", "BS Biology", "BS Mathematics"],
         CAMS: ["BSMT", "BSPH", "BSPT", "BSRT"],
