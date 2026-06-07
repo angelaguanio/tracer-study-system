@@ -8,6 +8,8 @@
     import { Label } from "@/components/ui/label";
     import { ArrowLeft, X } from "lucide-react";
 
+    import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+
     export default function AdminAnnouncementCreate() {
         const fileInputRef = useRef(null); // Reference para sa hidden file input
         const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
@@ -17,10 +19,60 @@
         const MAX_FILES = 10;
         const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+        const colleges = {
+            CECT: {
+                name: "College of Engineering and Computer Technology",
+                programs: [
+                    { code: "BSIT", label: "Bachelor of Science in Information Technology" },
+                    { code: "BSECE", label: "Bachelor of Science in Electronics Engineering" },
+                    { code: "BSCpE", label: "Bachelor of Science in Computer Engineering" },
+                ],
+            },
+            COED: {
+                name: "College of Education",
+                programs: [
+                    { code: "BEED", label: "Bachelor of Elementary Education" },
+                    { code: "BPED", label: "Bachelor of Physical Education" },
+                    { code: "BSED", label: "Bachelor of Secondary Education" },
+                ],
+            },
+            CAS: { name: "College of Arts and Sciences", programs: [] },
+            CAMS: {
+                name: "College of Allied Medical Sciences",
+                programs: [
+                    { code: "BSMT", label: "Medical Technology" },
+                    { code: "BSPH", label: "Pharmacy" },
+                    { code: "BSPT", label: "Physical Therapy" },
+                    { code: "BSRT", label: "Radiologic Technology" },
+                ],
+            },
+            CON: {
+                name: "College of Nursing",
+                programs: [
+                    { code: "BSN", label: "Nursing" },
+                ],
+            },
+            CBA: {
+                name: "College of Business and Accountancy",
+                programs: [
+                    { code: "BSA", label: "Accountancy" },
+                    { code: "BSBA", label: "Business Administration" },
+                    { code: "BSMA", label: "Management Accounting" },
+                    { code: "BSREM", label: "Real Estate Management" },
+                ],
+            },
+            CHTM: { name: "College of Hospitality and Tourism Management", programs: [] },
+            CCJE: { name: "College of Criminal Justice Education", programs: [] },
+        };
+
         // INERTIA FORM DATA
         const { data, setData, post, processing, errors } = useForm({
             title: "",
             details: "",
+            target_type: "ALL",     // ALL | COLLEGE | COURSE
+            target_value: null,     // CECT / BSIT / etc
+            target_college: "all",
+            target_department: "all",
             images: [],
         });
 
@@ -35,6 +87,10 @@
                     setData({
                         title: "",
                         details: "",
+                        target_type: "ALL",     // ALL | COLLEGE | COURSE
+                        target_value: null,     // CECT / BSIT / etc
+                        target_college: "all",
+                        target_department: "all",
                         images: [],
                     });
 
@@ -207,6 +263,101 @@
                                         {errors.title && (
                                             <p className="text-red-500 text-sm">{errors.title}</p>
                                         )}
+                                    </div>
+
+                                    {/* AUDIENCE */}
+                                    <div className="space-y-1 mt-4">
+                                        <Label className="text-[#6E6C6C] font-bold text-base">
+                                            Audience
+                                        </Label>
+
+                                        <p className="text-xs text-gray-500">
+                                            Choose who will receive this announcement
+                                        </p>
+
+                                        {/* DROPDOWNS ROW */}
+                                        <div className="flex gap-4 mt-3">
+
+                                            {/* TARGET COLLEGE */}
+                                            <div className="w-1/2">
+                                                <Label className="text-[#6E6C6C] text-sm">
+                                                    Target College
+                                                </Label>
+
+                                                <Select
+                                                    value={data.target_college}
+                                                    onValueChange={(value) => {
+                                                        setData("target_college", value);
+                                                        setData("target_department", "all");
+
+                                                        if (value === "all") {
+                                                            setData("target_type", "ALL");
+                                                            setData("target_value", null);
+                                                        } else {
+                                                            setData("target_type", "COLLEGE");
+                                                            setData("target_value", value);
+                                                        }
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="w-full mt-1 rounded-md border border-gray-300 shadow-sm text-sm">
+                                                        <SelectValue placeholder="Select College" />
+                                                    </SelectTrigger>
+
+                                                    <SelectContent className="rounded-md">
+                                                        <SelectItem value="all">All Colleges</SelectItem>
+                                                        <SelectItem value="CECT">College of Engineering and Computer Technology</SelectItem>
+                                                        <SelectItem value="COED">College of Education</SelectItem>
+                                                        <SelectItem value="CAS">College of Arts and Sciences</SelectItem>
+                                                        <SelectItem value="CAMS">College of Allied Medical Sciences</SelectItem>
+                                                        <SelectItem value="CON">College of Nursing</SelectItem>
+                                                        <SelectItem value="CBA">College of Business and Accountancy</SelectItem>
+                                                        <SelectItem value="CHTM">College of Hospitality and Tourism Management</SelectItem>
+                                                        <SelectItem value="CCJE">College of Criminal Justice Education</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {/* TARGET DEPARTMENT */}
+                                            {data.target_college !== "all" && (
+                                                <div className="w-1/2">
+                                                    <Label className="text-[#6E6C6C] text-sm">
+                                                        Target Department
+                                                    </Label>
+
+                                                    <Select
+                                                        value={data.target_department}
+                                                        onValueChange={(value) => {
+                                                            setData("target_department", value);
+
+                                                            if (value === "all") {
+                                                                setData("target_type", "COLLEGE");
+                                                                setData("target_value", data.target_college);
+                                                            } else {
+                                                                setData("target_type", "COURSE");
+                                                                setData("target_value", value);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <SelectTrigger className="w-full mt-1 rounded-md border border-gray-300 shadow-sm text-sm">
+                                                            <SelectValue placeholder="Select Department" />
+                                                        </SelectTrigger>
+
+                                                        <SelectContent className="rounded-md">
+                                                            <SelectItem value="all">All Departments</SelectItem>
+
+                                                            {colleges?.[data.target_college]?.programs?.map((department) => (
+                                                                <SelectItem
+                                                                    key={department.code}
+                                                                    value={department.code}
+                                                                >
+                                                                    {department.code} - {department.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* DETAILS */}

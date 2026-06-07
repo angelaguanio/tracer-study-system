@@ -83,6 +83,9 @@ class AnnouncementController extends Controller
             'title'   => 'required|string|max:255',
             'details' => 'required|string',
             'images.*' => 'image',
+
+            'target_type'  => 'required|string|in:ALL,COLLEGE,COURSE',
+            'target_value' => 'nullable|string',
         ]);
 
         $files = $request->file('images', []);
@@ -116,6 +119,9 @@ class AnnouncementController extends Controller
             'image'   => $imageUrls,
             'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
             'user_id' => auth()->id(),
+
+            'target_type' => $request->target_type,
+            'target_value' => $request->target_value,
         ]);
 
         return redirect()
@@ -281,9 +287,31 @@ class AnnouncementController extends Controller
     /* ================= ALUMNA ================= */
     public function alumna()
     {
+        $user = auth()->user();
 
-        // ONLY APPROVED SHOWN - 4 per page
+        $map = $this->collegeCoursesMap();
+        $userCollege = $this->getUserCollege($user->courses);
+
         $announcements = Announcement::where('status', 'approved')
+            ->where(function ($q) use ($user, $userCollege) {
+
+                $q->where('target_type', 'ALL')
+
+                // COURSE match
+                ->orWhere(function ($q2) use ($user) {
+                    $q2->where('target_type', 'COURSE')
+                        ->where('target_value', $user->courses);
+                })
+
+                // COLLEGE match (IMPORTANT FIX)
+                ->orWhere(function ($q2) use ($userCollege) {
+                    if (!$userCollege) return;
+
+                    $q2->where('target_type', 'COLLEGE')
+                        ->where('target_value', $userCollege);
+                });
+
+            })
             ->latest()
             ->paginate(4)
             ->withQueryString();
@@ -300,14 +328,64 @@ class AnnouncementController extends Controller
         ]);
     }
 
+    // COLLEGE COURSE MAP
+    private function collegeCoursesMap()
+    {
+        return [
+            'CECT' => ['BSIT', 'BSECE', 'BSCpE'],
+            'COED' => ['BEED', 'BPED', 'BSED'],
+            'CAMS' => ['BSMT', 'BSPH', 'BSPT', 'BSRT'],
+            'CON'  => ['BSN'],
+            'CBA'  => ['BSA', 'BSBA', 'BSMA', 'BSREM'],
+            'CHTM' => [],
+            'CCJE' => [],
+            'CAS'  => [],
+        ];
+    }
+
+    private function getUserCollege($course)
+    {
+        $map = $this->collegeCoursesMap();
+
+        foreach ($map as $college => $courses) {
+            if (in_array($course, $courses)) {
+                return $college;
+            }
+        }
+
+        return null;
+    }
+
     /* ================= COORDINATOR LIST ================= */
     public function coordinatorIndex(Request $request)
     {
+        $user = auth()->user();
+
         $status = $request->query('status');
         $search = $request->query('search');
         $sort   = $request->query('sort', 'newest');
 
         $announcements = Announcement::query()
+
+            ->where(function ($q) use ($user) {
+
+                $q->where('target_type', 'ALL')
+
+                ->orWhere(function ($q2) use ($user) {
+
+                    $q2->where('target_type', 'COLLEGE')
+                    ->where('target_value', $user->department);
+
+                })
+
+                ->orWhere(function ($q2) use ($user) {
+
+                    $q2->where('target_type', 'COURSE')
+                    ->where('target_value', $user->courses);
+
+                });
+
+            })
 
             // STATUS FILTER
             ->when($status && $status !== 'All', function ($q) use ($status) {
@@ -334,11 +412,7 @@ class AnnouncementController extends Controller
 
         return Inertia::render('Coordinator/CoordinatorAnnouncement', [
             'announcements' => $announcements,
-            'filters' => [
-                'status' => $status,
-                'search' => $search,
-                'sort' => $sort,
-            ],
+            'filters' => compact('status', 'search', 'sort'),
         ]);
     }
 }
