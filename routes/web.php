@@ -76,7 +76,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         // Student profile
         Route::get('/profile/history/{id}', [StudentProfileController::class, 'showHistory'])->name('history.show');
-        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
+        Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile'); 
         Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
 

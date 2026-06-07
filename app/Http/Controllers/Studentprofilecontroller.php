@@ -25,9 +25,10 @@ class StudentProfileController extends Controller
 
     public function showHistory($id)
     {
-        $history = EmploymentHistory::findOrFail($id);
-        return Inertia::render('Alumna/HistoryDetails', [
-            'history' => $history
+        $history = EmploymentHistory::with('user')->findOrFail($id);
+        return Inertia::render('Alumna/HistoryDetail', [
+            'history' => $history,
+            'profile' => $history->user
         ]);
     }
 
@@ -88,6 +89,7 @@ class StudentProfileController extends Controller
                     if ($hasChanged) {
                         $user->employmentHistory()->create([
                             'user_id'            => $user->id,
+                            'currently_employed' => $isEmployed,
                             'currently_employed' => 'Yes',
                             'employment_type'    => $request->employment_type,
                             'company_name'       => $request->company,
@@ -95,6 +97,8 @@ class StudentProfileController extends Controller
                             'location'           => $request->location,
                             'monthly_salary'     => $salaryValue,
                             'unemployment_reason'=> null,
+                           'employment_start_year' => ($isEmployed === 'Yes') ? $request->employment_start_year : null,
+                           'employment_end_year'   => ($isEmployed === 'Yes') ? $request->employment_end_year : null,
                         ]);
                     }
                 }

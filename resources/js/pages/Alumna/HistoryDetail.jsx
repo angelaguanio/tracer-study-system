@@ -1,23 +1,23 @@
 import { Link, Head } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 
+// --- Icons remain unchanged ---
 const IconArrow = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>;
 const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
 const IconBriefcase = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>;
 
 export default function HistoryDetail({ history, profile }) {
+    console.log("HISTORY DATA DEBUG:", history);
+    if (!history || !profile) return null;
+    
     const dateSaved = new Date(history.created_at).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
+        month: 'long', day: 'numeric', year: 'numeric',
     });
 
-    // ─── ROBUST YEAR EXTRACTION ──────────────────────────────────────────
-    // Checks all possible variations coming from the backend payload structure
-    const startYear = history.employment_start_year ?? history.start_year ?? history.year_started ?? history.start;
-    const endYear = history.employment_end_year ?? history.end_year ?? history.year_ended ?? history.end;
-    const employmentRange = startYear && endYear ? `${startYear}-${endYear}` : (startYear ? `${startYear} - Present` : '—');
+    const startYear = history.employment_start_year ?? history.start_year ?? history.year_started ?? history.start ?? "—";
+    const endYear = history.employment_end_year ?? history.end_year ?? history.year_ended ?? history.end ?? "Present";
+    const employmentRange = `${startYear} - ${endYear}`;
 
     return (
         <div className="w-full max-w-[700px] mx-auto px-4 py-10 flex flex-col gap-6">
@@ -33,7 +33,7 @@ export default function HistoryDetail({ history, profile }) {
             </div>
 
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gray-50 px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+                <div className="bg-gray-50 px-8 py-6 border-b border-gray-100">
                     <div className="flex items-center gap-3">
                         <div className="text-[#008542]"><IconHistory /></div>
                         <div>
@@ -100,10 +100,10 @@ export default function HistoryDetail({ history, profile }) {
     );
 }
 
-HistoryDetail.layout = (page) => <AlumnaLayout>{page}</AlumnaLayout>;
+HistoryDetail.layout = (page) => <AlumnaLayout children={page} />;
 
 function DetailItem({ label, value, isStatus = false }) {
-    const finalValue = (value === null || value === undefined || value === "null" || value === "" || value === "null (null)") ? "—" : value;
+    const finalValue = (!value || value === "null" || value === "null (null)" || value === "") ? "—" : value;
 
     return (
         <div className="flex flex-col gap-1.5">

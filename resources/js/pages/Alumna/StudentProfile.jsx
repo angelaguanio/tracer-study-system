@@ -1,5 +1,6 @@
 import React from 'react';
 import { usePage, Link } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 
 // ICONS 
@@ -161,12 +162,18 @@ export default function StudentProfile() {
                                                 </span>
                                             </td>
                                             <td className="py-2 text-center">
-                                                <Link
-                                                    href={route('alumna.history.show', history.id)}
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        window.location.href = route('alumna.history.show', { id: history.id });
+                                                         
+                                                    }}
+                        
                                                     className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
                                                 >
                                                     View Details
-                                                </Link>
+                                                </button>
                                             </td>
                                         </tr>
                                     );
