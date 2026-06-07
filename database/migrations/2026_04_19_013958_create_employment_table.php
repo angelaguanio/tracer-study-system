@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('position')->nullable();
             $table->string('location')->nullable();
 
-            $table->smallInteger('employment_start_year'); // smallInteger is sufficient for a 4-digit year
+            $table->smallInteger('employment_start_year')->nullable(); // smallInteger is sufficient for a 4-digit year
             $table->smallInteger('employment_end_year')->nullable();
             $table->boolean('is_current')->default(false);
 
