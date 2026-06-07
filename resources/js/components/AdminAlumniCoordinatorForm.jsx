@@ -26,6 +26,18 @@ export default function AdminAlumniCoordinatorForm({
         (_, i) => (2017 + i).toString()
     );
 
+    // DEPARTMENT TO PROGRAM MAPPING
+    const programOptions = {
+        CECT: ["BSIT", "BSECE & BSCpE"],
+        COED: ["BEEd", "BPEd", "BSEd"],
+        CAS: ["AB Psychology", "BS Psychology", "BS Biology", "BS Mathematics"],
+        CAMS: ["BSMT", "BSPH", "BSPT", "BSRT"],
+        CON: ["BSN"],
+        CBA: ["BSA", "BSBA", "BSMA", "BSREM"],
+        CHTM: ["BSHM", "BSTM"],
+        CCJE: ["BS Criminology"],
+    };
+
     const {
         data,
         setData,
@@ -239,18 +251,27 @@ export default function AdminAlumniCoordinatorForm({
 
                             <Select
                                 value={data.department}
-                                onValueChange={(val) =>
-                                    setData("department", val)
-                                }
+                                onValueChange={(val) => {
+                                    setData((oldData) => ({
+                                        ...oldData,
+                                        department: val,
+                                        courses: ""
+                                    }));
+                                }}
                             >
                                 <SelectTrigger className="w-full bg-white">
                                     <SelectValue />
                                 </SelectTrigger>
 
                                 <SelectContent>
-                                    <SelectItem value="CECT">
-                                        CECT
-                                    </SelectItem>
+                                    <SelectItem value="CECT">CECT</SelectItem>
+                                    <SelectItem value="COED">COED</SelectItem>
+                                    <SelectItem value="CAS">CAS</SelectItem>
+                                    <SelectItem value="CAMS">CAMS</SelectItem>
+                                    <SelectItem value="CON">CON</SelectItem>
+                                    <SelectItem value="CBA">CBA</SelectItem>
+                                    <SelectItem value="CHTM">CHTM</SelectItem>
+                                    <SelectItem value="CCJE">CCJE</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -261,25 +282,21 @@ export default function AdminAlumniCoordinatorForm({
                             </label>
 
                             <Select
-                                value={data.courses || undefined}
+                                value={data.courses || ""}
                                 onValueChange={(val) =>
                                     setData("courses", val)
                                 }
                             >
                                 <SelectTrigger className="w-full bg-white">
-                                    <SelectValue placeholder="Select a program">
-                                        {data.courses || "Select a program"}
-                                    </SelectValue>
+                                    <SelectValue placeholder="Select a program" />
                                 </SelectTrigger>
 
                                 <SelectContent>
-                                    <SelectItem value="BSIT">
-                                        BSIT
-                                    </SelectItem>
-
-                                    <SelectItem value="BSCpE & BSEcE">
-                                        BSCpE & BSEcE
-                                    </SelectItem>
+                                    {(programOptions[data.department] || []).map((program) => (
+                                        <SelectItem key={program} value={program}>
+                                            {program}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
 
@@ -469,4 +486,3 @@ export default function AdminAlumniCoordinatorForm({
         </div>
     );
 }
-
