@@ -80,6 +80,11 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
 
+        //inquiries
+        Route::get('/inquiries', [InquiriesController::class, 'alumniInquiriesList'])->name('inquiries.index');
+        Route::get('/inquiries/{id}', [InquiriesController::class, 'alumniShow'])->name('inquiries.show');
+        Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
+
         Route::match(['get', 'post'], '/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');
     });
 
@@ -192,8 +197,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
   
         //Inquiries
-        Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries');
+        Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries.index');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
+        Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
         // Alumni Coordinators            
         Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index']);
@@ -316,8 +322,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
             ->name('announcement.destroy');
 
-        Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries');
+        //inquiries
+        Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries.index');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
+        Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
         // Survey Builder for Coordinators
         Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');

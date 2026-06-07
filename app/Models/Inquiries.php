@@ -87,4 +87,9 @@ class Inquiries extends Model
     {
         return $this->created_at->format('M d, Y');
     }
+
+    public function replies()
+    {
+        return $this->hasMany(InquiryReply::class, 'inquiry_id')->with('sender')->latest();
+    }
 }
