@@ -1,402 +1,251 @@
-    import React, { useRef, useState } from "react";
-    import AdminLayout from "@/layouts/admin-layout";
-    import { Head, useForm, router, Link } from "@inertiajs/react";
-    import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-    import { Input } from "@/components/ui/input";
-    import { Textarea } from "@/components/ui/textarea";
-    import { Button } from "@/components/ui/button";
-    import { Label } from "@/components/ui/label";
-    import { ArrowLeft, X } from "lucide-react";
+import React, { useRef, useState } from "react";
+import AdminLayout from "@/layouts/admin-layout";
+import { Head, useForm, router, Link } from "@inertiajs/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, X } from "lucide-react";
 
-    import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+export default function AdminAnnouncementCreate() {
+    const fileInputRef = useRef(null); // Reference para sa hidden file input
+    const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
+    const [fileError, setFileError] = useState(""); //error state for image validation
 
-    export default function AdminAnnouncementCreate() {
-        const fileInputRef = useRef(null); // Reference para sa hidden file input
-        const [previews, setPreviews] = useState([]); // Preview ng image bago i-upload
-        const [fileError, setFileError] = useState(""); //error state for image validation
+    // LIMITS
+    const MAX_FILES = 10;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-        // LIMITS
-        const MAX_FILES = 10;
-        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    // INERTIA FORM DATA
+    const { data, setData, post, processing, errors } = useForm({
+        title: "",
+        details: "",
+        images: [],
+    });
 
-        const colleges = {
-            CECT: {
-                name: "College of Engineering and Computer Technology",
-                programs: [
-                    { code: "BSIT", label: "Bachelor of Science in Information Technology" },
-                    { code: "BSECE", label: "Bachelor of Science in Electronics Engineering" },
-                    { code: "BSCpE", label: "Bachelor of Science in Computer Engineering" },
-                ],
-            },
-            COED: {
-                name: "College of Education",
-                programs: [
-                    { code: "BEED", label: "Bachelor of Elementary Education" },
-                    { code: "BPED", label: "Bachelor of Physical Education" },
-                    { code: "BSED", label: "Bachelor of Secondary Education" },
-                ],
-            },
-            CAS: { name: "College of Arts and Sciences", programs: [] },
-            CAMS: {
-                name: "College of Allied Medical Sciences",
-                programs: [
-                    { code: "BSMT", label: "Medical Technology" },
-                    { code: "BSPH", label: "Pharmacy" },
-                    { code: "BSPT", label: "Physical Therapy" },
-                    { code: "BSRT", label: "Radiologic Technology" },
-                ],
-            },
-            CON: {
-                name: "College of Nursing",
-                programs: [
-                    { code: "BSN", label: "Nursing" },
-                ],
-            },
-            CBA: {
-                name: "College of Business and Accountancy",
-                programs: [
-                    { code: "BSA", label: "Accountancy" },
-                    { code: "BSBA", label: "Business Administration" },
-                    { code: "BSMA", label: "Management Accounting" },
-                    { code: "BSREM", label: "Real Estate Management" },
-                ],
-            },
-            CHTM: { name: "College of Hospitality and Tourism Management", programs: [] },
-            CCJE: { name: "College of Criminal Justice Education", programs: [] },
-        };
+    // SUBMIT HANDLER
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-        // INERTIA FORM DATA
-        const { data, setData, post, processing, errors } = useForm({
-            title: "",
-            details: "",
-            target_type: "ALL",     // ALL | COLLEGE | COURSE
-            target_value: null,     // CECT / BSIT / etc
-            target_college: "all",
-            target_department: "all",
-            images: [],
+        post("/admin/announcement", {
+            forceFormData: true,
+
+            onSuccess: () => {
+                setData({
+                    title: "",
+                    details: "",
+                    images: [],
+                });
+
+                setPreviews([]);
+                setFileError("");
+
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = null;
+                }
+
+                router.visit("/admin/announcement");
+            },
         });
+    };
 
-        // SUBMIT HANDLER
-        const handleSubmit = (e) => {
-            e.preventDefault();
+    return (
+            <>
+            <Head title="Create Announcement" />
 
-            post("/admin/announcement", {
-                forceFormData: true,
+            {/* Full-screen background wrapper */}
+            <div className="bg-[#f0faff] w-full overflow-y-auto flex justify-center py-10">
+                {/* Card wrapper */}
+                <div className="w-full max-w-6xl">
+                    <Card className="w-full flex flex-col min-h-[700px]">
 
-                onSuccess: () => {
-                    setData({
-                        title: "",
-                        details: "",
-                        target_type: "ALL",     // ALL | COLLEGE | COURSE
-                        target_value: null,     // CECT / BSIT / etc
-                        target_college: "all",
-                        target_department: "all",
-                        images: [],
-                    });
+                        {/* Card Header */}
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Link href="/admin/announcement">
+                                    <Button type="button" variant="ghost" className="p-2">
+                                        <ArrowLeft size={18} />
+                                    </Button>
+                                </Link>
+                                <CardTitle className="text-lg font-semibold ml-3">
+                                    Create new announcement
+                                </CardTitle>
+                            </div>
 
-                    setPreviews([]);
-                    setFileError("");
+                            {/* Upload Image Button */}
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    if (fileInputRef.current) {
+                                        fileInputRef.current.value = "";
+                                        fileInputRef.current.click();
+                                    }
+                                }}
+                                className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
+                            >
+                                Upload Image
+                            </Button>
+                        </CardHeader>
 
-                    if (fileInputRef.current) {
-                        fileInputRef.current.value = null;
-                    }
+                        {/* Card Content */}
+                        <CardContent className="flex flex-col flex-grow">
+                            {/* SINGLE FORM */}
+                            <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
 
-                    router.visit("/admin/announcement");
-                },
-            });
-        };
+                                {/* HIDDEN FILE INPUT */}
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={(e) => {
+                                        const newFiles = Array.from(e.target.files || []);
 
-        return (
-                <>
-                <Head title="Create Announcement" />
+                                        if (!newFiles.length) return;
 
-                {/* Full-screen background wrapper */}
-                <div className="bg-[#f0faff] w-full overflow-y-auto flex justify-center py-10">
-                    {/* Card wrapper */}
-                    <div className="w-full max-w-6xl">
-                        <Card className="w-full flex flex-col min-h-[700px]">
+                                        // reset error every upload attempt
+                                        setFileError("");
 
-                            {/* Card Header */}
-                            <CardHeader className="flex flex-row items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Link href="/admin/announcement">
-                                        <Button type="button" variant="ghost" className="p-2">
-                                            <ArrowLeft size={18} />
-                                        </Button>
-                                    </Link>
-                                    <CardTitle className="text-lg font-semibold ml-3">
-                                        Create new announcement
-                                    </CardTitle>
+                                        const currentFiles = data.images || [];
+                                        const combinedFiles = [...currentFiles, ...newFiles];
+
+                                        // LIMIT 10 IMAGES
+                                        if (combinedFiles.length > MAX_FILES) {
+                                            setFileError("Maximum of 10 images only.");
+                                            return;
+                                        }
+
+                                        // LIMIT 10MB TOTAL SIZE
+                                        const totalSize = combinedFiles.reduce(
+                                            (sum, file) => sum + file.size,
+                                            0
+                                        );
+
+                                        if (totalSize > MAX_SIZE) {
+                                            setFileError("Total image size must not exceed 10MB.");
+                                            return;
+                                        }
+
+                                        const newPreviews = newFiles.map(file =>
+                                            URL.createObjectURL(file)
+                                        );
+
+                                        setData(prev => ({
+                                            ...prev,
+                                            images: [...(prev.images || []), ...newFiles]
+                                        }));
+
+                                        setPreviews(prev => [...prev, ...newPreviews]);
+                                    }}
+                                />
+
+                                {/* INFO TEXT (only shows kapag may image na) */}
+                                {previews.length > 0 && (
+                                    <span className="text-xs text-gray-500 px-6 block">
+                                        You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
+                                    </span>
+                                )}
+
+                                {/* ERROR DISPLAY */}
+                                {fileError && (
+                                    <span className="text-sm text-red-500 px-6 block">
+                                        {fileError}
+                                    </span>
+                                )}
+
+                                {/* IMAGE PREVIEW */}
+                                {previews.length > 0 && (
+                                    <div className="mb-4 flex gap-2 flex-wrap px-6">
+                                        {previews.map((src, index) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    src={src}
+                                                    className="w-32 h-32 object-cover rounded border"
+                                                />
+
+                                                {/* REMOVE SPECIFIC IMAGE */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+
+                                                        // remove preview
+                                                        setPreviews(prev =>
+                                                            prev.filter((_, i) => i !== index)
+                                                        );
+
+                                                        // sync images
+                                                        setData(prev => ({
+                                                            ...prev,
+                                                            images: prev.images.filter((_, i) => i !== index)
+                                                        }));
+
+                                                        setFileError(""); // reset error
+                                                    }}
+                                                    className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* TITLE */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="title" className="text-[#6E6C6C] font-bold">Announcement Title</Label>
+                                    <Input
+                                        id="title"
+                                        name="title"
+                                        placeholder="Title"
+                                        value={data.title} // bind form data
+                                        onChange={e => setData("title", e.target.value)}
+                                        className="h-15 max-h-30 overflow-y-auto"
+                                    />
+                                    {/* ERROR */}
+                                    {errors.title && (
+                                        <p className="text-red-500 text-sm">{errors.title}</p>
+                                    )}
                                 </div>
 
-                                {/* Upload Image Button */}
-                                <Button
-                                    type="button"
-                                    onClick={() => {
-                                        if (fileInputRef.current) {
-                                            fileInputRef.current.value = "";
-                                            fileInputRef.current.click();
-                                        }
-                                    }}
-                                    className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
-                                >
-                                    Upload Image
-                                </Button>
-                            </CardHeader>
-
-                            {/* Card Content */}
-                            <CardContent className="flex flex-col flex-grow">
-                                {/* SINGLE FORM */}
-                                <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
-
-                                    {/* HIDDEN FILE INPUT */}
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        className="hidden"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={(e) => {
-                                            const newFiles = Array.from(e.target.files || []);
-
-                                            if (!newFiles.length) return;
-
-                                            // reset error every upload attempt
-                                            setFileError("");
-
-                                            const currentFiles = data.images || [];
-                                            const combinedFiles = [...currentFiles, ...newFiles];
-
-                                            // LIMIT 10 IMAGES
-                                            if (combinedFiles.length > MAX_FILES) {
-                                                setFileError("Maximum of 10 images only.");
-                                                return;
-                                            }
-
-                                            // LIMIT 10MB TOTAL SIZE
-                                            const totalSize = combinedFiles.reduce(
-                                                (sum, file) => sum + file.size,
-                                                0
-                                            );
-
-                                            if (totalSize > MAX_SIZE) {
-                                                setFileError("Total image size must not exceed 10MB.");
-                                                return;
-                                            }
-
-                                            const newPreviews = newFiles.map(file =>
-                                                URL.createObjectURL(file)
-                                            );
-
-                                            setData(prev => ({
-                                                ...prev,
-                                                images: [...(prev.images || []), ...newFiles]
-                                            }));
-
-                                            setPreviews(prev => [...prev, ...newPreviews]);
-                                        }}
+                                {/* DETAILS */}
+                                <div className="space-y-2 mt-4">
+                                    <Label htmlFor="details" className="text-[#6E6C6C] font-bold">Details</Label>
+                                    <Textarea
+                                        id="details"
+                                        name="details"
+                                        placeholder="Details"
+                                        value={data.details} // bind form data
+                                        onChange={e => setData("details", e.target.value)}
+                                        className="h-100 overflow-y-auto"
                                     />
-
-                                    {/* INFO TEXT (only shows kapag may image na) */}
-                                    {previews.length > 0 && (
-                                        <span className="text-xs text-gray-500 px-6 block">
-                                            You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
-                                        </span>
+                                    {/* ERROR */}
+                                    {errors.details && (
+                                        <p className="text-red-500 text-sm">{errors.details}</p>
                                     )}
+                                </div>
 
-                                    {/* ERROR DISPLAY */}
-                                    {fileError && (
-                                        <span className="text-sm text-red-500 px-6 block">
-                                            {fileError}
-                                        </span>
-                                    )}
+                                {/* Create Button - palaging nasa bottom */}
+                                <div className="mt-auto pt-4">
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="w-full bg-green-600 hover:bg-green-700"
+                                    >
+                                        {processing ? "Creating..." : "Create"}
+                                    </Button>
+                                </div>
 
-                                    {/* IMAGE PREVIEW */}
-                                    {previews.length > 0 && (
-                                        <div className="mb-4 flex gap-2 flex-wrap px-6">
-                                            {previews.map((src, index) => (
-                                                <div key={index} className="relative">
-                                                    <img
-                                                        src={src}
-                                                        className="w-32 h-32 object-cover rounded border"
-                                                    />
-
-                                                    {/* REMOVE SPECIFIC IMAGE */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-
-                                                            // remove preview
-                                                            setPreviews(prev =>
-                                                                prev.filter((_, i) => i !== index)
-                                                            );
-
-                                                            // sync images
-                                                            setData(prev => ({
-                                                                ...prev,
-                                                                images: prev.images.filter((_, i) => i !== index)
-                                                            }));
-
-                                                            setFileError(""); // reset error
-                                                        }}
-                                                        className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor-pointer"
-                                                    >
-                                                        <X size={14} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {/* TITLE */}
-                                    <div className="space-y-2">
-                                        <Label htmlFor="title" className="text-[#6E6C6C] font-bold">Announcement Title</Label>
-                                        <Input
-                                            id="title"
-                                            name="title"
-                                            placeholder="Title"
-                                            value={data.title} // bind form data
-                                            onChange={e => setData("title", e.target.value)}
-                                            className="h-15 max-h-30 overflow-y-auto"
-                                        />
-                                        {/* ERROR */}
-                                        {errors.title && (
-                                            <p className="text-red-500 text-sm">{errors.title}</p>
-                                        )}
-                                    </div>
-
-                                    {/* AUDIENCE */}
-                                    <div className="space-y-1 mt-4">
-                                        <Label className="text-[#6E6C6C] font-bold text-base">
-                                            Audience
-                                        </Label>
-
-                                        <p className="text-xs text-gray-500">
-                                            Choose who will receive this announcement
-                                        </p>
-
-                                        {/* DROPDOWNS ROW */}
-                                        <div className="flex gap-4 mt-3">
-
-                                            {/* TARGET COLLEGE */}
-                                            <div className="w-1/2">
-                                                <Label className="text-[#6E6C6C] text-sm">
-                                                    Target College
-                                                </Label>
-
-                                                <Select
-                                                    value={data.target_college}
-                                                    onValueChange={(value) => {
-                                                        setData("target_college", value);
-                                                        setData("target_department", "all");
-
-                                                        if (value === "all") {
-                                                            setData("target_type", "ALL");
-                                                            setData("target_value", null);
-                                                        } else {
-                                                            setData("target_type", "COLLEGE");
-                                                            setData("target_value", value);
-                                                        }
-                                                    }}
-                                                >
-                                                    <SelectTrigger className="w-full mt-1 rounded-md border border-gray-300 shadow-sm text-sm">
-                                                        <SelectValue placeholder="Select College" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent className="rounded-md">
-                                                        <SelectItem value="all">All Colleges</SelectItem>
-                                                        <SelectItem value="CECT">College of Engineering and Computer Technology</SelectItem>
-                                                        <SelectItem value="COED">College of Education</SelectItem>
-                                                        <SelectItem value="CAS">College of Arts and Sciences</SelectItem>
-                                                        <SelectItem value="CAMS">College of Allied Medical Sciences</SelectItem>
-                                                        <SelectItem value="CON">College of Nursing</SelectItem>
-                                                        <SelectItem value="CBA">College of Business and Accountancy</SelectItem>
-                                                        <SelectItem value="CHTM">College of Hospitality and Tourism Management</SelectItem>
-                                                        <SelectItem value="CCJE">College of Criminal Justice Education</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            {/* TARGET DEPARTMENT */}
-                                            {data.target_college !== "all" && (
-                                                <div className="w-1/2">
-                                                    <Label className="text-[#6E6C6C] text-sm">
-                                                        Target Department
-                                                    </Label>
-
-                                                    <Select
-                                                        value={data.target_department}
-                                                        onValueChange={(value) => {
-                                                            setData("target_department", value);
-
-                                                            if (value === "all") {
-                                                                setData("target_type", "COLLEGE");
-                                                                setData("target_value", data.target_college);
-                                                            } else {
-                                                                setData("target_type", "COURSE");
-                                                                setData("target_value", value);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <SelectTrigger className="w-full mt-1 rounded-md border border-gray-300 shadow-sm text-sm">
-                                                            <SelectValue placeholder="Select Department" />
-                                                        </SelectTrigger>
-
-                                                        <SelectContent className="rounded-md">
-                                                            <SelectItem value="all">All Departments</SelectItem>
-
-                                                            {colleges?.[data.target_college]?.programs?.map((department) => (
-                                                                <SelectItem
-                                                                    key={department.code}
-                                                                    value={department.code}
-                                                                >
-                                                                    {department.code} - {department.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* DETAILS */}
-                                    <div className="space-y-2 mt-4">
-                                        <Label htmlFor="details" className="text-[#6E6C6C] font-bold">Details</Label>
-                                        <Textarea
-                                            id="details"
-                                            name="details"
-                                            placeholder="Details"
-                                            value={data.details} // bind form data
-                                            onChange={e => setData("details", e.target.value)}
-                                            className="h-100 overflow-y-auto"
-                                        />
-                                        {/* ERROR */}
-                                        {errors.details && (
-                                            <p className="text-red-500 text-sm">{errors.details}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Create Button - palaging nasa bottom */}
-                                    <div className="mt-auto pt-4">
-                                        <Button
-                                            type="submit"
-                                            disabled={processing}
-                                            className="w-full bg-green-600 hover:bg-green-700"
-                                        >
-                                            {processing ? "Creating..." : "Create"}
-                                        </Button>
-                                    </div>
-
-                                </form>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            </form>
+                        </CardContent>
+                    </Card>
                 </div>
-                </>
-        )
-    }
+            </div>
+            </>
+    )
+}
 
-    AdminAnnouncementCreate.layout = (page) => (
-    <AdminLayout>{page}</AdminLayout>
-    );
+AdminAnnouncementCreate.layout = (page) => (
+<AdminLayout>{page}</AdminLayout>
+);

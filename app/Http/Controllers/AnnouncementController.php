@@ -27,11 +27,10 @@ class AnnouncementController extends Controller
     {
         $search = $request->query('search');
         $status = $request->query('status');
-        $sort   = $request->query('sort', 'newest');
+        $sort = $request->query('sort', 'newest');
 
         $announcements = Announcement::query()
-
-            ->whereIn('status', ['approved','pending','revise'])
+            ->whereIn('status', ['approved', 'pending', 'revise'])
 
             // STATUS FILTER
             ->when($status, function ($q) use ($status) {
@@ -46,13 +45,16 @@ class AnnouncementController extends Controller
                 });
             })
 
-            // SORT            
-            ->when($sort === 'oldest', function ($q) {
-                $q->orderBy('created_at', 'asc');
-            }, function ($q) {
-                $q->orderBy('created_at', 'desc');
-            })
-
+            // SORT
+            ->when(
+                $sort === 'oldest',
+                function ($q) {
+                    $q->orderBy('created_at', 'asc');
+                },
+                function ($q) {
+                    $q->orderBy('created_at', 'desc');
+                }
+            )
             ->paginate(5)
             ->withQueryString();
 
@@ -80,12 +82,9 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'details' => 'required|string',
             'images.*' => 'image',
-
-            'target_type'  => 'required|string|in:ALL,COLLEGE,COURSE',
-            'target_value' => 'nullable|string',
         ]);
 
         $files = $request->file('images', []);
@@ -114,14 +113,13 @@ class AnnouncementController extends Controller
         }
 
         Announcement::create([
-            'title'   => $request->title,
+            'title' => $request->title,
             'details' => $request->details,
-            'image'   => $imageUrls,
-            'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
+            'image' => $imageUrls,
+            'status' => auth()->user()->user_role === 'admin'
+                ? 'approved'
+                : 'pending',
             'user_id' => auth()->id(),
-
-            'target_type' => $request->target_type,
-            'target_value' => $request->target_value,
         ]);
 
         return redirect()
@@ -163,8 +161,8 @@ class AnnouncementController extends Controller
         $role = auth()->user()->user_role;
 
         $announcement->image = is_string($announcement->image)
-        ? json_decode($announcement->image, true)
-        : ($announcement->image ?? []);
+            ? json_decode($announcement->image, true)
+            : ($announcement->image ?? []);
 
         if ($role === 'admin') {
             return Inertia::render('Admin/AdminAnnouncementView', [
@@ -203,7 +201,7 @@ class AnnouncementController extends Controller
     public function update(Request $request, Announcement $announcement)
     {
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'details' => 'required|string',
             'images.*' => 'image',
         ]);
@@ -231,7 +229,11 @@ class AnnouncementController extends Controller
         $totalSize = 0;
 
         foreach ($existing as $imageUrl) {
-            $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
+            $path = str_replace(
+                '/storage/',
+                '',
+                parse_url($imageUrl, PHP_URL_PATH)
+            );
 
             if (Storage::disk('public')->exists($path)) {
                 $totalSize += Storage::disk('public')->size($path);
@@ -258,11 +260,11 @@ class AnnouncementController extends Controller
 
         // FINAL UPDATE
         $announcement->update([
-            'title'   => $request->title,
+            'title' => $request->title,
             'details' => $request->details,
-            'image'   => $imagePaths,
 
             // status reset
+            'image' => $imagePaths,
             'status' => $newStatus,
 
             // clear revision note
@@ -287,31 +289,7 @@ class AnnouncementController extends Controller
     /* ================= ALUMNA ================= */
     public function alumna()
     {
-        $user = auth()->user();
-
-        $map = $this->collegeCoursesMap();
-        $userCollege = $this->getUserCollege($user->courses);
-
         $announcements = Announcement::where('status', 'approved')
-            ->where(function ($q) use ($user, $userCollege) {
-
-                $q->where('target_type', 'ALL')
-
-                // COURSE match
-                ->orWhere(function ($q2) use ($user) {
-                    $q2->where('target_type', 'COURSE')
-                        ->where('target_value', $user->courses);
-                })
-
-                // COLLEGE match (IMPORTANT FIX)
-                ->orWhere(function ($q2) use ($userCollege) {
-                    if (!$userCollege) return;
-
-                    $q2->where('target_type', 'COLLEGE')
-                        ->where('target_value', $userCollege);
-                });
-
-            })
             ->latest()
             ->paginate(4)
             ->withQueryString();
@@ -328,64 +306,14 @@ class AnnouncementController extends Controller
         ]);
     }
 
-    // COLLEGE COURSE MAP
-    private function collegeCoursesMap()
-    {
-        return [
-            'CECT' => ['BSIT', 'BSECE', 'BSCpE'],
-            'COED' => ['BEED', 'BPED', 'BSED'],
-            'CAMS' => ['BSMT', 'BSPH', 'BSPT', 'BSRT'],
-            'CON'  => ['BSN'],
-            'CBA'  => ['BSA', 'BSBA', 'BSMA', 'BSREM'],
-            'CHTM' => [],
-            'CCJE' => [],
-            'CAS'  => [],
-        ];
-    }
-
-    private function getUserCollege($course)
-    {
-        $map = $this->collegeCoursesMap();
-
-        foreach ($map as $college => $courses) {
-            if (in_array($course, $courses)) {
-                return $college;
-            }
-        }
-
-        return null;
-    }
-
     /* ================= COORDINATOR LIST ================= */
     public function coordinatorIndex(Request $request)
     {
-        $user = auth()->user();
-
         $status = $request->query('status');
         $search = $request->query('search');
-        $sort   = $request->query('sort', 'newest');
+        $sort = $request->query('sort', 'newest');
 
         $announcements = Announcement::query()
-
-            ->where(function ($q) use ($user) {
-
-                $q->where('target_type', 'ALL')
-
-                ->orWhere(function ($q2) use ($user) {
-
-                    $q2->where('target_type', 'COLLEGE')
-                    ->where('target_value', $user->department);
-
-                })
-
-                ->orWhere(function ($q2) use ($user) {
-
-                    $q2->where('target_type', 'COURSE')
-                    ->where('target_value', $user->courses);
-
-                });
-
-            })
 
             // STATUS FILTER
             ->when($status && $status !== 'All', function ($q) use ($status) {
@@ -406,13 +334,16 @@ class AnnouncementController extends Controller
             }, function ($q) {
                 $q->orderBy('created_at', 'desc');
             })
-
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Coordinator/CoordinatorAnnouncement', [
             'announcements' => $announcements,
-            'filters' => compact('status', 'search', 'sort'),
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+                'sort' => $sort,
+            ],
         ]);
     }
 }

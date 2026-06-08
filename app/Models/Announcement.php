@@ -18,9 +18,6 @@ class Announcement extends Model
         'status',
         'revision_note',
         'user_id',
-
-        'target_type',
-        'target_value',
     ];
 
      protected $casts = [
