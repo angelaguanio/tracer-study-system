@@ -28,53 +28,11 @@ const STEP_META = [
 ];
 
 // ─── Options ──────────────────────────────────────────────────────────────────
-const DEPARTMENT_OPTIONS = [
-  { value: 'CECT',  label: 'College of Engineering and Computer Technology' },
-  { value: 'CAS',   label: 'College of Arts and Sciences' },
-  { value: 'CAMS',  label: 'College of Allied Medical Sciences' },
-  { value: 'CON',   label: 'College of Nursing' },
-  { value: 'CBA',   label: 'College of Business and Accountancy' },
-  { value: 'CHTM',  label: 'College of Hospitality and Tourism Management' },
-  { value: 'CCJE',  label: 'College of Criminal Justice Education' },
+const CECT_COURSES = [
+  { value: 'BSCpE', label: 'Bachelor of Science in Computer Engineering' },
+  { value: 'BSECE', label: 'Bachelor of Science in Electronics Engineering' },
+  { value: 'BSIT',  label: 'Bachelor of Science in Information Technology' },
 ];
-
-const COURSES_BY_DEPT = {
-  CECT: [
-    { value: 'BSCpE', label: 'Bachelor of Science in Computer Engineering' },
-    { value: 'BSECE', label: 'Bachelor of Science in Electronics Engineering' },
-    { value: 'BSIT',  label: 'Bachelor of Science in Information Technology' },
-  ],
-  CAS: [
-    { value: 'BSPsych',   label: 'Bachelor of Science in Psychology' },
-  ],
-  COED: [
-    { value: 'BSEd',  label: 'Bachelor of Secondary Education' },
-    { value: 'BEEd',  label: 'Bachelor of Elementary Education' },
-    { value: 'BPEd',label: 'Bachelor of Physical Education' },
-  ],
-  CAMS: [
-    { value: 'BSMT',  label: 'Bachelor of Science in Medical Technology' },
-    { value: 'BSPH',  label: 'Bachelor of Science in in Pharmacy' },
-    { value: 'BSPT',  label: 'Bachelor of Science in Physical Therapy' },
-    { value: 'BSRT',  label: 'Bachelor of Science in Radiologic Technology' },
-  ],
-  CON: [
-    { value: 'BSN',   label: 'Bachelor of Science in Nursing' },
-  ],
-  CBA: [
-    { value: 'BSA',   label: 'Bachelor of Science in Accountancy' },
-    { value: 'BSBA',  label: 'Bachelor of Science in Business Administration' },
-    { value: 'BSMA', label: 'Bachelor of Science in Management Accounting' },
-    { value: 'BSREM', label: 'Bachelor of Science in Real Estate Management' },
-  ],
-  CHTM: [
-    { value: 'BSHM',  label: 'Bachelor of Science in Hospitality Management' },
-    { value: 'BSTM',  label: 'Bachelor of Science in Tourism Management' },
-  ],
-  CCJE: [
-    { value: 'BSCRIM',label: 'Bachelor of Science in Criminology' },
-  ],
-};
 
 const SEMESTER_OPTIONS = [
   { value: '1st Semester', label: '1st Semester' },
@@ -98,7 +56,7 @@ const INITIAL_FORM = {
   last_name: '', first_name: '', middle_name: '',
   address: '', contact_number: '',
   email: '', password: '', password_confirmation: '',
-  department: '', courses: '',
+  department: 'CECT', courses: '',
   school_year: '', start_year: '', end_year: '', semester: '',
   user_role: '',
   currently_employed: '',
@@ -195,7 +153,7 @@ export default function AlumnaSignup() {
   useEffect(() => {
     const stepFields = [
       ['last_name', 'first_name', 'middle_name', 'address', 'contact_number'],
-      ['department', 'courses', 'start_year', 'end_year', 'semester'],
+      ['courses', 'start_year', 'end_year', 'semester'],
       ['email', 'password', 'password_confirmation'],
       ['currently_employed'],
       ['employment_type', 'company_name', 'position', 'location', 'monthly_salary', 'employment_start_year', 'employment_end_year'],
@@ -246,7 +204,7 @@ export default function AlumnaSignup() {
   };
 
   const isStep1Done = [data.last_name, data.first_name, data.address, data.contact_number].every(Boolean);
-  const isStep2Done = [data.department, data.courses, data.school_year, data.semester].every(Boolean);
+  const isStep2Done = [data.courses, data.school_year, data.semester].every(Boolean);
   const isStep3Done = [data.email, data.password, data.password_confirmation].every(Boolean) && passwordErrors.length === 0;
 
   const nextStep = () => {
@@ -312,24 +270,15 @@ export default function AlumnaSignup() {
           {/* ── Step 2: Academic ── */}
           {step === 2 && (
             <div className="flex flex-col gap-3">
-              <IconSelect icon={GraduationCap} placeholder="Department" value={data.department} onValueChange={(v) => { handleSelectChange('department', v); setData('courses', ''); }} error={errors.department}>
-                <SelectGroup>
-                  {DEPARTMENT_OPTIONS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
-                </SelectGroup>
-              </IconSelect>
+              {/* Static dept display */}
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                <GraduationCap className="h-4 w-4 text-gray-400 shrink-0" />
+                <span className="text-sm text-gray-500">College of Engineering and Computer Technology (CECT)</span>
+              </div>
 
-              <IconSelect
-                icon={BookOpen}
-                placeholder={data.department ? 'Program / Course' : 'Select a department first'}
-                value={data.courses}
-                onValueChange={(v) => handleSelectChange('courses', v)}
-                error={errors.courses}
-                disabled={!data.department}
-              >
+              <IconSelect icon={BookOpen} placeholder="Program / Course" value={data.courses} onValueChange={(v) => handleSelectChange('courses', v)} error={errors.courses}>
                 <SelectGroup>
-                  {(COURSES_BY_DEPT[data.department] ?? []).map((c) => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                  ))}
+                  {CECT_COURSES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                 </SelectGroup>
               </IconSelect>
 
