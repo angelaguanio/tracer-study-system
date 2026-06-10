@@ -1,6 +1,5 @@
-import React from 'react'
 import logo from '../assets/logotracer.png'
-import { Link, usePage, router } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,9 +71,15 @@ export default function NavbarAlumni({ children }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            {/* profile */}
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.profile')}>Profile</Link>
+              <Link href={route('alumna.profile')}>My Profile</Link>
             </DropdownMenuItem>
+              {/* inquiries */}
+            <DropdownMenuItem asChild>
+              <Link href={route('alumna.inquiries.index')}>My Inquiries</Link>
+            </DropdownMenuItem>
+
             <DropdownMenuItem asChild>
               <Link href={route('alumna.logout')} className='w-full flex'>
                 Logout

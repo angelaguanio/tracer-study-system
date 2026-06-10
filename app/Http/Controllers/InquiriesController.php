@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inquiries;
+use App\Models\InquiryReply;
 use App\Models\User;
+use App\Mail\InquiryReplied;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use App\Services\NotificationService;
 
@@ -55,9 +58,45 @@ class InquiriesController extends Controller
         return redirect()->back()->with('success', 'Message sent successfully!');
     }
 
+    public function alumniInquiriesList(Request $request)
+    {
+        $query = Inquiries::with(['replies.sender', 'alumni:id,first_name,last_name,email,profile_picture'])
+            ->where('user_id', Auth::id());
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%")
+                  ->orWhere('department', 'like', "%{$search}%");
+            });
+        }
+
+        return Inertia::render('Alumna/AlumnaInquiries', [
+            'inquiries' => $query->latest()->paginate(10)->withQueryString(),
+            'filters'   => ['search' => $request->search],
+            'openId'    => $request->integer('open') ?: null,
+        ]);
+    }
+
+        // Single inquiry thread
+    public function alumniShow($id)
+    {
+        $inquiry = Inquiries::with([
+            'alumni:id,first_name,last_name,email,profile_picture',
+            'replies.sender'
+        ])
+        ->where('user_id', Auth::id()) // security: only their own
+        ->findOrFail($id);
+
+        return Inertia::render('Alumna/InquiryThread', [
+            'inquiry' => $inquiry,
+        ]);
+    }
+
     //-------------admin-----------------------
     public function adminIndex(Request $request) {
-        $query = Inquiries::with('alumni:id,first_name,last_name,email,profile_picture')
+        $query = Inquiries::with(['alumni:id,first_name,last_name,email,profile_picture', 'replies.sender'])
             ->where('recipient_type', 'admin');
 
         // Search across all fields
@@ -109,7 +148,7 @@ class InquiriesController extends Controller
     public function coordIndex(Request $request) {
         $coordinatorId = Auth::id();
         
-        $query = Inquiries::with('alumni:id,first_name,last_name,email,profile_picture')
+        $query = Inquiries::with(['alumni:id,first_name,last_name,email,profile_picture', 'replies.sender'])
             ->where('recipient_type', 'coordinator')
             ->where('recipient_id', $coordinatorId);
 
@@ -141,6 +180,33 @@ class InquiriesController extends Controller
                 'status' => $request->status,
             ]
         ]);
+    }
+
+    //---------------REPLY FUNC--------------------
+    public function reply(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'message' => 'required|string|min:1|max:2000',
+        ]);
+
+        $inquiry = Inquiries::findOrFail($id);
+
+        $reply = InquiryReply::create([
+            'inquiry_id'  => $inquiry->id,
+            'sender_id'   => Auth::id(),
+            'sender_role' => Auth::user()->user_role,
+            'message'     => $validated['message'],
+        ]);
+
+        if ($inquiry->status === 'pending') {
+            $inquiry->update(['status' => 'replied']);
+        }
+
+        if (Auth::user()->user_role !== 'alumni') {
+        Mail::to($inquiry->alumni->email)->send(new InquiryReplied($reply));
+    }
+
+        return redirect()->back();
     }
 }
 
