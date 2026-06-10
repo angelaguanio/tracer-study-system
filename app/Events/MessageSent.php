@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -29,8 +30,9 @@ class MessageSent implements ShouldBroadcastNow
         $minId = min($conversation->admin_id, $conversation->coordinator_id);
         $maxId = max($conversation->admin_id, $conversation->coordinator_id);
 
+        // Use private channels for Pusher (instead of presence channels)
         return [
-            new PresenceChannel('chat.' . $minId . '.' . $maxId),
+            new Channel('chat.' . $minId . '.' . $maxId),
         ];
     }
 

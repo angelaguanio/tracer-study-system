@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Broadcast;
 | used to check if an authenticated user can listen to the channel.
 |
 */
+Broadcast::channel('role.{role}', function ($user, $role) {
+    return in_array($user->user_role, ['admin', 'coordinator']);
+});
+
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return $user->id === (int) $userId;
+});
+
 
 Broadcast::channel('chat.{minId}.{maxId}', function (User $user, $minId, $maxId) {
     if ($user->id === (int) $minId || $user->id === (int) $maxId) {
@@ -25,7 +33,7 @@ Broadcast::channel('chat.{minId}.{maxId}', function (User $user, $minId, $maxId)
     return false;
 });
 
-// Global presence channel for all chat users
+// Global presence channel for all chat users - converted to regular channel for Pusher
 Broadcast::channel('chat.presence', function (User $user) {
     if ($user->user_role === 'admin' || $user->user_role === 'coordinator') {
         return [

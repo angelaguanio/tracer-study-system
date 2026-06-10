@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Services\NotificationService;
+
 
 class InquiriesController extends Controller
 {
@@ -37,7 +39,7 @@ class InquiriesController extends Controller
             'message' => 'required|string|min:10',
         ]);
 
-        Inquiries::create([
+        $inquiry = Inquiries::create([
             'user_id'        => Auth::id(),
             'recipient_type' => $request->department === 'admin' ? 'admin' : 'coordinator',
             'recipient_id'   => $request->department === 'admin' ? null : $request->alumni_coord,
@@ -47,6 +49,8 @@ class InquiriesController extends Controller
             'subject'        => $validated['subject'],
             'status'         => 'pending',
         ]);
+
+        NotificationService::inquiryReceived($inquiry->id, auth()->user()->name, auth()->id());
 
         return redirect()->back()->with('success', 'Message sent successfully!');
     }

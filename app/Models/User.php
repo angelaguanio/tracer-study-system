@@ -43,7 +43,7 @@ class User extends Authenticatable
     /**
      * The accessors to append to the model's array form.
      */
-    protected $appends = ['initials', 'avatar_url'];
+    protected $appends = ['initials', 'avatar_url', 'name'];
 
     /**
      * Generate initials from first and last name.
@@ -64,6 +64,13 @@ class User extends Authenticatable
             return asset('storage/' . $this->profile_picture);
         }
         return null;
+    }
+
+    /**
+     * Get the user's full name.
+     */
+    public function getNameAttribute() {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 
     /**

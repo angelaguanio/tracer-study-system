@@ -10,6 +10,7 @@ import {
 } from "../components/ui/dropdown-menu"
 import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp' 
+import NotificationBell from './NotificationBell'
 
 export default function HeaderCoord({ navItemsCoord = [] }) {
   const { url, props } = usePage()
@@ -28,6 +29,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
       <div className='flex flex-row items-center gap-2'>
         <ModeToggle />
 
+        <NotificationBell/>
         {/* profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
