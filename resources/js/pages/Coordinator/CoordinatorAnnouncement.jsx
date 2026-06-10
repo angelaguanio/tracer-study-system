@@ -1,18 +1,20 @@
 import CoordinatorLayout from "@/layouts/coord-layout";
-import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, router } from "@inertiajs/react";
-import { useState, useEffect } from "react";
 import CoordinatorAnnouncementCard from "@/components/coordinator/CoordinatorAnnouncementCard";
+import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { useState, useEffect } from "react";
 
 export default function CoordinatorAnnouncement({ announcements }) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
-
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+
+  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
+
+  const { props } = usePage();
 
   // auto-hide modal after 3 seconds
   useEffect(() => {
@@ -24,12 +26,13 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
   // detect update modal
   useEffect(() => {
-    const updated = new URLSearchParams(window.location.search).get("updated");
+    const url = new URL(window.location.href);
+    const updated = url.searchParams.get("updated");
 
     if (updated === "1") {
       setShowUpdatedSuccess(true);
 
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setShowUpdatedSuccess(false);
 
         router.replace("/coordinator/announcement", {
@@ -37,10 +40,20 @@ export default function CoordinatorAnnouncement({ announcements }) {
           preserveScroll: true,
         });
       }, 2500);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (props.flash?.success === "Deleted") {
+      setShowSuccess(true);
+
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2500);
 
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [props.flash?.success]);
 
   // GLOBAL SEARCH
   useEffect(() => {
@@ -62,36 +75,33 @@ export default function CoordinatorAnnouncement({ announcements }) {
     return () => clearTimeout(delay);
   }, [search, statusFilter, sortOrder]);
 
-  // HANDLE DATA (pagination safe)
   const list = announcements?.data ?? [];
   const filteredAnnouncements = list;
 
   return (
-    <div className="w-full h-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4 overflow-hidden">
-
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Announcements</h1>
-      </div>
+    <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
       {/* INFO BANNER */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-blue-100 p-3 rounded-full">📢</div>
-          <p className="text-gray-600">
-            Create, edit, or remove announcements to keep everyone informed.
+          <div className="bg-blue-100 p-5 rounded-full">
+            <Megaphone size={25} className="text-blue-700"/>
+          </div>
+          <p className="text-lg text-gray-600">
+            Create and manage announcements to keep everyone informed.
           </p>
         </div>
 
         <Link
           href="/coordinator/announcement/create"
-          className="flex items-center justify-center gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+          className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
         >
           <Plus size={18} />
-          Add Announcement
+          Create Announcement
         </Link>
       </div>
 
+      <div className="flex flex-col h-full justify-evenly gap-5 p-10 border shadow-lg rounded-2xl bg-white "> 
       {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
@@ -123,7 +133,8 @@ export default function CoordinatorAnnouncement({ announcements }) {
               Status: {
                 statusFilter === ""
                   ? "All"
-                  : statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)
+                  : statusFilter.charAt(0).toUpperCase() +
+                    statusFilter.slice(1)
               }
               <ChevronDown size={16} />
             </button>
@@ -141,7 +152,8 @@ export default function CoordinatorAnnouncement({ announcements }) {
                   >
                     {status === ""
                       ? "All"
-                      : status.charAt(0).toUpperCase() + status.slice(1)}
+                      : status.charAt(0).toUpperCase() + 
+                        status.slice(1)}
                   </button>
                 ))}
               </div>
@@ -187,7 +199,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md shadow-md">
         <CoordinatorAnnouncementCard
           announcements={filteredAnnouncements}
           onDeleteSuccess={() => setShowSuccess(true)}
@@ -271,18 +283,21 @@ export default function CoordinatorAnnouncement({ announcements }) {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
 
+            {/* CLOSE BUTTON */}
             <button
               onClick={() => setShowSuccess(false)}
-              className="absolute top-3 right-3 text-gray-500"
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
             >
               <X size={20} />
             </button>
 
+            {/* GREEN CIRCLE WITH CHECK */}
             <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white" />
+              <Check size={28} className="text-white stroke-[3]" />
             </div>
 
-            <p className="text-gray-700 font-medium">
+            {/* TEXT */}
+            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
               Deleted successfully!
             </p>
 
@@ -290,7 +305,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
         </div>
       )}
 
-      {/* UPDATED SUCCESS MODAL */}
+      {/* UPDATE SUCCESS MODAL */}
       {showUpdatedSuccess && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
           <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
@@ -303,11 +318,12 @@ export default function CoordinatorAnnouncement({ announcements }) {
               <X size={20} />
             </button>
 
-            {/* GREEN CIRCLE WITH CHECK */}
+            {/* GREEN ICON */}
             <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
               <Check size={28} className="text-white stroke-[3]" />
             </div>
 
+            {/* TEXT */}
             <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
               Updated successfully!
             </p>
@@ -315,7 +331,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
           </div>
         </div>
       )}
-
+    </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import AdminLayout from "@/layouts/admin-layout";
 import AdminAnnouncementCard from "@/components/admin/AdminAnnouncementCard";
-import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
@@ -82,23 +82,26 @@ export default function AdminAnnouncement({ announcements }) {
     <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
       {/* INFO BANNER */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-blue-100 p-3 rounded-full">📢</div>
-          <p className="text-gray-600">
-            Create, edit, or remove announcements to keep everyone informed.
+          <div className="bg-blue-100 p-5 rounded-full">
+            <Megaphone size={25} className="text-blue-700"/>
+          </div>
+          <p className="text-lg text-gray-600">
+            Create and manage announcements to keep everyone informed.
           </p>
         </div>
 
         <Link
           href="/admin/announcement/create"
-          className="flex items-center justify-center text-sm gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+          className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
         >
           <Plus size={18} />
-          Add Announcement
+          Create Announcement
         </Link>
       </div>
 
+      <div className="flex flex-col h-full justify-evenly gap-5 p-10 border shadow-lg rounded-2xl bg-white "> 
       {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
@@ -196,7 +199,7 @@ export default function AdminAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md shadow-md">
         <AdminAnnouncementCard
           announcements={filteredAnnouncements}
           onDeleteSuccess={() => setShowSuccess(true)}
@@ -328,6 +331,7 @@ export default function AdminAnnouncement({ announcements }) {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -68,7 +68,7 @@ export default function AdminAnnouncementView({ announcement }) {
               <>
                 <button
                   onClick={handleApprove}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg border border-green-600 text-green-600 bg-green-50 hover:bg-green-100 hover:cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-2 rounded-lg border border-green-600 text-green-600 bg-green-50 hover:bg-green-100 cursor-pointer"
                 >
                   <Check size={16} />
                   Approve
