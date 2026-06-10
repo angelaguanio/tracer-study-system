@@ -1,17 +1,20 @@
 import AdminLayout from "@/layouts/admin-layout";
 import AdminAnnouncementCard from "@/components/admin/AdminAnnouncementCard";
-import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, router } from "@inertiajs/react";
+import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 
 export default function AdminAnnouncement({ announcements }) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
+
+  const { props } = usePage();
 
   // auto-hide modal after 3 seconds
   useEffect(() => {
@@ -40,6 +43,18 @@ export default function AdminAnnouncement({ announcements }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (props.flash?.success === "Deleted") {
+      setShowSuccess(true);
+
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [props.flash?.success]);
+
   // GLOBAL SEARCH
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -47,7 +62,7 @@ export default function AdminAnnouncement({ announcements }) {
         "/admin/announcement",
         {
           search,
-          status: activeTab,
+          status: statusFilter,
           sort: sortOrder,
         },
         {
@@ -58,7 +73,7 @@ export default function AdminAnnouncement({ announcements }) {
     }, 300);
 
     return () => clearTimeout(delay);
-  }, [search, activeTab, sortOrder]);
+  }, [search, statusFilter, sortOrder]);
 
   const list = announcements?.data ?? [];
   const filteredAnnouncements = list;
@@ -67,47 +82,31 @@ export default function AdminAnnouncement({ announcements }) {
     <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-hidden">
 
       {/* INFO BANNER */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-blue-100 p-3 rounded-full">📢</div>
-          <p className="text-gray-600">
-            Create, edit, or remove announcements to keep everyone informed.
+          <div className="bg-blue-100 p-5 rounded-full">
+            <Megaphone size={25} className="text-blue-700"/>
+          </div>
+          <p className="text-lg text-gray-600">
+            Create and manage announcements to keep everyone informed.
           </p>
         </div>
 
         <Link
           href="/admin/announcement/create"
-          className="flex items-center justify-center text-sm gap-2 bg-[#008236] hover:bg-green-700 text-white px-4 py-2 rounded-md transition"
+          className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
         >
           <Plus size={18} />
-          Add Announcement
+          Create Announcement
         </Link>
       </div>
 
-      {/* TABS + SEARCH + SORT */}
+      <div className="flex flex-col h-full justify-evenly gap-5 p-10 border shadow-lg rounded-2xl bg-white "> 
+      {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
-        {/* TABS */}
-        <div className="flex gap-2">
-          {["All", "Pending", "Approved"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-md text-sm font-medium border hover:cursor-pointer transition ${
-                activeTab === tab
-                  ? "bg-[#008236] text-white hover:bg-green-800"
-                  : "bg-blue-500 text-white  hover:bg-blue-800"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* SEARCH + SORT */}
-        <div className="flex gap-2 items-center">
-
-          {/* SEARCH */}
+        {/* ================= LEFT SIDE (SEARCH) ================= */}
+        <div className="w-full sm:w-auto">
           <div className="relative w-full sm:w-64 bg-white">
             <Search
               size={16}
@@ -119,6 +118,46 @@ export default function AdminAnnouncement({ announcements }) {
               placeholder="Search announcements..."
               className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
             />
+          </div>
+        </div>
+
+        {/* ================= RIGHT SIDE (FILTERS) ================= */}
+        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto">
+
+          {/* STATUS FILTER */}
+          <div className="relative">
+            <button
+              onClick={() => setStatusOpen(!statusOpen)}
+              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
+            >
+              Status: {
+                statusFilter === ""
+                  ? "All"
+                  : statusFilter.charAt(0).toUpperCase() +
+                    statusFilter.slice(1)
+              }
+              <ChevronDown size={16} />
+            </button>
+
+            {statusOpen && (
+              <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-28">
+                {["", "approved", "pending", "revise"].map((status) => (
+                  <button
+                    key={status || "all"}
+                    onClick={() => {
+                      setStatusFilter(status);
+                      setStatusOpen(false);
+                    }}
+                    className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                  >
+                    {status === ""
+                      ? "All"
+                      : status.charAt(0).toUpperCase() + 
+                        status.slice(1)}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* SORT */}
@@ -160,7 +199,7 @@ export default function AdminAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md shadow-md">
         <AdminAnnouncementCard
           announcements={filteredAnnouncements}
           onDeleteSuccess={() => setShowSuccess(true)}
@@ -292,6 +331,7 @@ export default function AdminAnnouncement({ announcements }) {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

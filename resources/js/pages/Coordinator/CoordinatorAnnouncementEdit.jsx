@@ -6,7 +6,7 @@
   import { Textarea } from "@/components/ui/textarea";
   import { Button } from "@/components/ui/button";
   import { Label } from "@/components/ui/label";
-  import { ArrowLeft, X } from "lucide-react";
+  import { ArrowLeft, X, AlertCircle } from "lucide-react";
   import CoordinatorAnnouncementEditUpdate from "../../components/CoordinatorAnnouncementEditUpdate";
 
   export default function CoordinatorAnnouncementEdit({ announcement }) {
@@ -124,6 +124,8 @@
       });
     };
 
+    const isRevise = announcement?.status === "revise";
+
     return (
       <CoordinatorLayout>
         <>
@@ -152,7 +154,7 @@
                     </Button>
 
                     <CardTitle className="text-lg font-semibold">
-                      Edit Announcement
+                      {isRevise ? "Resubmit Announcement" : "Edit Announcement"}
                     </CardTitle>
                   </div>
 
@@ -174,6 +176,24 @@
                     onChange={handleFileChange}
                   />
                 </CardHeader>
+
+                {/* REVISION BANNER */}
+                {isRevise && (
+                  <div className="mx-6 mt-3 mb-2 p-4 bg-white border-l-4 border-yellow-400 rounded-md shadow-sm">
+
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertCircle className="text-yellow-500" size={18} />
+                      <p className="font-semibold text-yellow-700 text-sm">
+                        Revision Note
+                      </p>
+                    </div>
+
+                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                      {announcement?.revision_note}
+                    </p>
+
+                  </div>
+                )}
 
                 {/* INFO TEXT (only shows kapag may image na) */}
                 {previews.length > 0 && (
@@ -274,7 +294,7 @@
                         type="submit"
                         className="w-full bg-[#2859C5] hover:bg-[#1f47a0]"
                       >
-                        Update
+                        {isRevise ? "Resubmit" : "Update"}
                       </Button>
                     </div>
 
