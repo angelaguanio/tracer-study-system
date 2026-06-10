@@ -27,15 +27,14 @@ class AnnouncementController extends Controller
     {
         $search = $request->query('search');
         $status = $request->query('status');
-        $sort   = $request->query('sort', 'newest');
+        $sort = $request->query('sort', 'newest');
 
         $announcements = Announcement::query()
-
-            ->where('status', '!=', 'rejected')
+            ->whereIn('status', ['approved', 'pending', 'revise'])
 
             // STATUS FILTER
-            ->when($status && $status !== 'All', function ($q) use ($status) {
-                $q->where('status', strtolower($status));
+            ->when($status, function ($q) use ($status) {
+                $q->where('status', $status);
             })
 
             // SEARCH
@@ -46,13 +45,16 @@ class AnnouncementController extends Controller
                 });
             })
 
-            // SORT            
-            ->when($sort === 'oldest', function ($q) {
-                $q->orderBy('created_at', 'asc');
-            }, function ($q) {
-                $q->orderBy('created_at', 'desc');
-            })
-
+            // SORT
+            ->when(
+                $sort === 'oldest',
+                function ($q) {
+                    $q->orderBy('created_at', 'asc');
+                },
+                function ($q) {
+                    $q->orderBy('created_at', 'desc');
+                }
+            )
             ->paginate(5)
             ->withQueryString();
 
@@ -80,7 +82,7 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'details' => 'required|string',
             'images.*' => 'image',
         ]);
@@ -111,10 +113,12 @@ class AnnouncementController extends Controller
         }
 
         Announcement::create([
-            'title'   => $request->title,
+            'title' => $request->title,
             'details' => $request->details,
-            'image'   => $imageUrls,
-            'status'  => auth()->user()->user_role === 'admin' ? 'approved' : 'pending',
+            'image' => $imageUrls,
+            'status' => auth()->user()->user_role === 'admin'
+                ? 'approved'
+                : 'pending',
             'user_id' => auth()->id(),
         ]);
 
@@ -123,7 +127,7 @@ class AnnouncementController extends Controller
             ->with('success', 'Announcement created successfully!');
     }
 
-    /* ================= APPROVE / REJECT ================= */
+    /* ================= APPROVE / REVISE ================= */
     public function approve(Announcement $announcement)
     {
         $announcement->update([
@@ -135,15 +139,20 @@ class AnnouncementController extends Controller
             ->with('success', 'Announcement approved successfully!');
     }
 
-    public function reject(Announcement $announcement)
+    public function reject(Request $request, Announcement $announcement)
     {
+        $request->validate([
+            'note' => 'required|string'
+        ]);
+
         $announcement->update([
-            'status' => 'rejected'
+            'status' => 'revise',
+            'revision_note' => $request->note,
         ]);
 
         return redirect()
             ->route('admin.announcement.index')
-            ->with('success', 'Announcement rejected successfully!');
+            ->with('success', 'Marked for revision');
     }
 
     /* ================= VIEW ================= */
@@ -152,8 +161,8 @@ class AnnouncementController extends Controller
         $role = auth()->user()->user_role;
 
         $announcement->image = is_string($announcement->image)
-        ? json_decode($announcement->image, true)
-        : ($announcement->image ?? []);
+            ? json_decode($announcement->image, true)
+            : ($announcement->image ?? []);
 
         if ($role === 'admin') {
             return Inertia::render('Admin/AdminAnnouncementView', [
@@ -192,15 +201,26 @@ class AnnouncementController extends Controller
     public function update(Request $request, Announcement $announcement)
     {
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'details' => 'required|string',
             'images.*' => 'image',
         ]);
 
         $existing = json_decode($request->existing_images, true) ?? [];
-        $newFiles = $request->file('images', []);
 
-        // MAX 10 TOTAL IMAGES (existing + new)
+        // MAX 10 TOTAL IMAGES (existing + new) (para di null)
+        $newFiles = $request->file('images', []) ?? [];
+
+        // RESET STATUS LOGIC
+        $newStatus = $announcement->status === 'revise'
+            ? 'pending'   // resubmit -> balik pending
+            : $announcement->status;
+
+        $newRevisionNote = $announcement->status === 'revise'
+            ? null        // alisin note after resubmit
+            : $announcement->revision_note;
+
+        // IMAGE LIMIT CHECKS
         if (count($existing) + count($newFiles) > 10) {
             abort(422, 'Maximum of 10 images only.');
         }
@@ -209,12 +229,16 @@ class AnnouncementController extends Controller
         $totalSize = 0;
 
         foreach ($existing as $imageUrl) {
-        $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
+            $path = str_replace(
+                '/storage/',
+                '',
+                parse_url($imageUrl, PHP_URL_PATH)
+            );
 
-        if (Storage::disk('public')->exists($path)) {
-            $totalSize += Storage::disk('public')->size($path);
+            if (Storage::disk('public')->exists($path)) {
+                $totalSize += Storage::disk('public')->size($path);
+            }
         }
-    }
 
         // NEW FILES SIZE
         foreach ($newFiles as $file) {
@@ -223,9 +247,10 @@ class AnnouncementController extends Controller
 
         // FINAL CHECK (10MB TOTAL)
         if (($totalSize / 1024 / 1024) > 10) {
-            abort(422, 'Total image size (existing + new) must not exceed 10MB.');
+            abort(422, 'Total image size must not exceed 10MB.');
         }
 
+        // SAVE IMAGES
         $imagePaths = $existing;
 
         foreach ($newFiles as $file) {
@@ -233,10 +258,17 @@ class AnnouncementController extends Controller
             $imagePaths[] = Storage::url($path);
         }
 
+        // FINAL UPDATE
         $announcement->update([
-            'title'   => $request->title,
+            'title' => $request->title,
             'details' => $request->details,
-            'image'   => $imagePaths,
+
+            // status reset
+            'image' => $imagePaths,
+            'status' => $newStatus,
+
+            // clear revision note
+            'revision_note' => $newRevisionNote,
         ]);
 
         return redirect()
@@ -257,8 +289,6 @@ class AnnouncementController extends Controller
     /* ================= ALUMNA ================= */
     public function alumna()
     {
-
-        // ONLY APPROVED SHOWN - 4 per page
         $announcements = Announcement::where('status', 'approved')
             ->latest()
             ->paginate(4)
@@ -281,7 +311,7 @@ class AnnouncementController extends Controller
     {
         $status = $request->query('status');
         $search = $request->query('search');
-        $sort   = $request->query('sort', 'newest');
+        $sort = $request->query('sort', 'newest');
 
         $announcements = Announcement::query()
 
@@ -304,7 +334,6 @@ class AnnouncementController extends Controller
             }, function ($q) {
                 $q->orderBy('created_at', 'desc');
             })
-
             ->paginate(10)
             ->withQueryString();
 

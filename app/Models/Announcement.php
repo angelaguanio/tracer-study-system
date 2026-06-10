@@ -16,6 +16,7 @@ class Announcement extends Model
         'details',
         'image',
         'status',
+        'revision_note',
         'user_id',
     ];
 
