@@ -47,14 +47,14 @@ export function useNotifications(userRole, userId) {
 
         // Use Echo for notifications (now using Pusher)
         const roleChannel = echo.channel(`role.${userRole}`);
-        roleChannel.listen('notification.created', (data) => {
+        roleChannel.listen('notification.created', () => {
             fetchNotifications();
             setUnreadCount(prev => prev + 1);
         });
 
         // User-specific channel (for coordinator approval/rejection notifs)
         const userChannel = echo.channel(`user.${userId}`);
-        userChannel.listen('notification.created', (data) => {
+        userChannel.listen('notification.created', () => {
             fetchNotifications();
             setUnreadCount(prev => prev + 1);
         });
@@ -63,7 +63,7 @@ export function useNotifications(userRole, userId) {
             echo.leaveChannel(`role.${userRole}`);
             echo.leaveChannel(`user.${userId}`);
         };
-    }, [userRole, userId]);
+    }, [userRole, userId, fetchNotifications, fetchUnreadCount]);
 
     return {
         notifications,
