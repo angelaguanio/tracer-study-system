@@ -2,23 +2,33 @@ import { useState, useEffect } from "react";
 import { Trash2, Check } from "lucide-react";
 import { router } from "@inertiajs/react";
 
+
 export default function AdminAnnouncementDeletePromptandConfirmation({ children, announcementId, onSuccess }) {
   const [open, setOpen] = useState(false);
 
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
 
-  const confirmDelete = () => {
-    if (!announcementId) return;
+  const [success, setSuccess] = useState(false);
 
-    router.delete(`/admin/announcement/${announcementId}`, {
-      onSuccess: () => {
-        setOpen(false); 
-        if (onSuccess) onSuccess(); 
-      },
-      onError: (error) => console.error("Delete failed:", error),
-    });
-  };
+  const confirmDelete = () => {
+  if (!announcementId) return;
+
+  router.delete(`/admin/announcement/${announcementId}`, {
+    onSuccess: () => {
+      setSuccess(true);
+
+      // show success message for 3 seconds
+      setTimeout(() => {
+        setOpen(false);
+        setSuccess(false);
+
+        if (onSuccess) onSuccess();
+      }, 3000);
+    },
+    onError: (error) => console.error("Delete failed:", error),
+  });
+};
 
   return (
     <>
@@ -45,13 +55,13 @@ export default function AdminAnnouncementDeletePromptandConfirmation({ children,
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
               <button 
                 onClick={closeModal} 
-                className="w-full sm:w-auto px-4 py-2 rounded-md border bg-gray-100 hover:bg-gray-200"
+                className="w-full sm:w-auto px-4 py-2 rounded-md border bg-gray-100 hover:bg-gray-200 hover:cursor-pointer"
               >
                 Cancel
               </button>
               <button 
                 onClick={confirmDelete} 
-                className="w-full sm:w-auto px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+                className="w-full sm:w-auto px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 hover:cursor-pointer"
               >
                 Delete
               </button>

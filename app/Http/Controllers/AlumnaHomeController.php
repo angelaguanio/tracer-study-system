@@ -10,7 +10,7 @@ class AlumnaHomeController extends Controller
 {
     public function __invoke(Request $request)
     {
-        // Kunin latest 3 announcements
+        // Kunin latest 3 announcements 
         $announcements = Announcement::where('status', 'approved')
             ->latest()
             ->take(3)
