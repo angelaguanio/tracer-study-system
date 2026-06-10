@@ -1,4 +1,4 @@
-import { route } from 'vendor/tightenco/ziggy';
+import { route } from 'ziggy-js';
 import { useState, useEffect } from "react";
 import { router, usePage, Link, useForm } from "@inertiajs/react";
 import { Plus, ArrowLeft, Pencil, Check } from "lucide-react";
