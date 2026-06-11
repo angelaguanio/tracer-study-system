@@ -6,7 +6,12 @@ export function useNotifications(userRole, userId) {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    
+    const clearBadge = useCallback(() => {
+        setUnreadCount(0);
+    }, []);
 
+    
     const fetchNotifications = useCallback(async () => {
         try {
             setLoading(true);
@@ -72,5 +77,6 @@ export function useNotifications(userRole, userId) {
         fetchNotifications,
         markRead,
         markAllRead,
+        clearBadge,
     };
 }

@@ -9,6 +9,8 @@ export default function NotificationBell() {
    
     const [open, setOpen] = useState(false);
 
+    const [hasUnread, setHasUnread] = useState(false);
+
     const {
         notifications,
         unreadCount,
@@ -16,11 +18,14 @@ export default function NotificationBell() {
         fetchNotifications,
         markRead,
         markAllRead,
+        clearBadge,
     } = useNotifications(auth.user.user_role, auth.user.id);
 
     const handleOpen = () => {
         setOpen(true);
         fetchNotifications();
+        if (unreadCount > 0) setHasUnread(true);
+        clearBadge();
     };
 
     const getNotificationRoute = (notification) => {
@@ -128,7 +133,14 @@ export default function NotificationBell() {
     return (
         <div className="relative">
             <button
-                onClick={() => (open ? setOpen(false) : handleOpen())}
+                onClick={() => {
+                if (open) {
+                    setOpen(false);
+                    setHasUnread(false); 
+                } else {
+                    handleOpen();
+                }
+            }}
                 className="relative p-2 rounded-full hover:bg-gray-100"
             >
                 <Bell size={22} />
@@ -144,9 +156,11 @@ export default function NotificationBell() {
                     {/* Header */}
                     <div className="flex justify-between items-center px-4 py-3 border-b">
                         <h3 className="font-semibold text-gray-800">Notifications</h3>
-                        {unreadCount > 0 && (
+                        {hasUnread && (
                             <button
-                                onClick={markAllRead}
+                                onClick={() => {
+                                    markAllRead();
+                                    setHasUnread(false);}}
                                 className="text-xs text-blue-600 hover:underline"
                             >
                                 Mark all as read
