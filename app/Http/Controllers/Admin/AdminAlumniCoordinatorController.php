@@ -61,7 +61,7 @@ class AdminAlumniCoordinatorController extends Controller
             'status'      => ['required', 'in:active,inactive'],
         ]);
 
-        // FIXED: Ginawang permanenteng 'CoordinatorCECT@2026' para sa lahat
+        // Permanenteng default password para sa lahat ng bagong gawa
         $defaultPassword = 'CoordinatorCECT@2026'; 
 
         User::create([
@@ -101,7 +101,7 @@ class AdminAlumniCoordinatorController extends Controller
             'start_year' => ['nullable', 'numeric'],
             'end_year'   => ['nullable', 'numeric'],
             'status'     => ['required', 'in:active,inactive'],
-            'password'   => ['nullable', 'string', 'min:6'], 
+            'password'   => ['nullable', 'string'], 
         ]);
 
         $updateData = [
@@ -116,11 +116,12 @@ class AdminAlumniCoordinatorController extends Controller
             'status'      => $validated['status'],
         ];
 
-        // KUNG NAG-RESET NG PASSWORD ANG ADMIN
-        if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($validated['password']);
+        // FIXED RESET LOGIC: 
+        // Sumasalo kung ang field ay may manual string OR kung ang checkbox mula sa frontend ay nagpasa ng `reset_password: true`
+        if ($request->filled('password') || $request->input('reset_password') === true) {
+            $updateData['password'] = Hash::make('CoordinatorCECT@2026');
             
-            // Puwersahing ibalik sa false ang flag sa database para dumaan ulit sa password change form
+            // Ibalik sa false para pilitin uli silang mag-update ng password pagkapasok
             $updateData['password_changed'] = false; 
         }
 
