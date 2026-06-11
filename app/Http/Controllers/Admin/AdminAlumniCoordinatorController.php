@@ -53,35 +53,30 @@ class AdminAlumniCoordinatorController extends Controller
             'first_name'  => ['required', 'string'],
             'last_name'   => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
-
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:6'],
-
-            'department' => ['required', 'string'],
-            'courses'    => ['nullable', 'string'],
-
-            // FIXED
-            'start_year' => ['required', 'numeric'],
-            'end_year'   => ['required', 'numeric'],
-
-            'status' => ['required', 'in:active,inactive'],
+            'email'       => ['required', 'email', 'unique:users,email'],
+            'department'  => ['required', 'string'],
+            'courses'     => ['nullable', 'string'],
+            'start_year'  => ['required', 'numeric'],
+            'end_year'    => ['required', 'numeric'],
+            'status'      => ['required', 'in:active,inactive'],
         ]);
 
+        // FIXED: Ginawang permanenteng 'CoordinatorCECT@2026' para sa lahat
+        $defaultPassword = 'CoordinatorCECT@2026'; 
+
         User::create([
-            'first_name'  => $validated['first_name'],
-            'last_name'   => $validated['last_name'],
-            'middle_name' => $validated['middle_name'] ?? null,
-            'email'       => $validated['email'],
-            'password'    => Hash::make($validated['password']),
-
-            'department'  => $validated['department'],
-            'courses'     => $validated['courses'] ?? null,
-
-            'start_year'  => (int) $validated['start_year'],
-            'end_year'    => (int) $validated['end_year'],
-
-            'status'      => $validated['status'],
-            'user_role'   => 'coordinator',
+            'first_name'       => $validated['first_name'],
+            'last_name'        => $validated['last_name'],
+            'middle_name'      => $validated['middle_name'] ?? null,
+            'email'            => $validated['email'],
+            'password'         => Hash::make($defaultPassword), 
+            'password_changed' => false, // Pipilitin mag-change password pagka-login
+            'department'       => $validated['department'],
+            'courses'          => $validated['courses'] ?? null,
+            'start_year'       => (int) $validated['start_year'],
+            'end_year'         => (int) $validated['end_year'],
+            'status'           => $validated['status'],
+            'user_role'        => 'coordinator',
         ]);
 
         return back();
@@ -96,22 +91,17 @@ class AdminAlumniCoordinatorController extends Controller
             'first_name'  => ['required', 'string'],
             'last_name'   => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
-
-            'email' => [
+            'email'       => [
                 'required',
                 'email',
                 'unique:users,email,' . $alumni_coordinator->id,
             ],
-
             'department' => ['required', 'string'],
             'courses'    => ['nullable', 'string'],
-
-            // FIXED
             'start_year' => ['nullable', 'numeric'],
             'end_year'   => ['nullable', 'numeric'],
-
             'status'     => ['required', 'in:active,inactive'],
-            'password'   => ['nullable', 'min:6'],
+            'password'   => ['nullable', 'string', 'min:6'], 
         ]);
 
         $updateData = [
@@ -119,24 +109,19 @@ class AdminAlumniCoordinatorController extends Controller
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
             'email'       => $validated['email'],
-
             'department'  => $validated['department'],
             'courses'     => $validated['courses'] ?? $alumni_coordinator->courses,
-
-            // SAFE UPDATE
-            'start_year'  => isset($validated['start_year'])
-                ? (int) $validated['start_year']
-                : $alumni_coordinator->start_year,
-
-            'end_year'    => isset($validated['end_year'])
-                ? (int) $validated['end_year']
-                : $alumni_coordinator->end_year,
-
+            'start_year'  => isset($validated['start_year']) ? (int) $validated['start_year'] : $alumni_coordinator->start_year,
+            'end_year'    => isset($validated['end_year']) ? (int) $validated['end_year'] : $alumni_coordinator->end_year,
             'status'      => $validated['status'],
         ];
 
-        if (!empty($validated['password'])) {
+        // KUNG NAG-RESET NG PASSWORD ANG ADMIN
+        if ($request->filled('password')) {
             $updateData['password'] = Hash::make($validated['password']);
+            
+            // Puwersahing ibalik sa false ang flag sa database para dumaan ulit sa password change form
+            $updateData['password_changed'] = false; 
         }
 
         $alumni_coordinator->update($updateData);

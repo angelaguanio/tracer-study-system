@@ -14,8 +14,9 @@ import {
 
 export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [isResetChecked, setIsResetChecked] = useState(false); // Tagasubaybay sa checkbox status
 
-  // DYNAMIC YEAR OPTIONS (2017 to Current Year)
+  // DYNAMIC YEAR OPTIONS (2017 to 2026)
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - 2017 + 1 },
@@ -50,16 +51,30 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         status: editing.status || "active",
         password: "",
       });
+      setIsResetChecked(false); // Siguraduhing un-checked kapag nagpalit ng ine-edit
     } else {
       reset();
     }
   }, [editing]);
 
+  // MANAGING THE CHECKBOX TOGGLE
+  const handleCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    setIsResetChecked(checked);
+    
+    if (checked) {
+      // Kapag pinindot, awtomatikong ilalagay ang default password
+      setData("password", "CoordinatorCECT@2026");
+    } else {
+      // Kapag tinanggal ang tsek, lilinisin ang field
+      setData("password", "");
+    }
+  };
+
   // SUBMIT
   const submit = (e) => {
     e.preventDefault();
 
-    // Frontend validation for logical year gaps
     if (data.start_year && data.end_year && Number(data.start_year) > Number(data.end_year)) {
       toast.error("End year must be greater than or equal to Start year.");
       return;
@@ -261,31 +276,61 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
             )}
           </div>
 
-          {/* PASSWORD */}
-          <div className="space-y-1 pt-2">
-            <label className="text-sm font-medium text-gray-700">
-              {editing ? "Reset Password (Leave blank to keep current)" : "Password"}
-            </label>
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                value={data.password}
-                onChange={(e) => setData("password", e.target.value)}
-                required={!editing}
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+          {/* FIXED: PASSWORD INTERFACE WITH CHECKBOX FOR RESET */}
+          {editing ? (
+            <div className="space-y-2 pt-2 border-t border-gray-100">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="resetPasswordCheck"
+                  checked={isResetChecked}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                />
+                <label 
+                  htmlFor="resetPasswordCheck" 
+                  className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
+                >
+                  Reset coordinator password to default?
+                </label>
+              </div>
+
+              {/* LILITAW LAMANG ANG INPUT FIELD KAPAG NAKA-CHECK ANG BOX */}
+              {isResetChecked && (
+                <div className="space-y-1 animate-in fade-in duration-200">
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={data.password}
+                      disabled={true} // Naka-disable para hindi na pwedeng palitan ng Admin ang default text
+                      className="pr-10 bg-gray-50 text-gray-600 border-blue-200 font-mono font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-blue-600">
+                    This will restore their access using the corporate temporary credentials.
+                  </p>
+                </div>
+              )}
+              {errors.password && (
+                <p className="text-red-500 text-xs">{errors.password}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password}</p>
-            )}
-          </div>
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-xs mt-2">
+              <strong>Notice:</strong> A default password{" "}
+              <span className="font-mono bg-blue-100 px-1 py-0.5 rounded mx-1 font-bold">
+                CoordinatorCECT@2026
+              </span>{" "}
+              will be automatically generated. The coordinator will be forced to change it upon their first login.
+            </div>
+          )}
 
           {/* BUTTONS */}
           <div className="flex justify-end gap-3 pt-4">
