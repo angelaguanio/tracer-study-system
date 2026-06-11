@@ -73,8 +73,17 @@ export default function StudentProfileEdit() {
 
    const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Explicitly define the post parameters
+
+    const payload = {
+        ...data,
+        is_present: data.is_employed === 'yes',
+        company_name: data.company,
+        unemployment_reason: data.reason_unemployed,
+        employment_end_year: data.is_employed === 'yes' && data.employment_end_year === 'current'
+        ? null
+        : data.employment_end_year,
+    };
+     
     post(route('alumna.profile.update'), {
         forceFormData: true,
         preserveScroll: true,

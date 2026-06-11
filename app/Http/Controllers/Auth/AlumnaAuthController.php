@@ -75,8 +75,8 @@ class AlumnaAuthController extends Controller
             'location' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'monthly_salary' => ['nullable'], // Removed 'numeric' to handle commas manually
             'employment_start_year' => 'required_if:currently_employed,Yes|nullable|integer',
-            'employment_end_year' => 'required_if:is_current,false|nullable|integer',
-            'is_current' => 'required_if:currently_employed,Yes|boolean',
+            'employment_end_year' => 'required_if:is_present,false|nullable|integer',
+            'is_present' => 'required_if:currently_employed,Yes|boolean',
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one number, and one symbol (!@#$%^&*(),.?":{}|<>_)',
@@ -129,11 +129,11 @@ class AlumnaAuthController extends Controller
 
         // Handle employment_end_year and is_current properly
         if ($validation['currently_employed'] === 'Yes') {
-            $isCurrent = isset($validation['is_current']) && ($validation['is_current'] === true || $validation['is_current'] === 'true' || $validation['is_current'] === 1);
-            $employmentData['is_current'] = $isCurrent;
-            $employmentData['employment_end_year'] = $isCurrent ? null : (isset($validation['employment_end_year']) ? (int) $validation['employment_end_year'] : null);
+            $isPresent = isset($validation['is_present']) && ($validation['is_present'] === true || $validation['is_present'] === 'true' || $validation['is_current'] === 1);
+            $employmentData['is_present'] = $isPresent;
+            $employmentData['employment_end_year'] = $isPresent ? null : (isset($validation['employment_end_year']) ? (int) $validation['employment_end_year'] : null);
         } else {
-            $employmentData['is_current'] = false;
+            $employmentData['is_present'] = false;
             $employmentData['employment_end_year'] = null;
         }
 

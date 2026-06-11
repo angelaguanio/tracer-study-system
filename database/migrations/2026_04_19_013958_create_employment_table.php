@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->smallInteger('employment_start_year')->nullable();
             $table->smallInteger('employment_end_year')->nullable();
-            $table->boolean('is_current')->default(false);
+            $table->boolean('is_present')->default(false);
 
             $table->decimal('monthly_salary', 10, 2)->nullable();
             $table->text('unemployment_reason')->nullable();

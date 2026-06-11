@@ -22,7 +22,7 @@ class Employment extends Model
         'monthly_salary',
         'employment_start_year',
         'employment_end_year',
-        'is_current',
+        'is_present',
         'unemployment_reason'
     ];
 

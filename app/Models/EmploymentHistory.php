@@ -24,8 +24,9 @@ class EmploymentHistory extends Model
         'location',
         'monthly_salary',
         'unemployment_reason',
-        'employment_start_year', // Binalik sa totoong column name ng DB mo
-        'employment_end_year',   // Binalik sa totoong column name ng DB mo
+        'employment_start_year', 
+        'employment_end_year',   
+        'is_present',
     ];
 
     public function user()

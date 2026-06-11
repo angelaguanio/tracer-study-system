@@ -58,7 +58,7 @@ export default function AlumnaSignup() {
   monthly_salary: '',
   employment_start_year: '',
   employment_end_year: '',
-  is_current: true,
+  is_present: true,
   unemployment_reason: '',
 };
 
@@ -252,7 +252,8 @@ const handleSubmit = (e) => {
       ...data,
       start_year,
       end_year,
-      employment_end_year: data.is_current ? null : data.employment_end_year,
+      is_present: data.is_present,
+      employment_end_year: data.is_present ? null : data.employment_end_year,
     },
     onSuccess: () => {
       setData(INITIAL_FORM);
@@ -296,9 +297,9 @@ const handleSubmit = (e) => {
   const handleSelectChange = (name, value) => {
     if (name === 'employment_end_year') {
     if (value === 'current') {
-      setData({ ...data, is_current: true, employment_end_year: 'current' });
+      setData({ ...data, is_present: true, employment_end_year: 'current' });
     } else {
-      setData({ ...data, is_current: false, employment_end_year: value });
+      setData({ ...data, is_present: false, employment_end_year: value });
     }
     return;
   }
@@ -597,7 +598,7 @@ const handleSubmit = (e) => {
               </Select>
 
               <Select
-                value={data.is_current ? 'current' : data.employment_end_year}
+                value={data.is_present ? 'current' : data.employment_end_year}
                 onValueChange={(value) => handleSelectChange('employment_end_year', value)}>
                 <SelectTrigger className="w-full text-black border-gray-400 text-sm">
                   <SelectValue placeholder="End Year" />

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('unemployment_reason')->nullable();
            $table->string('employment_start_year')->nullable();
            $table->string('employment_end_year')->nullable();
-
+            $table->boolean('is_present')->default(false);
             $table->timestamps();
 
             // Index for "get all history for a user" queries ordered by time.

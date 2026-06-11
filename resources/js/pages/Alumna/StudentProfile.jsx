@@ -96,7 +96,14 @@ export default function StudentProfile() {
                        <div className="grid grid-cols-2 gap-y-6">
     <InfoItem label="Position" value={emp.position} />
     <InfoItem label="Location" value={emp.location} />
-    <InfoItem label="Start Year" value={emp.employment_start_year || '—'} />
+    
+    <div className="flex flex-col text-left">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</p>
+        <p className="text-[13px] font-bold text-[#343a40]">
+        {emp.employment_start_year || '—'} - {emp.is_present ? 'Present' : (emp.employment_end_year || '—')}
+    </p>
+    </div>
+
     <div>
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
                                 <p className="text-[13px] font-bold text-[#343a40]">
@@ -140,12 +147,13 @@ export default function StudentProfile() {
                                     const isUnemployed = history.currently_employed === 'No' || !history.company_name;
 
                                     return (
+                                        // year range logic sa employment history
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="py-2 pl-2 text-gray-600 font-medium">
-                                                {!isUnemployed && history.start_year ? (
-                                                    history.end_year ? `${history.start_year}-${history.end_year}` : `${history.start_year} - Present`
-                                                ) : !isUnemployed && history.employment_start_year ? (
-                                                    history.employment_end_year ? `${history.employment_start_year}-${history.employment_end_year}` : `${history.employment_start_year} - Present`
+                                                {!isUnemployed ? (
+                                                    history.is_present
+                                                   ? `${history.employment_start_year} - Present`
+                                                : `${history.employment_start_year} - ${history.employment_end_year === 'current' ? 'Present' : history.employment_end_year}`
                                                 ) : (
                                                     '—'
                                                 )}
