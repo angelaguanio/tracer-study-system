@@ -58,9 +58,9 @@ export default function NotificationBell() {
 
             case 'inquiry_received':
                 if (userRole === 'admin') {
-                    return route('admin.inquiries');
+                    return route('admin.inquiries.index');
                 } else if (userRole === 'coordinator') {
-                    return route('coordinator.inquiries');
+                    return route('coordinator.inquiries.index');
                 }
                 break;
 
@@ -72,7 +72,21 @@ export default function NotificationBell() {
 
             case 'announcement_approved':
             case 'announcement_rejected':
-                return route('coordinator.announcement.index');
+                return data.announcement_id
+                    ? route('coordinator.announcement.show', data.announcement_id)
+                    : route('coordinator.announcement.index');
+
+            case 'announcement_revision':
+                // Coordinator gets this — go directly to that announcement to edit it
+                return data.announcement_id
+                    ? route('coordinator.announcement.show', data.announcement_id)
+                    : route('coordinator.announcement.index');
+
+            case 'announcement_resubmitted':
+                // Admin gets this — go directly to that announcement to review it
+                return data.announcement_id
+                    ? route('admin.announcement.show', data.announcement_id)
+                    : route('admin.announcement.index');
 
             default:
                 // Default to dashboard
@@ -107,6 +121,8 @@ export default function NotificationBell() {
         announcement_approved: '✅',
         announcement_rejected: '❌',
         inquiry_received: '💬',
+        announcement_revision: '✏️',
+        announcement_resubmitted: '🔄', 
     };
 
     return (

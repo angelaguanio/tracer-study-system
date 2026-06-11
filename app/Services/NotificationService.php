@@ -110,4 +110,31 @@ class NotificationService
             targetUserId: $coordinatorId,
         );
     }
+
+        // ── Admin sent announcement back for revision ─────────────
+    public static function announcementNeedsRevision(int $announcementId, string $announcementTitle, int $coordinatorId, string $note): Notification
+    {
+        return self::send(
+            type: 'announcement_revision',
+            targetRole: 'coordinator_specific',
+            title: 'Announcement Needs Revision',
+            message: "Your announcement \"{$announcementTitle}\" needs revision. Note: {$note}",
+            data: ['announcement_id' => $announcementId, 'note' => $note],
+            triggeredBy: auth()->id(),
+            targetUserId: $coordinatorId,
+        );
+    }
+
+    // ── Coordinator resubmitted revised announcement ──────────
+    public static function announcementResubmitted(int $announcementId, string $announcementTitle, int $coordinatorId, string $coordinatorName): Notification
+    {
+        return self::send(
+            type: 'announcement_resubmitted',
+            targetRole: 'admin',
+            title: 'Announcement Resubmitted',
+            message: "{$coordinatorName} resubmitted the announcement \"{$announcementTitle}\" for review.",
+            data: ['announcement_id' => $announcementId, 'coordinator_id' => $coordinatorId],
+            triggeredBy: $coordinatorId,
+        );
+    }
 }

@@ -167,11 +167,11 @@ class AnnouncementController extends Controller
             'revision_note' => $request->note,
         ]);
 
-        NotificationService::announcementRejected(
+        NotificationService::announcementNeedsRevision(
             $announcement->id,
             $announcement->title,
-            $announcement->user_id,   // coordinator's user_id
-            'Announcement did not meet approval criteria.'  // default reason
+            $announcement->user_id,
+            $request->note        
         );
 
         return redirect()
@@ -282,19 +282,26 @@ class AnnouncementController extends Controller
             $imagePaths[] = Storage::url($path);
         }
 
+        // Capture original status BEFORE update() syncs it
+        $originalStatus = $announcement->status;
+
         // FINAL UPDATE
         $announcement->update([
             'title' => $request->title,
             'details' => $request->details,
-
-            // status reset
             'image' => $imagePaths,
             'status' => $newStatus,
-
-            // clear revision note
             'revision_note' => $newRevisionNote,
         ]);
 
+        if ($newStatus === 'pending' && $originalStatus === 'revise') {
+            NotificationService::announcementResubmitted(
+                $announcement->id,
+                $request->title,
+                auth()->id(),
+                auth()->user()->first_name . ' ' . auth()->user()->last_name
+            );
+        }
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Updated');
