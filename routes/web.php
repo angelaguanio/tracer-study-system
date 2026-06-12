@@ -75,12 +75,11 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/contact', [InquiriesController::class, 'alumniIndex'])->name('contact');
         Route::post('/contact', [InquiriesController::class, 'store'])->name('contact.store');
 
-         // Student profile
+        // Student profile
         Route::get('/profile/history/{id}', [StudentProfileController::class, 'showHistory'])->name('history.show');
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
-        Route::post('/profile/update', [StudentProfileController::class, 'update'])->name('profile.update');
+        Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
-
 
 
         //inquiries
