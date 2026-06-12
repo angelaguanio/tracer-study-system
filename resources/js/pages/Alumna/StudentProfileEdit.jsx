@@ -91,9 +91,7 @@ export default function StudentProfileEdit() {
         onSuccess: () => {
             console.log("Success!");
         },
-        onError: (errors) => {
-            console.log("Errors:", errors); // Dito mo makikita kung bakit nag-405 o validation error
-        },
+        onError: (errors) => console.error("Validation Errors:", errors),
     });
 };
 

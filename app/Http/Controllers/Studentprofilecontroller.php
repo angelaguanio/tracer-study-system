@@ -83,7 +83,10 @@ class StudentProfileController extends Controller
                 // Create History Entry if status is Yes and details changed
                 if ($isEmployed === 'Yes' && $oldEmp) {
                     $hasChanged = (
-                        $oldEmp->company_name !== $request->company);
+                       $oldEmp->company_name !== $request->company ||
+                       $oldEmp->employment_start_year != $request->employment_start_year ||
+                      ($request->employment_end_year === 'current' ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
+                    );
 
                     if ($hasChanged) {
                         $user->employmentHistory()->create([
@@ -115,6 +118,7 @@ class StudentProfileController extends Controller
                         'unemployment_reason' => $unemploymentReason,
                         'employment_start_year'=> $isEmployed === 'Yes' ? $request->employment_start_year : null,
                         'employment_end_year'  => $isEmployed === 'Yes' ? ($request->employment_end_year === 'current' ? null : $request->employment_end_year) : null,
+                        'is_present'           => ($isEmployed === 'Yes' && $request->employment_end_year === 'current') ? 1 : 0,
                     ]
                 );
             });
