@@ -27,7 +27,8 @@ class AlumnaSeeder extends Seeder
             'courses' => 'BSIT',
             'start_year' => '2017',
             'end_year' => '2018',
-            'semester' => '2nd Semester'
+            'semester' => '2nd Semester',
+            'department' => 'CECT'
 
         ]);
 
