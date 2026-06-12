@@ -151,9 +151,11 @@ export default function StudentProfile() {
                                         <tr key={history.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="py-2 pl-2 text-gray-600 font-medium">
                                                 {!isUnemployed ? (
-                                                    history.is_present
-                                                   ? `${history.employment_start_year} - Present`
-                                                : `${history.employment_start_year} - ${history.employment_end_year === 'current' ? 'Present' : history.employment_end_year}`
+                                                    (() => {
+                                                   const isCurrentlyPresent = history.is_present || history.employment_end_year === 'current';
+                                                   const endYear = isCurrentlyPresent ? 'Present' : (history.employment_end_year || '—');
+                                                   return `${history.employment_start_year || '—'} - ${endYear}`;
+                                                    })()
                                                 ) : (
                                                     '—'
                                                 )}

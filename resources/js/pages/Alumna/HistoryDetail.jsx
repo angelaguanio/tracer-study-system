@@ -15,8 +15,10 @@ export default function HistoryDetail({ history, profile }) {
         month: 'long', day: 'numeric', year: 'numeric',
     });
 
-    const startYear = history.employment_start_year ?? history.start_year ?? history.year_started ?? history.start ?? "—";
-    const endYear = history.employment_end_year ?? history.end_year ?? history.year_ended ?? history.end ?? "Present";
+    const startYear = history.employment_start_year ?? "—";
+    const rawEndYear = history.is_present ? "Present" : (history.employment_end_year || "—");
+    const endYear = (rawEndYear === "current" || rawEndYear === "Current") ? "Present" : rawEndYear;
+
     const employmentRange = `${startYear} - ${endYear}`;
 
     return (

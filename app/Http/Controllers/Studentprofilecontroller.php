@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
 use App\Models\EmploymentHistory;
 
 class StudentProfileController extends Controller
 {
-    public function show() 
+    public function show($id = null) 
     {
-        $user = Auth::user()->load(['employment', 'employmentHistory' => function($query) {
-            $query->latest(); 
-        }]);
+        $userId = $id ?? auth()->id();
+       $user = User::with(['employment', 'employmentHistory' => function($query) {
+            $query->orderBy('created_at', 'desc');
+        }])->findOrFail($userId);
         
         return Inertia::render('Alumna/StudentProfile', [
             'profile' => $user
@@ -95,8 +96,8 @@ class StudentProfileController extends Controller
                             'monthly_salary'     => $salaryValue,
                             'unemployment_reason'=> null,
                             'employment_start_year' => ($isEmployed === 'Yes') ? $request->employment_start_year : null,
-                            'employment_end_year'   => ($isEmployed === 'Yes') ? $request->employment_end_year : null,
-                           
+                            'employment_end_year' => ($request->employment_end_year === 'current') ? null : $request->employment_end_year,
+                            'is_present'           => ($request->employment_end_year === 'current') ? 1 : 0,
                         ]);
                     }
                 }

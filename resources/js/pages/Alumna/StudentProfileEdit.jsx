@@ -76,7 +76,8 @@ export default function StudentProfileEdit() {
 
     const payload = {
         ...data,
-        is_present: data.is_employed === 'yes',
+        is_employed: data.is_employed === 'yes' ? 'Yes' : 'No',
+        is_present: data.employment_end_year === 'current',
         company_name: data.company,
         unemployment_reason: data.reason_unemployed,
         employment_end_year: data.is_employed === 'yes' && data.employment_end_year === 'current'
@@ -84,14 +85,14 @@ export default function StudentProfileEdit() {
         : data.employment_end_year,
     };
      
-    post(route('alumna.profile.update'), {
+    post(route('profile.update'), {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log("Success!");
+            console.log("Profile updated successfully!");
         },
         onError: (errors) => {
-            console.log("Errors:", errors); // Check your browser console!
+            console.error("Validation Errors:", errors);
         },
     });
 };
