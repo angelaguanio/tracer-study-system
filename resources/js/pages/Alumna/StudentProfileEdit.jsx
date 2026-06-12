@@ -76,8 +76,7 @@ export default function StudentProfileEdit() {
 
     const payload = {
         ...data,
-        is_employed: data.is_employed === 'yes' ? 'Yes' : 'No',
-        is_present: data.employment_end_year === 'current',
+        is_present: data.is_employed === 'yes',
         company_name: data.company,
         unemployment_reason: data.reason_unemployed,
         employment_end_year: data.is_employed === 'yes' && data.employment_end_year === 'current'
@@ -85,14 +84,15 @@ export default function StudentProfileEdit() {
         : data.employment_end_year,
     };
      
-    post(route('profile.update'), {
+    post(route('alumna.profile.update'), {
+        data: payload,
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log("Profile updated successfully!");
+            console.log("Success!");
         },
         onError: (errors) => {
-            console.error("Validation Errors:", errors);
+            console.log("Errors:", errors); // Dito mo makikita kung bakit nag-405 o validation error
         },
     });
 };
