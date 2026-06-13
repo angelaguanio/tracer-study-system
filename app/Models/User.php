@@ -12,6 +12,10 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $casts = [
+        'password_changed' => 'boolean', // ← add this
+    ];
+
     /**
      * The attributes that are mass assignable.
      */
@@ -21,6 +25,7 @@ class User extends Authenticatable
         'middle_name', 
         'email', 
         'password', 
+        'password_changed',
         'user_role', 
         'start_year', 
         'end_year', 
@@ -32,6 +37,8 @@ class User extends Authenticatable
         'contact_number',
         'profile_picture'
     ];
+
+    
 
     /**
      * The attributes that should be hidden for serialization.

@@ -101,7 +101,7 @@ class AdminAlumniCoordinatorController extends Controller
             'start_year' => ['nullable', 'numeric'],
             'end_year'   => ['nullable', 'numeric'],
             'status'     => ['required', 'in:active,inactive'],
-            'password'   => ['nullable', 'string'], 
+            'reset_password' => ['nullable', 'boolean'],
         ]);
 
         $updateData = [
@@ -118,11 +118,9 @@ class AdminAlumniCoordinatorController extends Controller
 
         // FIXED RESET LOGIC: 
         // Sumasalo kung ang field ay may manual string OR kung ang checkbox mula sa frontend ay nagpasa ng `reset_password: true`
-        if ($request->filled('password') || $request->input('reset_password') === true) {
+       if ($request->boolean('reset_password')) {
             $updateData['password'] = Hash::make('CoordinatorCECT@2026');
-            
-            // Ibalik sa false para pilitin uli silang mag-update ng password pagkapasok
-            $updateData['password_changed'] = false; 
+            $updateData['password_changed'] = false;
         }
 
         $alumni_coordinator->update($updateData);

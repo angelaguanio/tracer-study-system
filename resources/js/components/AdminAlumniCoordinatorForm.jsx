@@ -33,7 +33,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     start_year: "",
     end_year: "",
     status: "active",
-    password: "",
+    reset_password: false,
   });
 
   // LOAD DATA WHEN EDITING
@@ -49,7 +49,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         start_year: editing.start_year ? editing.start_year.toString() : "",
         end_year: editing.end_year ? editing.end_year.toString() : "",
         status: editing.status || "active",
-        password: "",
+        reset_password: false,
       });
       setIsResetChecked(false); // Siguraduhing un-checked kapag nagpalit ng ine-edit
     } else {
@@ -59,17 +59,10 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
   // MANAGING THE CHECKBOX TOGGLE
   const handleCheckboxChange = (e) => {
-    const checked = e.target.checked;
-    setIsResetChecked(checked);
-    
-    if (checked) {
-      // Kapag pinindot, awtomatikong ilalagay ang default password
-      setData("password", "CoordinatorCECT@2026");
-    } else {
-      // Kapag tinanggal ang tsek, lilinisin ang field
-      setData("password", "");
-    }
-  };
+  const checked = e.target.checked;
+  setIsResetChecked(checked);
+  setData("reset_password", checked); // ← simple boolean flag
+};
 
   // SUBMIT
   const submit = (e) => {
@@ -301,16 +294,17 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      value={data.password}
-                      disabled={true} // Naka-disable para hindi na pwedeng palitan ng Admin ang default text
+                      value="CoordinatorCECT@2026"
+                      readOnly
                       className="pr-10 bg-gray-50 text-gray-600 border-blue-200 font-mono font-bold"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                      tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                   <p className="text-[11px] text-blue-600">
@@ -318,6 +312,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                   </p>
                 </div>
               )}
+
               {errors.password && (
                 <p className="text-red-500 text-xs">{errors.password}</p>
               )}

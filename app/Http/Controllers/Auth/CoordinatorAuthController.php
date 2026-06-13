@@ -13,6 +13,12 @@ class CoordinatorAuthController extends Controller
         return Inertia::render('Auth/CoordinatorLogin');
     }
 
+    public function showChangePassword() {
+        return Inertia::render('Auth/CoordinatorLogin', [
+            'forceChangePassword' => true,
+        ]);
+    }
+
     public function loginCoordinator(Request $request) {
         $credentials = $request->only('email', 'password');
 
@@ -21,10 +27,14 @@ class CoordinatorAuthController extends Controller
                 'email' => $credentials['email'],
                 'password' => $credentials['password'],
                 'user_role' => 'coordinator',
-                'status' => 'active', // 🔥 BLOCK INACTIVE
+                'status' => 'active',
             ])
         ) {
             $request->session()->regenerate();
+
+            if (!Auth::user()->password_changed) {
+                return redirect()->route('coordinator.show-change-password');
+            }
 
             return redirect()->intended('/coordinator/dashboard');
         }
@@ -40,5 +50,30 @@ class CoordinatorAuthController extends Controller
         $request->session()->regenerateToken();
 
         return Inertia::location(route('role.select'));
+    }
+
+    // change pass func
+    public function changePassword(Request $request) {
+        $request->validate([
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[!@#$%^&*()\,.?":{}|<>_]/',
+            ],
+            'password_confirmation' => ['required'],
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one number, and one symbol.',
+        ]);
+
+        $user = Auth::user();
+        $user->password         = bcrypt($request->password);
+        $user->password_changed = true;
+        $user->save();
+
+        return redirect('/coordinator/dashboard');
     }
 }
