@@ -12,7 +12,7 @@ export default function AuthLayout({ children }) {
                 style={{ backgroundImage: `url(${authBg})` }}
             >
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-emerald-400 via-teal-500 to-blue-600 opacity-85"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/60 via-teal-500 to-blue-600/60 opacity-85"></div>
                 
                 {/* Content Container */}
                 <div className="relative min-h-screen w-full">
