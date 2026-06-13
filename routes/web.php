@@ -280,6 +280,9 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     });
 
     Route::middleware('auth')->group(function () {
+        Route::post('/change-password', [CoordinatorAuthController::class, 'changePassword'])->name('change-password');
+        Route::get('/change-password', [CoordinatorAuthController::class, 'showChangePassword'])->name('show-change-password');
+        
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');

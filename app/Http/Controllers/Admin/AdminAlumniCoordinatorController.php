@@ -17,6 +17,13 @@ class AdminAlumniCoordinatorController extends Controller
         }
     }
 
+    private function checkCoordinator(User $user)
+    {
+        if ($user->user_role !== 'coordinator') {
+            abort(403);
+        }
+    }
+
     public function index()
     {
         $this->checkAdmin();
@@ -31,10 +38,7 @@ class AdminAlumniCoordinatorController extends Controller
     public function show(User $alumni_coordinator)
     {
         $this->checkAdmin();
-
-        if ($alumni_coordinator->user_role !== 'coordinator') {
-            abort(403);
-        }
+        $this->checkCoordinator($alumni_coordinator);
 
         return Inertia::render('Admin/AdminAlumniCoordinatorView', [
             'coordinator' => $alumni_coordinator,
@@ -46,50 +50,58 @@ class AdminAlumniCoordinatorController extends Controller
         $this->checkAdmin();
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string'],
-            'last_name'  => ['required', 'string'],
-            'middle_name'=> ['nullable', 'string'],
-            'email'      => ['required', 'email', 'unique:users,email'],
-            'password'   => ['required', 'min:6'],
-            'department' => ['required', 'string'],
-            'courses'    => ['required', 'string'],
+            'first_name'  => ['required', 'string'],
+            'last_name'   => ['required', 'string'],
+            'middle_name' => ['nullable', 'string'],
+            'email'       => ['required', 'email', 'unique:users,email'],
+            'department'  => ['required', 'string'],
+            'courses'     => ['nullable', 'string'],
+            'start_year'  => ['required', 'numeric'],
+            'end_year'    => ['required', 'numeric'],
+            'status'      => ['required', 'in:active,inactive'],
         ]);
+
+        // Permanenteng default password para sa lahat ng bagong gawa
+        $defaultPassword = 'CoordinatorCECT@2026'; 
 
         User::create([
-            'first_name'  => $validated['first_name'],
-            'last_name'   => $validated['last_name'],
-            'middle_name' => $validated['middle_name'] ?? null,
-            'email'       => $validated['email'],
-            'password'    => Hash::make($validated['password']),
-            'department'  => $validated['department'],
-            'courses'     => $validated['courses'],
-            'user_role'   => 'coordinator',
+            'first_name'       => $validated['first_name'],
+            'last_name'        => $validated['last_name'],
+            'middle_name'      => $validated['middle_name'] ?? null,
+            'email'            => $validated['email'],
+            'password'         => Hash::make($defaultPassword), 
+            'password_changed' => false, // Pipilitin mag-change password pagka-login
+            'department'       => $validated['department'],
+            'courses'          => $validated['courses'] ?? null,
+            'start_year'       => (int) $validated['start_year'],
+            'end_year'         => (int) $validated['end_year'],
+            'status'           => $validated['status'],
+            'user_role'        => 'coordinator',
         ]);
 
-  
         return back();
     }
 
     public function update(Request $request, User $alumni_coordinator)
     {
         $this->checkAdmin();
-
-        if ($alumni_coordinator->user_role !== 'coordinator') {
-            abort(403);
-        }
+        $this->checkCoordinator($alumni_coordinator);
 
         $validated = $request->validate([
-            'first_name' => ['required', 'string'],
-            'last_name'  => ['required', 'string'],
-            'middle_name'=> ['nullable', 'string'],
-            'email'      => [
+            'first_name'  => ['required', 'string'],
+            'last_name'   => ['required', 'string'],
+            'middle_name' => ['nullable', 'string'],
+            'email'       => [
                 'required',
                 'email',
-                'unique:users,email,' . $alumni_coordinator->id
+                'unique:users,email,' . $alumni_coordinator->id,
             ],
-            'department' => ['nullable', 'string'],
+            'department' => ['required', 'string'],
             'courses'    => ['nullable', 'string'],
-            'password'   => ['nullable', 'min:6'],
+            'start_year' => ['nullable', 'numeric'],
+            'end_year'   => ['nullable', 'numeric'],
+            'status'     => ['required', 'in:active,inactive'],
+            'reset_password' => ['nullable', 'boolean'],
         ]);
 
         $updateData = [
@@ -97,36 +109,29 @@ class AdminAlumniCoordinatorController extends Controller
             'last_name'   => $validated['last_name'],
             'middle_name' => $validated['middle_name'] ?? null,
             'email'       => $validated['email'],
+            'department'  => $validated['department'],
+            'courses'     => $validated['courses'] ?? $alumni_coordinator->courses,
+            'start_year'  => isset($validated['start_year']) ? (int) $validated['start_year'] : $alumni_coordinator->start_year,
+            'end_year'    => isset($validated['end_year']) ? (int) $validated['end_year'] : $alumni_coordinator->end_year,
+            'status'      => $validated['status'],
         ];
 
-        // Only update department if provided
-        if (!empty($validated['department'])) {
-            $updateData['department'] = $validated['department'];
-        }
-
-        // Only update courses if provided
-        if (!empty($validated['courses'])) {
-            $updateData['courses'] = $validated['courses'];
-        }
-
-        // Only update password if provided
-        if (!empty($validated['password'])) {
-            $updateData['password'] = Hash::make($validated['password']);
+        // FIXED RESET LOGIC: 
+        // Sumasalo kung ang field ay may manual string OR kung ang checkbox mula sa frontend ay nagpasa ng `reset_password: true`
+       if ($request->boolean('reset_password')) {
+            $updateData['password'] = Hash::make('CoordinatorCECT@2026');
+            $updateData['password_changed'] = false;
         }
 
         $alumni_coordinator->update($updateData);
 
-       
         return back();
     }
 
     public function destroy(User $alumni_coordinator)
     {
         $this->checkAdmin();
-
-        if ($alumni_coordinator->user_role !== 'coordinator') {
-            abort(403);
-        }
+        $this->checkCoordinator($alumni_coordinator);
 
         $alumni_coordinator->delete();
 
