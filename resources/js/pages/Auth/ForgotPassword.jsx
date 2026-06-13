@@ -34,9 +34,9 @@ export default function ForgotPassword({status}) {
                 <h2 className='mt-2 text-lg text-black font-bruno'>Alumni Connect</h2>
             </div>
             
-            <div className='justify-center w-full'>
-            <h2 className="text-xl font-bold text-gray-900 mt-4">Forgot Password</h2>
-            <p className="text-gray-600 text-start mt-2 text-sm">Enter your email to receive a reset link</p>
+            <div className='justify-center w-full py-3'>
+            <h2 className="text-2xl text-center font-bold text-gray-900 mt-4">Forgot Password</h2>
+            <p className="text-gray-600 text-center text-base">Enter your email to receive a reset link</p>
             </div>
 
             {/* Success Message */}
