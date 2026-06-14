@@ -94,7 +94,7 @@ export default function CoordinatorViewProfile({ user }) {
             <InfoItem icon={<IconPin />} label="Address" value={user.address} />
             <InfoItem icon={<IconGrad />} label="Course" value={user.courses} />
             <InfoItem label="Year Graduated" value={displayedYear} />
-            <InfoItem label="Semester Graduated" value={user.semester ?? user.semester_graduated} />
+            <DetailItem label="Semester Graduated" value={user.semester ?? user.semester_graduated ?? '—'} />
           </div>
         </section>
 
@@ -227,10 +227,8 @@ export default function CoordinatorViewProfile({ user }) {
                     <DetailItem label="Contact Number" value={user.contact_number} />
                     <DetailItem label="Address" value={user.address} />
                     <DetailItem label="Course" value={user.courses || '—'} />
-                    <DetailItem
-                       label="Year Graduated"
-                       value={user.end_year ?? user.year_graduated ?? '—'}/>
-                    <DetailItem label="Semester Graduated" value={user.semester ?? user.semester_graduated ?? '—'} />
+                    <DetailItem label="Year Graduated" value={(user.start_year && user.end_year) ? `${user.start_year} - ${user.end_year}` : (user.year_graduated || '—')}/>
+                    <DetailItem label="Semester Graduated" value={user.semester || user.semester_graduated || '—'} />
                   </div>
 
                 </div>

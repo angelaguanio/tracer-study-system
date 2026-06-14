@@ -57,8 +57,8 @@ export default function HistoryDetail({ history, profile }) {
                             <DetailItem label="Contact Number" value={profile.contact_number} />
                             <DetailItem label="Address" value={profile.address} />
                             <DetailItem label="Course" value={profile.courses ?? profile.course} />
-                            <DetailItem label="Year Graduated" value={profile.end_year ?? profile.year_graduated} />
-                            <DetailItem label="Semester Graduated" value={profile.semester ?? profile.semester_graduated} />
+                            <DetailItem label="Year Graduated" value={(profile.start_year && profile.end_year) ? `${profile.start_year} - ${profile.end_year}` : (profile.year_graduated ?? '—')}/>
+                            <DetailItem label="Semester Graduated" value={profile.semester ? `${profile.semester} Semester` : (profile.semester_graduated ?? '—')}/>
                         </div>
                     </div>
 
