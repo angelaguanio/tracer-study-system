@@ -22,6 +22,12 @@ export default function CoordinatorViewProfile({ user }) {
   const emp = user.employment;
   const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
 
+  // FOR YEAR
+  const displayedYear = (user.start_year && user.end_year)
+      ? `${user.start_year}-${user.end_year}`
+      : (user.year_graduated || '—');
+  const displayedSemester = user.semester || user.semester_graduated || '—';
+
   // Filter out records where student logged an unemployed layer state
   const validEmploymentHistory = user.employment_history?.filter(
     history => history.currently_employed === 'Yes' && history.company_name
@@ -87,7 +93,7 @@ export default function CoordinatorViewProfile({ user }) {
             <InfoItem icon={<IconPhone />} label="Contact Number" value={user.contact_number} />
             <InfoItem icon={<IconPin />} label="Address" value={user.address} />
             <InfoItem icon={<IconGrad />} label="Course" value={user.courses} />
-            <InfoItem label="Year Graduated" value={user.end_year ?? user.year_graduated} />
+            <InfoItem label="Year Graduated" value={displayedYear} />
             <InfoItem label="Semester Graduated" value={user.semester ?? user.semester_graduated} />
           </div>
         </section>
@@ -112,7 +118,16 @@ export default function CoordinatorViewProfile({ user }) {
               <div className="grid grid-cols-2 gap-x-6 gap-y-5">
                 <InfoItem label="Position" value={emp.position} />
                 <InfoItem label="Location" value={emp.location} />
-                <InfoItem label="Start Year" value={emp.employment_start_year || '—'} />
+                {/* <InfoItem label="Start Year" value={emp.employment_start_year || '—'} /> */}
+
+                <div>
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</span>
+                  <span className="text-[13px] font-bold text-[#343a40]">
+                   {emp.employment_start_year || '—'} - {emp.is_present ? 'Present' : (emp.employment_end_year || '—')} 
+                  </span>
+
+                </div>
+
                 <div>
                   <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</span>
                   <span className="text-[13px] font-bold text-[#343a40]">
@@ -151,7 +166,7 @@ export default function CoordinatorViewProfile({ user }) {
                   {validEmploymentHistory.map((history) => (
                     <tr key={history.id} className="hover:bg-gray-50/50 transition">
                       <td className="py-4 text-center text-gray-600 text-sm">
-                        {new Date(history.created_at).toLocaleDateString()}
+                        {history.employment_start_year || '—'} - {history.is_present ? 'Present' : (history.employment_end_year || '—')}
                       </td>
                       <td className="py-4 text-center font-bold text-gray-800 text-sm">
                         {history.company_name}
@@ -206,13 +221,18 @@ export default function CoordinatorViewProfile({ user }) {
                   <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
                     <IconUser /> Personal Details
                   </div>
-                  <div className="grid grid-cols-2 gap-8">
+                  <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                     <DetailItem label="Full Name" value={fullName} />
                     <DetailItem label="Email Address" value={user.email} />
                     <DetailItem label="Contact Number" value={user.contact_number} />
                     <DetailItem label="Address" value={user.address} />
-                    <DetailItem label="Course & Year" value={user.courses && user.year_graduated ? `${user.courses} (${user.year_graduated})` : null} />
+                    <DetailItem label="Course" value={user.courses || '—'} />
+                    <DetailItem
+                       label="Year Graduated"
+                       value={user.end_year ?? user.year_graduated ?? '—'}/>
+                    <DetailItem label="Semester Graduated" value={user.semester ?? user.semester_graduated ?? '—'} />
                   </div>
+
                 </div>
 
                 <hr className="border-gray-50" />
@@ -228,6 +248,10 @@ export default function CoordinatorViewProfile({ user }) {
                       <DetailItem label="Position" value={selectedHistory.position} />
                       <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
                       <DetailItem label="Location" value={selectedHistory.location} />
+                      <DetailItem
+                        label="Employment Range"
+                        value={`${selectedHistory.employment_start_year || '—'} - ${selectedHistory.is_present ? 'Present' : (selectedHistory.employment_end_year || '—')}`}
+                        />
                       <DetailItem
                         label="Monthly Salary"
                         value={selectedHistory.monthly_salary ? `₱${parseFloat(String(selectedHistory.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString()}` : '—'}
