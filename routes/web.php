@@ -106,7 +106,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     //guest onlyy
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
-        Route::post('/logout', [AdminAuthController::class, 'logoutAdmin'])->name('admin.logout');
+        Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
+
     });
 
     //AUTH ADMIN

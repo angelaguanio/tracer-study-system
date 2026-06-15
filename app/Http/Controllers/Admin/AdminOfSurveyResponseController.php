@@ -98,7 +98,28 @@ class AdminOfSurveyResponseController extends Controller
         $survey = Survey::with('sections.questions')->findOrFail($surveyId);
         
         // Eager load the employment relationships
-        $user = User::with(['employment', 'employmentHistory'])->findOrFail($userId);
+       $user = User::with([
+            'employment',
+            'employmentHistory' => function($query) {
+                // Ensure only the columns needed by the frontend are serialized,
+                // so Coordinator/Admin “Range” fields are present.
+                $query->select([
+                    'id',
+                    'user_id',
+                    'currently_employed',
+                    'company_name',
+                    'position',
+                    'employment_type',
+                    'location',
+                    'monthly_salary',
+                    'unemployment_reason',
+                    'employment_start_year',
+                    'employment_end_year',
+                    'is_present',
+                    'created_at',
+                ])->$query->orderBy('employment_start_year', 'desc');
+            }
+        ])->findOrFail($userId);
 
         $responses = Response::with(['question.section'])
             ->where('survey_id', $surveyId)
@@ -160,7 +181,29 @@ class AdminOfSurveyResponseController extends Controller
         $survey = Survey::findOrFail($surveyId);
         
         // Eager load the employment relationships here too
-        $user = User::with(['employment', 'employmentHistory'])->findOrFail($userId);
+        $user = User::with([
+            'employment',
+            'employmentHistory' => function($query) {
+                // Ensure only the columns needed by the frontend are serialized,
+                // so Coordinator/Admin “Range” fields are present.
+                $query->select([
+                    'id',
+                    'user_id',
+                    'currently_employed',
+                    'company_name',
+                    'position',
+                    'employment_type',
+                    'location',
+                    'monthly_salary',
+                    'unemployment_reason',
+                    'employment_start_year',
+                    'employment_end_year',
+                    'is_present',
+                    'created_at',
+                ])->$query->orderBy('employment_start_year', 'desc');
+            }
+        ])->findOrFail($userId);
+
 
         return Inertia::render('Admin/AdminSurveyResponseViewNotComplete', [
             'survey' => [

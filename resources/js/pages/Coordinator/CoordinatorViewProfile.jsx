@@ -145,28 +145,25 @@ export default function CoordinatorViewProfile({ user }) {
         </section>
 
         {/* 3. EMPLOYMENT HISTORY LOGS CARD */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-6">
-          <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-            <IconHistory /> Employment History
-          </div>
-
+        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+           <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconHistory /> Employment History</div>
           {validEmploymentHistory.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
+            <div className="overflow-y-auto border border-gray-100 rounded-lg" style={{ maxHeight: '300px' }}>
+               <table className="w-full text-left text-sm table-fixed">
+                <thead className="sticky top-0 bg-white shadow-sm z-10">
                   <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                    <th className="pb-3 font-bold text-center">Date Logged</th>
-                    <th className="pb-3 font-bold text-center">Company</th>
-                    <th className="pb-3 font-bold text-center">Position</th>
-                    <th className="pb-3 font-bold text-center">Status</th>
-                    <th className="pb-3 font-bold text-center">Action</th>
+                    <th className="py-3 pl-4 w-[20%]">Range</th>
+                    <th className="py-3 text-center w-[25%]">Company</th>
+                    <th className="py-3 text-center w-[20%]">Position</th>
+                    <th className="py-3 text-center w-[15%]">Status</th>
+                    <th className="py-3 text-center pr-4 w-[20%]">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                 <tbody className="divide-y divide-gray-50">
                   {validEmploymentHistory.map((history) => (
                     <tr key={history.id} className="hover:bg-gray-50/50 transition">
                       <td className="py-4 text-center text-gray-600 text-sm">
-                        {history.employment_start_year || '—'} - {history.is_present ? 'Present' : (history.employment_end_year || '—')}
+                       {history.employment_start_year ? `${history.employment_start_year} - ${history.is_present ? 'Present' : (history.employment_end_year || '—')}` : '—'  }
                       </td>
                       <td className="py-4 text-center font-bold text-gray-800 text-sm">
                         {history.company_name}
@@ -183,7 +180,7 @@ export default function CoordinatorViewProfile({ user }) {
                         <button
                           type="button"
                           onClick={() => handleViewDetails(history)}
-                          className="text-blue-600 hover:underline text-sm font-medium cursor-pointer"
+                           className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
                         >
                           View Details
                         </button>
