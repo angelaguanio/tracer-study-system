@@ -19,10 +19,12 @@ class Survey extends Model
         'status',
         'is_tracer_study',
         'created_by',
+        'archived_at',
     ];
 
     protected $casts = [
-        'deleted_at' => 'datetime',
+        'deleted_at'  => 'datetime',
+        'archived_at' => 'datetime',
         'is_tracer_study' => 'boolean',
     ];
 
@@ -34,6 +36,23 @@ class Survey extends Model
     public function scopeTracerStudy($query)
     {
         return $query->where('is_tracer_study', true);
+    }
+
+    /** Surveys not archived */
+    public function scopeNotArchived($query)
+    {
+        return $query->whereNull('archived_at');
+    }
+
+    /** Only archived surveys */
+    public function scopeArchived($query)
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
     }
 
     public function creator(): BelongsTo

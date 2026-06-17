@@ -37,7 +37,7 @@ class InquiriesController extends Controller
         $validated = $request->validate([
             'title' => 'required|string',
             'department' => 'required|string',
-            'alumni_coord' => 'nullable|integer',
+            'alumni_coord' => 'required_unless:department,admin|nullable|integer',
             'subject' => 'required|string|max:50',
             'message' => 'required|string|min:10',
         ]);

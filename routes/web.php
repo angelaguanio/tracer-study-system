@@ -244,6 +244,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
         Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
         Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+        Route::patch('/surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
+        Route::patch('/surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
         Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
         Route::get('/surveys/{survey}/analytics/data', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics.data');
 
@@ -346,6 +348,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
         Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
         Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+        Route::patch('/surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
+        Route::patch('/surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
         Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
 
         // Sections

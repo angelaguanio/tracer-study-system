@@ -22,8 +22,9 @@ export default function AuthLayout({ children }) {
                         <div className="flex w-full max-w-md flex-col items-center text-center lg:w-1/2 lg:max-w-none lg:items-start lg:text-left">
                             <h1 className="font-inria text-4xl font-bold tracking-widest text-white drop-shadow-lg sm:text-5xl lg:text-7xl">
                                 GRADUATE <br />
-                                TRACER <br />
-                                STUDY
+                                ACCESS & <br />
+                                TRACKING <br />
+                                ENVIRONMENT
                             </h1>
 
                             <h3 className="mt-4 font-inria text-base font-bold tracking-wide text-white drop-shadow-lg sm:text-lg lg:text-2xl">

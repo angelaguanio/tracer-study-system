@@ -39,6 +39,10 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [] }) {
                     {new Date(survey.created_at).toLocaleDateString()}
                   </span>
                 </div>
+
+                <p className="text-xs text-gray-400 mt-1">
+                  Created by: <span className="font-medium text-gray-600">{survey.created_by}</span>
+                </p>
               </div>
 
              <button

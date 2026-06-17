@@ -16,36 +16,34 @@ export default function AlumnaQuestionnaire({
   const justCompleted = props.flash?.justCompleted;
   const [selectedTab, setSelectedTab] = useState('tracer-study');
 
-  // Just finished this session → show success modal
-  if (justCompleted) {
-    return (
-      <div className='flex items-center justify-center w-full py-10'>
-        <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
-          <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
-            <div className='space-y-4'>
-              <div className='flex flex-row gap-2'>
-                <PartyPopper />
-                <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
-              </div>
-              <div>
-                <h1 className='text-3xl'>Survey Completed!</h1>
-                <p>Your response has been recorded.</p>
-              </div>
+  // Just finished this session → show success card inside the normal tab layout
+  const renderJustCompleted = () => (
+    <div className='flex items-center justify-center w-full py-10'>
+      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
+          <div className='space-y-4'>
+            <div className='flex flex-row gap-2'>
+              <PartyPopper />
+              <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
             </div>
-          </CardHeader>
-          <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
-            <CircleCheck size={64} color='green' />
-            <div className='space-y-2'>
-              <p className='text-lg font-medium'>Thank you for completing the survey!</p>
-              <p className='text-sm text-gray-500'>
-                Your feedback helps us improve our programs for future students.
-              </p>
+            <div>
+              <h1 className='text-3xl'>Survey Completed!</h1>
+              <p>Your response has been recorded.</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+          <CircleCheck size={64} color='green' />
+          <div className='space-y-2'>
+            <p className='text-lg font-medium'>Thank you for completing the survey!</p>
+            <p className='text-sm text-gray-500'>
+              Your feedback helps us improve our programs for future students.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   const renderTracerStudyTab = () => {
     // Tracer study already completed
@@ -289,7 +287,12 @@ export default function AlumnaQuestionnaire({
       </div>
 
       {/* Tab Content */}
-      {selectedTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
+      {justCompleted
+        ? renderJustCompleted()
+        : selectedTab === 'tracer-study'
+          ? renderTracerStudyTab()
+          : renderCectSurveysTab()
+      }
     </div>
   );
 }

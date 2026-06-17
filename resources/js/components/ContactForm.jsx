@@ -50,6 +50,11 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
   function handleSubmit(e) {
     e.preventDefault();
 
+    // If a department is selected and it's not admin, coordinator is required
+    if (data.department && data.department !== 'admin' && !data.alumni_coord) {
+      return;
+    }
+
     post(route('alumna.contact.store'), {
         onSuccess: () => {
             toast.success('Message sent successfully!', {
@@ -155,13 +160,22 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
               
               {/* coord */}
               <div className='flex flex-col gap-3 w-1/2 px-3 py-2'>
-              <Label>Alumni Coordinator</Label>
+              <Label>
+                Alumni Coordinator
+                {data.department && data.department !== 'admin' && (
+                  <span className='text-red-500 ml-1'>*</span>
+                )}
+              </Label>
                 <Select 
                   onValueChange={(val) => setData('alumni_coord', val)}
                   disabled={!data.department || data.department === 'admin'}
                   value={data.department === 'admin' ? '' : data.alumni_coord}
                 >
-                  <SelectTrigger className="w-full text-black border-gray-400 text-sm bg-white">
+                  <SelectTrigger className={`w-full text-black text-sm bg-white ${
+                    data.department && data.department !== 'admin' && !data.alumni_coord
+                      ? 'border-red-400'
+                      : 'border-gray-400'
+                  }`}>
                     <SelectValue placeholder={
                       !data.department 
                         ? "Select department first" 
@@ -188,6 +202,12 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+                {data.department && data.department !== 'admin' && !data.alumni_coord && (
+                  <p className='text-red-500 text-xs'>Please select an alumni coordinator.</p>
+                )}
+                {errors.alumni_coord && (
+                  <p className='text-red-500 text-xs'>{errors.alumni_coord}</p>
+                )}
                 </div>
               </div>
 
@@ -218,7 +238,12 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
         </CardContent>
 
         <CardFooter className='py-4'>
-          <Button type='submit' size='login2' variant='blue' disabled={processing}>Submit</Button>
+          <Button 
+            type='submit' 
+            size='login2' 
+            variant='blue' 
+            disabled={processing || (data.department && data.department !== 'admin' && !data.alumni_coord)}
+          >Submit</Button>
         </CardFooter>
         </form>
     </Card>

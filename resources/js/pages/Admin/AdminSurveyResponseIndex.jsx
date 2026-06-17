@@ -54,6 +54,10 @@ export default function AdminSurveyResponseIndex({ surveys = [] }) {
                   </span>
 
                 </div>
+
+                <p className="text-xs text-gray-400 mt-1">
+                  Created by: <span className="font-medium text-gray-600">{survey.created_by}</span>
+                </p>
               </div>
 
               {/* BUTTON */}

@@ -15,7 +15,7 @@ const TYPE_MAP = {
     subheading: { label: "Subheading"},
 };
 
-export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast }) {
+export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast, hasResponses = false }) {
     const handleDelete = () => {
         // Determine route prefix from current route name
         const currentRoute = route().current();
@@ -49,6 +49,7 @@ export default function QuestionItem({ question, onEdit, onReorder, isFirst, isL
                         <Button size="icon" variant="ghost" className="h-7 w-7 text-[#2859C5]" onClick={() => onEdit(question)}>
                             <Pencil size={14} />
                         </Button>
+                        {/* Subheadings can always be deleted — they hold no response data */}
                         <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={handleDelete}>
                             <Trash2 size={14} />
                         </Button>
@@ -68,9 +69,16 @@ export default function QuestionItem({ question, onEdit, onReorder, isFirst, isL
                     <Button size="icon" variant="ghost" className="h-7 w-7 text-[#2859C5]" onClick={() => onEdit(question)}>
                         <Pencil size={14} />
                     </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={handleDelete}>
-                        <Trash2 size={14} />
-                    </Button>
+                    {/* Lock delete when responses exist */}
+                    {hasResponses ? (
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-gray-300 cursor-not-allowed" disabled title="Cannot delete: responses already exist">
+                            <Trash2 size={14} />
+                        </Button>
+                    ) : (
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={handleDelete}>
+                            <Trash2 size={14} />
+                        </Button>
+                    )}
                 </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
