@@ -47,7 +47,9 @@ class AdminAlumniController extends Controller
                 'id' => $user->id,
                 'name' => $user->first_name . ' ' . $user->last_name,
                 'course' => $user->courses,
-                'year' => $user->end_year,
+                'year' => ($user->start_year && $user->end_year)
+                           ? "{$user->start_year}-{$user->end_year}"
+                           : ($user->end_year ?? 'N/A'),
                 'avatar' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
                 'email' => $user->email,
             ];

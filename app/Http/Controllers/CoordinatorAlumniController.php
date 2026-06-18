@@ -32,7 +32,9 @@ class CoordinatorAlumniController extends Controller
             'id' => $user->id,
             'name' => "{$user->first_name} {$user->last_name}",
             'course' => $user->courses,
-            'year' => $user->year_graduated,
+            'year' => ($user->start_year && $user->end_year)
+                       ? "{$user->start_year}-{$user->end_year}"
+                       : ($user->end_year ?? 'N/A'),
             'avatar' => $user->avatar_url,
             'survey_status' => 'Not Completed', 
         ]);
