@@ -73,7 +73,9 @@ class AdminOfSurveyResponseController extends Controller
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'status' => $hasResponse ? 'completed' : 'incomplete',
                 'course' => $user->courses ?? '-',
-                'year' => $user->year_graduated ?? '-',
+                'year' => ($user->start_year && $user->end_year) 
+                           ? "{$user->start_year}-{$user->end_year}" 
+                           : ($user->end_year ?? 'N/A'),
                 'avatar' => $user->profile_picture 
                     ? asset('storage/' . $user->profile_picture) 
                     : null,
