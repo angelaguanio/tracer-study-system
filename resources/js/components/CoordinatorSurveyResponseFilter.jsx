@@ -15,6 +15,11 @@ export default function CoordinatorSurveyResponseFilter({
   course,
   setCourse,
 }) {
+  const latestYear = new Date().getFullYear() - 1;
+  const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+    const s = latestYear - i;
+    return `${s}-${s + 1}`;
+  });
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -29,7 +34,7 @@ export default function CoordinatorSurveyResponseFilter({
           <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent >
             <SelectItem value="all">All Courses</SelectItem>
             <SelectItem value="BSIT">BSIT</SelectItem>
             <SelectItem value="BSCpE">BSCpE</SelectItem>
@@ -41,9 +46,9 @@ export default function CoordinatorSurveyResponseFilter({
           <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-48">
             <SelectItem value="all">All Years</SelectItem>
-            {["2017-2018", "2018-2019", "2019-2020", "2020-2021", "2021-2022"].map((y) => (
+            {yearOptions.map((y) => (
               <SelectItem key={y} value={y}>
                 {y}
               </SelectItem>

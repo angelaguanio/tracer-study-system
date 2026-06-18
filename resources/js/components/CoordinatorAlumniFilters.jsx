@@ -15,6 +15,11 @@ export default function CoordinatorAlumniFilters({
   course,
   setCourse,
 }) {
+  const latestYear = new Date().getFullYear() - 1; // last completed academic year
+  const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+    const s = latestYear - i;
+    return `${s}-${s + 1}`;
+  });
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow mb-4">
       
@@ -27,20 +32,21 @@ export default function CoordinatorAlumniFilters({
       />
 
       {/* FILTERS */}
-      <div className="flex gap-2 w-full md:w-auto">
+      <div className="flex gap-2 w-full md:w-auto ">
         <Select onValueChange={setYear} value={year}>
           <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Years</SelectItem>
-            {["2017-2018", "2018-2019", "2019-2020", "2020-2021" , "2021-2022"].map((y) => (
-              <SelectItem key={y} value={y.toString()}>
+          <SelectContent className="max-h-48">
+            <SelectItem value="all"  className="h-12">All Years</SelectItem>
+            {yearOptions.map((y) => (
+              <SelectItem key={y} value={y}>
                 {y}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         <Select onValueChange={setCourse} value={course}>
           <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="All Courses" />

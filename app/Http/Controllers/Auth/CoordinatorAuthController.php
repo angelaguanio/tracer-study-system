@@ -33,10 +33,11 @@ class CoordinatorAuthController extends Controller
             $request->session()->regenerate();
 
             if (!Auth::user()->password_changed) {
-                return redirect()->route('coordinator.show-change-password');
+                // Full page redirect so browser picks up the regenerated CSRF token
+                return Inertia::location(route('coordinator.show-change-password'));
             }
 
-            return redirect()->intended('/coordinator/dashboard');
+            return Inertia::location('/coordinator/dashboard');
         }
 
         return back()->withErrors([
@@ -74,6 +75,6 @@ class CoordinatorAuthController extends Controller
         $user->password_changed = true;
         $user->save();
 
-        return redirect('/coordinator/dashboard');
+        return Inertia::location('/coordinator/dashboard');
     }
 }
