@@ -125,8 +125,9 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
                     </span>
                   </div>
 
+                  {/* 💡 ATTRIBUTE ALIAS FIX HERE: */}
                   <div className="w-[20%] text-gray-600 font-medium flex items-center justify-center">
-                    {item.year}
+                    {item.year ?? "—"}
                   </div>
 
                   <div className="w-[20%] flex items-center justify-center">

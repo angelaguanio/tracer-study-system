@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap');
 
 @import 'tailwindcss';
+@plugin 'tailwindcss-animate';
 
 @plugin 'tailwindcss-animate';
 
@@ -96,6 +97,8 @@
         border-color: var(--color-gray-200, currentColor);
     }
 }
+
+
 
 :root {
     --background:

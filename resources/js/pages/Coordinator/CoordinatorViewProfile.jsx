@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CoordinatorLayout from "@/layouts/coord-layout"; 
-import { Head, router } from "@inertiajs/react";
+import { Head, router, Link } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -8,7 +8,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 
-// Icons
+// Icons matching your strict layout styling
 const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
 const IconMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>;
 const IconPhone = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16"><path d="M22 16.9v3a2 2 0 01-2.2 2A19.8 19.8 0 013.1 4.2 2 2 0 015.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2L9.1 9.9a16 16 0 006.9 6.9l1.3-1.3a2 2 0 012-.5c.9.3 1.9.6 2.9.7a2 2 0 011.8 2z"/></svg>;
@@ -22,7 +22,18 @@ export default function CoordinatorViewProfile({ user }) {
   const emp = user.employment;
   const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
 
-  // History states for the modal
+  // FOR YEAR
+  const displayedYear = (user.start_year && user.end_year)
+      ? `${user.start_year}-${user.end_year}`
+      : (user.year_graduated || '—');
+  const displayedSemester = user.semester || user.semester_graduated || '—';
+
+  // Filter out records where student logged an unemployed layer state
+  const validEmploymentHistory = user.employment_history?.filter(
+    history => history.currently_employed === 'Yes' && history.company_name
+  ) || [];
+
+  // Modal handlers
   const [selectedHistory, setSelectedHistory] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
@@ -31,145 +42,148 @@ export default function CoordinatorViewProfile({ user }) {
     setDetailsModalOpen(true);
   };
 
-  // RESOLVE IMAGE PATH URL (Prepend /storage/ if it's a local upload relative path)
+  // Image Source Prepend Logic
   const rawImage = user.profile_picture;
   const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
     ? rawImage
     : rawImage 
       ? `/storage/${rawImage}` 
-      : `https://ui-avatars.com/api/?name=${user.first_name}&background=70CAFF&color=fff`;
+      : null;
 
   return (
     <>
       <Head title={`Alumna Profile - ${fullName}`} />
-      <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
+      <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5 pb-12">
         
-        {/* Back Button */}
-        <div className="flex justify-start">
+        {/* TOP ACTION BAR */}
+        <div className="flex justify-between items-center">
           <Button
             onClick={() => router.visit(route("coordinator.alumni.index"))}
             variant="outline"
-            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2"
+            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2 border-gray-200 text-gray-500 hover:text-gray-700"
           >
             <ArrowLeft size={14} /> BACK TO LIST
           </Button>
         </div>
 
-        {/* Profile Card */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-          <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-            <IconUser /> ALUMNA INFORMATION
+        {/* 1. PERSONAL INFORMATION CARD */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-6">
+          <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+            <IconUser /> Personal Information
           </div>
 
-          <div className="flex items-center gap-5 mb-8">
-            <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-gray-200 shrink-0">
-              <img 
-                src={imageSrc} 
-                alt={fullName}
-                className="w-full h-full object-cover" 
-                onError={(e) => {
-                  // Fallback to UI-Avatars if loading fails
-                  e.target.src = `https://ui-avatars.com/api/?name=${user.first_name}&background=70CAFF&color=fff`;
-                }}
-              />
+          <div className="flex items-center gap-5 mb-4">
+            <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
+              {imageSrc ? (
+                <img src={imageSrc} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">
+                  {user.first_name ? user.first_name[0].toUpperCase() : 'U'}
+                </div>
+              )}
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-[#343a40] leading-tight">{fullName}</h3>
-              <p className="text-gray-500 text-sm font-medium">{user.courses} ({user.year_graduated})</p>
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight lowercase first-letter:uppercase capitalize">{fullName}</h3>
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{user.courses || '—'}</p>
             </div>
           </div>
 
-          <hr className="border-gray-100 mb-6" />
-
-          <div className="grid grid-cols-2 gap-y-6">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5 pt-2 border-t border-gray-50">
             <InfoItem icon={<IconMail />} label="Email" value={user.email} />
             <InfoItem icon={<IconPhone />} label="Contact Number" value={user.contact_number} />
             <InfoItem icon={<IconPin />} label="Address" value={user.address} />
-            <InfoItem icon={<IconGrad />} label="Course & Year" value={`${user.courses} (${user.year_graduated})`} />
+            <InfoItem icon={<IconGrad />} label="Course" value={user.courses} />
+            <InfoItem label="Year Graduated" value={displayedYear} />
+            <DetailItem label="Semester Graduated" value={user.semester ?? user.semester_graduated ?? '—'} />
           </div>
         </section>
 
-        {/* Employment Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-           <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-                 <IconBriefcase /> CURRENT EMPLOYMENT
-              </div>
-              <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-gray-400'}`}>
-                 {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
-              </span>
-           </div>
-
-           {emp?.currently_employed === 'Yes' ? (
-              <div className="mt-4">
-                 <div className="flex items-center gap-2 mb-6">
-                    <IconBuilding />
-                    <span className="font-bold text-gray-800 text-base">{emp.company_name}</span>
-                    <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>
-                 </div>
-                 <div className="grid grid-cols-2 gap-y-6">
-                    <InfoItem label="Position" value={emp.position} />
-                    <InfoItem label="Location" value={emp.location} />
-                    <div>
-                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
-                       <p className="text-[13px] font-bold text-[#343a40]">
-                          ₱{emp?.monthly_salary ?
-                             parseFloat(emp.monthly_salary.replace(/[^\d.]/g, ''))?.toLocaleString('en-PH', { minimumFractionDigits: 0 }) ?? '0'
-                             : '0'}
-                       </p>
-                    </div>
-                 </div>
-              </div>
-           ) : (
-              <div className="py-4">
-                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Reason for Unemployment</p>
-                 <p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'looking for a job.'}</p>
-              </div>
-           )}
-        </section>
-
-        {/* Employment History Logs Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
-          <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
-            <IconHistory /> Employment History Logs
+        {/* 2. CURRENT EMPLOYMENT STATUS CARD */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8 flex flex-col gap-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+              <IconBriefcase /> Current Employment Status
+            </div>
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${emp?.currently_employed === 'Yes' ? 'bg-[#008542] text-white' : 'bg-gray-400 text-white'}`}>
+              {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+            </span>
           </div>
 
-          {user.employment_history?.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
+          {emp?.currently_employed === 'Yes' ? (
+            <div className="flex flex-col gap-5 pt-2">
+              <div className="flex items-center gap-2 font-bold text-gray-800 text-[15px]">
+                <IconBuilding /> {emp.company_name} 
+                <span className="text-gray-400 text-xs font-normal">({emp.employment_type})</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+                <InfoItem label="Position" value={emp.position} />
+                <InfoItem label="Location" value={emp.location} />
+                {/* <InfoItem label="Start Year" value={emp.employment_start_year || '—'} /> */}
+
+                <div>
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</span>
+                  <span className="text-[13px] font-bold text-[#343a40]">
+                   {emp.employment_start_year || '—'} - {emp.is_present ? 'Present' : (emp.employment_end_year || '—')} 
+                  </span>
+
+                </div>
+
+                <div>
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</span>
+                  <span className="text-[13px] font-bold text-[#343a40]">
+                    ₱{emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '0'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-2">
+              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Reason for Unemployment</span>
+              <span className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'Career Break'}</span>
+            </div>
+          )}
+        </section>
+
+        {/* 3. EMPLOYMENT HISTORY LOGS CARD */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+           <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconHistory /> Employment History</div>
+          {validEmploymentHistory.length > 0 ? (
+            <div className="overflow-y-auto border border-gray-100 rounded-lg" style={{ maxHeight: '300px' }}>
+               <table className="w-full text-left text-sm table-fixed">
+                <thead className="sticky top-0 bg-white shadow-sm z-10">
                   <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                    <th className="pb-3 font-bold text-center">Date Logged</th>
-                    <th className="pb-3 font-bold text-center">Company</th>
-                    <th className="pb-3 font-bold text-center">Position</th>
-                    <th className="pb-3 font-bold text-center">Status</th>
-                    <th className="pb-3 font-bold text-center">Action</th>
+                    <th className="py-3 pl-4 w-[20%]">Range</th>
+                    <th className="py-3 text-center w-[25%]">Company</th>
+                    <th className="py-3 text-center w-[20%]">Position</th>
+                    <th className="py-3 text-center w-[15%]">Status</th>
+                    <th className="py-3 text-center pr-4 w-[20%]">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {user.employment_history.map((history) => (
-                    <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 text-gray-600 text-center">
-                        {new Date(history.created_at).toLocaleDateString()}
+                 <tbody className="divide-y divide-gray-50">
+                  {validEmploymentHistory.map((history) => (
+                    <tr key={history.id} className="hover:bg-gray-50/50 transition">
+                      <td className="py-4 text-center text-gray-600 text-sm">
+                       {history.employment_start_year ? `${history.employment_start_year} - ${history.is_present ? 'Present' : (history.employment_end_year || '—')}` : '—'  }
                       </td>
-                      <td className="py-4 font-bold text-gray-800 text-center">
-                        {history.company_name || '—'}
+                      <td className="py-4 text-center font-bold text-gray-800 text-sm">
+                        {history.company_name}
                       </td>
-                      <td className="py-4 text-gray-600 text-center">{history.position || '—'}</td>
+                      <td className="py-4 text-center text-gray-600 text-sm">
+                        {history.position || '—'}
+                      </td>
                       <td className="py-4 text-center">
-                        <span className={`text-[10px] font-bold px-3 py-2 rounded-xl ${history.currently_employed === 'Yes' ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-100'}`}>
-                          {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
+                        <span className="px-2 py-1 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">
+                          EMPLOYED
                         </span>
                       </td>
                       <td className="py-4 text-center">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-[10px] font-bold text-blue-400 border-blue-300 hover:bg-green-50"
+                        <button
+                          type="button"
                           onClick={() => handleViewDetails(history)}
+                           className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
                         >
                           View Details
-                        </Button>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -183,11 +197,11 @@ export default function CoordinatorViewProfile({ user }) {
           )}
         </section>
 
-        {/* Employment History Details Modal */}
+        {/* DETAILS POPUP MODAL */}
         <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
           <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-white">
             <div className="bg-gray-50 px-8 py-6 border-b border-gray-100 flex items-center justify-between ">
-              <div className="flex items-center gap-3 ">
+              <div className="flex items-center gap-3">
                 <div className="text-[#008542]"><IconHistory /></div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-800 leading-tight">Archived Profile Record</h2>
@@ -200,56 +214,44 @@ export default function CoordinatorViewProfile({ user }) {
 
             {selectedHistory && (
               <div className="px-8 py-4 space-y-10 max-h-[60vh] overflow-y-auto inquiry-scrollbar">
-                {/* Personal Information */}
                 <div>
                   <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
                     <IconUser /> Personal Details
                   </div>
-                  <div className="grid grid-cols-2 gap-8">
+                  <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                     <DetailItem label="Full Name" value={fullName} />
                     <DetailItem label="Email Address" value={user.email} />
                     <DetailItem label="Contact Number" value={user.contact_number} />
                     <DetailItem label="Address" value={user.address} />
-                    <DetailItem
-                      label="Course & Year"
-                      value={user.courses && user.year_graduated
-                        ? `${user.courses} (${user.year_graduated})`
-                        : null
-                      }
-                    />
+                    <DetailItem label="Course" value={user.courses || '—'} />
+                    <DetailItem label="Year Graduated" value={(user.start_year && user.end_year) ? `${user.start_year} - ${user.end_year}` : (user.year_graduated || '—')}/>
+                    <DetailItem label="Semester Graduated" value={user.semester || user.semester_graduated || '—'} />
                   </div>
+
                 </div>
 
                 <hr className="border-gray-50" />
 
-                {/* Employment Status */}
                 <div>
                   <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
                     <IconBriefcase /> Employment Status
                   </div>
                   <div className="space-y-8">
-                    <DetailItem
-                      label="Status"
-                      value={selectedHistory.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
-                      isStatus={true}
-                    />
-
-                    {selectedHistory.currently_employed === 'Yes' ? (
-                      <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-50">
-                        <DetailItem label="Company Name" value={selectedHistory.company_name} />
-                        <DetailItem label="Position" value={selectedHistory.position} />
-                        <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
-                        <DetailItem label="Location" value={selectedHistory.location} />
-                        <DetailItem
-                          label="Monthly Salary"
-                          value={selectedHistory.monthly_salary ? `₱${parseFloat(selectedHistory.monthly_salary.replace(/[^\d.]/g, '')).toLocaleString()}` : '—'}
+                    <DetailItem label="Status" value="Employed" isStatus={true} />
+                    <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                      <DetailItem label="Company Name" value={selectedHistory.company_name} />
+                      <DetailItem label="Position" value={selectedHistory.position} />
+                      <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
+                      <DetailItem label="Location" value={selectedHistory.location} />
+                      <DetailItem
+                        label="Employment Range"
+                        value={`${selectedHistory.employment_start_year || '—'} - ${selectedHistory.is_present ? 'Present' : (selectedHistory.employment_end_year || '—')}`}
                         />
-                      </div>
-                    ) : (
-                      <div className="pt-4 border-t border-gray-50">
-                        <DetailItem label="Reason for Unemployment" value={selectedHistory.unemployment_reason} />
-                      </div>
-                    )}
+                      <DetailItem
+                        label="Monthly Salary"
+                        value={selectedHistory.monthly_salary ? `₱${parseFloat(String(selectedHistory.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString()}` : '—'}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -264,23 +266,19 @@ export default function CoordinatorViewProfile({ user }) {
 
 function InfoItem({ icon, label, value }) {
   return (
-    <div className="flex items-start gap-3">
-      {icon && <div className="text-gray-400 mt-1">{icon}</div>}
-      <div className="flex flex-col">
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
-        <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
-      </div>
+    <div className="flex flex-col">
+      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</span>
+      <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
     </div>
   );
 }
 
 function DetailItem({ label, value, isStatus = false }) {
-  const finalValue = (value === null || value === undefined || value === "null" || value === "null (null)") ? " — " : value;
-
+  const finalValue = (value === null || value === undefined || value === "null") ? " — " : value;
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
-      <span className={`text-[14px] font-bold ${isStatus && finalValue === 'Employed' ? 'text-green-600' : 'text-gray-800'}`}>
+      <span className={`text-[14px] font-bold ${isStatus ? 'text-green-600' : 'text-gray-800'}`}>
         {finalValue}
       </span>
     </div>

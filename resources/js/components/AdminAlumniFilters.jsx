@@ -16,6 +16,11 @@ export default function AdminAlumniFilters({
   course,
   setCourse,
 }) {
+  const latestYear = new Date().getFullYear() - 1;
+  const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+    const s = latestYear - i;
+    return `${s}-${s + 1}`;
+  });
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow mb-4">
       
@@ -31,13 +36,13 @@ export default function AdminAlumniFilters({
 
       <div className="flex gap-2 w-full md:w-auto">
         <Select onValueChange={setYear} value={year}>
-          <SelectTrigger className="w-full md:w-[140px]">
+          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent  className="max-h-48">
             <SelectItem value="all">All Years</SelectItem>
-            {[2022, 2021, 2020, 2019, 2018].map((y) => (
-              <SelectItem key={y} value={y.toString()}>
+            {yearOptions.map((y) => (
+              <SelectItem key={y} value={y}>
                 {y}
               </SelectItem>
             ))}
