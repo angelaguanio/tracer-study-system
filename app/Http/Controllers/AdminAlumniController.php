@@ -107,7 +107,7 @@ class AdminAlumniController extends Controller
                         'employment_type' => $history->employment_type,
                         'location' => $history->location,
                         'monthly_salary' => $history->monthly_salary,
-'unemployment_reason' => $history->unemployment_reason,
+                        'unemployment_reason' => $history->unemployment_reason,
                         'employment_start_year' => $history->employment_start_year,
                         'employment_end_year' => $history->employment_end_year,
                         'is_present' => $history->is_present,

@@ -18,7 +18,7 @@ class CoordinatorAlumniController extends Controller
                   ->orWhere('last_name', 'like', "%{$search}%");
             })
             ->when($request->year && $request->year !== 'all', function ($q) use ($request) {
-                $q->where('end_year', $request->year);
+                $q->where('year_graduated', $request->year);
             })
             ->when($request->course && $request->course !== 'all', function ($q) use ($request) {
                 $q->where('courses', $request->course);
@@ -32,7 +32,7 @@ class CoordinatorAlumniController extends Controller
             'id' => $user->id,
             'name' => "{$user->first_name} {$user->last_name}",
             'course' => $user->courses,
-            'year' => $user->end_year, 
+            'year' => $user->year_graduated,
             'avatar' => $user->avatar_url,
             'survey_status' => 'Not Completed', 
         ]);

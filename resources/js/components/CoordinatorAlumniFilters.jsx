@@ -29,21 +29,20 @@ export default function CoordinatorAlumniFilters({
       {/* FILTERS */}
       <div className="flex gap-2 w-full md:w-auto">
         <Select onValueChange={setYear} value={year}>
-          <SelectTrigger className="w-full md:w-[140px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Years</SelectItem>
-            {[2022, 2021, 2020, 2019, 2018].map((y) => (
+            {["2017-2018", "2018-2019", "2019-2020", "2020-2021" , "2021-2022"].map((y) => (
               <SelectItem key={y} value={y.toString()}>
                 {y}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-
         <Select onValueChange={setCourse} value={course}>
-          <SelectTrigger className="w-full md:w-[140px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
           <SelectContent>
