@@ -75,12 +75,15 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
             {type === 'pie' && (
               <PieChart>
                 <Pie
-                  data={Object.entries(data)
-                    .filter(([key]) => !key.includes('percentage')) // Filter out percentage fields
-                    .map(([key, value]) => ({
-                      name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                      value: typeof value === 'number' ? value : 0
-                    }))}
+                  data={Array.isArray(data) 
+                    ? data // Handle array data (existing employment distribution)
+                    : Object.entries(data)
+                        .filter(([key]) => !key.includes('percentage')) // Filter out percentage fields
+                        .map(([key, value]) => ({
+                          name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                          value: typeof value === 'number' ? value : 0
+                        }))
+                  }
                   cx="50%"
                   cy="45%"
                   labelLine={true}
@@ -91,15 +94,15 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {Object.keys(data).filter(key => !key.includes('percentage')).map((entry, index) => (
+                  {(Array.isArray(data) ? data : Object.keys(data).filter(key => !key.includes('percentage'))).map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Legend 
                   verticalAlign="bottom" 
                   height={60}
-                  wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                  iconSize={10}
+                  wrapperStyle={{ fontSize: '16px', paddingTop: '10px', fontWeight: '500' }}
+                  iconSize={12}
                 />
                 <Tooltip 
                   contentStyle={{ 

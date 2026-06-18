@@ -1,17 +1,21 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import LightModeWrapper from '@/components/light-mode-wrapper';
 import { Toaster } from 'sonner';
-import bg from '../assets/bg.png';
+import authBg from '../assets/auth_bg.jfif'
 
 export default function AuthLayout({ children }) {
     return (
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
             <LightModeWrapper>
             <div
-                className="min-h-screen w-full bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${bg})` }}
+                className="min-h-screen w-full bg-cover bg-center bg-no-repeat relative"
+                style={{ backgroundImage: `url(${authBg})` }}
             >
-                <div className="min-h-screen w-full bg-black/20">
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/60 via-teal-500 to-blue-600/60 opacity-85"></div>
+                
+                {/* Content Container */}
+                <div className="relative min-h-screen w-full">
                     <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
                         
                         {/* Hero text */}

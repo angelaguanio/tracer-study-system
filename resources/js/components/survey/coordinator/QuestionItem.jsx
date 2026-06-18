@@ -17,10 +17,15 @@ const TYPE_MAP = {
 
 export default function QuestionItem({ question, onEdit, onReorder, isFirst, isLast }) {
     const handleDelete = () => {
+        // Determine route prefix from current route name
+        const currentRoute = route().current();
+        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
+        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
+        
         if (question.itemType === 'subheading') {
-            router.delete(route("admin.subheadings.destroy", question.id));
+            router.delete(route(`${routePrefix}.subheadings.destroy`, question.id));
         } else {
-            router.delete(route("admin.questions.destroy", question.id));
+            router.delete(route(`${routePrefix}.questions.destroy`, question.id));
         }
     };
 

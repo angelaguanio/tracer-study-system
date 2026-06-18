@@ -69,10 +69,15 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
 
         const onError = (e) => setErrors(e);
 
+        // Determine route prefix from current route name
+        const currentRoute = route().current();
+        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
+        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
+
         if (isEdit) {
-            router.put(route("admin.questions.update", question.id), payload, { onError, onSuccess: onClose });
+            router.put(route(`${routePrefix}.questions.update`, question.id), payload, { onError, onSuccess: onClose });
         } else {
-            router.post(route("admin.questions.store", sectionId), payload, { onError, onSuccess: onClose });
+            router.post(route(`${routePrefix}.questions.store`, sectionId), payload, { onError, onSuccess: onClose });
         }
     };
 

@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Services\NotificationService;
+
 
 class SurveyResponseController extends Controller
 {
@@ -18,10 +20,10 @@ class SurveyResponseController extends Controller
 
     public function index()
     {
-        $survey = Survey::active()->first();
+        $survey = Survey::tracerStudy()->first();
 
         if (!$survey) {
-            return back()->withErrors(['survey' => 'No active survey available at this time.']);
+            return back()->withErrors(['survey' => 'No tracer study survey available at this time.']);
         }
 
         return redirect()->route('alumna.surveys.show', $survey->id);
@@ -124,6 +126,9 @@ class SurveyResponseController extends Controller
                     'submitted_at' => now(),
                 ]);
             }
+
+            NotificationService::surveyAnswered($survey->id, $user->id, $user->name);
+
 
             $draft->delete();
         });

@@ -59,8 +59,8 @@ export default function AlumnaAnnouncements({ announcements }) {
                       className="w-full h-56 object-cover"
                     />
                   ) : (
-                    <div className="w-full h-56 flex items-center justify-center bg-gray-100">
-                      <ImageOff size={48} className="text-blue-800" />
+                    <div className="w-full h-56 flex items-center justify-center">
+                      <ImageOff size={80} className="text-blue-800" />
                     </div>
                   )}
 

@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Notification;
+use App\Models\NotificationRead;
+use Illuminate\Http\Request;
+
+class NotificationController extends Controller
+{
+    private function getNotificationsQuery()
+    {
+        $user = auth()->user();
+        $role = $user->user_role; // 'admin' or 'coordinator'
+
+        return Notification::query()
+            ->where(function ($q) use ($role, $user) {
+                // Role-wide notifications (all, admin, coordinator)
+                $q->whereIn('target_role', [$role, 'all'])
+                ->whereNull('target_user_id');
+
+                // Coordinator-specific notifications targeted at this user
+                if ($role === 'coordinator') {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('target_role', 'coordinator_specific')
+                        ->where('target_user_id', $user->id);
+                    });
+                }
+            })
+            ->orderByDesc('created_at');
+    }
+
+
+    public function index(Request $request)
+    {
+        $notifications = $this->getNotificationsQuery()
+        ->paginate(20)
+        ->through(function ($notif) {
+            return [
+                'id'         => $notif->id,
+                'type'       => $notif->type,
+                'title'      => $notif->title,
+                'message'    => $notif->message,
+                'data'       => $notif->data,
+                'created_at' => $notif->created_at->diffForHumans(),
+                'is_read'    => $notif->isReadBy(auth()->user()),
+            ];
+        });
+
+    return response()->json($notifications);
+    }
+
+    public function unreadCount()
+    {
+        $userId = auth()->id();
+
+        $count = $this->getNotificationsQuery()
+            ->whereDoesntHave('reads', fn($q) => $q->where('user_id', $userId))
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function markRead($id)
+    {
+        NotificationRead::firstOrCreate([
+            'notification_id' => $id,
+            'user_id'         => auth()->id(),
+        ], [
+            'read_at' => now()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllRead()
+    {
+        $user = auth()->user();
+        $role = $user->user_role;
+        $userId = auth()->id();
+
+        $unread = Notification::where(function ($q) use ($role, $user) {
+                // Role-wide notifications (all, admin, coordinator)
+                $q->whereIn('target_role', [$role, 'all'])
+                ->whereNull('target_user_id');
+
+                // Coordinator-specific notifications targeted at this user
+                if ($role === 'coordinator') {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('target_role', 'coordinator_specific')
+                        ->where('target_user_id', $user->id);
+                    });
+                }
+            })
+            ->whereDoesntHave('reads', fn($q) => $q->where('user_id', $userId))
+            ->pluck('id');
+
+        $inserts = $unread->map(fn($id) => [
+            'notification_id' => $id,
+            'user_id'         => $userId,
+            'read_at'         => now(),
+            'created_at'      => now(),
+            'updated_at'      => now(),
+        ])->toArray();
+
+        if (!empty($inserts)) {
+            NotificationRead::insert($inserts);
+        }
+
+        return response()->json(['success' => true]);
+    }
+}

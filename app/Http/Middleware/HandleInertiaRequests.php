@@ -64,6 +64,17 @@ class HandleInertiaRequests extends Middleware
                 'success'       => $request->session()->get('success'),
                 'justCompleted' => $request->session()->get('justCompleted'),
             ],
+            'notifications' => [
+            'unread_count' => $request->user()
+                ? \App\Models\Notification::whereIn('target_role', [
+                    $request->user()->user_role, 'all'
+                  ])
+                  ->whereDoesntHave('reads', fn($q) =>
+                      $q->where('user_id', $request->user()->id)
+                  )
+                  ->count()
+                : 0,
+        ],
         ];
     }
 

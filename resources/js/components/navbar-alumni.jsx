@@ -1,6 +1,5 @@
-import React from 'react'
 import logo from '../assets/logotracer.png'
-import { Link, usePage, router } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +10,9 @@ import { Button } from './ui/button'
 import ProfileTemp from './profile-temp'
 
 const navBtns = [
-  { id: "home", name: "Home", href:"/alumna/home" },
-  { id: "announcements", name: "Announcements", href: "/alumna/announcements" },
   { id: "questionnaire", name: "Questionnaire", href:"/alumna/questionnaire" },
+  { id: "announcements", name: "Announcements", href: "/alumna/announcements" },
+  { id: "home", name: "Home", href:"/alumna/home" },
   { id: "about", name: "About", href:"/alumna/about" },
   { id: "contact", name: "Contact us", href:"/alumna/contact" }
 ]
@@ -72,9 +71,15 @@ export default function NavbarAlumni({ children }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            {/* profile */}
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.profile')}>Profile</Link>
+              <Link href={route('alumna.profile')}>My Profile</Link>
             </DropdownMenuItem>
+              {/* inquiries */}
+            <DropdownMenuItem asChild>
+              <Link href={route('alumna.inquiries.index')}>My Inquiries</Link>
+            </DropdownMenuItem>
+
             <DropdownMenuItem asChild>
               <Link href={route('alumna.logout')} className='w-full flex'>
                 Logout

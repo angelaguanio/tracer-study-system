@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
+use App\Services\NotificationService;
 
 class AlumnaAuthController extends Controller
 {
@@ -60,7 +61,8 @@ class AlumnaAuthController extends Controller
             'start_year' => 'required|integer|digits:4',
             'end_year' => 'required|integer|digits:4|gt:start_year',
             'semester' => 'required|string',
-            'courses' => 'nullable|string',
+            'department' => 'required|string',
+            'courses' => 'required|string',
             
             // Address and Contact Number to validation
             'address' => 'nullable|string|max:500',
@@ -107,6 +109,7 @@ class AlumnaAuthController extends Controller
             'start_year' => $validation['start_year'] ?? null,
             'end_year' => $validation['end_year'] ?? null,
             'semester' => $validation['semester'] ?? null,
+            'department' => $validation['department'] ?? null,
             'courses' => $validation['courses'] ?? null,
             'user_role' => 'alumna',
             // FIX: Ensure these are saved to the users table
@@ -140,6 +143,7 @@ class AlumnaAuthController extends Controller
         Employment::create($employmentData);
 
         Auth::login($user);
+        NotificationService::alumniRegistered($user->id, $user->name);
         
         return redirect()->route('alumna.home')->with('success', 'Account created successfully!');
     }

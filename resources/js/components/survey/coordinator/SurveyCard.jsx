@@ -24,7 +24,14 @@ export default function SurveyCard({ survey }) {
         <Card className="bg-white border shadow-sm">
             <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 px-6">
                 <div className="flex flex-col gap-1">
-                    <h2 className="font-semibold text-gray-800">{survey.title}</h2>
+                    <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-gray-800">{survey.title}</h2>
+                        {survey.is_tracer_study && (
+                            <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
+                                Tracer Study
+                            </Badge>
+                        )}
+                    </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                         <Badge
                             className={

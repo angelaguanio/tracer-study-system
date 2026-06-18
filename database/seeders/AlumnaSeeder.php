@@ -24,6 +24,7 @@ class AlumnaSeeder extends Seeder
             'user_role' => 'alumna',
             'address' => 'Gapan City',
             'contact_number' => '09123456789',
+            'department' => 'CECT',
             'courses' => 'BSIT',
             'start_year' => '2017',
             'end_year' => '2018',

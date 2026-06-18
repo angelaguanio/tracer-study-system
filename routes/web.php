@@ -4,6 +4,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\AlumnaAuthController;
 use App\Http\Controllers\Auth\CoordinatorAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\CoordinatorDashboardController;
 use App\Http\Controllers\AdminDashboardController;
@@ -54,6 +56,14 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::post('/signup', [AlumnaAuthController::class, 'signupAlumna']);
         Route::get('/login', [AlumnaAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AlumnaAuthController::class, 'loginAlumna']);
+
+        //forgot & reset pass routes
+        Route::get('/forgot-password', function () {
+            return \Inertia\Inertia::render('Auth/ForgotPassword');
+        })->name('forgot-password');
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
+        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
+        Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
     });
 
     Route::middleware('auth')->group(function () {
@@ -80,7 +90,6 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
         Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
-
 
         //inquiries
         Route::get('/inquiries', [InquiriesController::class, 'alumniInquiriesList'])->name('inquiries.index');
@@ -272,6 +281,9 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
     });
 
     Route::middleware('auth')->group(function () {
+        Route::post('/change-password', [CoordinatorAuthController::class, 'changePassword'])->name('change-password');
+        Route::get('/change-password', [CoordinatorAuthController::class, 'showChangePassword'])->name('show-change-password');
+        
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');

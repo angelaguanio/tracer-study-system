@@ -39,10 +39,15 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
         };
         const onError = (e) => setError(e.title ?? "");
 
+        // Determine route prefix from current route name
+        const currentRoute = route().current();
+        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
+        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
+
         if (isEdit) {
-            router.put(route("admin.sections.update", section.id), payload, { onError, onSuccess: onClose });
+            router.put(route(`${routePrefix}.sections.update`, section.id), payload, { onError, onSuccess: onClose });
         } else {
-            router.post(route("admin.sections.store", surveyId), payload, { onError, onSuccess: onClose });
+            router.post(route(`${routePrefix}.sections.store`, surveyId), payload, { onError, onSuccess: onClose });
         }
     };
 

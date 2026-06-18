@@ -1,95 +1,105 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-
+  DropdownMenu, DropdownMenuContent, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from './ui/button';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Send } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
 
-export default function InquiryContent({inquiry, onUpdateStatus, userRole = 'admin'}) {
-    const statusItems = [
-        {
-            value: 'pending',
-            label: 'Pending',
-        },
-        {
-            value: 'replied',
-            label: 'Replied',
-        },
-        {
-            value: 'resolved',
-            label: 'Resolved',
-        }
+export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'admin' }) {
+    const [replyText, setReplyText] = useState('');
+    const [sending, setSending] = useState(false);
+    const bottomRef = useRef(null);
 
-    ]
+    const statusItems = [
+        { value: 'pending', label: 'Pending' },
+        { value: 'replied', label: 'Replied' },
+        { value: 'resolved', label: 'Resolved' },
+    ];
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [inquiry?.replies]);
 
     const updateStatus = (newStatus) => {
-        const routeName = userRole === 'coordinator' 
-            ? 'coordinator.inquiries.update' 
+        const routeName = userRole === 'coordinator'
+            ? 'coordinator.inquiries.update'
             : 'admin.inquiries.update';
-            
-        router.patch(route(routeName, inquiry.id), {
-            status: newStatus
-        }, {
-            // Keeps the scroll position so the admin doesn't lose their place
-            preserveScroll: true, 
-            onStart: () => console.log('Updating...'),
+
+        router.patch(route(routeName, inquiry.id), { status: newStatus }, {
+            preserveScroll: true,
             onSuccess: () => {
                 toast.success(`Inquiry marked as ${newStatus}`);
-                onUpdateStatus(inquiry.id, newStatus);  
+                onUpdateStatus(inquiry.id, newStatus);
             }
         });
     };
 
+    const sendReply = () => {
+        if (!replyText.trim()) return;
+        const routeName = userRole === 'coordinator'
+            ? 'coordinator.inquiries.reply'
+            : 'admin.inquiries.reply';
+
+        setSending(true);
+        router.post(route(routeName, inquiry.id), { message: replyText }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setReplyText('');
+                toast.success('Reply sent!');
+            },
+            onFinish: () => setSending(false),
+        });
+    };
+
+    const AvatarBlock = ({ user, size = 'sm' }) => {
+        const dim = size === 'sm' ? 'h-8 w-8 text-xs' : 'h-12 w-12 text-sm';
+        return (
+            <Avatar className={`${dim} shrink-0 overflow-hidden border border-gray-200`}>
+                {user.profile_picture ? (
+                    <img src={`/storage/${user.profile_picture}`} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                    <div className={`h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white font-bold`}>
+                        {user.first_name[0]}{user.last_name[0]}
+                    </div>
+                )}
+            </Avatar>
+        );
+    };
+
     if (!inquiry) {
+        return (
+            <div className="flex items-center justify-center h-full w-full text-gray-400">
+                No Content
+            </div>
+        );
+    }
+
+    // Sort replies oldest-first for display
+    const replies = [...(inquiry.replies ?? [])].reverse();
+
     return (
-        <div className="flex items-center justify-center h-full w-full text-gray-400">
-            No Content
-        </div>
-    );
-}
-  return (
-    <main className='flex flex-col w-full h-full p-4'>
-        <header className='flex flex-row justify-between px-3 pb-3'>
-            <div className='flex gap-3 h-full items-center'>
-                <Avatar className='h-15 w-15 shrink-0 overflow-hidden border border-gray-200'>
-                    {inquiry.alumni.profile_picture ? (
-                        <img 
-                            src={`/storage/${inquiry.alumni.profile_picture}`} 
-                            alt={`${inquiry.alumni.first_name}'s profile`}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-md font-bold">
-                            {inquiry.alumni.first_name[0]}{inquiry.alumni.last_name[0]}
-                        </div>
-                    )}
-                </Avatar>
-                
-                <div>
-                    <h1 className='text-xl font-semibold'>{inquiry?.title} {inquiry.alumni.first_name} {inquiry.alumni.last_name}</h1>
-                    <p>{inquiry.alumni.email}</p>
+        <main className='flex flex-col w-full h-full p-4 gap-3'>
+            {/* Header */}
+            <header className='flex flex-row justify-between px-3 pb-3 border-b'>
+                <div className='flex gap-3 h-full items-center'>
+                    <AvatarBlock user={inquiry.alumni} size="lg" />
                     <div>
-                        <p className='text-sm'>{inquiry.formatted_date}</p>
+                        <h1 className='text-xl font-semibold'>
+                            {inquiry.alumni.first_name} {inquiry.alumni.last_name}
+                        </h1>
+                        <p className='text-sm text-gray-500'>{inquiry.alumni.email}</p>
+                        <p className='text-xs text-gray-400'>{inquiry.formatted_date}</p>
                     </div>
                 </div>
-            </div>
 
-            <div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2 h-8 text-sm font-semibold">
-                        Mark as
-                        <ChevronDown className="h-3 w-3" />
+                            Mark as <ChevronDown className="h-3 w-3" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
@@ -97,31 +107,79 @@ export default function InquiryContent({inquiry, onUpdateStatus, userRole = 'adm
                             Change Status
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        
                         {statusItems.map((option) => (
-                        <DropdownMenuItem 
-                            key={option.value} 
-                            onClick={() => updateStatus(option.value)}
-                            className="cursor-pointer gap-2"
-                        >
-                            {/* Visual status indicator */}
-                            <div className={`h-2 w-2 rounded-full ${option.color}`} />
-                            {option.label}
-                        </DropdownMenuItem>
+                            <DropdownMenuItem key={option.value} onClick={() => updateStatus(option.value)} className="cursor-pointer">
+                                {option.label}
+                            </DropdownMenuItem>
                         ))}
-                        
                     </DropdownMenuContent>
-                    </DropdownMenu>
-            </div>
-        </header>
+                </DropdownMenu>
+            </header>
 
-        <div className='flex flex-col bg-blue-100/30 h-full overflow-y-auto overflow-x-hidden'>
-            <div className='px-5 py-4 overflow-hidden'>
-                <h2 className='text-xl font-inter font-semibold text-slate-800' style={{wordBreak: 'break-all', overflowWrap: 'break-word'}}>{inquiry.subject}</h2>
-                <hr className='my-3 border-blue-300'/>
-                <p style={{wordBreak: 'break-all', overflowWrap: 'break-word'}}>{inquiry.message}</p>
+            {/* Thread */}
+            <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
+                {/* Original inquiry */}
+                <div className='flex gap-3'>
+                    <AvatarBlock user={inquiry.alumni} />
+                    <div className='flex flex-col gap-1 max-w-[80%]'>
+                        <span className='text-xs text-gray-400'>
+                            {inquiry.alumni.first_name} · {inquiry.formatted_date}
+                        </span>
+                        <div className='bg-gray-100 text-slate-700 rounded-2xl rounded-tl-none px-4 py-3'>
+                            <p className='text-sm font-semibold mb-1'>{inquiry.subject}</p>
+                            <p className='text-sm' style={{ wordBreak: 'break-word' }}>
+                                {inquiry.message}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Replies */}
+                {replies.map((reply) => {
+                    const isStaff = reply.sender_role === 'admin' || reply.sender_role === 'coordinator';
+                    return (
+                        <div key={reply.id} className={`flex gap-3 ${isStaff ? 'flex-row-reverse' : 'flex-row'}`}>
+                            <AvatarBlock user={reply.sender} />
+                            <div className={`flex flex-col gap-1 max-w-[80%] ${isStaff ? 'items-end' : 'items-start'}`}>
+                                <span className='text-xs text-gray-400'>
+                                    {reply.sender.first_name} · {new Date(reply.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                <div className={`rounded-2xl px-4 py-3 text-sm ${isStaff
+                                    ? 'bg-blue-600 text-white rounded-tr-none'
+                                    : 'bg-gray-100 text-slate-700 rounded-tl-none'
+                                }`}
+                                    style={{ wordBreak: 'break-word' }}>
+                                    {reply.message}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+                <div ref={bottomRef} />
             </div>
-        </div>
-    </main>
-  )
+
+            {/* Reply box */}
+            <div className='flex gap-2 items-end border-t pt-3'>
+                <textarea
+                    className='flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[60px] max-h-[140px]'
+                    placeholder='Write a reply...'
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendReply();
+                        }
+                    }}
+                />
+                <Button
+                    onClick={sendReply}
+                    disabled={sending || !replyText.trim()}
+                    className='h-10 w-10 p-0 rounded-xl bg-blue-600 hover:bg-blue-700'
+                >
+                    <Send className='h-4 w-4 text-white' />
+                </Button>
+            </div>
+        </main>
+    );
 }

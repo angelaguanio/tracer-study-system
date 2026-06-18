@@ -1,4 +1,4 @@
-import  {route}  from "ziggy-js";
+import { route } from 'ziggy-js';
 import { useState, useEffect } from "react";
 import { router, usePage, Link, useForm } from "@inertiajs/react";
 import { Plus, ArrowLeft, Pencil, Check } from "lucide-react";
@@ -73,6 +73,10 @@ export default function SurveyBuilder({ survey }) {
 
     const handleStatusToggle = (checked) => {
         router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
+    };
+
+    const handleTracerStudyToggle = (checked) => {
+        router.put(route("admin.surveys.update", survey.id), { is_tracer_study: checked });
     };
 
     const handleSaveHeader = () => {
@@ -216,6 +220,23 @@ export default function SurveyBuilder({ survey }) {
                                     }`}
                                 >
                                     {survey.status === "active" ? "Active" : "Inactive"}
+                                </Label>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1.5 border border-blue-200 ">
+                                <Switch
+                                    id="tracer-study-toggle"
+                                    checked={survey.is_tracer_study || false}
+                                    onCheckedChange={handleTracerStudyToggle}
+                                    className="data-[state=checked]:bg-blue-600"
+                                />
+                                <Label 
+                                    htmlFor="tracer-study-toggle" 
+                                    className={`text-sm font-medium cursor-pointer ${
+                                        survey.is_tracer_study ? "text-blue-700" : "text-gray-500"
+                                    }`}
+                                >
+                                    Tracer Study
                                 </Label>
                             </div>
                         </div>

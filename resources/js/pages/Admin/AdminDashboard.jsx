@@ -4,7 +4,7 @@ import MetricCard from '@/components/dashboard/MetricCard';
 import ChartWidget from '@/components/dashboard/ChartWidget';
 import RecentActivityList from '@/components/dashboard/RecentActivityList';
 import QuickActionButton from '@/components/dashboard/QuickActionButton';
-import { Users, FileText, CheckCircle, Mail, Bell, Briefcase, UserX, Plus, Eye, AlertCircle } from 'lucide-react';
+import { Users, FileText, Mail, Bell, Plus, Eye, AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 /**
@@ -27,7 +27,7 @@ export default function AdminDashboard({
         {/* Header Section */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-blue-800 font-inter">
-            Welcome back, Admin!
+            Welcome, Admin!
           </h1>
           <p className="text-muted-foreground text-lg">
             Monitor system health, track activity, and manage your alumni network
@@ -53,7 +53,7 @@ export default function AdminDashboard({
         <div>
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <div className="h-8 w-1 bg-primary rounded-full" />
-            Key Metrics
+            Overview
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard 
@@ -61,12 +61,6 @@ export default function AdminDashboard({
               value={metrics.total_alumni} 
               icon={Users}
               color="blue"
-            />
-            <MetricCard 
-              title="Completed Responses" 
-              value={metrics.completed_responses} 
-              icon={CheckCircle}
-              color="purple"
             />
             <MetricCard 
               title="Pending Inquiries" 
@@ -80,37 +74,19 @@ export default function AdminDashboard({
               icon={Bell}
               color="yellow"
             />
-            <MetricCard 
-              title="Employed Alumni" 
-              value={metrics.employed_alumni} 
-              icon={Briefcase}
-              color="green"
-            />
-            <MetricCard 
-              title="Unemployed Alumni" 
-              value={metrics.unemployed_alumni} 
-              icon={UserX}
-              color="red"
-            />
           </div>
         </div>
 
-        <Separator />
-
         {/* Analytics Section */}
         <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <div className="h-8 w-1 bg-primary rounded-full" />
-            Analytics & Insights
-          </h2>
           <div className="grid gap-6 lg:grid-cols-2">
             <ChartWidget 
-              title="Survey Completion Rates" 
-              description="Track response rates across all surveys"
+              title="Tracer Study Survey Completion" 
+              description="Percentage of alumni who have completed the tracer study survey"
               data={survey_analytics}
-              type="bar"
+              type="pie"
               height={350}
-              emptyMessage="No active surveys to display"
+              emptyMessage="No tracer study survey available"
             />
             <ChartWidget 
               title="Employment Distribution" 

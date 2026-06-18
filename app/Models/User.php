@@ -7,10 +7,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+
+    protected $casts = [
+        'password_changed' => 'boolean', // ← add this
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -21,16 +26,20 @@ class User extends Authenticatable
         'middle_name', 
         'email', 
         'password', 
+        'password_changed',
         'user_role', 
         'start_year', 
         'end_year', 
         'semester', 
         'courses', 
+        'status', 
         'department',
         'address',       
         'contact_number',
         'profile_picture'
     ];
+
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -43,7 +52,7 @@ class User extends Authenticatable
     /**
      * The accessors to append to the model's array form.
      */
-    protected $appends = ['initials', 'avatar_url'];
+    protected $appends = ['initials', 'avatar_url', 'name'];
 
     /**
      * Generate initials from first and last name.
@@ -64,6 +73,13 @@ class User extends Authenticatable
             return asset('storage/' . $this->profile_picture);
         }
         return null;
+    }
+
+    /**
+     * Get the user's full name.
+     */
+    public function getNameAttribute() {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 
     /**
@@ -105,5 +121,13 @@ class User extends Authenticatable
     public function isAlumna(): bool
     {
         return $this->user_role === 'alumna';
+    }
+
+    /**
+     * Send the password reset notification.
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
