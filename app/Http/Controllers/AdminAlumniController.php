@@ -18,48 +18,61 @@ class AdminAlumniController extends Controller
      * LIST PAGE - Fetching Alumna list
      */
     public function index(Request $request)
-    {
-        $query = User::query()->where('user_role', 'alumna');
+{
+    $query = User::query()->where('user_role', 'alumna');
 
-        if ($request->filled('search')) {
-            $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'LIKE', "%{$search}%")
-                  ->orWhere('last_name', 'LIKE', "%{$search}%")
-                  ->orWhere('email', 'LIKE', "%{$search}%");
-            });
-        }
+    // Search logic
+    if ($request->filled('search')) {
+        $search = trim($request->search);
+        $query->where(function ($q) use ($search) {
+            $q->where('first_name', 'LIKE', "%{$search}%")
+              ->orWhere('last_name', 'LIKE', "%{$search}%")
+              ->orWhere('email', 'LIKE', "%{$search}%");
+        });
+    }
 
-        if ($request->filled('year') && $request->year !== 'all') {
+    // UPDATED YEAR FILTERING LOGIC
+    if ($request->filled('year') && $request->year !== 'all') {
+        // I-handle ang "2017-2018" format
+        if (strpos($request->year, '-') !== false) {
+            // Kunin ang "2018" mula sa "2017-2018"
+            $endYear = explode('-', $request->year)[1];
+            $query->where('end_year', $endYear);
+        } else {
+            // Fallback kung sakaling "2018" lang ang input
             $query->where('end_year', $request->year);
         }
-
-        if ($request->filled('course') && $request->course !== 'all') {
-            $query->whereRaw('TRIM(courses) = ?', [$request->course]);
-        }
-
-        $query->orderBy('created_at', 'desc');
-
-        $users = $query->paginate(6)->appends($request->query());
-
-        $users->getCollection()->transform(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->first_name . ' ' . $user->last_name,
-                'course' => $user->courses,
-                'year' => ($user->start_year && $user->end_year)
-                           ? "{$user->start_year}-{$user->end_year}"
-                           : ($user->end_year ?? 'N/A'),
-                'avatar' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
-                'email' => $user->email,
-            ];
-        });
-
-        return Inertia::render('Admin/AdminAlumni', [
-            'alumni' => $users,
-            'filters' => $request->only(['search', 'year', 'course']),
-        ]);
     }
+
+    // Course logic
+    if ($request->filled('course') && $request->course !== 'all') {
+        $query->whereRaw('TRIM(courses) = ?', [$request->course]);
+    }
+
+    $query->orderBy('created_at', 'desc');
+
+    // Pag-paginate ng data
+    $users = $query->paginate(6)->appends($request->query());
+
+    // Transformation ng data para sa frontend
+    $users->getCollection()->transform(function ($user) {
+        return [
+            'id' => $user->id,
+            'name' => $user->first_name . ' ' . $user->last_name,
+            'course' => $user->courses,
+            'year' => ($user->start_year && $user->end_year)
+                        ? "{$user->start_year}-{$user->end_year}"
+                        : ($user->end_year ?? 'N/A'),
+            'avatar' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
+            'email' => $user->email,
+        ];
+    });
+
+    return Inertia::render('Admin/AdminAlumni', [
+        'alumni' => $users,
+        'filters' => $request->only(['search', 'year', 'course']),
+    ]);
+}
 
     /**
      * SHOW PROFILE PAGE - Individual Alumna Detailed Profile

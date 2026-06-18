@@ -38,13 +38,13 @@ export default function CoordinatorSurveyResponseFilter({
         </Select>
 
         <Select value={year} onValueChange={(val) => setYear(val)}>
-          <SelectTrigger className="h-10 w-full sm:w-[140px] bg-white">
+          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Years</SelectItem>
-            {[2022, 2021, 2020, 2019, 2018].map((y) => (
-              <SelectItem key={y} value={y.toString()}>
+            {["2017-2018", "2018-2019", "2019-2020", "2020-2021", "2021-2022"].map((y) => (
+              <SelectItem key={y} value={y}>
                 {y}
               </SelectItem>
             ))}

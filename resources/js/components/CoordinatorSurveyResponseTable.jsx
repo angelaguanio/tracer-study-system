@@ -47,7 +47,7 @@ export default function CoordinatorSurveyResponseTable({
   const paginationItems = getPaginationItems();
 
   const handleView = (res) => {
-    if (!res?.id) return;
+    if (!res?.id || !surveyId) return;
 
     const currentSurveyId = surveyId || res.survey_id || res.survey_form_id;
     if (!currentSurveyId) return;

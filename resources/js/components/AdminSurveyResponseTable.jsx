@@ -15,7 +15,9 @@ export default function AdminSurveyResponseTable({
     const params = new URLSearchParams(window.location.search);
     params.set("page", p);
 
-    router.get(window.location.pathname, Object.fromEntries(params), {
+    router.get(window.location.pathname, 
+      Object.fromEntries(params), 
+      {
       preserveState: true,
       preserveScroll: true,
       replace: true,

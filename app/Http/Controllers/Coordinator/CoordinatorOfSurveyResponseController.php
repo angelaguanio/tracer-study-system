@@ -56,9 +56,17 @@ class CoordinatorOfSurveyResponseController extends Controller
             $query->where('courses', $request->course);
         }
 
-        // YEAR FILTER
+        // UPDATED YEAR FILTERING LOGIC
         if ($request->filled('year') && $request->year !== 'all') {
-            $query->where('year_graduated', $request->year);
+            // I-handle ang "2017-2018" format
+            if (strpos($request->year, '-') !== false) {
+                // Kunin ang "2018" mula sa "2017-2018" para i-match sa DB column
+                $endYear = explode('-', $request->year)[1];
+                $query->where('end_year', $endYear); // Siguraduhin na 'end_year' ang column mo
+            } else {
+                // Fallback para sa single year input
+                $query->where('end_year', $request->year);
+            }
         }
 
         $users = $query->latest()->paginate(10)->withQueryString();
@@ -73,7 +81,9 @@ class CoordinatorOfSurveyResponseController extends Controller
                 'name' => trim($user->first_name . ' ' . $user->last_name),
                 'status' => $hasResponse ? 'completed' : 'incomplete',
                 'course' => $user->courses ?? '-',
-                'year' => $user->year_graduated ?? '-',
+                'year' => ($user->start_year && $user->end_year) 
+                            ? "{$user->start_year}-{$user->end_year}" 
+                            : ($user->end_year ?? 'N/A'),
                 'avatar' => $user->avatar ?? $user->profile_picture, 
             ];
         });
