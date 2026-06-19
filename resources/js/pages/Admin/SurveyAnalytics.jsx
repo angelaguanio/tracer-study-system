@@ -3,13 +3,19 @@ import { router, Link } from "@inertiajs/react";
 import AdminLayout from "@/layouts/admin-layout";
 import AnalyticsChart from "@/components/survey/coordinator/AnalyticsChart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, Legend, CartesianGrid } from "recharts";
 
-const YEARS = ["All Years", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"];
+const latestYear = new Date().getFullYear() - 1;
+const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+    const s = latestYear - i;
+    return `${s}-${s + 1}`;
+})];
+
+const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "3rd Semester", "Summer"];
+
 const COLORS = ["#2859C5", "#008236", "#E70813", "#f59e0b", "#8b5cf6", "#06b6d4", "#ec4899"];
 
 function StatCard({ label, value, sub }) {
@@ -63,14 +69,15 @@ export default function SurveyAnalytics({
 }) {
     const [localFilters, setLocalFilters] = useState({
         year_graduated: filters.yearGraduated || "",
-        from: filters.from || "",
-        to: filters.to || "",
+        semester: filters.semester || "",
     });
 
     const applyFilters = (updated) => {
         const next = { ...localFilters, ...updated };
         setLocalFilters(next);
-        const params = Object.fromEntries(Object.entries(next).filter(([, v]) => v && v !== "All Years"));
+        const params = Object.fromEntries(
+            Object.entries(next).filter(([, v]) => v && v !== "All Years" && v !== "All Semesters")
+        );
         router.get(route("admin.surveys.analytics", survey.id), params, { preserveState: true, replace: true });
     };
 
@@ -101,11 +108,10 @@ export default function SurveyAnalytics({
                     </div>
                 </div>
                 <a
-                    href={route("admin.surveys.analytics.download", {
+                    href={route("admin.analytics.download", {
                         survey: survey.id,
                         year_graduated: localFilters.year_graduated || undefined,
-                        from: localFilters.from || undefined,
-                        to: localFilters.to || undefined,
+                        semester: localFilters.semester || undefined,
                     })}
                     className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
@@ -120,20 +126,29 @@ export default function SurveyAnalytics({
 
             {/* Filters */}
             <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 min-w-36">
+                <div className="flex flex-col gap-1 min-w-44">
                     <Label className="text-xs">Year Graduated</Label>
-                    <Select value={localFilters.year_graduated || "All Years"} onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}>
+                    <Select
+                        value={localFilters.year_graduated || "All Years"}
+                        onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
+                    >
                         <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-                        <SelectContent>{YEARS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+                        <SelectContent className="max-h-48 overflow-y-auto">
+                            {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                        </SelectContent>
                     </Select>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <Label className="text-xs">From</Label>
-                    <Input type="date" className="h-8 text-sm" value={localFilters.from} onChange={(e) => applyFilters({ from: e.target.value })} />
-                </div>
-                <div className="flex flex-col gap-1">
-                    <Label className="text-xs">To</Label>
-                    <Input type="date" className="h-8 text-sm" value={localFilters.to} onChange={(e) => applyFilters({ to: e.target.value })} />
+                <div className="flex flex-col gap-1 min-w-44">
+                    <Label className="text-xs">Semester</Label>
+                    <Select
+                        value={localFilters.semester || "All Semesters"}
+                        onValueChange={(v) => applyFilters({ semester: v === "All Semesters" ? "" : v })}
+                    >
+                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {SEMESTER_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 

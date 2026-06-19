@@ -227,21 +227,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 abort(403, 'Only admins can access survey analytics.');
             }
             $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
-            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys]);
+            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys->map(fn($s) => [
+                'id'             => $s->id,
+                'title'          => $s->title,
+                'status'         => $s->status,
+                'sections_count' => $s->sections_count,
+                'is_tracer_study'=> (bool) $s->is_tracer_study,
+            ])]);
         })->name('analytics');
 
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
 
-        Route::get('/surveys/{survey}/analytics', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics');
-        Route::get('/surveys/{survey}/analytics/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('surveys.analytics.download');
-
+            
+        Route::get('/analytics/{survey}', [SurveyAnalyticsController::class, 'show'])->name('analytics.show');
+        Route::get('/analytics/{survey}/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('analytics.download');
+        Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])->name('analytics.cect-show');
+        Route::get('/analytics/{survey}/cect/download', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'download'])->name('analytics.cect-download');
         // Employment location analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
         });
 
-          Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
         Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
         Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
         Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
@@ -290,6 +298,24 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
         Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
+
+        // Coordinator Analytics Index
+        Route::get('/analytics', function () {
+            $user = auth()->user();
+            $surveys = \App\Models\Survey::withCount(['sections', 'responses'])
+                ->where('created_by', $user->id)
+                ->whereNull('archived_at')
+                ->whereHas('responses')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return \Inertia\Inertia::render('Coordinator/CoordinatorAnalyticsIndex', [
+                'surveys' => $surveys,
+            ]);
+        })->name('analytics');
+        Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])
+            ->name('analytics.cect-show');
+        Route::get('/analytics/{survey}/cect/download', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'download'])
+            ->name('analytics.cect-download');
 
         // Survey Response (Coordinator)
         Route::get('/survey-response', [CoordinatorOfSurveyResponseController::class, 'index'])
@@ -352,6 +378,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::patch('/surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
         Route::patch('/surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
         Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
+        
 
         // Sections
         Route::post('/surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');

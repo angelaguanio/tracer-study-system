@@ -1,6 +1,6 @@
 import React from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import alumniHomeImg from '../../assets/alumni_homepage.jpg';
+import alumniHomeImg from '../../assets/cect_home.jpg';
 import { Link } from '@inertiajs/react';
 
 import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 'lucide-react';

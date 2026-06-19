@@ -188,27 +188,28 @@ export default function AlumnaQuestionnaire({
 
     //=======CARDS CECT SURVEYSSSSSSS==============
     return (
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto py-10'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl mx-auto py-10'>
         {cectSurveys.map((survey) => (
           <Card key={survey.id} className="flex flex-col w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
-            <CardHeader className='h-36 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-8 py-6 text-white space-y-4'>
-              <div className="flex items-center gap-3 mt-3">
+            <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-8 py-6 text-white space-y-4'>
+              <div className="flex items-start gap-3 mt-3">
                 <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
                   <div className='flex items-center gap-3'>
                     <div className='p-3 rounded-full bg-white/30 w-fit'>
                       <NotebookPen size={20} />
                     </div>
-                    <h3 className="text-xl font-semibold text-white text-shadow">{survey.title}</h3>
+                    <h3 className="text-lg font-semibold text-white text-shadow line-clamp-2">{survey.title}</h3>
+                    {survey.completed && (
+                      <Badge className="bg-green-100 text-green-700 border-green-300 py-1 rounded-full flex-shrink-0">
+                        Completed
+                      </Badge>
+                    )}
                   </div>
                   {survey.description && (
-                    <p className="text-sm font-normal text-gray-700">{survey.description}</p>
+                    <p className="text-sm font-normal text-white line-clamp-2">{survey.description}</p>
                   )}
                 </div>
-                {survey.completed && (
-                  <Badge className="bg-green-100 text-green-700 border-green-300 py-1 rounded-full flex-shrink-0">
-                    Completed
-                  </Badge>
-                )}
+                
               </div>
             </CardHeader>
             <CardContent className="flex flex-col p-6">

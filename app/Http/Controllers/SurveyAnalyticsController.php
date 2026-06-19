@@ -19,13 +19,16 @@ class SurveyAnalyticsController extends Controller
         $this->authorize('viewAnalytics', Survey::class);
 
         $yearGraduated = $request->query('year_graduated');
-        $from          = $request->query('from');
-        $to            = $request->query('to');
+        $semester      = $request->query('semester');
 
-        $validYears = ['2018','2019','2020','2021','2022','2023','2024','2025'];
-        $applyYear  = $yearGraduated && in_array($yearGraduated, $validYears);
+        $latestYear = (int) date('Y') - 1;
+        $validYears = [];
+        for ($y = $latestYear; $y >= 1990; $y--) {
+            $validYears[] = "{$y}-" . ($y + 1);
+        }
+        $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
 
-        // Load survey with sections + questions
         $survey->load([
             'sections' => fn($q) => $q->orderBy('display_order')->with([
                 'questions' => fn($q) => $q->orderBy('display_order'),
@@ -34,10 +37,12 @@ class SurveyAnalyticsController extends Controller
 
         // --- Base respondent user IDs (filtered) ---
         $respondentQuery = Response::where('survey_id', $survey->id)
-            ->when($from, fn($q) => $q->where('submitted_at', '>=', $from))
-            ->when($to,   fn($q) => $q->where('submitted_at', '<=', $to))
-            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('year_graduated', $yearGraduated)
+            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) => $u->where(function($u2) use ($yearGraduated) {
+                [$startY, $endY] = explode('-', $yearGraduated);
+                $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
+            })))
+            ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
+                $u->where('semester', $semester)
             ));
 
         $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
@@ -49,8 +54,13 @@ class SurveyAnalyticsController extends Controller
         $degreeDistribution = $respondents->groupBy('courses')
             ->map(fn($g) => $g->count())->sortDesc()->toArray();
 
-        $yearDistribution = $respondents->groupBy('year_graduated')
-            ->map(fn($g) => $g->count())->sortKeys()->toArray();
+        // Group by start_year-end_year pair since there's no year_graduated column
+        $yearDistribution = $respondents->map(fn($u) => $u->start_year && $u->end_year
+                ? "{$u->start_year}-{$u->end_year}" : null)
+            ->filter()
+            ->countBy()
+            ->sortKeys()
+            ->toArray();
 
         // --- Helper: get answers for a question label keyword ---
         $getAnswersForQuestion = function(string $keyword) use ($survey, $respondentIds) {
@@ -286,10 +296,13 @@ class SurveyAnalyticsController extends Controller
 
         // --- 5. Trend Analysis by year ---
         $trendByYear = [];
-        $allYears = $respondents->pluck('year_graduated')->unique()->sort()->values();
+        $allYears = $respondents->map(fn($u) => $u->start_year && $u->end_year
+                ? "{$u->start_year}-{$u->end_year}" : null)
+            ->filter()->unique()->sort()->values();
 
         foreach ($allYears as $yr) {
-            $yrUserIds = $respondents->where('year_graduated', $yr)->pluck('id');
+            [$sy, $ey] = explode('-', $yr);
+            $yrUserIds = $respondents->filter(fn($u) => (string)$u->start_year === $sy && (string)$u->end_year === $ey)->pluck('id');
             $yrEmpAnswers = Response::where('survey_id', $survey->id)
                 ->whereIn('user_id', $yrUserIds)
                 ->whereHas('question', fn($q) => $q->where('label', 'like', '%currently employed%'))
@@ -440,7 +453,7 @@ class SurveyAnalyticsController extends Controller
             ],
             'trendByYear'         => $trendByYear,
             'textAnalysis'        => $textAnalysis,
-            'filters'             => compact('yearGraduated', 'from', 'to'),
+            'filters'             => compact('yearGraduated', 'semester'),
             'locationMigration'   => $this->getLocationMigrationData($respondentIds),
         ]);
     }
@@ -546,7 +559,8 @@ class SurveyAnalyticsController extends Controller
                 'company_city' => $companyCity,
                 'company_name' => $user->employment->company_name,
                 'is_local' => $isLocal,
-                'year_graduated' => $user->year_graduated,
+                'year_graduated' => ($user->start_year && $user->end_year)
+                    ? "{$user->start_year}-{$user->end_year}" : null,
                 'course' => $user->courses,
             ];
         }
@@ -728,11 +742,15 @@ class SurveyAnalyticsController extends Controller
 
         // Get the same data as the show method
         $yearGraduated = $request->query('year_graduated');
-        $from          = $request->query('from');
-        $to            = $request->query('to');
+        $semester      = $request->query('semester');
 
-        $validYears = ['2018','2019','2020','2021','2022','2023','2024','2025'];
-        $applyYear  = $yearGraduated && in_array($yearGraduated, $validYears);
+        $latestYear = (int) date('Y') - 1;
+        $validYears = [];
+        for ($y = $latestYear; $y >= 1990; $y--) {
+            $validYears[] = "{$y}-" . ($y + 1);
+        }
+        $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
 
         $survey->load([
             'sections' => fn($q) => $q->orderBy('display_order')->with([
@@ -741,10 +759,12 @@ class SurveyAnalyticsController extends Controller
         ]);
 
         $respondentQuery = Response::where('survey_id', $survey->id)
-            ->when($from, fn($q) => $q->where('submitted_at', '>=', $from))
-            ->when($to,   fn($q) => $q->where('submitted_at', '<=', $to))
-            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('year_graduated', $yearGraduated)
+            ->when($applyYear, fn($q) => $q->whereHas('user', fn($u) => $u->where(function($u2) use ($yearGraduated) {
+                [$startY, $endY] = explode('-', $yearGraduated);
+                $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
+            })))
+            ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
+                $u->where('semester', $semester)
             ));
 
         $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
@@ -781,7 +801,9 @@ class SurveyAnalyticsController extends Controller
             // Year Distribution
             fputcsv($file, ['Year Graduated Distribution']);
             fputcsv($file, ['Year', 'Count', 'Percentage']);
-            $yearDistribution = $respondents->groupBy('year_graduated')->map(fn($g) => $g->count())->sortKeys();
+            $yearDistribution = $respondents
+                ->map(fn($u) => ($u->start_year && $u->end_year) ? "{$u->start_year}-{$u->end_year}" : null)
+                ->filter()->countBy()->sortKeys();
             foreach ($yearDistribution as $year => $count) {
                 $pct = $totalRespondents > 0 ? round(($count / $totalRespondents) * 100, 1) : 0;
                 fputcsv($file, [$year, $count, $pct . '%']);
