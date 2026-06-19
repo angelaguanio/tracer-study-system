@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import AlumnaLayout from "@/layouts/alumna-layout";
-import { CircleCheck, SparkleIcon, PartyPopper, ClipboardX, FileText, GraduationCap, NotebookText, CalendarDays } from 'lucide-react';
+import { CircleCheck, SparkleIcon, PartyPopper, ClipboardX, FileText, GraduationCap, NotebookText, CalendarDays, NotebookPen } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link, usePage, router } from '@inertiajs/react';
 import { Badge } from "@/components/ui/badge";
+import { toast } from 'sonner';
 
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
@@ -14,36 +15,22 @@ export default function AlumnaQuestionnaire({
 }) {
   const { props } = usePage();
   const justCompleted = props.flash?.justCompleted;
-  const [selectedTab, setSelectedTab] = useState('tracer-study');
-
-  // Just finished this session → show success card inside the normal tab layout
-  const renderJustCompleted = () => (
-    <div className='flex items-center justify-center w-full py-10'>
-      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
-          <div className='space-y-4'>
-            <div className='flex flex-row gap-2'>
-              <PartyPopper />
-              <span className='text-sm'>THANK YOU FOR YOUR RESPONSE</span>
-            </div>
-            <div>
-              <h1 className='text-3xl'>Survey Completed!</h1>
-              <p>Your response has been recorded.</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
-          <CircleCheck size={64} color='green' />
-          <div className='space-y-2'>
-            <p className='text-lg font-medium'>Thank you for completing the survey!</p>
-            <p className='text-sm text-gray-500'>
-              Your feedback helps us improve our programs for future students.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+  const [selectedTab, setSelectedTab] = useState(
+    // Auto-switch to CECT tab when a CECT survey was just completed
+    justCompleted ? 'cect-surveys' : 'tracer-study'
   );
+
+  // Fire a toast when arriving back after survey submission
+  useEffect(() => {
+    if (justCompleted) {
+      toast.success('Survey Completed!', {
+        description: 'Your response has been recorded. Thank you for your feedback!',
+        duration: 5000,
+      });
+    }
+  }, [justCompleted]);
+
+  // Just finished this session → toast fires above; fall through to normal tab render
 
   const renderTracerStudyTab = () => {
     // Tracer study already completed
@@ -204,16 +191,21 @@ export default function AlumnaQuestionnaire({
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto py-10'>
         {cectSurveys.map((survey) => (
           <Card key={survey.id} className="flex flex-col w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
-            <CardHeader className='h-36 bg-gradient-to-l from-[#5efad3] to-[#47c5fb] px-8 py-6 text-white space-y-4'>
-              <div className="flex items-start gap-3 mt-3">
-                <div className={`flex-col w-full ${survey.description ? 'space-y-2' : ''}`}>
-                  <h3 className="text-xl font-semibold text-gray-800">{survey.title}</h3>
+            <CardHeader className='h-36 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-8 py-6 text-white space-y-4'>
+              <div className="flex items-center gap-3 mt-3">
+                <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
+                  <div className='flex items-center gap-3'>
+                    <div className='p-3 rounded-full bg-white/30 w-fit'>
+                      <NotebookPen size={20} />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white text-shadow">{survey.title}</h3>
+                  </div>
                   {survey.description && (
                     <p className="text-sm font-normal text-gray-700">{survey.description}</p>
                   )}
                 </div>
                 {survey.completed && (
-                  <Badge className="bg-green-100 text-green-700 border-green-300 flex-shrink-0">
+                  <Badge className="bg-green-100 text-green-700 border-green-300 py-1 rounded-full flex-shrink-0">
                     Completed
                   </Badge>
                 )}
@@ -265,7 +257,7 @@ export default function AlumnaQuestionnaire({
             onClick={() => setSelectedTab('tracer-study')}
             className={`px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
               selectedTab === 'tracer-study'
-                ? 'bg-blue-500 text-white shadow-sm'
+                ? 'bg-[#269be9] text-white shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
@@ -276,7 +268,7 @@ export default function AlumnaQuestionnaire({
             onClick={() => setSelectedTab('cect-surveys')}
             className={`px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
               selectedTab === 'cect-surveys'
-                ? 'bg-[#0accead7] text-white shadow-sm'
+                ? 'bg-[#31c7b3d7] text-white shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
