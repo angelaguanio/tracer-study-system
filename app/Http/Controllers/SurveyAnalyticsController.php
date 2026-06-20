@@ -504,14 +504,12 @@ class SurveyAnalyticsController extends Controller
     {
         $this->authorize('viewAnalytics', Survey::class);
 
-        // Get all employed alumni with both address and location data
+        // Get all employed alumni with location data
         $employedUsers = User::where('user_role', 'alumna')
             ->whereHas('employment', function($q) {
                 $q->whereNotNull('location')
                   ->where('location', '!=', '');
             })
-            ->whereNotNull('address')
-            ->where('address', '!=', '')
             ->with('employment')
             ->get();
 
@@ -521,37 +519,30 @@ class SurveyAnalyticsController extends Controller
         $detailedData = [];
 
         foreach ($employedUsers as $user) {
-            $homeAddress = strtolower(trim($user->address));
             $companyLocation = strtolower(trim($user->employment->location));
+            $homeAddress = $user->address ? strtolower(trim($user->address)) : '';
 
-            // Check if same area (now uses normalized addresses internally)
-            $isLocal = $this->isSameArea($homeAddress, $companyLocation);
+            // Extract cities
+            $companyCity = $this->extractCity($companyLocation);
+            $homeCity = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
 
+            // Check if employment is local (within Cabanatuan) or external
+            $isLocal = $this->isSameArea($homeAddress ?: 'unknown', $companyLocation);
+            
             if ($isLocal) {
                 $localCount++;
             } else {
                 $externalCount++;
             }
 
-            // Track city distribution (now uses normalized addresses)
-            $companyCity = $this->extractCity($companyLocation);
-            $homeCity = $this->extractCity($homeAddress);
-
+            // Track city distribution
             if (!isset($cityDistribution[$companyCity])) {
                 $cityDistribution[$companyCity] = [
                     'city' => $companyCity,
-                    'local' => 0,
-                    'external' => 0,
-                    'total' => 0,
+                    'count' => 0,
                 ];
             }
-
-            $cityDistribution[$companyCity]['total']++;
-            if ($isLocal) {
-                $cityDistribution[$companyCity]['local']++;
-            } else {
-                $cityDistribution[$companyCity]['external']++;
-            }
+            $cityDistribution[$companyCity]['count']++;
 
             $detailedData[] = [
                 'name' => $user->first_name . ' ' . $user->last_name,
@@ -559,63 +550,27 @@ class SurveyAnalyticsController extends Controller
                 'company_city' => $companyCity,
                 'company_name' => $user->employment->company_name,
                 'is_local' => $isLocal,
-                'year_graduated' => ($user->start_year && $user->end_year)
-                    ? "{$user->start_year}-{$user->end_year}" : null,
+                'start_year' => $user->start_year,
+                'end_year' => $user->end_year,
+                'year_graduated' => $user->year_graduated,
                 'course' => $user->courses,
             ];
         }
 
-        $totalEmployed = $localCount + $externalCount;
-        $localPercentage = $totalEmployed > 0 ? round(($localCount / $totalEmployed) * 100, 1) : 0;
+        $totalEmployed = count($detailedData);
         $externalPercentage = $totalEmployed > 0 ? round(($externalCount / $totalEmployed) * 100, 1) : 0;
 
-        // Sort city distribution by total
-        usort($cityDistribution, fn($a, $b) => $b['total'] <=> $a['total']);
-
-        // Year-wise breakdown
-        $yearBreakdown = [];
-        foreach ($detailedData as $record) {
-            $year = $record['year_graduated'] ?? 'Unknown';
-            if (!isset($yearBreakdown[$year])) {
-                $yearBreakdown[$year] = ['year' => $year, 'local' => 0, 'external' => 0, 'total' => 0];
-            }
-            $yearBreakdown[$year]['total']++;
-            if ($record['is_local']) {
-                $yearBreakdown[$year]['local']++;
-            } else {
-                $yearBreakdown[$year]['external']++;
-            }
-        }
-        $yearBreakdown = array_values($yearBreakdown);
-        usort($yearBreakdown, fn($a, $b) => $a['year'] <=> $b['year']);
-
-        // Course-wise breakdown
-        $courseBreakdown = [];
-        foreach ($detailedData as $record) {
-            $course = $record['course'] ?? 'Unknown';
-            if (!isset($courseBreakdown[$course])) {
-                $courseBreakdown[$course] = ['course' => $course, 'local' => 0, 'external' => 0, 'total' => 0];
-            }
-            $courseBreakdown[$course]['total']++;
-            if ($record['is_local']) {
-                $courseBreakdown[$course]['local']++;
-            } else {
-                $courseBreakdown[$course]['external']++;
-            }
-        }
-        $courseBreakdown = array_values($courseBreakdown);
+        // Sort city distribution by count
+        usort($cityDistribution, fn($a, $b) => $b['count'] <=> $a['count']);
 
         return Inertia::render('Admin/EmploymentLocationAnalytics', [
             'summary' => [
                 'total_employed' => $totalEmployed,
-                'local_count' => $localCount,
+                'total_cities' => count($cityDistribution),
                 'external_count' => $externalCount,
-                'local_percentage' => $localPercentage,
                 'external_percentage' => $externalPercentage,
             ],
             'cityDistribution' => $cityDistribution,
-            'yearBreakdown' => $yearBreakdown,
-            'courseBreakdown' => $courseBreakdown,
             'detailedData' => $detailedData,
         ]);
     }

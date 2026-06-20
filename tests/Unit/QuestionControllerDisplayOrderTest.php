@@ -31,7 +31,7 @@ class QuestionControllerDisplayOrderTest extends TestCase
         parent::setUp();
         
         $this->controller = new QuestionController();
-        $this->user = User::factory()->create(['role' => 'admin']);
+        $this->user = User::factory()->create(['user_role' => 'admin']);
         
         $this->survey = Survey::create([
             'title' => 'Test Survey',

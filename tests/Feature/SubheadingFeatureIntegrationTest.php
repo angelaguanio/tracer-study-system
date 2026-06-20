@@ -29,12 +29,13 @@ class SubheadingFeatureIntegrationTest extends TestCase
     {
         parent::setUp();
         
-        $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->alumna = User::factory()->create(['role' => 'alumna']);
+        $this->admin = User::factory()->create(['user_role' => 'admin']);
+        $this->alumna = User::factory()->create(['user_role' => 'alumna']);
         
         $this->survey = Survey::create([
             'title' => 'Integration Test Survey',
             'status' => 'active',
+            'created_by' => $this->admin->id,
         ]);
         
         $this->section = Section::create([
@@ -173,7 +174,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
             'section_id' => $this->section->id,
         ];
 
-        $response = $this->post(route('alumna.surveys.saveSection', $this->survey->id), $draftData);
+        $response = $this->post(route('alumna.surveys.draft', $this->survey->id), $draftData);
         $response->assertRedirect();
 
         // 4. Verify draft was created with all answers (including subheadings)
@@ -263,7 +264,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
             ],
         ];
 
-        $response = $this->post(route('admin.questions.reorder', $this->section->id), $reorderData);
+        $response = $this->put(route('admin.questions.reorder', $this->section->id), $reorderData);
         $response->assertRedirect();
 
         // 3. Verify reordering worked
@@ -287,7 +288,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
         ];
 
         // Create draft first
-        $this->post(route('alumna.surveys.saveSection', $this->survey->id), [
+        $this->post(route('alumna.surveys.draft', $this->survey->id), [
             'answers' => $submissionData['answers'],
             'section_id' => $this->section->id,
         ]);
@@ -361,7 +362,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
         ];
 
         // Create draft
-        $this->post(route('alumna.surveys.saveSection', $this->survey->id), [
+        $this->post(route('alumna.surveys.draft', $this->survey->id), [
             'answers' => $invalidSubmissionData['answers'],
             'section_id' => $this->section->id,
         ]);
@@ -383,7 +384,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
         ];
 
         // Update draft
-        $this->post(route('alumna.surveys.saveSection', $this->survey->id), [
+        $this->post(route('alumna.surveys.draft', $this->survey->id), [
             'answers' => $validSubmissionData['answers'],
             'section_id' => $this->section->id,
         ]);
@@ -460,7 +461,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
 
         // 3. Move a question between sections
         $moveData = ['section_id' => $section2->id];
-        $response = $this->post(route('admin.questions.move', $section1Items[1]->id), $moveData);
+        $response = $this->put(route('admin.questions.move', $section1Items[1]->id), $moveData);
         $response->assertRedirect();
 
         // 4. Verify move worked and display orders were updated
@@ -481,7 +482,7 @@ class SubheadingFeatureIntegrationTest extends TestCase
         ];
 
         // Create draft and submit
-        $this->post(route('alumna.surveys.saveSection', $this->survey->id), [
+        $this->post(route('alumna.surveys.draft', $this->survey->id), [
             'answers' => $submissionData['answers'],
             'section_id' => $this->section->id,
         ]);
