@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\InquiriesController;
 use App\Http\Controllers\CoordinatorAlumniController;
+use App\Http\Controllers\Coordinator\CoordinatorProfileController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -295,6 +296,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/change-password', [CoordinatorAuthController::class, 'showChangePassword'])->name('show-change-password');
         
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
+        Route::get('/profile', [CoordinatorProfileController::class, 'show'])->name('profile');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
         Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');

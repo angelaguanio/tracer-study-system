@@ -8,6 +8,7 @@ import {
 } from "../components/ui/dropdown-menu"
 import { Button } from './ui/button'
 import ProfileTemp from './profile-temp'
+import {User, Mail, LogOut} from 'lucide-react'
 
 const navBtns = [
   { id: "questionnaire", name: "Questionnaire", href:"/alumna/questionnaire" },
@@ -73,15 +74,24 @@ export default function NavbarAlumni({ children }) {
           <DropdownMenuContent>
             {/* profile */}
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.profile')}>My Profile</Link>
+              <Link
+                href={route('alumna.profile')}
+                className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Profile
+            </Link>
             </DropdownMenuItem>
               {/* inquiries */}
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.inquiries.index')}>My Inquiries</Link>
+              <Link href={route('alumna.inquiries.index')}
+              className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Inquiries</Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Link href={route('alumna.logout')} className='w-full flex'>
+              <Link href={route('alumna.logout')} className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
                 Logout
               </Link>
             </DropdownMenuItem>

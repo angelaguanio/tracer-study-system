@@ -65,7 +65,7 @@ export default function CoordinatorDashboard({
         <div>
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <div className="h-8 w-1 bg-primary rounded-full" />
-            Key Metrics
+            Overview
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard 
@@ -89,14 +89,10 @@ export default function CoordinatorDashboard({
           </div>
         </div>
 
-        <Separator />
+
 
         {/* Analytics Section */}
         <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <div className="h-8 w-1 bg-primary rounded-full" />
-            Analytics & Insights
-          </h2>
           <div className="grid gap-6 lg:grid-cols-2">
             <ChartWidget 
               title="Survey Response Overview" 
@@ -113,34 +109,6 @@ export default function CoordinatorDashboard({
               type="pie"
               height={350}
               emptyMessage="No announcements created yet"
-            />
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Alumni Distribution Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <div className="h-8 w-1 bg-primary rounded-full" />
-            Alumni Distribution
-          </h2>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <ChartWidget 
-              title="Alumni by Graduation Year" 
-              description="Distribution of alumni by graduation year"
-              data={alumni_by_year}
-              type="bar"
-              height={350}
-              emptyMessage="No alumni data available"
-            />
-            <ChartWidget 
-              title="Alumni by Course" 
-              description="Distribution across different programs"
-              data={alumni_by_course}
-              type="bar"
-              height={350}
-              emptyMessage="No alumni data available"
             />
           </div>
         </div>
