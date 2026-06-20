@@ -27,8 +27,8 @@ class SubheadingIntegrationPropertyTest extends TestCase
     {
         parent::setUp();
         
-        $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->alumna = User::factory()->create(['role' => 'alumna']);
+        $this->admin = User::factory()->create(['user_role' => 'admin']);
+        $this->alumna = User::factory()->create(['user_role' => 'alumna']);
     }
 
     /**
@@ -41,6 +41,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         $survey = Survey::create([
             'title' => 'Complex Integration Survey',
             'status' => 'active',
+            'created_by' => $this->admin->id,
         ]);
 
         $sections = [];
@@ -95,13 +96,13 @@ class SubheadingIntegrationPropertyTest extends TestCase
             })->toArray(),
         ];
 
-        $response = $this->post(route('admin.questions.reorder', $sections[0]->id), $reorderData);
+        $response = $this->put(route('admin.questions.reorder', $sections[0]->id), $reorderData);
         $response->assertRedirect();
 
         // Move a question between sections
         $questionToMove = $section1Questions->where('type', 'text')->first();
         $moveData = ['section_id' => $sections[1]->id];
-        $response = $this->post(route('admin.questions.move', $questionToMove->id), $moveData);
+        $response = $this->put(route('admin.questions.move', $questionToMove->id), $moveData);
         $response->assertRedirect();
 
         // Alumna completes the survey
@@ -118,7 +119,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         }
 
         // Save draft
-        $this->post(route('alumna.surveys.saveSection', $survey->id), [
+        $this->post(route('alumna.surveys.draft', $survey->id), [
             'answers' => $submissionAnswers,
             'section_id' => $sections[0]->id,
         ]);
@@ -180,6 +181,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         $survey = Survey::create([
             'title' => 'Large Scale Survey',
             'status' => 'active',
+            'created_by' => $this->admin->id,
         ]);
 
         $section = Section::create([
@@ -234,7 +236,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
             })->toArray(),
         ];
 
-        $response = $this->post(route('admin.questions.reorder', $section->id), $reorderData);
+        $response = $this->put(route('admin.questions.reorder', $section->id), $reorderData);
         $response->assertRedirect();
 
         $reorderTime = microtime(true) - $startTime;
@@ -257,7 +259,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         // Create draft
         $startTime = microtime(true);
 
-        $this->post(route('alumna.surveys.saveSection', $survey->id), [
+        $this->post(route('alumna.surveys.draft', $survey->id), [
             'answers' => $submissionAnswers,
             'section_id' => $section->id,
         ]);
@@ -311,6 +313,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         $survey = Survey::create([
             'title' => 'Concurrent Operations Survey',
             'status' => 'active',
+            'created_by' => $this->admin->id,
         ]);
 
         $section = Section::create([
@@ -346,7 +349,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
             })->toArray(),
         ];
 
-        $this->post(route('admin.questions.reorder', $section->id), $reorderData);
+        $this->put(route('admin.questions.reorder', $section->id), $reorderData);
 
         // 2. Add new items
         $newSubheading = [
@@ -400,7 +403,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         }
 
         // Create draft and submit
-        $this->post(route('alumna.surveys.saveSection', $survey->id), [
+        $this->post(route('alumna.surveys.draft', $survey->id), [
             'answers' => $submissionAnswers,
             'section_id' => $section->id,
         ]);
@@ -442,6 +445,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         $survey = Survey::create([
             'title' => 'Cross-Section Survey',
             'status' => 'active',
+            'created_by' => $this->admin->id,
         ]);
 
         // Create multiple sections
@@ -479,13 +483,13 @@ class SubheadingIntegrationPropertyTest extends TestCase
         
         // Move first subheading from section 1 to section 2
         $firstSubheading = $subheadingsToMove->where('section_id', $sections[0]->id)->first();
-        $this->post(route('admin.questions.move', $firstSubheading->id), [
+        $this->put(route('admin.questions.move', $firstSubheading->id), [
             'section_id' => $sections[1]->id,
         ]);
 
         // Move a subheading from section 2 to section 3
         $secondSubheading = $subheadingsToMove->where('section_id', $sections[1]->id)->first();
-        $this->post(route('admin.questions.move', $secondSubheading->id), [
+        $this->put(route('admin.questions.move', $secondSubheading->id), [
             'section_id' => $sections[2]->id,
         ]);
 
@@ -520,7 +524,7 @@ class SubheadingIntegrationPropertyTest extends TestCase
         }
 
         // Submit survey
-        $this->post(route('alumna.surveys.saveSection', $survey->id), [
+        $this->post(route('alumna.surveys.draft', $survey->id), [
             'answers' => $submissionAnswers,
             'section_id' => $sections[0]->id,
         ]);
