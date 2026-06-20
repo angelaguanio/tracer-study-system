@@ -13,13 +13,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    
-    env:
-        PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
-        PUSHER_APP_KEY: ${{ secrets.PUSHER_APP_KEY }}
-        PUSHER_APP_SECRET: ${{ secrets.PUSHER_APP_SECRET }}
-        PUSHER_APP_CLUSTER: ${{ secrets.PUSHER_APP_CLUSTER }}
-        
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,6 +46,10 @@ jobs:
           echo "PUSHER_APP_KEY=${{ secrets.PUSHER_APP_KEY }}" >> .env
           echo "PUSHER_APP_SECRET=${{ secrets.PUSHER_APP_SECRET }}" >> .env
           echo "PUSHER_APP_CLUSTER=${{ secrets.PUSHER_APP_CLUSTER }}" >> .env
+
+      - name: Check .env
+        run: |
+          grep PUSHER .env
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
