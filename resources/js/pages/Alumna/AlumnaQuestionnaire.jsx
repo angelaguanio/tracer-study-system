@@ -37,7 +37,7 @@ export default function AlumnaQuestionnaire({
     if (tracerStudyCompleted) {
       return (
         <div className='flex items-center justify-center w-full py-10'>
-          <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+          <Card className="w-full max-w-xl mx-2 overflow-hidden shadow-xl rounded-3xl p-0 gap-1">
             <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
               <div className='space-y-4'>
                 <div className='flex flex-row gap-2'>
@@ -45,7 +45,7 @@ export default function AlumnaQuestionnaire({
                   <span className='text-sm'>TRACER STUDY COMPLETED</span>
                 </div>
                 <div>
-                  <h1 className='text-3xl'>Already Submitted</h1>
+                  <h1 className='text-2xl sm:text-3xl'>Already Submitted</h1>
                   <p>You have completed the tracer study survey.</p>
                 </div>
               </div>
@@ -76,7 +76,7 @@ export default function AlumnaQuestionnaire({
                   <span className='text-sm'>TRACER STUDY</span>
                 </div>
                 <div>
-                  <h1 className='text-3xl'>No Active Tracer Study</h1>
+                  <h1 className='text-2xl sm:text-3xl'>No Active Tracer Study</h1>
                   <p>Check back later for the tracer study survey.</p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function AlumnaQuestionnaire({
     // Show tracer study survey
     //TRACER STUDY SURVEY CARD
     return (
-      <div className='flex items-center justify-center w-full'>
+      <div className='flex items-center justify-center w-full px-4'>
         <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-1 bg-white text-gray-800">
           <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 px-8 py-6 text-white space-y-4">
               <div className='space-y-2'>
@@ -108,7 +108,7 @@ export default function AlumnaQuestionnaire({
                 </div>
 
                 <div>
-                  <h1 className='text-3xl'>Your Voice Matters</h1>
+                  <h1 className='text-2xl sm:text-3xl'>Your Voice Matters</h1>
                   <p>Share your post-graduation experience</p>
                 </div>
               </div>
@@ -124,8 +124,8 @@ export default function AlumnaQuestionnaire({
               </p>
             </div>
 
-            <div className='flex flex-row gap-5'>
-              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-1/2'>
+            <div className='flex flex-col sm:flex-row gap-4'>
+              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-full sm:w-1/2'>
                 <CircleCheck color='green'/>
                 <div className='flex flex-col'>
                   <p className='text-[15px] text-gray-800'>5-10 minutes</p>
@@ -133,7 +133,7 @@ export default function AlumnaQuestionnaire({
                 </div>
               </div>
 
-              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-1/2'>
+              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-full sm:w-1/2'>
                 <CircleCheck color='green'/>
                 <div className='flex flex-col'>
                   <p className='text-[15px] text-gray-800'>Confidential</p>
@@ -167,7 +167,7 @@ export default function AlumnaQuestionnaire({
                   <span className='text-sm'>CECT SURVEYS</span>
                 </div>
                 <div>
-                  <h1 className='text-3xl'>No Active Surveys</h1>
+                  <h1 className='text-2xl sm:text-3xl'>No Active Surveys</h1>
                   <p>Check back later for CECT surveys.</p>
                 </div>
               </div>
@@ -188,10 +188,10 @@ export default function AlumnaQuestionnaire({
 
     //=======CARDS CECT SURVEYSSSSSSS==============
     return (
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl mx-auto py-10'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 w-full max-w-7xl mx-auto py-6 px-4'>
         {cectSurveys.map((survey) => (
           <Card key={survey.id} className="flex flex-col w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
-            <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-8 py-6 text-white space-y-4'>
+            <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
                 <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
                   <div className='flex items-center gap-3'>
@@ -252,11 +252,11 @@ export default function AlumnaQuestionnaire({
   return (
     <div className="w-full">
       {/* Tab Navigation */}
-      <div className="flex justify-center mb-6 py-6">
-        <div className="bg-white rounded-lg shadow-md p-1 flex">
+      <div className="flex justify-center mb-6 py-6 px-4">
+        <div className="bg-white rounded-lg shadow-md p-1 flex flex-col sm:flex-row w-full sm:w-auto">
           <button
             onClick={() => setSelectedTab('tracer-study')}
-            className={`px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
               selectedTab === 'tracer-study'
                 ? 'bg-[#269be9] text-white shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
@@ -267,7 +267,7 @@ export default function AlumnaQuestionnaire({
           </button>
           <button
             onClick={() => setSelectedTab('cect-surveys')}
-            className={`px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
               selectedTab === 'cect-surveys'
                 ? 'bg-[#31c7b3d7] text-white shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
