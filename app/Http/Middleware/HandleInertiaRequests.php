@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                     'initials' => $request->user()->initials,
                     'profile_picture' => $request->user()->profile_picture,
                     'user_role' => $request->user()->user_role,
+                    'courses' => $request->user()->courses,
                 ] : null,
             ],
             'csrf_token' => csrf_token(),

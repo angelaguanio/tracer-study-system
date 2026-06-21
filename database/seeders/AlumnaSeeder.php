@@ -29,7 +29,7 @@ class AlumnaSeeder extends Seeder
             'start_year' => '2017',
             'end_year' => '2018',
             'semester' => '2nd Semester',
-            'department' => 'CECT'
+            
 
         ]);
 
