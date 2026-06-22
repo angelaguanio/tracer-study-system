@@ -50,7 +50,7 @@ export default function AdminAnnouncementView({ announcement }) {
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 space-y-4">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
           {/* BACK */}
           <Link
@@ -62,13 +62,13 @@ export default function AdminAnnouncementView({ announcement }) {
           </Link>
 
           {/* ACTIONS */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
 
             {isPending && (
               <>
                 <button
                   onClick={handleApprove}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg border border-green-600 text-green-600 bg-green-50 hover:bg-green-100 cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-green-600 text-green-600 bg-green-50 hover:bg-green-100 cursor-pointer"
                 >
                   <Check size={16} />
                   Approve
@@ -76,7 +76,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
                 <button
                   onClick={() => setOpenModal(true)}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg border border-yellow-600 text-yellow-600 bg-yellow-50 hover:bg-yellow-100 cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-yellow-600 text-yellow-600 bg-yellow-50 hover:bg-yellow-100 cursor-pointer"
                 >
                   <X size={16} />
                   Revise
@@ -88,7 +88,7 @@ export default function AdminAnnouncementView({ announcement }) {
               <>
                 <Link
                   href={`/admin/announcement/${announcement.id}/edit`}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg border border-blue-600 text-blue-600 bg-blue-50 hover:bg-blue-100"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-blue-600 text-blue-600 bg-blue-50 hover:bg-blue-100"
                 >
                   <Pencil size={16} />
                   Edit
@@ -98,7 +98,7 @@ export default function AdminAnnouncementView({ announcement }) {
                   announcementId={announcement.id}
                   onSuccess={() => router.visit("/admin/announcement")}
                 >
-                  <button className="flex items-center gap-1 px-3 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-100 cursor-pointer">
+                  <button className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-100 cursor-pointer">
                     <Trash2 size={16} />
                     Delete
                   </button>
@@ -114,7 +114,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
         {/* MODAL */}
         {openModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
 
             <div className="bg-white w-full max-w-md p-5 rounded-lg shadow-lg">
 
@@ -129,21 +129,21 @@ export default function AdminAnnouncementView({ announcement }) {
                 className="w-full border rounded-md p-3 text-sm h-32 resize-none"
               />
 
-              <div className="flex justify-end gap-2 mt-4">
+              <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
 
                 <button
                   onClick={() => {
                     setOpenModal(false);
                     setNote("");
                   }}
-                  className="px-4 py-2 text-sm rounded-md border hover:bg-gray-100 hover:cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
                 >
                   Cancel
                 </button>
 
                 <button
                   onClick={submitRevision}
-                  className="px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600 hover:cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
                 >
                   Submit
                 </button>

@@ -27,48 +27,50 @@ export default function CoordinatorAnnouncementCreate() {
     // SUBMIT HANDLER
     const handleSubmit = (e) => {
         e.preventDefault();
-    
         post("/coordinator/announcement", {
             forceFormData: true,
-    
             onSuccess: () => {
                 setData({
                     title: "",
                     details: "",
                     images: [],
                 });
-    
+
                 setPreviews([]);
                 setFileError("");
-    
+
                 if (fileInputRef.current) {
                     fileInputRef.current.value = null;
                 }
-    
+
                 router.visit("/coordinator/announcement");
             },
         });
     };
 
     return (
-            <>
+        <>
             <Head title="Create Announcement" />
 
-            {/* Full-screen background wrapper */}
-            <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
-                {/* Card wrapper */}
-                <div className="w-full max-w-6xl">
-                    <Card className="w-full flex flex-col min-h-[700px]">
+            {/* WRAPPER */}
+            <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 sm:py-10 px-3 sm:px-4">
 
-                        {/* Card Header */}
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div className="flex items-center gap-2">
+                <div className="w-full max-w-6xl">
+
+                    {/* CARD */}
+                    <Card className="w-full flex flex-col h-fit">
+
+                        {/* HEADER */}
+                        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <Link href="/coordinator/announcement">
                                     <Button type="button" variant="ghost" className="p-2">
                                         <ArrowLeft size={18} />
                                     </Button>
                                 </Link>
-                                <CardTitle className="text-lg font-semibold ml-3">
+
+                                <CardTitle className="text-lg font-semibold ml-1 sm:ml-3">
                                     Create new announcement
                                 </CardTitle>
                             </div>
@@ -82,16 +84,20 @@ export default function CoordinatorAnnouncementCreate() {
                                         fileInputRef.current.click();
                                     }
                                 }}
-                                className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
+                                className="w-full sm:w-auto bg-[#2859C5] text-white hover:bg-[#1f47a0]"
                             >
                                 Upload Image
                             </Button>
-                    </CardHeader>
 
-                        {/* Card Content */}
-                        <CardContent className="flex flex-col flex-grow">
-                            {/* SINGLE FORM */}
-                            <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
+                        </CardHeader>
+
+                        {/* CONTENT */}
+                        <CardContent className="flex flex-col">
+
+                            <form
+                                onSubmit={handleSubmit}
+                                className="flex flex-col gap-3 sm:gap-4"
+                            >
 
                                 {/* HIDDEN FILE INPUT */}
                                 <input
@@ -102,7 +108,6 @@ export default function CoordinatorAnnouncementCreate() {
                                     multiple
                                     onChange={(e) => {
                                         const newFiles = Array.from(e.target.files || []);
-
                                         if (!newFiles.length) return;
 
                                         // reset error every upload attempt
@@ -143,33 +148,32 @@ export default function CoordinatorAnnouncementCreate() {
 
                                 {/* INFO TEXT (only shows kapag may image na) */}
                                 {previews.length > 0 && (
-                                    <span className="text-xs text-gray-500 px-6 block">
+                                    <span className="text-xs text-gray-500 px-2 sm:px-6">
                                         You can upload up to <b>10 images</b> with a total size of <b>10MB</b>.
                                     </span>
                                 )}
 
                                 {/* ERROR DISPLAY */}
                                 {fileError && (
-                                    <span className="text-sm text-red-500 px-6 block">
+                                    <span className="text-sm text-red-500 px-2 sm:px-6">
                                         {fileError}
                                     </span>
                                 )}
 
                                 {/* IMAGE PREVIEW */}
                                 {previews.length > 0 && (
-                                    <div className="mb-4 flex gap-2 flex-wrap px-6">
+                                    <div className="mb-2 flex gap-2 flex-wrap px-2 sm:px-6">
                                         {previews.map((src, index) => (
                                             <div key={index} className="relative">
                                                 <img
                                                     src={src}
-                                                    className="w-32 h-32 object-cover rounded border"
+                                                    className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded border"
                                                 />
-                                
                                                 {/* REMOVE SPECIFIC IMAGE */}
                                                 <button
                                                     type="button"
                                                     onClick={() => {
-                                                         // remove preview
+                                                        // remove preview
                                                         setPreviews(prev =>
                                                             prev.filter((_, i) => i !== index)
                                                         );
@@ -182,7 +186,7 @@ export default function CoordinatorAnnouncementCreate() {
 
                                                         setFileError(""); // reset error
                                                     }}
-                                                    className="absolute -top-2 -right-2 bg-white border rounded-full p-1 cursor pointer"
+                                                    className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
                                                 >
                                                     <X size={14} />
                                                 </button>
@@ -192,16 +196,19 @@ export default function CoordinatorAnnouncementCreate() {
                                 )}
 
                                 {/* TITLE */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="title" className="text-[#6E6C6C] font-bold">Announcement Title</Label>
+                                <div className="space-y-1 px-2 sm:px-6">
+                                    <Label className="text-[#6E6C6C] font-bold">
+                                        Announcement Title
+                                    </Label>
+
                                     <Input
                                         id="title"
                                         name="title"
                                         placeholder="Title"
                                         value={data.title} // bind form data
                                         onChange={e => setData("title", e.target.value)}
-                                        className="h-15 max-h-30 overflow-y-auto"
                                     />
+
                                     {/* ERROR */}
                                     {errors.title && (
                                         <p className="text-red-500 text-sm">{errors.title}</p>
@@ -209,16 +216,20 @@ export default function CoordinatorAnnouncementCreate() {
                                 </div>
 
                                 {/* DETAILS */}
-                                <div className="space-y-2 mt-4">
-                                    <Label htmlFor="details" className="text-[#6E6C6C] font-bold">Details</Label>
+                                <div className="space-y-1 px-2 sm:px-6">
+                                    <Label className="text-[#6E6C6C] font-bold">
+                                        Details
+                                    </Label>
+
                                     <Textarea
                                         id="details"
                                         name="details"
                                         placeholder="Details"
                                         value={data.details} // bind form data
                                         onChange={e => setData("details", e.target.value)}
-                                        className="h-100 overflow-y-auto"
+                                        className="min-h-[320px] sm:min-h-[360px] lg:min-h-[450px]"
                                     />
+
                                     {/* ERROR */}
                                     {errors.details && (
                                         <p className="text-red-500 text-sm">{errors.details}</p>
@@ -226,7 +237,7 @@ export default function CoordinatorAnnouncementCreate() {
                                 </div>
 
                                 {/* Create Button - palaging nasa bottom */}
-                                <div className="mt-auto pt-4">
+                                <div className="pt-2 sm:pt-4 px-2 sm:px-6">
                                     <Button
                                         type="submit"
                                         disabled={processing}
@@ -237,12 +248,14 @@ export default function CoordinatorAnnouncementCreate() {
                                 </div>
 
                             </form>
+
                         </CardContent>
                     </Card>
+
                 </div>
             </div>
-            </>
-    )
+        </>
+    );
 }
 
 CoordinatorAnnouncementCreate.layout = (page) => (

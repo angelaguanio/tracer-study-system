@@ -13,12 +13,12 @@ function CoordinatorAnnouncementView({ announcement }) {
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 space-y-4">
 
         {/* ================= HEADER ================= */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
           {/* BACK */}
           <Link
             href="/coordinator/announcement"
-            className="inline-flex items-center gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
+            className="w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft size={20} />
             Back
@@ -30,7 +30,7 @@ function CoordinatorAnnouncementView({ announcement }) {
               onClick={() =>
                 router.get(`/coordinator/announcement/${announcement.id}/edit`)
               }
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition whitespace-nowrap
+              className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition whitespace-nowrap
                 ${isRevise
                   ? "bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200"
                   : "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
