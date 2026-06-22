@@ -11,6 +11,7 @@ import {
 import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp' 
 import NotificationBell from './NotificationBell'
+import { User, LogOut } from 'lucide-react'
 
 export default function HeaderCoord({ navItemsCoord = [] }) {
   const { url, props } = usePage()
@@ -41,7 +42,15 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
           <DropdownMenuContent>
 
             <DropdownMenuItem asChild>
-                <Link href={route('coordinator.logout')} className='w-full flex'>
+              <Link href={route('coordinator.profile')} className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+                <Link href={route('coordinator.logout')} className="flex items-center gap-2">
+                  <LogOut className="h-4 w-4" />
                   Logout
                 </Link>
             </DropdownMenuItem>

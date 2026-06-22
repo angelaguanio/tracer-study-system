@@ -76,6 +76,19 @@ class SurveyPolicy
         return Response::deny('Only coordinators and admins can delete surveys.');
     }
 
+    public function archive(User $user, Survey $survey): Response
+    {
+        // Archive is allowed even when responses exist — it just hides the survey
+        if ($user->isAdmin() || $user->isCoordinator()) {
+            if ($survey->created_by !== $user->id) {
+                return Response::deny('You can only archive surveys you created.');
+            }
+            return Response::allow();
+        }
+
+        return Response::deny('Only coordinators and admins can archive surveys.');
+    }
+
     public function activate(User $user, Survey $survey): Response
     {
         // Both admins and coordinators can only activate surveys they created

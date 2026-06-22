@@ -2,7 +2,7 @@ import { router } from "@inertiajs/react";
 import { ChevronUp, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function SectionPanel({ section, surveyId, isFirst, isLast, isActive, onClick, onReorder, onEdit }) {
+export default function SectionPanel({ section, surveyId, isFirst, isLast, isActive, onClick, onReorder, onEdit, hasResponses = false }) {
     const handleDelete = () => {
         // Determine route prefix from current route name
         const currentRoute = route().current();
@@ -29,7 +29,11 @@ export default function SectionPanel({ section, surveyId, isFirst, isLast, isAct
                 <Button size="icon" variant="ghost" className="h-7 w-7" disabled={isFirst} onClick={() => onReorder(section.id, "up")}><ChevronUp size={14} /></Button>
                 <Button size="icon" variant="ghost" className="h-7 w-7" disabled={isLast} onClick={() => onReorder(section.id, "down")}><ChevronDown size={14} /></Button>
                 <Button size="icon" variant="ghost" className="h-7 w-7 text-[#2859C5]" onClick={() => onEdit(section)}><Pencil size={14} /></Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={handleDelete}><Trash2 size={14} /></Button>
+                {hasResponses ? (
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-gray-300 cursor-not-allowed" disabled title="Cannot delete: responses already exist"><Trash2 size={14} /></Button>
+                ) : (
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={handleDelete}><Trash2 size={14} /></Button>
+                )}
             </div>
         </div>
     );

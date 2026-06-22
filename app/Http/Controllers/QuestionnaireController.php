@@ -21,9 +21,10 @@ class QuestionnaireController extends Controller
                 ->exists()
             : false;
 
-        // Get CECT surveys (active surveys that are not tracer study)
+        // Get CECT surveys (active surveys that are not tracer study, and not archived)
         $cectSurveys = \App\Models\Survey::where('status', 'active')
             ->where('is_tracer_study', false)
+            ->whereNull('archived_at')
             ->withCount(['questions'])
             ->orderBy('created_at', 'desc')
             ->get()

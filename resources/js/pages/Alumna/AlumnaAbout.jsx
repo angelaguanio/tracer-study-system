@@ -79,17 +79,17 @@ export default function AlumnaAbout() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/85 via-blue-800/70 to-blue-600/40" />
 
         {/* text — pinned to left half */}
-        <div className="relative z-10 w-full max-w-7xl  ml-26 px-6 sm:px-10 py-16">
+        <div className="relative z-10 w-full justify-center items-center flex flex-col px-6 sm:px-10 py-16">
           <div className="max-w-xl">
-            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg">
+            <h1 className="text-center text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg">
               CECT Alumni Tracer
             </h1>
-            <h2 className="text-blue-200 text-2xl sm:text-3xl md:text-4xl font-semibold mt-1 drop-shadow">
+            <h2 className="text-center text-blue-200 text-2xl sm:text-3xl md:text-4xl font-semibold mt-1 drop-shadow">
               Study and Updates Portal
             </h2>
 
             {/* left-border accent paragraph */}
-            <p className="mt-6 text-white/90 lg:text-lg sm:text-base leading-relaxed border-l-4 border-blue-300 pl-4">
+            <p className=" text-center mt-6 text-white/90 lg:text-lg sm:text-base leading-relaxed">
               Strengthening connections between the College of Engineering and Computer Technology graduates and the institution.
             </p>
           </div>

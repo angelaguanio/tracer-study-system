@@ -53,6 +53,36 @@ class QuestionController extends Controller
         $this->authorize('update', $question->section->survey);
 
         $data = $request->validated();
+        $survey = $question->section->survey;
+
+        // Structural lock: if responses exist, block type changes and option removal
+        if ($survey->responses()->exists()) {
+            // Block question type change
+            if ($request->has('type') && $request->type !== $question->type) {
+                return back()->withErrors([
+                    'type' => 'The question type cannot be changed because responses already exist for this survey.',
+                ]);
+            }
+
+            // Block removal of options that have been answered
+            if ($request->has('options') && is_array($request->options)) {
+                $currentOptions = $question->options ?? [];
+                $removedOptions = array_values(array_diff($currentOptions, $request->options));
+
+                if (!empty($removedOptions)) {
+                    // Check if any response used a removed option
+                    $hasAnsweredOption = $question->responses()
+                        ->whereIn('answer_value', $removedOptions)
+                        ->exists();
+
+                    if ($hasAnsweredOption) {
+                        return back()->withErrors([
+                            'options' => 'One or more removed options have already been selected by respondents and cannot be deleted.',
+                        ]);
+                    }
+                }
+            }
+        }
 
         if ($request->has('label') && $request->label !== $question->label) {
             $data['question_identifier'] = $this->generateUniqueSlug(
@@ -147,6 +177,13 @@ class QuestionController extends Controller
     public function destroy(Question $question)
     {
         $this->authorize('update', $question->section->survey);
+
+        // Structural lock: cannot delete questions once responses exist
+        if ($question->section->survey->responses()->exists()) {
+            return back()->withErrors([
+                'question' => 'This question cannot be deleted because responses already exist for this survey.',
+            ]);
+        }
 
         $sectionId = $question->section_id;
         $deletedOrder = $question->display_order;

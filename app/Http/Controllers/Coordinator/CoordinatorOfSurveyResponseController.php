@@ -17,15 +17,19 @@ class CoordinatorOfSurveyResponseController extends Controller
     public function index()
     {
         $surveys = Survey::withCount('sections')
+            ->with('creator')
             ->latest()
             ->get()
             ->map(function ($survey) {
                 return [
-                    'id' => $survey->id,
-                    'title' => $survey->title,
-                    'status' => $survey->status,
+                    'id'             => $survey->id,
+                    'title'          => $survey->title,
+                    'status'         => $survey->status,
                     'sections_count' => $survey->sections_count,
-                    'created_at' => $survey->created_at,
+                    'created_at'     => $survey->created_at,
+                    'created_by'     => $survey->creator
+                        ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
+                        : 'Unknown',
                 ];
             });
 

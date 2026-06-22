@@ -55,7 +55,7 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
                     <img src={logo} className='aspect-square h-40'/>
                     <img src={cectlogo} className='aspect-square h-18'/>
                 </div>
-                <h1 className='font-inria text-2xl font-bold'>TRACER STUDY SYSTEM</h1>
+                <h1 className='font-bruno text-xl'>ALUMNI CONNECT</h1>
                 <p className='font-inria text-xl'>COLLEGE OF ENGINEERING AND COMPUTER TECHNOLOGY</p>
             </header>
 
@@ -63,9 +63,12 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
                 {completed ? (
                     <SurveyCompletedCard surveyTitle={survey.title} />
                 ) : (
-                    <div className="flex flex-col gap-6 pt-2 pb-6">
+                    <div className="flex flex-col gap-6 pt-6 pb-6">
                         <div>
-                            <h1 className="text-xl font-bold text-blue-text mb-3">{survey.title}</h1>
+                            <h1 className="text-xl font-bold text-blue-text mb-1">{survey.title}</h1>
+                            {survey.description && (
+                                <p className="text-sm text-gray-500 mb-3">{survey.description}</p>
+                            )}
                             <SurveyStepIndicator current={stepIndex + 1} total={total} />
                         </div>
 

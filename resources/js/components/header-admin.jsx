@@ -11,6 +11,7 @@ import {
 import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp'
 import NotificationBell from './NotificationBell'
+import {LogOut} from 'lucide-react'
 
 export default function HeaderAdmin({ navItems = [] }) {
   const { url, props } = usePage()
@@ -41,7 +42,8 @@ export default function HeaderAdmin({ navItems = [] }) {
 
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
-              <Link href={route('admin.logout')} className='w-full flex'>
+              <Link href={route('admin.logout')} className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
                 Logout
               </Link>
             </DropdownMenuItem>

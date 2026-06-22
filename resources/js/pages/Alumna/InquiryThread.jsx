@@ -51,81 +51,118 @@ export default function InquiryThread({ inquiry }) {
     // Disable reply if resolved
     const isResolved = inquiry.status === 'resolved';
 
-    return (
-        <div className="max-w-3xl mx-auto py-8 px-4 flex flex-col h-screen gap-4">
+   return (
+    <div className="max-w-3xl mx-auto h-[100dvh] flex flex-col px-3 sm:px-4 py-4 sm:py-6 gap-4">
 
-            {/* Back + Header */}
-            <div className="flex items-center gap-3">
-                <Link href={route('alumna.inquiries.index')} className="text-gray-400 hover:text-gray-600">
-                    <ArrowLeft className="h-5 w-5" />
-                </Link>
-                <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-lg font-bold text-slate-800">{inquiry.subject}</h1>
-                        <span className={`text-xs font-semibold px-2 py-1 rounded-full capitalize ${statusColor[inquiry.status]}`}>
-                            {inquiry.status}
-                        </span>
+        {/* Header */}
+        <div className="flex items-start gap-3 shrink-0">
+            <Link
+                href={route('alumna.inquiries.index')}
+                className="mt-1 text-gray-400 hover:text-gray-600"
+            >
+                <ArrowLeft className="h-5 w-5" />
+            </Link>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-base sm:text-lg font-bold text-slate-800 truncate">
+                        {inquiry.subject}
+                    </h1>
+
+                    <span
+                        className={`text-xs font-semibold px-2 py-1 rounded-full capitalize ${statusColor[inquiry.status]}`}
+                    >
+                        {inquiry.status}
+                    </span>
+                </div>
+
+                <p className="text-xs text-gray-400">
+                    {inquiry.formatted_date}
+                </p>
+            </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 pb-2">
+
+            {/* Original Message */}
+            <div className="flex gap-2 sm:gap-3">
+                <AvatarBlock user={inquiry.alumni} />
+
+                <div className="flex flex-col gap-1 max-w-[90%] sm:max-w-[80%]">
+                    <span className="text-xs text-gray-400">
+                        You · {inquiry.formatted_date}
+                    </span>
+
+                    <div
+                        className="bg-blue-50 border border-blue-200 rounded-2xl rounded-tl-none px-4 py-3 text-sm text-slate-700 break-words"
+                    >
+                        {inquiry.message}
                     </div>
-                    <p className="text-xs text-gray-400">{inquiry.formatted_date}</p>
                 </div>
             </div>
 
-            {/* Thread */}
-            <div className="flex-1 overflow-y-auto flex flex-col gap-4 pb-2">
+            {/* Replies */}
+            {replies.map((reply) => {
+                const isMe = reply.sender_role === 'alumni';
 
-                {/* Original message */}
-                <div className="flex gap-3">
-                    <AvatarBlock user={inquiry.alumni} />
-                    <div className="flex flex-col gap-1 max-w-[80%]">
-                        <span className="text-xs text-gray-400">
-                            You · {inquiry.formatted_date}
-                        </span>
-                        <div className="bg-blue-50 border border-blue-200 rounded-2xl rounded-tl-none px-4 py-3 text-sm text-slate-700"
-                            style={{ wordBreak: 'break-word' }}>
-                            {inquiry.message}
-                        </div>
-                    </div>
-                </div>
+                return (
+                    <div
+                        key={reply.id}
+                        className={`flex gap-2 sm:gap-3 ${
+                            isMe ? 'flex-row-reverse' : 'flex-row'
+                        }`}
+                    >
+                        <AvatarBlock user={reply.sender} />
 
-                {/* Replies */}
-                {replies.map((reply) => {
-                    const isMe = reply.sender_role === 'alumni';
-                    return (
-                        <div key={reply.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                            <AvatarBlock user={reply.sender} />
-                            <div className={`flex flex-col gap-1 max-w-[80%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                <span className="text-xs text-gray-400">
-                                    {isMe ? 'You' : `${reply.sender.first_name} ${reply.sender.last_name}`}
-                                    {' · '}
-                                    {new Date(reply.created_at).toLocaleDateString('en-US', {
-                                        month: 'short', day: 'numeric',
-                                        hour: '2-digit', minute: '2-digit'
-                                    })}
-                                </span>
-                                <div className={`rounded-2xl px-4 py-3 text-sm ${
+                        <div
+                            className={`flex flex-col gap-1 max-w-[90%] sm:max-w-[80%] ${
+                                isMe ? 'items-end' : 'items-start'
+                            }`}
+                        >
+                            <span className="text-xs text-gray-400">
+                                {isMe
+                                    ? 'You'
+                                    : `${reply.sender.first_name} ${reply.sender.last_name}`}
+                                {' · '}
+                                {new Date(reply.created_at).toLocaleDateString(
+                                    'en-US',
+                                    {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    }
+                                )}
+                            </span>
+
+                            <div
+                                className={`rounded-2xl px-4 py-3 text-sm break-words ${
                                     isMe
                                         ? 'bg-blue-600 text-white rounded-tr-none'
                                         : 'bg-gray-100 text-slate-700 rounded-tl-none'
-                                }`} style={{ wordBreak: 'break-word' }}>
-                                    {reply.message}
-                                </div>
+                                }`}
+                            >
+                                {reply.message}
                             </div>
                         </div>
-                    );
-                })}
+                    </div>
+                );
+            })}
 
-                <div ref={bottomRef} />
+            <div ref={bottomRef} />
+        </div>
+
+        {/* Reply Box */}
+        {isResolved ? (
+            <div className="shrink-0 border-t pt-3 text-center text-sm text-gray-400">
+                This inquiry has been resolved. No further replies needed.
             </div>
-
-            {/* Reply box */}
-            {isResolved ? (
-                <div className="text-center text-sm text-gray-400 border-t pt-3">
-                    This inquiry has been resolved. No further replies needed.
-                </div>
-            ) : (
-                <div className="flex gap-2 items-end border-t pt-3">
+        ) : (
+            <div className="shrink-0 border-t pt-3">
+                <div className="flex gap-2 items-end">
                     <textarea
-                        className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[60px] max-h-[140px]"
+                        className="flex-1 resize-none rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[52px] max-h-[140px]"
                         placeholder="Write a reply..."
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
@@ -136,17 +173,19 @@ export default function InquiryThread({ inquiry }) {
                             }
                         }}
                     />
+
                     <Button
                         onClick={sendReply}
                         disabled={sending || !replyText.trim()}
-                        className="h-10 w-10 p-0 rounded-xl bg-blue-600 hover:bg-blue-700"
+                        className="h-12 w-12 shrink-0 rounded-2xl bg-blue-600 hover:bg-blue-700"
                     >
-                        <Send className="h-4 w-4 text-white" />
+                        <Send className="h-5 w-5 text-white" />
                     </Button>
                 </div>
-            )}
-        </div>
-    );
+            </div>
+        )}
+    </div>
+);
 }
 
 InquiryThread.layout = page => <AlumnaLayout>{page}</AlumnaLayout>;

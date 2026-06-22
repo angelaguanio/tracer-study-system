@@ -99,6 +99,13 @@ class SectionController extends Controller
     {
         $this->authorize('update', $section->survey);
 
+        // Structural lock: cannot delete sections once responses exist
+        if ($section->survey->responses()->exists()) {
+            return back()->withErrors([
+                'section' => 'This section cannot be deleted because responses already exist for this survey.',
+            ]);
+        }
+
         if ($section->questions()->exists()) {
             return back()->withErrors([
                 'section' => 'Cannot delete a section that contains questions. Remove or reassign all questions first.',
