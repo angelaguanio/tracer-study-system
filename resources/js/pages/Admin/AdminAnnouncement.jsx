@@ -199,7 +199,7 @@ export default function AdminAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <div className="flex-1 min-h-0 overflow-y-auto rounded-md shadow-md">
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
         <AdminAnnouncementCard
           announcements={filteredAnnouncements}
           onDeleteSuccess={() => setShowSuccess(true)}

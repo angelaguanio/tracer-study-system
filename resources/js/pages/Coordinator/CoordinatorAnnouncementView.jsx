@@ -18,7 +18,7 @@ function CoordinatorAnnouncementView({ announcement }) {
           {/* BACK */}
           <Link
             href="/coordinator/announcement"
-            className="w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
+            className="inline-flex items-center gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft size={20} />
             Back

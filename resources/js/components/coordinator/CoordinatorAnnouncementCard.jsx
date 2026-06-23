@@ -81,8 +81,13 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
   const table = useReactTable({ data: tableData, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <div className="rounded-md border bg-white shadow-sm h-full flex flex-col">
-
+    <div
+      className={
+        isMobile
+          ? "h-full"
+          : "rounded-md border bg-white shadow-sm h-full flex flex-col"
+      }
+    >
       {/* DESKTOP TABLE */}
       {!isMobile && (
         <Table className="w-full" style={{ tableLayout: "fixed" }}>
@@ -195,7 +200,6 @@ export default function CoordinatorAnnouncementCard({ announcements, onDeleteSuc
           )}
         </div>
       )}
-
     </div>
   );
 }
