@@ -50,8 +50,8 @@ export default function ContactUs({auth, userEmail, userName, coordinators, depa
         <div className='absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/50'/>
 
         <div className='relative z-10 flex flex-col h-full items-center justify-center gap-6 px-4'>
-          <h1 className='text-white text-7xl font-bold tracking-tight drop-shadow-2xl'>Contact Us</h1>
-          <p className='text-white text-lg w-full max-w-3xl text-center leading-relaxed drop-shadow-lg font-light'>
+          <h1 className='text-white lg:text-7xl font-bold tracking-tight drop-shadow-2xl text-5xl'>Contact Us</h1>
+          <p className='text-white lg:text-lg w-full max-w-3xl text-center leading-relaxed drop-shadow-lg font-light'>
             Have questions, concerns, or suggestions? We're here to help. Feel free to reach out to us regarding your concern, and we'll do our best to assist you.
           </p>
         </div>

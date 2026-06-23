@@ -58,7 +58,7 @@ export default function AlumnaOffice() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-blue-600/30" />
 
         {/* left-aligned text */}
-        <div className="relative z-10 w-full max-w-7xl ml-24 px-6 sm:px-10 py-16">
+        <div className="relative z-10 w-full max-w-7xl lg:ml-24 ml-6 px-6 sm:px-10 py-16">
           <div className="max-w-xl">
             <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg uppercase">
               Alumni Affairs

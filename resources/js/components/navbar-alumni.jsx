@@ -49,7 +49,7 @@ export default function NavbarAlumni({ children }) {
       <header className="relative flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 bg-navbar">
         <div className='flex items-center space-x-3'>
           <img src={logo} className='h-10 md:h-12' alt="Alumni Connect logo" />
-          <p className="font-bruno text-md sm:text-sm">Alumni Connect</p>
+          <p className="font-bruno lg:text-md text-sm">Alumni Connect</p>
         </div>
 
         {/* Desktop nav */}
