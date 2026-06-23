@@ -35,18 +35,37 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
     }, [inquiries.data]);
 
     return (
-        <div className='flex h-screen w-full overflow-hidden bg-white py-8 px-8 rounded-lg border border-gray-200 shadow-sm'>
-            <AlumnaInquiryList
-                inquiries={inquiries}
-                selectedId={selectedInquiry?.id}
-                onSelect={setSelectedInquiry}
-                search={search}
-                setSearch={setSearch}
-            />
+        <div className='flex flex-col md:flex-row h-[calc(100vh-2rem)] w-full overflow-hidden shadow-sm bg-white rounded-xl shadow-lg m-4'>
+           {/* Mobile */}
+            <div className="md:hidden h-full">
+                {!selectedInquiry ? (
+                    <AlumnaInquiryList
+                        inquiries={inquiries}
+                        selectedId={selectedInquiry?.id}
+                        onSelect={setSelectedInquiry}
+                        search={search}
+                        setSearch={setSearch}
+                    />
+                ) : (
+                    <AlumnaInquiryContent
+                        inquiry={selectedInquiry}
+                        onBack={() => setSelectedInquiry(null)}
+                    />
+                )}
+            </div>
 
-            <AlumnaInquiryContent
-                inquiry={selectedInquiry}
-            />
+            {/* Desktop */}
+            <div className="hidden md:flex h-full w-full">
+                <AlumnaInquiryList
+                    inquiries={inquiries}
+                    selectedId={selectedInquiry?.id}
+                    onSelect={setSelectedInquiry}
+                    search={search}
+                    setSearch={setSearch}
+                />
+
+                <AlumnaInquiryContent inquiry={selectedInquiry} />
+            </div>
         </div>
     );
 }

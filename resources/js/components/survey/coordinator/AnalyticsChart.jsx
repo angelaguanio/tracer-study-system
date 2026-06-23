@@ -66,15 +66,17 @@ function ListView({ data }) {
 }
 
 export default function AnalyticsChart({ label, data = [], questionType = "" }) {
-    const type = pickChartType(data, questionType);
+    // Ensure data is always a proper array (guards against object {} from server)
+    const safeData = Array.isArray(data) ? data : Object.values(data ?? {});
+    const type = pickChartType(safeData, questionType);
 
     return (
         <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-col gap-2">
             <p className="text-sm font-medium text-gray-800">{label}</p>
             {type === "empty" && <p className="text-xs text-gray-400 py-4 text-center">No responses yet</p>}
-            {type === "pie"  && <PieChartView data={data} />}
-            {type === "bar"  && <BarChartView data={data} />}
-            {type === "list" && <ListView data={data} />}
+            {type === "pie"  && <PieChartView data={safeData} />}
+            {type === "bar"  && <BarChartView data={safeData} />}
+            {type === "list" && <ListView data={safeData} />}
         </div>
     );
 }

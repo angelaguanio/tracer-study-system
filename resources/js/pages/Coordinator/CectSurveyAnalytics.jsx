@@ -1,0 +1,230 @@
+import { useState } from "react";
+import { Link, router } from "@inertiajs/react";
+import { ArrowLeft } from "lucide-react";
+import CoordinatorLayout from "@/layouts/coord-layout";
+import AnalyticsChart from "@/components/survey/coordinator/AnalyticsChart";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const latestYear = new Date().getFullYear() - 1;
+const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+    const s = latestYear - i;
+    return `${s}-${s + 1}`;
+})];
+const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "3rd Semester", "Summer"];
+
+function SectionCard({ title, children }) {
+    return (
+        <div className="bg-white border rounded-lg p-5 shadow-sm flex flex-col gap-4">
+            <h2 className="text-base font-semibold text-gray-700 border-b pb-2">{title}</h2>
+            {children}
+        </div>
+    );
+}
+
+function StatCard({ label, value, sub }) {
+    return (
+        <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-col gap-1">
+            <p className="text-xs text-gray-500">{label}</p>
+            <p className="text-2xl font-bold text-gray-800">{value}</p>
+            {sub && <p className="text-xs text-gray-400">{sub}</p>}
+        </div>
+    );
+}
+
+export default function CectSurveyAnalytics({
+    survey,
+    sections = [],
+    analytics = [],
+    textAnalysis = [],
+    totalRespondents = 0,
+    sectionSummary = [],
+    filters = {},
+}) {
+    const [localFilters, setLocalFilters] = useState({
+        year_graduated: filters.yearGraduated || "",
+        semester:       filters.semester || "",
+    });
+
+    const applyFilters = (updated) => {
+        const next = { ...localFilters, ...updated };
+        setLocalFilters(next);
+        const params = Object.fromEntries(
+            Object.entries(next).filter(([, v]) => v && v !== "All Years" && v !== "All Semesters")
+        );
+        router.get(route("coordinator.analytics.cect-show", survey.id), params, { preserveState: true, replace: true });
+    };
+
+    const bySection = {};
+    for (const q of analytics) {
+        const key = q.section_id ?? "unsectioned";
+        if (!bySection[key]) bySection[key] = { title: q.section_title ?? "Questions", items: [] };
+        bySection[key].items.push(q);
+    }
+
+    const textBySection = {};
+    for (const t of textAnalysis) {
+        const key = t.section_title ?? "Open-ended";
+        if (!textBySection[key]) textBySection[key] = [];
+        textBySection[key].push(t);
+    }
+
+    const downloadUrl = route("coordinator.analytics.cect-download", {
+        survey: survey.id,
+        ...(localFilters.year_graduated && localFilters.year_graduated !== "All Years"
+            ? { year_graduated: localFilters.year_graduated } : {}),
+        ...(localFilters.semester && localFilters.semester !== "All Semesters"
+            ? { semester: localFilters.semester } : {}),
+    });
+
+    return (
+        <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Link href={route("coordinator.analytics")}>
+                        <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer">
+                            <ArrowLeft size={18} />
+                        </button>
+                    </Link>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800">{survey.title} — Analytics</h1>
+                        <p className="text-sm text-gray-500">
+                            Total respondents:{" "}
+                            <span className="font-semibold text-gray-800">{totalRespondents}</span>
+                        </p>
+                    </div>
+                </div>
+                <a
+                    href={downloadUrl}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download Report
+                </a>
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 min-w-44">
+                    <Label className="text-xs">Year Graduated</Label>
+                    <Select
+                        value={localFilters.year_graduated || "All Years"}
+                        onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
+                    >
+                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectContent className="max-h-48 overflow-y-auto">
+                            {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex flex-col gap-1 min-w-44">
+                    <Label className="text-xs">Semester</Label>
+                    <Select
+                        value={localFilters.semester || "All Semesters"}
+                        onValueChange={(v) => applyFilters({ semester: v === "All Semesters" ? "" : v })}
+                    >
+                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {SEMESTER_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            {totalRespondents === 0 ? (
+                <div className="bg-white border rounded-lg p-10 text-center text-gray-400 shadow-sm">
+                    No responses yet for the selected filters.
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <StatCard label="Total Respondents" value={totalRespondents} />
+                        <StatCard label="Sections" value={sections.length} />
+                        <StatCard label="Questions with Data" value={analytics.length + textAnalysis.length} />
+                        <StatCard
+                            label="Choice Questions"
+                            value={analytics.filter(q => ["radio","checkbox","select"].includes(q.question_type)).length}
+                        />
+                    </div>
+
+                    {sectionSummary.length > 1 && (
+                        <SectionCard title="Section Response Rates">
+                            <div className="flex flex-col gap-2">
+                                {sectionSummary.map((s) => {
+                                    const pct = totalRespondents > 0 ? Math.round((s.response_count / totalRespondents) * 100) : 0;
+                                    return (
+                                        <div key={s.section_id} className="flex items-center gap-3 text-sm">
+                                            <span className="w-48 shrink-0 truncate text-gray-600 text-xs">{s.title}</span>
+                                            <div className="flex-1 bg-gray-100 rounded-full h-3">
+                                                <div className="h-3 rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
+                                            </div>
+                                            <span className="shrink-0 text-xs text-gray-500 w-24 text-right">
+                                                {s.response_count} / {totalRespondents} ({pct}%)
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </SectionCard>
+                    )}
+
+                    {Object.entries(bySection).map(([sectionId, { title, items }]) => (
+                        <SectionCard key={sectionId} title={title}>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {items.map((q) => (
+                                    <div key={q.question_id}>
+                                        <AnalyticsChart label={q.label} data={q.data} questionType={q.question_type} />
+                                        {q.question_type === "number" && q.stats && (
+                                            <div className="flex gap-3 mt-1 text-xs text-gray-500 px-1">
+                                                <span>Min: <strong>{q.stats.min}</strong></span>
+                                                <span>Max: <strong>{q.stats.max}</strong></span>
+                                                <span>Avg: <strong>{q.stats.average}</strong></span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </SectionCard>
+                    ))}
+
+                    {Object.entries(textBySection).map(([sectionTitle, questions]) => (
+                        <SectionCard key={sectionTitle} title={`${sectionTitle} — Open-ended Responses`}>
+                            {questions.map((t) => (
+                                <div key={t.question_id} className="border rounded-lg p-4 bg-gray-50">
+                                    <p className="text-sm font-semibold text-gray-700 mb-1">{t.label}</p>
+                                    <p className="text-xs text-gray-400 mb-3">{t.response_count} responses</p>
+                                    {Object.keys(t.top_keywords).length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mb-3">
+                                            {Object.entries(t.top_keywords).map(([word, count]) => (
+                                                <Badge key={word} className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                    {word} ({count})
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {t.sample_answers.length > 0 && (
+                                        <div className="flex flex-col gap-1">
+                                            <p className="text-xs text-gray-500 font-medium mb-1">Sample responses:</p>
+                                            {t.sample_answers.map((a, i) => (
+                                                <p key={i} className="text-xs text-gray-600 italic border-l-2 border-blue-200 pl-2">"{a}"</p>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </SectionCard>
+                    ))}
+                </>
+            )}
+        </div>
+    );
+}
+
+CectSurveyAnalytics.layout = (page) => <CoordinatorLayout>{page}</CoordinatorLayout>;

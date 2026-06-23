@@ -20,7 +20,7 @@ export default function AlumnaInquiryList({ inquiries, selectedId, onSelect, sea
     };
 
     return (
-        <aside className='bg-blue-100 max-w-[400px] w-full rounded-2xl flex flex-col h-full'>
+        <aside className='bg-blue-100 w-full md:w-[380px] md:min-w-[380px] rounded-2xl flex flex-col h-full'>
             {/* Header */}
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center px-6 pt-5'>

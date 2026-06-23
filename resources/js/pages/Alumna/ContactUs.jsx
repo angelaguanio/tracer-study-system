@@ -52,7 +52,7 @@ export default function ContactUs({auth, userEmail, userName, coordinators, depa
         <div className='relative z-10 flex flex-col h-full items-center justify-center gap-6 px-4'>
           <h1 className='text-white text-7xl font-bold tracking-tight drop-shadow-2xl'>Contact Us</h1>
           <p className='text-white text-lg w-full max-w-3xl text-center leading-relaxed drop-shadow-lg font-light'>
-            Your feedback is a vital part of our developmental research. Whether you have questions about the tracer survey or suggestions for improvements, your input helps us build a better bridge between our graduates and the institution.
+            Have questions, concerns, or suggestions? We're here to help. Feel free to reach out to us regarding your concern, and we'll do our best to assist you.
           </p>
         </div>
       </section>

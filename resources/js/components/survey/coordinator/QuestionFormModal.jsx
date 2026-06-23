@@ -20,8 +20,11 @@ const QUESTION_TYPES = [
     { icon: RectangleEllipsis, value: "likert", label: "Likert Scale" },
 ];
 
-export default function QuestionFormModal({ open, onClose, sectionId, question = null, likertScale = null }) {
+export default function QuestionFormModal({ open, onClose, sectionId, question = null, likertScale = null, hasResponses = false }) {
     const isEdit = !!question;
+    // When editing with existing responses, only label/is_required can change freely.
+    // Type change and option removal are locked.
+    const isStructurallyLocked = isEdit && hasResponses;
     const [form, setForm] = useState({ label: "", type: "text", is_required: false, options: [] });
     const [newOption, setNewOption] = useState("");
     const [errors, setErrors] = useState({});
@@ -99,19 +102,29 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                     {/* choose answer type */}
                     <div className="flex flex-col gap-3">
                         <Label>Answer Type:</Label>
-                        <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v, options: [] }))}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {QUESTION_TYPES.map((t) => (
-                                    <SelectItem key={t.value} value={t.value}>
-                                        <div className="flex items-center gap-2">
-                                            <t.icon size={15} />
-                                            {t.label}
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {isStructurallyLocked ? (
+                            <div className="flex items-center gap-2 border border-gray-200 rounded-md px-3 py-2 bg-gray-50 text-sm text-gray-500">
+                                {(() => {
+                                    const t = QUESTION_TYPES.find(t => t.value === form.type);
+                                    return t ? <><t.icon size={14} className="text-gray-400" />{t.label}</> : form.type;
+                                })()}
+                                <span className="ml-auto text-xs text-amber-600 font-medium">Locked</span>
+                            </div>
+                        ) : (
+                            <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v, options: [] }))}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {QUESTION_TYPES.map((t) => (
+                                        <SelectItem key={t.value} value={t.value}>
+                                            <div className="flex items-center gap-2">
+                                                <t.icon size={15} />
+                                                {t.label}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -142,19 +155,27 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
                                 <Label>Options</Label>
-                                <Button
-                                    size="sm"
-                                    variant={hasOthers ? "default" : "outline"}
-                                    className="h-6 text-xs"
-                                    onClick={toggleOthers}
-                                >
-                                    {hasOthers ? "Remove Others" : '+ "Others" option'}
-                                </Button>
+                                {!isStructurallyLocked && (
+                                    <Button
+                                        size="sm"
+                                        variant={hasOthers ? "default" : "outline"}
+                                        className="h-6 text-xs"
+                                        onClick={toggleOthers}
+                                    >
+                                        {hasOthers ? "Remove Others" : '+ "Others" option'}
+                                    </Button>
+                                )}
                             </div>
+                            {isStructurallyLocked && (
+                                <p className="text-xs text-amber-600 flex items-center gap-1">
+                                    <span>⚠</span> Options that have been selected by respondents cannot be removed.
+                                </p>
+                            )}
                             <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
                             {form.options.map((opt, i) => (
                                 <div key={i} className="flex items-center gap-2">
                                     <span className={`flex-1 text-sm border rounded px-2 py-1 ${opt === "Others" ? "bg-blue-50 text-blue-700 italic" : "bg-gray-50"}`}>{opt}</span>
+                                    {/* When locked, still allow removing options — backend will block if they have answers */}
                                     {opt !== "Others" && (
                                         <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={() => removeOption(i)}><X size={12} /></Button>
                                     )}

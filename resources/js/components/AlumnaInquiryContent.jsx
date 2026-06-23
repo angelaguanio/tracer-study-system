@@ -4,8 +4,9 @@ import { Avatar } from './ui/avatar';
 import { Send } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 
-export default function AlumnaInquiryContent({ inquiry }) {
+export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
     const bottomRef = useRef(null);
@@ -59,19 +60,34 @@ export default function AlumnaInquiryContent({ inquiry }) {
 
     return (
         <main className='flex flex-col w-full h-full p-4 gap-3'>
-            {/* Header */}
-            <header className='flex flex-row items-center px-3 pb-3 border-b'>
-                <div className='flex gap-3 items-center'>
-                    <div>
-                        <h1 className='text-xl font-semibold'>{inquiry.subject}</h1>
-                        <p className='text-xs text-gray-400'>{inquiry.formatted_date}</p>
-                        {inquiry.department && (
-                            <p className='text-sm text-gray-500'>Department: {inquiry.department}</p>
-                        )}
-                    </div>
-                </div>
-            </header>
+          <header className="flex items-center gap-2 px-3 pb-3 border-b">
+            <div className="md:hidden">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onBack}
+                    className="shrink-0"
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+            </div>
 
+            <div className="min-w-0">
+                <h1 className="text-xl font-semibold break-words">
+                    {inquiry.subject}
+                </h1>
+
+                <p className="text-xs text-gray-400">
+                    {inquiry.formatted_date}
+                </p>
+
+                {inquiry.department && (
+                    <p className="text-sm text-gray-500">
+                        Department: {inquiry.department}
+                    </p>
+                )}
+            </div>
+        </header>
             {/* Thread */}
             <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
                 {/* Original inquiry — alumna's message, shown on the right */}

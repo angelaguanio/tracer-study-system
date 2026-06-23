@@ -167,7 +167,7 @@ export default function AlumnaSignup() {
   const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();
 
   const yearOptions = useMemo(() => {
-    const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear() - 1; // last completed academic year
     return Array.from({ length: currentYear - 1990 + 1 }, (_, i) => {
       const s = currentYear - i; return { value: `${s}-${s + 1}`, label: `${s}-${s + 1}` };
     });

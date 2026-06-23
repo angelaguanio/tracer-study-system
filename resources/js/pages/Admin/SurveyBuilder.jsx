@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function SurveyBuilder({ survey }) {
+export default function SurveyBuilder({ survey, has_responses = false }) {
     const { props } = usePage();
     const [localSections, setLocalSections] = useState(survey.sections ?? []);
     const [activeSectionId, setActiveSectionId] = useState((survey.sections ?? [])[0]?.id ?? null);
@@ -244,6 +244,16 @@ export default function SurveyBuilder({ survey }) {
                 </div>
             </div>
 
+            {/* Structural lock banner */}
+            {has_responses && (
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-300 rounded-lg px-4 py-2.5 text-sm text-amber-800">
+                    <svg className="w-4 h-4 shrink-0 text-amber-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                    <span><strong>Responses exist.</strong> Wording, title, and description edits are still allowed. Deleting questions/sections and changing question types are locked.</span>
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
                 {/* Left: Sections */}
                 <div className="sm:w-64 flex flex-col gap-2">
@@ -267,6 +277,7 @@ export default function SurveyBuilder({ survey }) {
                                 onClick={() => setActiveSectionId(section.id)}
                                 onReorder={handleReorder}
                                 onEdit={(s) => setSectionModal({ open: true, section: s })}
+                                hasResponses={has_responses}
                             />
                         ))
                     )}
@@ -310,6 +321,7 @@ export default function SurveyBuilder({ survey }) {
                                         question={item}
                                         isFirst={idx === 0}
                                         isLast={idx === allItems.length - 1}
+                                        hasResponses={has_responses}
                                         onEdit={(item) => {
                                             if (item.itemType === 'subheading') {
                                                 setSubheadingModal({ open: true, subheading: item });
@@ -342,6 +354,7 @@ export default function SurveyBuilder({ survey }) {
                 sectionId={activeSectionId}
                 question={questionModal.question}
                 likertScale={activeSection?.likert_scale ?? null}
+                hasResponses={has_responses}
             />
             <SubheadingFormModal
                 open={subheadingModal.open}

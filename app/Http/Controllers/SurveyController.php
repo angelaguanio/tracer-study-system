@@ -15,24 +15,35 @@ class SurveyController extends Controller
     {
         $this->authorize('viewAny', Survey::class);
 
-        $query = Survey::withCount('sections')
+        $user  = auth()->user();
+        $routeName = request()->route()->getName();
+        $viewPath  = strpos($routeName, 'coordinator.') === 0
+            ? 'Coordinator/CoordinatorSurveyIndex'
+            : 'Admin/SurveyIndex';
+
+        $base = Survey::withCount('sections')
+            ->where('created_by', $user->id)
             ->orderBy('created_at', 'desc');
 
-        // Filter surveys based on user role - both admins and coordinators only see their own surveys
-        $user = auth()->user();
-        if ($user->user_role === 'coordinator' || $user->user_role === 'admin') {
-            // Both coordinators and admins can only see surveys they created
-            $query->where('created_by', $user->id);
-        }
+        // Active surveys (not archived)
+        $surveys = (clone $base)
+            ->notArchived()
+            ->get()
+            ->map(fn ($s) => array_merge($s->toArray(), [
+                'has_responses' => $s->responses()->exists(),
+            ]));
 
-        $surveys = $query->get();
-
-        // Determine the correct view based on the current route name
-        $routeName = request()->route()->getName();
-        $viewPath = strpos($routeName, 'coordinator.') === 0 ? 'Coordinator/CoordinatorSurveyIndex' : 'Admin/SurveyIndex';
+        // Archived surveys
+        $archivedSurveys = (clone $base)
+            ->archived()
+            ->get()
+            ->map(fn ($s) => array_merge($s->toArray(), [
+                'has_responses' => true, // archived always had responses
+            ]));
 
         return Inertia::render($viewPath, [
-            'surveys' => $surveys,
+            'surveys'         => $surveys,
+            'archivedSurveys' => $archivedSurveys,
         ]);
     }
 
@@ -89,6 +100,37 @@ class SurveyController extends Controller
         return redirect()->route($redirectRoute);
     }
 
+    public function archive(Survey $survey)
+    {
+        $this->authorize('archive', $survey);
+
+        $survey->update([
+            'archived_at' => now(),
+            'status'      => 'inactive',
+        ]);
+
+        $routeName     = request()->route()->getName();
+        $redirectRoute = strpos($routeName, 'coordinator.') === 0
+            ? 'coordinator.surveys.index'
+            : 'admin.surveys.index';
+
+        return redirect()->route($redirectRoute);
+    }
+
+    public function unarchive(Survey $survey)
+    {
+        $this->authorize('archive', $survey);
+
+        $survey->update(['archived_at' => null]);
+
+        $routeName     = request()->route()->getName();
+        $redirectRoute = strpos($routeName, 'coordinator.') === 0
+            ? 'coordinator.surveys.index'
+            : 'admin.surveys.index';
+
+        return redirect()->route($redirectRoute);
+    }
+
     public function builder(Survey $survey)
     {
         $this->authorize('update', $survey);
@@ -111,7 +153,8 @@ class SurveyController extends Controller
         $viewPath = strpos($routeName, 'coordinator.') === 0 ? 'Coordinator/CoordinatorSurveyBuilder' : 'Admin/SurveyBuilder';
 
         return Inertia::render($viewPath, [
-            'survey' => $survey,
+            'survey'        => $survey,
+            'has_responses' => $survey->responses()->exists(),
         ]);
     }
 }
