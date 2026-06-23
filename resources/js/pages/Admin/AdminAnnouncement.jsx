@@ -122,7 +122,7 @@ export default function AdminAnnouncement({ announcements }) {
         </div>
 
         {/* ================= RIGHT SIDE (FILTERS) ================= */}
-        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 items-center justify-between w-full sm:w-auto">
 
           {/* STATUS FILTER */}
           <div className="relative">

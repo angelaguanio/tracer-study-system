@@ -26,8 +26,8 @@ export default function AdminAnnouncementViewCard({ announcement }) {
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
 
         {/* TITLE + DATE */}
-        <div className="text-center lg:text-left w-full lg:w-[80%]">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 break-words">
+        <div className="flex flex-col w-full">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 break-words">
             {title}
           </h1>
 
