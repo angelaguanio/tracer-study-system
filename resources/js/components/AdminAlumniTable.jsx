@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, Eye, Pencil, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Mail } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -79,7 +79,7 @@ export default function AdminAlumniTable({
   return (
     <div className="flex flex-col gap-3 flex-1 min-h-0 h-full w-full">
       
-      {/* ================= DESKTOP VIEW (TABLE) ================= */}
+      {/* ================= DESKTOP VIEW (TABLE - WALANG BINAGO) ================= */}
       <div className="hidden md:flex flex-col flex-1 min-h-0 rounded-xl shadow overflow-hidden bg-white border border-gray-100">
         <div className="overflow-x-auto shrink-0">
           <Table className="w-full table-fixed min-w-[700px]">
@@ -191,7 +191,7 @@ export default function AdminAlumniTable({
         </div>
       </div>
 
-      {/* ================= MOBILE VIEW (CARD LIST) ================= */}
+      {/* ================= MOBILE VIEW (BASED ON IMAGE_8B351C.PNG) ================= */}
       <div className="block md:hidden flex-1 overflow-y-auto space-y-3 pb-2">
         {alumniData.length > 0 && (
           <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
@@ -214,7 +214,7 @@ export default function AdminAlumniTable({
               selectedIds.includes(item.id) ? "bg-blue-50/70 border-blue-200" : "bg-white border-gray-100"
             }`}
           >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               
               {/* Row 1: Checkbox + Avatar + Pangalan */}
               <div className="flex items-center gap-3">
@@ -242,15 +242,18 @@ export default function AdminAlumniTable({
                 </div>
               </div>
 
-              {/* MOBILE ROW 2: Magkatabi lang ang Course at Year gamit ang gap-2 */}
-              <div className="pl-8 text-xs font-medium flex items-center gap-2">
-                <div>
-                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full inline-block ${badgeColor(item.course)}`}>
-                    {item.course ?? "N/A"}
-                  </span>
+              {/* MOBILE ROW 2: COURSE & YEAR LAYOUT PATTERN (IMAGE_8B351C.PNG) */}
+              <div className="pl-8 flex flex-col gap-1.5 text-xs">
+                {/* Course Row */}
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-gray-400 font-normal">Course:</span>
+                  <span className="text-gray-800 font-medium">{item.course ?? "N/A"}</span>
                 </div>
-                <div className="text-gray-500 font-medium">
-                  {item.year ?? "N/A"}
+                
+                {/* Year Row */}
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-gray-400 font-normal">Year:</span>
+                  <span className="text-gray-700 font-medium">{item.year ?? "N/A"}</span>
                 </div>
               </div>
 
