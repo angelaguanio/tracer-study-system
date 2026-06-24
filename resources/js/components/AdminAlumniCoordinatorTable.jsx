@@ -65,11 +65,11 @@ export default function AdminAlumniCoordinatorTable({
   const paginationItems = getPaginationItems();
 
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex flex-col gap-3 w-full h-full min-h-0">
 
-      {/* FIXED: Isang container na lang at tinanggal ang hiwalay na flex heights para sa scrollbar */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <Table className="w-full table-fixed">
+      {/* ================= DESKTOP VIEW (TABLE) ================= */}
+      <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto w-full border border-gray-100">
+        <Table className="w-full table-fixed min-w-[900px]">
 
           <colgroup>
             <col className="w-[18%]" />
@@ -207,8 +207,90 @@ export default function AdminAlumniCoordinatorTable({
         </Table>
       </div>
 
+      {/* ================= MOBILE VIEW (CARD LIST) ================= */}
+      <div className="block md:hidden space-y-3 w-full overflow-y-auto pr-0.5">
+        {data?.length > 0 ? (
+          data.map((c) => (
+            <div key={`mobile-${c.id}`} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-3">
+              
+              {/* SECTION 1: Avatar, Name, at Status sa iisang row */}
+              <div className="flex items-center justify-between border-b border-gray-50 pb-2 gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                    {getInitials(c.first_name, c.last_name)}
+                  </div>
+                  <span className="font-semibold text-gray-900 truncate">
+                    {c.first_name} {c.last_name}
+                  </span>
+                </div>
+                
+                {/* Dito inilipat ang Status Badge */}
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${
+                    c.status === "inactive" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : "Active"}
+                </span>
+              </div>
+
+              {/* SECTION 2: Email, Department, Program, Year */}
+              <div className="text-xs space-y-1.5 text-gray-600 bg-gray-50/50 p-2.5 rounded-lg">
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-400">Email:</span>
+                  <span className="truncate max-w-[200px] font-medium text-gray-800">{c.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Department:</span>
+                  <span className="font-medium text-gray-800">{c.department}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Program:</span>
+                  <span className="font-medium text-gray-800 truncate max-w-[180px]">{c.courses}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Year:</span>
+                  <span className="font-medium text-gray-800">
+                    {c.start_year && c.end_year ? `${c.start_year} - ${c.end_year}` : "No Year"}
+                  </span>
+                </div>
+              </div>
+
+              {/* SECTION 3: Iisang section para sa mga Button Actions */}
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 border-blue-500 text-blue-600 flex items-center justify-center gap-1 text-xs h-9"
+                  onClick={() => router.visit(`/admin/alumni-coordinators/${c.id}`)}
+                >
+                  <Eye size={14} /> View
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 border-green-500 text-green-600 flex items-center justify-center gap-1 text-xs h-9"
+                  onClick={() => {
+                    setEditing(c);
+                    setShowForm(true);
+                  }}
+                >
+                  <Pencil size={14} /> Edit
+                </Button>
+              </div>
+
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-6 text-gray-500 bg-white rounded-xl shadow">
+            No records found.
+          </div>
+        )}
+      </div>
+
       {/* PAGINATION */}
-      <div className="flex justify-start">
+      <div className="flex justify-start pt-1">
         <div className="flex items-center gap-1">
           <button
             disabled={currentPage === 1}
