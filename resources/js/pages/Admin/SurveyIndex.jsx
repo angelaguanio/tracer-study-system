@@ -86,7 +86,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
 
             {/* New Survey dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-md">
+                <DialogContent className="lg:max-w-lg max-w-sm">
                     <DialogHeader>
                         <DialogTitle>New Survey</DialogTitle>
                     </DialogHeader>
@@ -101,9 +101,9 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
                             <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={3} />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                        <Button className="bg-[#008236] hover:bg-green-700 text-white" onClick={handleCreate}>Create</Button>
+                    <DialogFooter className=" flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                        <Button variant="outline" className="w-full sm:w-auto" onClick={() => setOpen(false)}>Cancel</Button>
+                        <Button className="bg-[#008236] hover:bg-green-700 text-white  w-full sm:w-auto" onClick={handleCreate}>Create</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

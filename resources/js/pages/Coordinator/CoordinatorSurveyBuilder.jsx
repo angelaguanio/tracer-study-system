@@ -126,9 +126,9 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4">
             {/* Header */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     {/* Left: Back button + Title/Description */}
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
                         <Link href={route("coordinator.surveys.index")}>
                             <Button variant="ghost" size="sm" className=" text-gray-400 hover:text-gray-600 hover:bg-gray-100 px-2 mt-1">
                                 <ArrowLeft size={18} />
@@ -181,9 +181,9 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
                             <div className="flex-1 group">
                                 <div className="flex items-start gap-2">
                                     <div className="flex-1 min-w-0">
-                                        <h1 className="text-lg font-semibold text-gray-900 truncate">{survey.title}</h1>
+                                        <h1 className="text-lg font-semibold text-gray-900 line-clamp-2">{survey.title}</h1>
                                         {survey.description && (
-                                            <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{survey.description}</p>
+                                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{survey.description}</p>
                                         )}
                                     </div>
                                     <Button
@@ -201,8 +201,8 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
 
                     {/* Right: Status Badge + Toggle */}
                     {!isEditingHeader && (
-                        <div className="flex items-center gap-3 shrink-0 self-center">
-                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200 ">
+                        <div className="flex items-center gap-3 shrink-0 self-center ">
+                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
                                 <Switch
                                     id="status-toggle"
                                     checked={survey.status === "active"}
@@ -262,10 +262,12 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
                     )}
                 </div>
 
-                <div
-        className="h-screen min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-20 dark:opacity-100"
-      ></div>
+                
+                {/* Separator */}
+                <div className="block sm:hidden border-t border-gray-300 my-2" />
+                <div className="hidden sm:block w-px bg-gray-300 self-stretch" />
                 {/* Right: Questions */}
+                
                 <div className="flex-1 min-w-0 flex flex-col gap-2">
                     {activeSection ? (
                         <>

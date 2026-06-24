@@ -130,9 +130,9 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4">
             {/* Header */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     {/* Left: Back button + Title/Description */}
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex items-center gap-3 w-full sm:flex-1 min-w-0">
                         <Link href={route("admin.surveys.index")}>
                             <Button variant="ghost" size="sm" className=" text-gray-400 hover:text-gray-600 hover:bg-gray-100 px-2 mt-1">
                                 <ArrowLeft size={18} />
@@ -146,7 +146,7 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
                                         value={data.title}
                                         onChange={(e) => setData('title', e.target.value)}
                                         placeholder="Enter survey title"
-                                        className="text-lg font-semibold border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                        className="lg:text-lg text-md font-semibold border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                         autoFocus
                                     />
                                 </div>
@@ -205,8 +205,8 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
 
                     {/* Right: Status Badge + Toggle */}
                     {!isEditingHeader && (
-                        <div className="flex items-center gap-3 shrink-0 self-center">
-                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200 ">
+                        <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end ">
+                            <div className="flex items-center justify-center gap-2 flex-1 sm:flex-none bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200 ">
                                 <Switch
                                     id="status-toggle"
                                     checked={survey.status === "active"}
@@ -283,9 +283,11 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
                     )}
                 </div>
 
-                <div
-        className="h-screen min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-20 dark:opacity-100"
-      ></div>
+                {/* Separator */}
+                <div className="block sm:hidden border-t border-gray-300 my-2" />
+                <div className="hidden sm:block w-px bg-gray-300 self-stretch" />
+
+
                 {/* Right: Questions */}
                 <div className="flex-1 min-w-0 flex flex-col gap-2">
                     {activeSection ? (

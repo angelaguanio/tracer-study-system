@@ -86,7 +86,7 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="lg:max-w-lg max-w-sm">
                 <DialogHeader>
                     <DialogTitle>{isEdit ? "Edit Question" : "Add Question"}</DialogTitle>
                 </DialogHeader>
@@ -195,10 +195,19 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                         </div>
                     )}
                 </div>
+              <DialogFooter className=" flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        className="w-full sm:w-auto"
+                    >
+                        Cancel
+                    </Button>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
-                    <Button className="bg-[#008236] hover:bg-green-700 text-white" onClick={handleSubmit}>
+                    <Button
+                        className="bg-[#008236] hover:bg-green-700 text-white w-full sm:w-auto"
+                        onClick={handleSubmit}
+                    >
                         {isEdit ? "Save Question" : "Add Question"}
                     </Button>
                 </DialogFooter>

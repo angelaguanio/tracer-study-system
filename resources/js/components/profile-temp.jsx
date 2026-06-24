@@ -5,7 +5,7 @@ export default function ProfileTemp({
   showName = true,
   className = '',
   avatarClassName = '',
-  nameClassName = '',
+  nameClassName = 'lg:text-lg text-sm',
 }) {
 
   if (!user) return null
@@ -24,7 +24,7 @@ export default function ProfileTemp({
     <div className={`flex items-center gap-3 ${className}`}>
       {/* AVATAR CONTAINER */}
       <div
-        className={`h-10 w-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold bg-blue-400 ${avatarClassName}`}
+        className={`lg:h-10 lg:w-10 h-9 w-9 rounded-full overflow-hidden flex items-center justify-center text-white font-bold bg-blue-400 ${avatarClassName}`}
       >
         {user.profile_picture ? (
           <img 
