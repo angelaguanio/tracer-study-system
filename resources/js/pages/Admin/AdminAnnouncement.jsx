@@ -122,7 +122,7 @@ export default function AdminAnnouncement({ announcements }) {
         </div>
 
         {/* ================= RIGHT SIDE (FILTERS) ================= */}
-        <div className="flex flex-wrap gap-2 items-center justify-end w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 items-center justify-between w-full sm:w-auto">
 
           {/* STATUS FILTER */}
           <div className="relative">
@@ -199,7 +199,7 @@ export default function AdminAnnouncement({ announcements }) {
       </div>
 
       {/* TABLE */}
-      <div className="flex-1 min-h-0 overflow-y-auto rounded-md shadow-md">
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
         <AdminAnnouncementCard
           announcements={filteredAnnouncements}
           onDeleteSuccess={() => setShowSuccess(true)}
