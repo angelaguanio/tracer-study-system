@@ -65,7 +65,7 @@ export default function AdminSurveyResponseTable({
   return (
     <div className="flex flex-col gap-3 w-full flex-1 min-h-0">
 
-      {/* ================= DESKTOP VIEW (WALANG BINAGO) ================= */}
+      {/* ================= DESKTOP VIEW (EKSAKTONG GAYA NG ORIGINAL AT SCREENSHOT) ================= */}
       <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
 
         {/* HEADER */}
@@ -87,9 +87,10 @@ export default function AdminSurveyResponseTable({
                   key={res.id}
                   className="h-[64px] border-b border-gray-100 hover:bg-gray-50 flex items-center w-full text-center"
                 >
-                  {/* ALUMNI */}
+                  {/* ALUMNI - ORIGINAL SPACING AT ALIGNMENT (IMAGE_89E2ED.PNG) */}
                   <div className="w-[32%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
+                      {/* Mananatili sa kaliwang bahagi ang avatar gaya ng dati */}
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
                         {res.avatar ? (
                           <img
@@ -102,6 +103,7 @@ export default function AdminSurveyResponseTable({
                         )}
                       </div>
 
+                      {/* Ang name naman ay perpektong nakasentro sa buong kolum */}
                       <div className="w-full text-center">
                         <span className="font-medium text-gray-800 truncate block">
                           {res.name}
@@ -164,14 +166,14 @@ export default function AdminSurveyResponseTable({
         </div>
       </div>
 
-      {/* ================= MOBILE VIEW ================= */}
+      {/* ================= MOBILE VIEW (RESPONSIVE AT MAGKADIKIT ANG AVATAR AT NAME) ================= */}
       <div className="block md:hidden space-y-3 w-full overflow-y-auto pr-0.5">
         {responseData.length > 0 ? (
           responseData.map((res) => (
-            <div key={`mobile-${res.id}`} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-2">
+            <div key={`mobile-${res.id}`} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-3">
               
-              {/* ROW 1: Avatar, Name, at Status Badge */}
-              <div className="flex items-center justify-between gap-2">
+              {/* SECTION 1: Avatar at Name (Dito sila magkatabi na may gap-3) */}
+              <div className="flex items-center justify-between border-b border-gray-50 pb-2 gap-2">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
                     {res.avatar ? (
@@ -184,7 +186,7 @@ export default function AdminSurveyResponseTable({
                       getInitials(res.name)
                     )}
                   </div>
-                  <span className="font-semibold text-gray-900 text-sm truncate">
+                  <span className="font-semibold text-gray-900 truncate">
                     {res.name}
                   </span>
                 </div>
@@ -200,20 +202,20 @@ export default function AdminSurveyResponseTable({
                 </span>
               </div>
 
-              {/* ROW 2: COURSE BADGE AT YEAR (EKSAKTONG GAYA NG IMAGE_8AB55C.PNG) */}
-              <div className="flex items-center gap-2 pl-[48px]"> {/* pl-[48px] para pumantay sa ilalim ng pangalan */}
-                {/* Course Badge */}
-                <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[11px] font-medium border border-blue-100">
-                  {res.course ?? "-"}
-                </span>
-                {/* Year Text */}
-                <span className="text-xs text-gray-500 font-medium">
-                  {res.year ?? "-"}
-                </span>
+              {/* SECTION 2: Course at Year Details */}
+              <div className="text-xs space-y-1.5 text-gray-600 bg-gray-50/50 p-2.5 rounded-lg">
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-400">Course:</span>
+                  <span className="font-medium text-gray-800 truncate max-w-[180px]">{res.course ?? "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Year:</span>
+                  <span className="font-medium text-gray-800">{res.year ?? "-"}</span>
+                </div>
               </div>
 
-              {/* ROW 3: View Button */}
-              <div className="flex items-center pt-2 border-t border-gray-50 mt-1">
+              {/* SECTION 3: View Button */}
+              <div className="flex items-center pt-1">
                 <button
                   onClick={() => handleView(res)}
                   className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 text-xs font-medium cursor-pointer h-9"
