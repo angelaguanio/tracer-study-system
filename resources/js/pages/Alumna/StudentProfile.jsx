@@ -29,131 +29,76 @@ export default function StudentProfile() {
     const { profile, flash } = usePage().props;
     const emp = profile?.employment;
     const fullName = `${profile?.first_name} ${profile?.middle_name ? profile.middle_name + ' ' : ''}${profile?.last_name}`;
-
     const displayedYear = (profile?.start_year && profile?.end_year) ? `${profile.start_year}-${profile.end_year}` : (profile?.school_year || '—');
-    const displayedCourse = profile?.courses || '—';
-    const displayedSemester = profile?.semester || '—';
-
-    const avatarElement = profile?.profile_picture ? (
-        <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
-    ) : (
-        <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-xl font-bold">
-            {profile?.initials || (profile?.first_name?.[0] || 'R') + (profile?.last_name?.[0] || 'R')}
-        </div>
-    );
+    
+    // Sort logic
+    const employmentHistory = profile?.employment_history ? [...profile.employment_history].sort((a, b) => parseInt(b.employment_start_year || 0) - parseInt(a.employment_start_year || 0)) : [];
 
     return (
         <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
             {flash?.success && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">{flash.success}</div>}
 
             <div className="flex justify-end">
-                <Link 
-                   href={route('alumna.profile.edit')}
-                   className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase transition-colors"
-                >
+                <Link href={route('alumna.profile.edit')} className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase transition-colors">
                     <IconEdit /> Edit Profile
                 </Link>
             </div>
 
-            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+            {/* Personal Information */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase"><IconUser /> Personal Information</div>
                 <div className="flex items-center gap-5 mb-8">
-                    <div className="relative h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white">{avatarElement}</div>
+                    <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
+                        {profile?.profile_picture ? <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{profile?.first_name?.[0] || 'R'}</div>}
+                    </div>
                     <div><h3 className="text-2xl font-bold text-[#343a40]">{fullName}</h3></div>
                 </div>
-                <hr className="border-gray-100 mb-6" />
-                <div className="grid grid-cols-2 gap-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-2 border-t border-gray-50">
                     <InfoItem icon={<IconMail />} label="Email" value={profile?.email} />
                     <InfoItem icon={<IconPhone />} label="Contact Number" value={profile?.contact_number} />
                     <InfoItem icon={<IconPin />} label="Address" value={profile?.address} />
-                    <InfoItem icon={<IconGrad />} label="Course" value={displayedCourse} />
+                    <InfoItem icon={<IconGrad />} label="Course" value={profile?.courses || '—'} />
                     <InfoItem icon={<IconGrad />} label="Year Graduated" value={displayedYear} />
-                    <InfoItem icon={<IconGrad />} label="Semester" value={displayedSemester} />
                 </div>
             </section>
 
-            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+            {/* Employment Status */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconBriefcase /> Current Employment Status</div>
                     <span className={`px-4 py-1 rounded-full text-white text-[10px] font-bold uppercase ${emp?.currently_employed === 'Yes' ? 'bg-[#28a745]' : 'bg-[#aeb4b9]'}`}>
                         {emp?.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
                     </span>
                 </div>
-
                 {emp?.currently_employed === 'Yes' ? (
-                    <div className="mt-4">
-                        <div className="flex items-center gap-2 mb-6">
-                            <IconBuilding />
-                            <span className="font-bold text-gray-800 text-base">{emp.company_name || '—'}</span>
-                            {emp.employment_type && <span className="text-gray-400 text-sm font-medium">({emp.employment_type})</span>}
-                        </div>
-                        <div className="grid grid-cols-2 gap-y-6">
+                    <div className="flex flex-col gap-5">
+                        <div className="flex items-center gap-2 font-bold text-gray-800 text-[15px]"><IconBuilding /> {emp.company_name || '—'} <span className="text-gray-400 text-xs font-normal">({emp.employment_type})</span></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6">
                             <InfoItem label="Position" value={emp.position} />
                             <InfoItem label="Location" value={emp.location} />
-                            <div className="flex flex-col text-left">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</p>
-                                <p className="text-[13px] font-bold text-[#343a40]">{emp.employment_start_year || '—'} - {emp.is_present ? 'Present' : (emp.employment_end_year || '—')}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</p>
-                                <p className="text-[13px] font-bold text-[#343a40]">₱{emp?.monthly_salary ? parseFloat(emp.monthly_salary.toString().replace(/[^\d.]/g, ''))?.toLocaleString('en-PH') : '0'}</p>
-                            </div>
+                            <InfoItem label="Period" value={`${emp.employment_start_year || '—'} - ${emp.is_present ? 'Present' : (emp.employment_end_year || '—')}`} />
+                            <InfoItem label="Monthly Salary" value={`₱${emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString('en-PH') : '0'}`} />
                         </div>
                     </div>
                 ) : (
-                    <div className="py-4 flex flex-col gap-2">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reason for Unemployment</p>
-                        <p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'Career Break'}</p>
-                    </div>
+                    <div className="pt-2"><p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Reason for Unemployment</p><p className="text-[13px] font-bold text-[#343a40] italic">{emp?.unemployment_reason || 'Career Break'}</p></div>
                 )}
             </section>
 
-            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-8">
+            {/* Employment History (Responsive) */}
+            <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconHistory /> Employment History</div>
-                {profile?.employment_history && profile.employment_history.length > 0 ? (
-                    <div className="overflow-y-auto border border-gray-100 rounded-lg" style={{ maxHeight: '300px' }}>
-                        <table className="w-full text-left text-sm table-fixed">
-                            <thead className="sticky top-0 bg-white shadow-sm z-10">
-                                <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
-                                    <th className="py-3 pl-4 w-[20%]">Range</th>
-                                    <th className="py-3 text-center w-[25%]">Company</th>
-                                    <th className="py-3 text-center w-[20%]">Position</th>
-                                    <th className="py-3 text-center w-[15%]">Status</th>
-                                    <th className="py-3 text-center pr-4 w-[20%]">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {[...profile.employment_history]
-                                    .sort((a, b) => parseInt(b.employment_start_year || 0) - parseInt(a.employment_start_year || 0))
-                                    .map((history) => (
-                                        <tr key={history.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-3 pl-4 text-gray-600 font-medium truncate">
-                                                {history.employment_start_year || '—'} - {history.is_present ? 'Present' : (history.employment_end_year || '—')}
-                                            </td>
-                                            <td className="py-3 font-bold text-gray-800 text-center truncate">{history.company_name || '—'}</td>
-                                            <td className="py-3 text-gray-600 text-center truncate">{history.position || '—'}</td>
-                                            <td className="py-3 text-center">
-                                                <span className={`px-2 py-1 rounded-full text-[9px] font-bold uppercase inline-block ${history.currently_employed === 'Yes' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {history.currently_employed === 'Yes' ? 'Employed' : 'Unemployed'}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 text-center pr-4">
-                                                <Link 
-                                                    href={route('alumna.history.show', { id: history.id })}
-                                                    className="inline-block text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
-                                                >
-                                                    View Details
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <div className="text-center py-6 text-gray-400 italic text-sm">No employment history on record.</div>
-                )}
+                {employmentHistory.length > 0 ? (
+                    <>
+                        <div className="hidden md:block overflow-x-auto border border-gray-100 rounded-lg">
+                            <table className="w-full text-left text-sm table-fixed">
+                                <thead className="bg-gray-50"><tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider"><th className="py-3 pl-4 w-[20%]">Range</th><th className="py-3 text-center w-[25%]">Company</th><th className="py-3 text-center w-[20%]">Position</th><th className="py-3 text-center w-[15%]">Status</th><th className="py-3 text-center pr-4 w-[20%]">Action</th></tr></thead>
+                                <tbody className="divide-y divide-gray-50">{employmentHistory.map((h) => (<tr key={h.id} className="hover:bg-gray-50/50 transition"><td className="py-4 text-center text-gray-600 text-sm">{h.employment_start_year ? `${h.employment_start_year} - ${h.is_present ? 'Present' : (h.employment_end_year || '—')}` : '—'}</td><td className="py-4 text-center font-bold text-gray-800 text-sm">{h.company_name}</td><td className="py-4 text-center text-gray-600 text-sm">{h.position || '—'}</td><td className="py-4 text-center"><span className="px-2 py-1 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></td><td className="py-4 text-center"><Link href={route('alumna.history.show', { id: h.id })} className="text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors">View Details</Link></td></tr>))}</tbody>
+                            </table>
+                        </div>
+                        <div className="md:hidden flex flex-col gap-3">{employmentHistory.map((h) => (<div key={h.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50/50 flex flex-col gap-2"><div className="flex justify-between items-start"><div><p className="text-[11px] font-bold text-gray-400 uppercase">Company</p><p className="font-bold text-gray-800">{h.company_name}</p></div><span className="px-2 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></div><div className="grid grid-cols-2 gap-2 mt-2"><div><p className="text-[10px] font-bold text-gray-400 uppercase">Position</p><p className="text-sm text-gray-600">{h.position || '—'}</p></div><div><p className="text-[10px] font-bold text-gray-400 uppercase">Range</p><p className="text-sm text-gray-600">{h.employment_start_year ? `${h.employment_start_year} - ${h.is_present ? 'Present' : (h.employment_end_year || '—')}` : '—'}</p></div></div><Link href={route('alumna.history.show', { id: h.id })} className="w-full mt-2 text-[11px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 py-2 rounded text-center transition-colors">View Details</Link></div>))}</div>
+                    </>
+                ) : <p className="text-center py-6 text-gray-400 italic text-sm">No employment history on record.</p>}
             </section>
         </div>
     );

@@ -16,15 +16,11 @@ export default function CoordinatorSurveyResponseTable({
     const params = new URLSearchParams(window.location.search);
     params.set("page", p);
 
-    router.get(
-      window.location.pathname,
-      Object.fromEntries(params),
-      {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-      }
-    );
+    router.get(window.location.pathname, Object.fromEntries(params), {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+    });
   };
 
   const getPaginationItems = () => {
@@ -33,15 +29,7 @@ export default function CoordinatorSurveyResponseTable({
     if (currentPage >= lastPage - 2)
       return [1, "...", lastPage - 2, lastPage - 1, lastPage];
 
-    return [
-      1,
-      "...",
-      currentPage - 1,
-      currentPage,
-      currentPage + 1,
-      "...",
-      lastPage,
-    ];
+    return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", lastPage];
   };
 
   const paginationItems = getPaginationItems();
@@ -52,8 +40,7 @@ export default function CoordinatorSurveyResponseTable({
     const currentSurveyId = surveyId || res.survey_id || res.survey_form_id;
     if (!currentSurveyId) return;
 
-    const url =
-      res.status === "completed"
+    const url = res.status === "completed"
         ? `/coordinator/survey-response/${currentSurveyId}/${res.id}`
         : `/coordinator/survey-response/${currentSurveyId}/${res.id}/not-complete`;
 
@@ -61,21 +48,18 @@ export default function CoordinatorSurveyResponseTable({
   };
 
   const getInitials = (name = "") => {
-    if (!name) return "";
     const parts = name.split(" ").filter(Boolean);
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-    }
-    return parts[0][0].toUpperCase();
+    if (!parts.length) return "";
+    return parts.length >= 2
+      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+      : parts[0][0].toUpperCase();
   };
 
   return (
     <div className="flex flex-col gap-3 w-full flex-1 min-h-0">
       
-      {/* Outer Main Container Card */}
-      <div className="rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex flex-col w-full flex-1 min-h-0">
-        
-        {/* FIXED HEADER ROW - Added right padding to align perfectly with scrollable container */}
+      {/* ================= DESKTOP VIEW ================= */}
+      <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
           <div className="w-[32%] text-center">Alumni</div>
           <div className="w-[17%] text-center">Status</div>
@@ -84,146 +68,108 @@ export default function CoordinatorSurveyResponseTable({
           <div className="w-[17%] text-center">Action</div>
         </div>
 
-        {/* SCROLLABLE ROWS BODY - Converted to strict vertical scrolling div elements */}
         <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
           <div className="w-full flex flex-col">
             {responseData.length > 0 ? (
-              responseData.map((res) => {
-                const rawImage = res.avatar || res.profile_picture;
-                const imageSrc = rawImage && (rawImage.startsWith('http') || rawImage.startsWith('/storage/'))
-                  ? rawImage
-                  : rawImage 
-                    ? `/storage/${rawImage}` 
-                    : null;
-
-                return (
-                  <div
-                    key={res.id}
-                    className="h-[64px] border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-center w-full text-center"
-                  >
-                    {/* ALUMNI CELL WITH ABSOLUTE OFFSET ALIGNMENT */}
-                    <div className="w-[32%] flex items-center justify-center">
-                      <div className="relative w-full flex items-center px-4">
-                        
-                        {/* Profile Picture fixed to the left side of the cell */}
-                        <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100 shadow-sm">
-                          {imageSrc ? (
-                            <img
-                              src={imageSrc}
-                              alt={res.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                                const parent = e.target.parentElement;
-                                if (parent) parent.innerText = getInitials(res.name);
-                              }}
-                            />
-                          ) : (
-                            <span>{getInitials(res.name)}</span>
-                          )}
-                        </div>
-
-                        {/* Name Text centered freely inside the cell */}
-                        <div className="w-full text-center">
-                          <span className="font-medium text-gray-800 ml-[-36px] truncate block">
-                            {res.name}
-                          </span>
-                        </div>
+              responseData.map((res) => (
+                <div key={res.id} className="h-[64px] border-b border-gray-100 hover:bg-gray-50 flex items-center w-full text-center">
+                  <div className="w-[32%] flex items-center justify-center">
+                    <div className="relative w-full flex items-center px-4">
+                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                        {res.avatar || res.profile_picture ? (
+                          <img src={res.avatar || `/storage/${res.profile_picture}`} alt={res.name} className="w-full h-full object-cover" />
+                        ) : (
+                          getInitials(res.name)
+                        )}
+                      </div>
+                      <div className="w-full text-center">
+                        <span className="font-medium text-gray-800 truncate block">{res.name}</span>
                       </div>
                     </div>
-
-                    {/* STATUS CELL */}
-                    <div className="w-[17%] flex items-center justify-center">
-                      <span
-                        className={`px-3 py-1 text-[11px] font-semibold rounded-full tracking-wide ${
-                          res.status === "completed"
-                            ? "bg-green-100 text-green-600 border border-green-200"
-                            : "bg-red-100 text-red-600 border border-red-200"
-                        }`}
-                      >
-                        {res.status === "completed" ? "Completed" : "Not Completed"}
-                      </span>
-                    </div>
-
-                    {/* COURSE CELL */}
-                    <div className="w-[17%] text-gray-600 font-medium flex items-center justify-center">
-                      {res.course ?? "-"}
-                    </div>
-
-                    {/* YEAR CELL */}
-                    <div className="w-[17%] text-gray-600 font-medium flex items-center justify-center">
-                      {res.year ?? "-"}
-                    </div>
-
-                    {/* ACTION CELL */}
-                    <div className="w-[17%] flex items-center justify-center">
-                      <button
-                        type="button"
-                        onClick={() => handleView(res)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-all text-sm font-medium shadow-sm cursor-pointer"
-                      >
-                        <Eye size={14} /> View
-                      </button>
-                    </div>
                   </div>
-                );
-              })
+                  <div className="w-[17%] flex items-center justify-center">
+                    <span className={`px-3 py-1 text-[11px] font-semibold rounded-full ${res.status === "completed" ? "bg-green-100 text-green-600 border border-green-200" : "bg-red-100 text-red-600 border border-red-200"}`}>
+                      {res.status === "completed" ? "Completed" : "Not Completed"}
+                    </span>
+                  </div>
+                  <div className="w-[17%] text-gray-600 truncate px-2">{res.course ?? "-"}</div>
+                  <div className="w-[17%] text-gray-600">{res.year ?? "-"}</div>
+                  <div className="w-[17%] flex items-center justify-center">
+                    <button onClick={() => handleView(res)} className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium cursor-pointer">
+                      <Eye size={14} /> View
+                    </button>
+                  </div>
+                </div>
+              ))
             ) : (
-              <div className="h-[64px] flex items-center justify-center w-full text-gray-500">
-                No records found.
-              </div>
+              <div className="h-[64px] flex items-center justify-center w-full text-gray-500">No records found.</div>
             )}
-
-            {/* Dynamic empty rows up to 10 entries */}
-            {Array.from({ length: Math.max(0, rowsPerPage - responseData.length) }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-[64px] border-b border-gray-50/50 flex items-center w-full">
-                <div className="w-full" />
-              </div>
-            ))}
           </div>
         </div>
       </div>
 
-      {/* FIXED PAGINATION LOWER PANEL */}
-      <div className="flex justify-start mt-1 pb-2">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            {paginationItems.map((item, i) =>
-              item === "..." ? (
-                <span key={i} className="w-9 h-9 flex items-center justify-center text-gray-400 text-sm">
-                  ...
+      {/* ================= MOBILE VIEW ================= */}
+      <div className="block md:hidden space-y-3 w-full overflow-y-auto">
+        {responseData.length > 0 ? (
+          responseData.map((res) => (
+            <div key={`mobile-${res.id}`} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-3">
+              <div className="flex items-center justify-between border-b border-gray-50 pb-2 gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                    {res.avatar || res.profile_picture ? (
+                       <img src={res.avatar || `/storage/${res.profile_picture}`} alt={res.name} className="w-full h-full object-cover" />
+                    ) : (
+                      getInitials(res.name)
+                    )}
+                  </div>
+                  <span className="font-semibold text-gray-900 truncate">{res.name}</span>
+                </div>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${res.status === "completed" ? "bg-green-100 text-green-600 border border-green-200" : "bg-red-100 text-red-600 border border-red-200"}`}>
+                  {res.status === "completed" ? "Completed" : "Not Completed"}
                 </span>
-              ) : (
-                <button
-                  key={item}
-                  onClick={() => goToPage(item)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium transition-all cursor-pointer ${
-                    currentPage === item
-                      ? "bg-blue-500 text-white border-blue-500 shadow-sm"
-                      : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  {item}
+              </div>
+              <div className="text-xs space-y-1.5 text-gray-600 bg-gray-50/50 p-2.5 rounded-lg">
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-400">Course:</span>
+                  <span className="font-medium text-gray-800 truncate max-w-[180px]">{res.course ?? "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Year:</span>
+                  <span className="font-medium text-gray-800">{res.year ?? "-"}</span>
+                </div>
+              </div>
+              <div className="flex items-center pt-1">
+                <button onClick={() => handleView(res)} className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 text-xs font-medium cursor-pointer h-9">
+                  <Eye size={14} /> View
                 </button>
-              )
-            )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-6 text-gray-500 bg-white rounded-xl shadow">No records found.</div>
+        )}
+      </div>
 
-            <button
-              onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
-              disabled={currentPage === lastPage}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition-all cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+      {/* ================= PAGINATION ================= */}
+      <div className="flex justify-start mt-1 pb-2">
+        <div className="flex items-center gap-1">
+          <button onClick={() => currentPage > 1 && goToPage(currentPage - 1)} disabled={currentPage === 1} className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40 cursor-pointer">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          {paginationItems.map((item, i) =>
+            item === "..." ? (
+              <span key={i} className="w-9 h-9 flex items-center justify-center text-gray-400">...</span>
+            ) : (
+              <button key={item} onClick={() => goToPage(item)} className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm cursor-pointer ${currentPage === item ? "bg-blue-500 text-white border-blue-500" : "bg-white text-gray-700"}`}>
+                {item}
+              </button>
+            )
+          )}
+          <button onClick={() => currentPage < lastPage && goToPage(currentPage + 1)} disabled={currentPage === lastPage} className="w-9 h-9 flex items-center justify-center border rounded-lg bg-white disabled:opacity-40 cursor-pointer">
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
+      </div>
     </div>
   );
 }
