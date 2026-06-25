@@ -137,7 +137,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
         <div className="w-full max-w-6xl">
           <Card className="w-full flex flex-col min-h-[700px]">
 
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Link href="/admin/announcement">
                   <Button type="button" variant="ghost" className="p-2">
@@ -150,7 +150,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                 </CardTitle>
               </div>
 
-              <div>
+              <div className="w-full sm:w-auto">
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -163,7 +163,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
                 <Button
                   type="button"
                   onClick={() => fileInputRef.current.click()}
-                  className="bg-[#2859C5] text-white hover:bg-[#1f47a0]"
+                  className="w-full sm:w-auto bg-[#2859C5] text-white hover:bg-[#1f47a0]"
                 >
                   Upload Image
                 </Button>
@@ -277,6 +277,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
               </form>
             </CardContent>
+
           </Card>
         </div>
       </div>
