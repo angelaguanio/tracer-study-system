@@ -86,7 +86,7 @@ export default function CoordinatorSurveyIndex({ surveys = [], archivedSurveys =
 
             {/* New Survey dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-md">
+                <DialogContent className="lg:max-w-md max-w-sm">
                     <DialogHeader>
                         <DialogTitle>New Survey</DialogTitle>
                     </DialogHeader>

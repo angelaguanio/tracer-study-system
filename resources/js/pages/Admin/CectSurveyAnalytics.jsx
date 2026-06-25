@@ -6,6 +6,7 @@ import AnalyticsChart from "@/components/survey/coordinator/AnalyticsChart";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download } from "lucide-react";
 
 const latestYear = new Date().getFullYear() - 1;
 const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
@@ -84,38 +85,42 @@ export default function CectSurveyAnalytics({
     return (
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
 
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+         {/* Header */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                
+                <div className="flex items-start gap-3 min-w-0">
                     <Link href={route("admin.analytics")}>
-                        <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer">
+                        <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer shrink-0">
                             <ArrowLeft size={18} />
                         </button>
                     </Link>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-800">{survey.title} — Analytics</h1>
+
+                    <div className="min-w-0">
+                        <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 break-words">
+                            {survey.title} — Analytics
+                        </h1>
+
                         <p className="text-sm text-gray-500">
                             Total respondents:{" "}
-                            <span className="font-semibold text-gray-800">{totalRespondents}</span>
+                            <span className="font-semibold text-gray-800">
+                                {totalRespondents}
+                            </span>
                         </p>
                     </div>
                 </div>
+
                 <a
                     href={downloadUrl}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shrink-0"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
+                    <Download size={16} />
                     Download Report
                 </a>
             </div>
 
             {/* Filters */}
             <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 min-w-44">
+                <div className="flex flex-col gap-1 ">
                     <Label className="text-xs">Year Graduated</Label>
                     <Select
                         value={localFilters.year_graduated || "All Years"}
@@ -127,7 +132,7 @@ export default function CectSurveyAnalytics({
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="flex flex-col gap-1 min-w-44">
+                <div className="flex flex-col gap-1">
                     <Label className="text-xs">Semester</Label>
                     <Select
                         value={localFilters.semester || "All Semesters"}

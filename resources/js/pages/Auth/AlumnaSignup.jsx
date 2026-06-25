@@ -63,7 +63,7 @@ const INITIAL_FORM = {
   employment_type: '', company_name: '', position: '',
   location: '', monthly_salary: '',
   employment_start_year: '', employment_end_year: '',
-  is_current: true,
+  is_present: true,
   unemployment_reason: '',
 };
 
@@ -147,7 +147,7 @@ export default function AlumnaSignup() {
   const [step, setStep] = useState(1);
   const [passwordErrors, setPasswordErrors] = useState([]);
 
-  const { data, setData, post, errors, processing } = useForm(INITIAL_FORM);
+  const { data, setData, post, errors, processing, transform } = useForm(INITIAL_FORM);
 
   // Jump back to the step that has an error after server validation
   useEffect(() => {
@@ -196,8 +196,8 @@ export default function AlumnaSignup() {
   const handleSelectChange = (name, value) => {
     if (name === 'employment_end_year') {
       setData(value === 'current'
-        ? { ...data, is_current: true,  employment_end_year: 'current' }
-        : { ...data, is_current: false, employment_end_year: value });
+        ? { ...data, is_present: true,  employment_end_year: 'current' }
+        : { ...data, is_present: false, employment_end_year: value });
       return;
     }
     setData(name, value);
@@ -225,9 +225,16 @@ export default function AlumnaSignup() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const [start_year, end_year] = data.school_year.split('-');
+  
+    transform((formData) => ({
+      ...formData,
+      start_year,
+      end_year,
+      employment_end_year: formData.is_present ? null : formData.employment_end_year,
+    }));
+  
     post('/alumna/signup', {
       preserveScroll: true,
-      data: { ...data, start_year, end_year, employment_end_year: data.is_current ? null : data.employment_end_year },
       onSuccess: () => { setData(INITIAL_FORM); setStep(1); },
     });
   };
@@ -362,7 +369,7 @@ export default function AlumnaSignup() {
                       {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
                     </SelectGroup>
                   </IconSelect>
-                  <IconSelect icon={CalendarDays} placeholder="End Year" value={data.is_current ? 'current' : data.employment_end_year} onValueChange={(v) => handleSelectChange('employment_end_year', v)}>
+                  <IconSelect icon={CalendarDays} placeholder="End Year" value={data.is_present ? 'current' : data.employment_end_year} onValueChange={(v) => handleSelectChange('employment_end_year', v)}>
                     <SelectGroup>
                       <SelectItem value="current">Present/Current</SelectItem>
                       {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}

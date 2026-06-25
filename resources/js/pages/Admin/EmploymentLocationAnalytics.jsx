@@ -44,30 +44,30 @@ export default function EmploymentLocationAnalytics({
         <div className="w-full max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 self-start">
 
             {/* HEADER */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.visit(route("admin.analytics"))}
-                        className="text-gray-500 hover:text-gray-800 cursor-pointer"
-                    >
-                        <ArrowLeft size={16} className="mr-1" /> 
-                    </Button>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                            <MapPin size={20} className="text-blue-600" />
-                            Alumni Employment Cities
-                        </h1>
-                        <p className="text-sm text-gray-500 mt-0.5">
-                            Track the cities where alumni are currently employed
-                        </p>
-                    </div>
+            <div className="flex items-start gap-3">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.visit(route("admin.analytics"))}
+                    className="text-gray-500 hover:text-gray-800 cursor-pointer shrink-0"
+                >
+                    <ArrowLeft size={16} />
+                </Button>
+
+                <div className="min-w-0">
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2 flex-wrap">
+                        <MapPin size={20} className="text-blue-600 shrink-0" />
+                        Alumni Employment Cities
+                    </h1>
+
+                    <p className="text-sm text-gray-500">
+                        Track the cities where alumni are currently employed
+                    </p>
                 </div>
             </div>
 
             {/* SUMMARY CARDS */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <SummaryCard
                     icon={<Users size={24} className="text-white" />}
                     label="Total Employed"
@@ -168,7 +168,7 @@ export default function EmploymentLocationAnalytics({
                                             type="category"
                                             dataKey="city"
                                             tick={{ fontSize: 11 }}
-                                            width={90}
+                                            width={50}
                                         />
                                         <Tooltip />
                                         <Bar dataKey="count" name="Alumni Count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
@@ -180,71 +180,182 @@ export default function EmploymentLocationAnalytics({
                 </div>
             )}
 
-            {/* TABLE TAB */}
-            {activeTab === "table" && (
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm font-semibold text-gray-700">
-                                Detailed Distribution ({filteredTable.length} records)
-                            </CardTitle>
-                            <div className="flex items-center gap-2">
-                                <label className="text-sm font-medium text-gray-600">
-                                    Filter by City:
-                                </label>
-                                <Select value={tableFilter} onValueChange={setTableFilter}>
-                                    <SelectTrigger className="w-48">
-                                        <SelectValue placeholder="All Cities" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Cities</SelectItem>
-                                        {allUniqueCities.map((city) => (
-                                            <SelectItem key={city} value={city}>
-                                                {city}
+           {/* TABLE TAB */}
+                {activeTab === "table" && (
+                    <Card>
+                        <CardHeader>
+                            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <CardTitle className="text-sm font-semibold text-gray-700">
+                                    Detailed Distribution ({filteredTable.length} records)
+                                </CardTitle>
+
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <label className="text-sm font-medium text-gray-600">
+                                        Filter by City:
+                                    </label>
+
+                                    <Select
+                                        value={tableFilter}
+                                        onValueChange={setTableFilter}
+                                    >
+                                        <SelectTrigger className="w-full sm:w-48">
+                                            <SelectValue placeholder="All Cities" />
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <SelectItem value="all">
+                                                All Cities
                                             </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {filteredTable.length === 0 ? (
-                            <div className="p-6"><EmptyState /></div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="bg-gray-50 border-b border-gray-100">
-                                        <tr>
-                                            {["Name", "Program", "Year", "Home City", "Company", "Workplace"].map((h) => (
-                                                <th key={h} className="px-4 py-3 text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                                    {h}
-                                                </th>
+
+                                            {allUniqueCities.map((city) => (
+                                                <SelectItem
+                                                    key={city}
+                                                    value={city}
+                                                >
+                                                    {city}
+                                                </SelectItem>
                                             ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {filteredTable.map((row, i) => (
-                                            <tr key={i} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-3 font-medium text-gray-800 text-center">{row.name}</td>
-                                                <td className="px-4 py-3 text-gray-600 text-center">{row.course || "—"}</td>
-                                                <td className="px-4 py-3 text-gray-600 text-center">
-                                                    {row.start_year && row.end_year 
-                                                        ? `${row.start_year}-${row.end_year}` 
-                                                        : row.year_graduated || "—"}
-                                                </td>
-                                                <td className="px-4 py-3 text-gray-600 text-center">{row.home_city}</td>
-                                                <td className="px-4 py-3 text-gray-600 text-center">{row.company_name || "—"}</td>
-                                                <td className="px-4 py-3 text-gray-600 text-center">{row.company_city}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
-            )}
+                        </CardHeader>
+
+                        <CardContent className="p-0">
+                            {filteredTable.length === 0 ? (
+                                <div className="p-6">
+                                    <EmptyState />
+                                </div>
+                            ) : (
+                                <>
+                                    {/* MOBILE CARDS */}
+                                    <div className="block md:hidden p-4 space-y-4">
+                                        {filteredTable.map((row, i) => (
+                                            <div
+                                                key={i}
+                                                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+                                            >
+                                                {/* Header */}
+                                                <div className="px-4 py-3 border-b bg-gray-50">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div className="min-w-0">
+                                                            <h3 className="font-semibold text-gray-900 text-base break-words">
+                                                                {row.name}
+                                                            </h3>
+                                                            <p className="text-sm text-gray-500">
+                                                                {row.course || "No Program"}
+                                                            </p>
+                                                        </div>
+
+                                                        <span className="shrink-0 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                                                            {row.start_year && row.end_year
+                                                                ? `${row.start_year}-${row.end_year}`
+                                                                : row.year_graduated || "—"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Body */}
+                                                <div className="p-4">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                                                                Home City
+                                                            </p>
+                                                            <p className="mt-1 text-sm font-medium text-gray-800">
+                                                                {row.home_city || "—"}
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                                                                Workplace
+                                                            </p>
+                                                            <p className="mt-1 text-sm font-medium text-gray-800">
+                                                                {row.company_city || "—"}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="col-span-2">
+                                                            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                                                                Company
+                                                            </p>
+                                                            <p className="mt-1 text-sm font-medium text-gray-800">
+                                                                {row.company_name || "—"}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* DESKTOP TABLE */}
+                                    <div className="hidden md:block overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-gray-50 border-b border-gray-100">
+                                                <tr>
+                                                    {[
+                                                        "Name",
+                                                        "Program",
+                                                        "Year",
+                                                        "Home City",
+                                                        "Company",
+                                                        "Workplace",
+                                                    ].map((h) => (
+                                                        <th
+                                                            key={h}
+                                                            className="px-4 py-3 text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider"
+                                                        >
+                                                            {h}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+
+                                            <tbody className="divide-y divide-gray-50">
+                                                {filteredTable.map((row, i) => (
+                                                    <tr
+                                                        key={i}
+                                                        className="hover:bg-gray-50 transition-colors"
+                                                    >
+                                                        <td className="px-4 py-3 font-medium text-gray-800 text-center">
+                                                            {row.name}
+                                                        </td>
+
+                                                        <td className="px-4 py-3 text-gray-600 text-center">
+                                                            {row.course || "—"}
+                                                        </td>
+
+                                                        <td className="px-4 py-3 text-gray-600 text-center">
+                                                            {row.start_year &&
+                                                            row.end_year
+                                                                ? `${row.start_year}-${row.end_year}`
+                                                                : row.year_graduated ||
+                                                                "—"}
+                                                        </td>
+
+                                                        <td className="px-4 py-3 text-gray-600 text-center">
+                                                            {row.home_city}
+                                                        </td>
+
+                                                        <td className="px-4 py-3 text-gray-600 text-center">
+                                                            {row.company_name || "—"}
+                                                        </td>
+
+                                                        <td className="px-4 py-3 text-gray-600 text-center">
+                                                            {row.company_city}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
         </div>
     );

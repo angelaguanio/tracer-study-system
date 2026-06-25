@@ -5,7 +5,11 @@ import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
 
 export default function AdminInquiries({inquiries, filters}) {
-    const [selectedInquiry, setSelectedInquiry] = useState(inquiries.data[0] || null);
+    const [selectedInquiry, setSelectedInquiry] = useState(
+        window.innerWidth >= 768
+            ? inquiries.data[0] || null
+            : null
+    );
     const [statusFilter, setStatusFilter] = useState(filters?.status ? filters.status.split(',') : []);
     const [search, setSearch] = useState(filters?.search || '');
 
@@ -25,10 +29,8 @@ export default function AdminInquiries({inquiries, filters}) {
     }, [search, statusFilter]);
 
     useEffect(() => {
-        if (inquiries.data.length > 0) {
-            setSelectedInquiry(inquiries.data[0]);
-        } else {
-            setSelectedInquiry(null);
+        if (window.innerWidth >= 768) {
+            setSelectedInquiry(inquiries.data[0] || null);
         }
     }, [inquiries.data]);
 
@@ -39,10 +41,42 @@ export default function AdminInquiries({inquiries, filters}) {
     };
 
     return (
-        <div className='flex h-screen w-full overflow-hidden bg-white p-4 rounded-lg border border-gray-200 shadow-sm '>
-            <InquiryList 
-                inquiries={inquiries} 
-                selectedId={selectedInquiry?.id} 
+        <div className="    flex
+        flex-col
+        md:flex-row
+        h-[calc(100vh-80px)]
+        w-full
+        overflow-hidden
+        bg-white
+        rounded-xl
+        border">
+
+        {/* Mobile */}
+        <div className="md:hidden h-full w-full">
+            {!selectedInquiry ? (
+                <InquiryList
+                    inquiries={inquiries}
+                    selectedId={selectedInquiry?.id}
+                    onSelect={setSelectedInquiry}
+                    statusFilter={statusFilter}
+                    setStatusFilter={setStatusFilter}
+                    search={search}
+                    setSearch={setSearch}
+                />
+            ) : (
+                <InquiryContent
+                    inquiry={selectedInquiry}
+                    onUpdateStatus={handleUpdateStatus}
+                    onBack={() => setSelectedInquiry(null)}
+                />
+            )}
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden md:flex flex-1 min-h-0">
+            <InquiryList
+                inquiries={inquiries}
+                selectedId={selectedInquiry?.id}
                 onSelect={setSelectedInquiry}
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}
@@ -50,11 +84,13 @@ export default function AdminInquiries({inquiries, filters}) {
                 setSearch={setSearch}
             />
 
-            <InquiryContent 
+            <InquiryContent
                 inquiry={selectedInquiry}
                 onUpdateStatus={handleUpdateStatus}
             />
         </div>
+
+    </div>
     )
     }
 
