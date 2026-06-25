@@ -21,7 +21,7 @@ export default function AdminSurveyResponseViewNotComplete({ survey }) {
           <ArrowLeft size={24} className="stroke-[2]" />
         </button>
 
-        <h1 className="text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
+        <h1 className="lg:text-xl text-md line-clamp-2 font-bold text-gray-800 tracking-tight whitespace-nowrap">
           {survey?.title}
         </h1>
 

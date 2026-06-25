@@ -21,27 +21,34 @@ export default function AdminSurveyResponseFilter({
     const s = latestYear - i;
     return `${s}-${s + 1}`;
   });
+
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+    /* MOBILE: May background card, padding, shadow, at border (Eksaktong gaya ng image_139407.png).
+      DESKTOP: Nawawala ang background at nagiging transparent para sumama sa header line (md:bg-transparent md:shadow-none).
+    */
+    <div className="flex flex-col gap-2.5 w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 md:flex-row md:items-center md:gap-3 md:w-auto md:bg-transparent md:p-0 md:shadow-none md:border-0">
+      
+      {/* SEARCH FIELD */}
+      <div className="relative w-full md:w-[220px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <Input
+          placeholder="Search..."
+          className="h-10 pl-10 bg-white border-gray-200 rounded-lg text-gray-700"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-        {/* SEARCH */}
-        <div className="relative w-full sm:w-[220px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <Input
-            placeholder="Search..."
-            className="h-10 pl-10 bg-white"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      {/* MOBILE: Naka-grid grid-cols-2 para magkasama at pantay sa iisang row ang dalawang select filters.
+        DESKTOP:md:flex md:flex-row para maging tuloy-tuloy sa tabi ng search input field.
+      */}
+      <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
 
-        {/* COURSE */}
+        {/* COURSE DROPDOWN */}
         <Select value={course} onValueChange={(val) => setCourse(val)}>
-          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
+          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
-
           <SelectContent>
             <SelectItem value="all">All Courses</SelectItem>
             <SelectItem value="BSIT">BSIT</SelectItem>
@@ -50,24 +57,22 @@ export default function AdminSurveyResponseFilter({
           </SelectContent>
         </Select>
 
-        {/* YEAR */}
+        {/* YEAR DROPDOWN */}
         <Select value={year} onValueChange={(val) => setYear(val)}>
-          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
+          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
-          <SelectContent  className="max-h-48">
+          <SelectContent className="max-h-48">
             <SelectItem value="all">All Years</SelectItem>
             {yearOptions.map((y) => (
               <SelectItem key={y} value={y}>
                 {y}
               </SelectItem>
             ))}
-
           </SelectContent>
         </Select>
 
       </div>
-
     </div>
   );
 }
