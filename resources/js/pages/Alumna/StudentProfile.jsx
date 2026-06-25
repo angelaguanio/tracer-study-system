@@ -56,7 +56,7 @@ export default function StudentProfile() {
                             </div>
                         )}
                     </div>
-                    <div><h3 className="text-2xl font-bold text-[#343a40]">{fullName}</h3></div>
+                    <div><h3 className="lg:text-2xl text-lg font-bold text-[#343a40]">{fullName}</h3></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-2 border-t border-gray-50">
                     <InfoItem icon={<IconMail />} label="Email" value={profile?.email} />
