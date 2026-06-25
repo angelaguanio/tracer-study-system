@@ -14,7 +14,7 @@ import {
 
 export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isResetChecked, setIsResetChecked] = useState(false); // Tagasubaybay sa checkbox status
+  const [isResetChecked, setIsResetChecked] = useState(false);
 
   // DYNAMIC YEAR OPTIONS (2017 to 2026)
   const currentYear = new Date().getFullYear();
@@ -51,7 +51,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         status: editing.status || "active",
         reset_password: false,
       });
-      setIsResetChecked(false); // Siguraduhing un-checked kapag nagpalit ng ine-edit
+      setIsResetChecked(false);
     } else {
       reset();
     }
@@ -59,10 +59,10 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
   // MANAGING THE CHECKBOX TOGGLE
   const handleCheckboxChange = (e) => {
-  const checked = e.target.checked;
-  setIsResetChecked(checked);
-  setData("reset_password", checked); // ← simple boolean flag
-};
+    const checked = e.target.checked;
+    setIsResetChecked(checked);
+    setData("reset_password", checked);
+  };
 
   // SUBMIT
   const submit = (e) => {
@@ -102,35 +102,42 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden px-2">
-        {/* HEADER */}
-        <div className="px-8 pt-8 pb-5 text-black">
-          <h2 className="text-lg font-semibold">
+    /* FIXED: Nagdagdag ng 'overflow-y-auto' sa backdrop wrapper para ma-scroll ang buong modal sa mobile */
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+      
+      {/* FIXED: 'max-h-[calc(100vh-2rem)] flex flex-col' para magkasya sa screen at hindi lumagpas */}
+      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl flex flex-col my-auto max-h-[calc(100vh-2rem)] overflow-hidden">
+        
+        {/* HEADER - Adjusted padding para mas swabe sa maliit na screen */}
+        <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-5 text-black shrink-0">
+          <h2 className="text-base sm:text-lg font-semibold">
             {editing ? "Edit Coordinator" : "Add Coordinator"}
           </h2>
         </div>
-        <hr />
+        <hr className="shrink-0" />
 
-        {/* FORM */}
-        <form onSubmit={submit} className="p-6 space-y-5">
+        {/* FORM BODY - FIXED: 'overflow-y-auto' dito para ang mismong form content lang ang mag-scroll kapag mahaba */}
+        <form onSubmit={submit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1 text-left">
+          
           {/* NAME */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">First Name</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">First Name</label>
               <Input
                 value={data.first_name}
                 onChange={(e) => setData("first_name", e.target.value)}
+                className="bg-white"
               />
               {errors.first_name && (
                 <p className="text-red-500 text-xs">{errors.first_name}</p>
               )}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Last Name</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Last Name</label>
               <Input
                 value={data.last_name}
                 onChange={(e) => setData("last_name", e.target.value)}
+                className="bg-white"
               />
               {errors.last_name && (
                 <p className="text-red-500 text-xs">{errors.last_name}</p>
@@ -139,24 +146,26 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
           </div>
 
           {/* MIDDLE + EMAIL */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Middle Name</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Middle Name</label>
               <Input
                 value={data.middle_name}
                 onChange={(e) => setData("middle_name", e.target.value)}
                 placeholder="Optional"
+                className="bg-white"
               />
               {errors.middle_name && (
                 <p className="text-red-500 text-xs">{errors.middle_name}</p>
               )}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Email Address</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Email Address</label>
               <Input
                 type="email"
                 value={data.email}
                 onChange={(e) => setData("email", e.target.value)}
+                className="bg-white"
               />
               {errors.email && (
                 <p className="text-red-500 text-xs">{errors.email}</p>
@@ -165,9 +174,9 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
           </div>
 
           {/* DEPARTMENT + PROGRAM */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Department</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Department</label>
               <Select
                 value={data.department}
                 onValueChange={(val) => setData("department", val)}
@@ -181,7 +190,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
               </Select>
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Assigned Program</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Assigned Program</label>
               <Select
                 value={data.courses || undefined}
                 onValueChange={(val) => setData("courses", val)}
@@ -201,10 +210,10 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
           </div>
 
           {/* START YEAR + END YEAR */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* START YEAR */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Start Year</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">Start Year</label>
               <Select
                 value={data.start_year || undefined}
                 onValueChange={(val) => setData("start_year", val)}
@@ -227,7 +236,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
             {/* END YEAR */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">End Year</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700">End Year</label>
               <Select
                 value={data.end_year || undefined}
                 onValueChange={(val) => setData("end_year", val)}
@@ -251,7 +260,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
           {/* STATUS */}
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Status</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700">Status</label>
             <Select
               value={data.status}
               onValueChange={(val) => setData("status", val)}
@@ -269,7 +278,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
             )}
           </div>
 
-          {/* FIXED: PASSWORD INTERFACE WITH CHECKBOX FOR RESET */}
+          {/* PASSWORD INTERFACE WITH CHECKBOX FOR RESET */}
           {editing ? (
             <div className="space-y-2 pt-2 border-t border-gray-100">
               <div className="flex items-center gap-2">
@@ -278,17 +287,16 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                   id="resetPasswordCheck"
                   checked={isResetChecked}
                   onChange={handleCheckboxChange}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
                 />
                 <label 
                   htmlFor="resetPasswordCheck" 
-                  className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
+                  className="text-xs sm:text-sm font-semibold text-gray-800 cursor-pointer select-none"
                 >
                   Reset coordinator password to default?
                 </label>
               </div>
 
-              {/* LILITAW LAMANG ANG INPUT FIELD KAPAG NAKA-CHECK ANG BOX */}
               {isResetChecked && (
                 <div className="space-y-1 animate-in fade-in duration-200">
                   <div className="relative">
@@ -296,7 +304,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                       type={showPassword ? "text" : "password"}
                       value="CoordinatorCECT@2026"
                       readOnly
-                      className="pr-10 bg-gray-50 text-gray-600 border-blue-200 font-mono font-bold"
+                      className="pr-10 bg-gray-50 text-gray-600 border-blue-200 font-mono font-bold text-xs sm:text-sm"
                     />
                     <button
                       type="button"
@@ -307,7 +315,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                  <p className="text-[11px] text-blue-600">
+                  <p className="text-[10px] sm:text-[11px] text-blue-600">
                     This will restore their access using the corporate temporary credentials.
                   </p>
                 </div>
@@ -318,7 +326,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
               )}
             </div>
           ) : (
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-xs mt-2">
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-[11px] sm:text-xs mt-2">
               <strong>Notice:</strong> A default password{" "}
               <span className="font-mono bg-blue-100 px-1 py-0.5 rounded mx-1 font-bold">
                 CoordinatorCECT@2026
@@ -327,19 +335,20 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
             </div>
           )}
 
-          {/* BUTTONS */}
-          <div className="flex justify-end gap-3 pt-4">
+          {/* BUTTONS - Fixed alignment and height for touch-friendly taps */}
+          <div className="flex justify-end gap-2 sm:gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={closeForm}
               disabled={processing}
+              className="text-xs sm:text-sm h-9 sm:h-10"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 text-xs sm:text-sm h-9 sm:h-10"
               disabled={processing}
             >
               {processing ? "Saving..." : editing ? "Update Changes" : "Save"}
