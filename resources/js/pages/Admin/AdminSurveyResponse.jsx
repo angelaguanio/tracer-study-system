@@ -65,7 +65,7 @@ export default function AdminSurveyResponse({
             <ArrowLeft size={24} className="stroke-[2]" />
           </button>
 
-          <h1 className="text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
+          <h1 className="lg:text-xl text-md font-bold text-gray-800 tracking-tight whitespace-nowrap line-clamp-2">
             {survey.title}
           </h1>
         </div>

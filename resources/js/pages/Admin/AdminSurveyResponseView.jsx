@@ -29,7 +29,7 @@ export default function AdminSurveyResponseView({ response, survey }) {
                     </button>
 
                     {/* Nilagyan ng truncate para hindi itulak palabas ang screen kung sobrang haba ng title */}
-                    <h1 className="text-xl font-bold text-gray-800 tracking-tight truncate max-w-[280px] xs:max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl" title={survey?.title}>
+                    <h1 className="lg:text-xl text-md line-clamp-2 font-bold text-gray-800 tracking-tight max-w-[280px] xs:max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl" title={survey?.title}>
                         {survey?.title}
                     </h1>
                 </div>
