@@ -76,7 +76,7 @@ export default function AdminViewProfileOfRespondents(props) {
           <Button
             onClick={() => router.visit(route("admin.alumni.index"))}
             variant="outline"
-            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2 border-gray-200 text-gray-500 hover:text-gray-700"
+            className="h-auto p-0 bg-transparent border-0 shadow-none rounded-none hover:bg-transparent hover:text-gray-700 text-gray-500 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide"
           >
             <ArrowLeft size={14} /> BACK TO LIST
           </Button>
