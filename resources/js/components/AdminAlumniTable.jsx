@@ -191,7 +191,7 @@ export default function AdminAlumniTable({
         </div>
       </div>
 
-      {/* ================= MOBILE VIEW (BASED ON IMAGE_8B351C.PNG) ================= */}
+      {/* ================= MOBILE VIEW ================= */}
       <div className="block md:hidden flex-1 overflow-y-auto space-y-3 pb-2">
         {alumniData.length > 0 && (
           <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
@@ -242,18 +242,20 @@ export default function AdminAlumniTable({
                 </div>
               </div>
 
-              {/* MOBILE ROW 2: COURSE & YEAR LAYOUT PATTERN (IMAGE_8B351C.PNG) */}
-              <div className="pl-8 flex flex-col gap-1.5 text-xs">
+              {/* MOBILE ROW 2: COURSE & YEAR LAYOUT PATTERN */}
+              <div className="px-2 flex flex-col gap-1.5 text-xs ">
                 {/* Course Row */}
                 <div className="flex justify-between items-center w-full">
-                  <span className="text-gray-400 font-normal">Course:</span>
-                  <span className="text-gray-800 font-medium">{item.course ?? "N/A"}</span>
+                  <span className="text-gray-800 font-medium">Course:</span>
+                  <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
+                      {item.course ?? "N/A"}
+                  </span>
                 </div>
                 
                 {/* Year Row */}
                 <div className="flex justify-between items-center w-full">
-                  <span className="text-gray-400 font-normal">Year:</span>
-                  <span className="text-gray-700 font-medium">{item.year ?? "N/A"}</span>
+                  <span className="text-gray-800 font-medium">Year:</span>
+                  <span className="text-gray-800 font-normal">{item.year ?? "N/A"}</span>
                 </div>
               </div>
 

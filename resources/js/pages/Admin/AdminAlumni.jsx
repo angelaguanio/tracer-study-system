@@ -194,7 +194,7 @@ export default function AdminAlumni({ alumni, filters }) {
 
       {/* ── INDIVIDUAL EMAIL MODAL ── */}
       <Dialog open={indivModalOpen} onOpenChange={setIndivModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="lg:max-w-lg max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-blue-800">
               Send an email to {selectedUser?.name}
@@ -248,7 +248,7 @@ export default function AdminAlumni({ alumni, filters }) {
 
       {/* ── BULK EMAIL MODAL ── */}
       <Dialog open={bulkModalOpen} onOpenChange={setBulkModalOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="lg:max-w-lg max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-blue-800">
               Send Bulk Email
