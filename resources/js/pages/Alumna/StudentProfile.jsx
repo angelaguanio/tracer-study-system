@@ -51,7 +51,7 @@ export default function StudentProfile() {
                     <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
                         {profile?.profile_picture ? <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{profile?.first_name?.[0] || 'R'}</div>}
                     </div>
-                    <div><h3 className="text-2xl font-bold text-[#343a40]">{fullName}</h3></div>
+                    <div><h3 className="lg:text-2xl text-lg font-bold text-[#343a40]">{fullName}</h3></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-2 border-t border-gray-50">
                     <InfoItem icon={<IconMail />} label="Email" value={profile?.email} />
