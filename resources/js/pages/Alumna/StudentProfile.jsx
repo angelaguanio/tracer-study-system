@@ -31,7 +31,6 @@ export default function StudentProfile() {
     const fullName = `${profile?.first_name} ${profile?.middle_name ? profile.middle_name + ' ' : ''}${profile?.last_name}`;
     const displayedYear = (profile?.start_year && profile?.end_year) ? `${profile.start_year}-${profile.end_year}` : (profile?.school_year || '—');
     
-    // Sort logic
     const employmentHistory = profile?.employment_history ? [...profile.employment_history].sort((a, b) => parseInt(b.employment_start_year || 0) - parseInt(a.employment_start_year || 0)) : [];
 
     return (
@@ -48,8 +47,14 @@ export default function StudentProfile() {
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase"><IconUser /> Personal Information</div>
                 <div className="flex items-center gap-5 mb-8">
-                    <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
-                        {profile?.profile_picture ? <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{profile?.first_name?.[0] || 'R'}</div>}
+                    <div className="h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white shrink-0 flex items-center justify-center">
+                        {profile?.profile_picture ? (
+                            <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-2xl font-bold">
+                               {(profile?.first_name?.[0] || '') + (profile?.last_name?.[0] || '') || 'R'}
+                            </div>
+                        )}
                     </div>
                     <div><h3 className="text-2xl font-bold text-[#343a40]">{fullName}</h3></div>
                 </div>
@@ -62,7 +67,7 @@ export default function StudentProfile() {
                 </div>
             </section>
 
-            {/* Employment Status */}
+            {/* Employment Status Section*/}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconBriefcase /> Current Employment Status</div>
@@ -85,7 +90,7 @@ export default function StudentProfile() {
                 )}
             </section>
 
-            {/* Employment History (Responsive) */}
+            {/* Employment History Section */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
                 <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconHistory /> Employment History</div>
                 {employmentHistory.length > 0 ? (
