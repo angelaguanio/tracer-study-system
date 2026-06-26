@@ -100,7 +100,7 @@ export default function CoordinatorViewProfile({ user }) {
         </section>
 
         <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
-          <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-white">
+          <DialogContent className="lg:max-w-3xl max-w-sm p-0 overflow-hidden bg-white">
             <div className="bg-gray-50 px-6 sm:px-8 py-6 border-b border-gray-100 flex items-center justify-between"><div className="flex items-center gap-3"><div className="text-[#008542]"><IconHistory /></div><div><h2 className="text-lg font-bold text-gray-800 leading-tight">Archived Profile Record</h2><p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Saved on {selectedHistory ? new Date(selectedHistory.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}</p></div></div></div>
             {selectedHistory && (
               <div className="px-6 sm:px-8 py-6 space-y-8 max-h-[80vh] overflow-y-auto">

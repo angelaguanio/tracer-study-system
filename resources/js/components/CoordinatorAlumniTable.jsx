@@ -22,6 +22,7 @@ const badgeColor = (course) => {
   }
 };
 
+
 export default function CoordinatorAlumniTable({ alumni, onView }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
@@ -61,7 +62,7 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
         <table className="w-full text-sm">
           <thead className="bg-[#70CAFF]">
             <tr className="h-12 text-gray-800">
-              <th className="text-center font-semibold">Alumni</th>
+              <th className="text-center font-semibold pl-8">Name</th>
               <th className="text-center font-semibold">Course</th>
               <th className="text-center font-semibold">Year</th>
               <th className="text-center font-semibold">Actions</th>
@@ -71,12 +72,22 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
             {alumniData.length > 0 ? (
               alumniData.map((item) => (
                 <tr key={item.id} className="h-[64px] hover:bg-gray-50 transition-colors">
-                  <td className="flex items-center justify-center h-[64px] gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shadow-sm">
-                      {getInitials(item.name)}
+                 <td className="px-4 h-[64px]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                      {item.avatar ? (
+                        <img
+                          src={item.avatar}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        getInitials(item.name)
+                      )}
                     </div>
-                    <span className="font-medium text-gray-800">{item.name}</span>
-                  </td>
+                    <span className="flex-1 text-center text-sm font-medium text-gray-800">{item.name}</span>
+                  </div>
+                </td>
                   <td className="text-center">
                     <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                       {item.course ?? "N/A"}
@@ -103,7 +114,13 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
           alumniData.map((item) => (
             <div key={item.id} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-3">
               <div className="flex items-center gap-3 border-b border-gray-50 pb-2">
-                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold">{getInitials(item.name)}</div>
+                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                  {item.avatar ? (
+                    <img src={item.avatar} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    getInitials(item.name)
+                  )}
+                </div>
                 <span className="font-semibold text-gray-900">{item.name}</span>
               </div>
               <div className="text-xs space-y-2 text-gray-600 bg-gray-50/50 p-2.5 rounded-lg">

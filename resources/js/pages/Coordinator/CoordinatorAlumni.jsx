@@ -28,7 +28,10 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   }, [search]);
 
   return (
-    <div className="w-full h-full flex flex-col p-4 gap-4 overflow-hidden">
+    <div className="w-full h-full flex flex-col p-4 gap-4 overflow-y-auto">
+      <div className="flex px-4">
+        <h1 className="text-xl font-bold">List of Alumni</h1>
+      </div>
       <div className="shrink-0">
         <CoordinatorAlumniFilters 
           search={search} setSearch={setSearch} 
