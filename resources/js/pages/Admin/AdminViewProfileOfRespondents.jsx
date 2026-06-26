@@ -62,7 +62,8 @@ export default function AdminViewProfileOfRespondents(props) {
             <InfoItem label="Contact Number" value={user.contact_number} />
             <InfoItem label="Address" value={user.address} />
             <InfoItem label="Course" value={user.courses ?? user.course} />
-            <InfoItem label="Year Graduated" value={(user.start_year && user.end_year) ? `${user.start_year} - ${user.end_year}` : '—'}/>
+            <InfoItem label="Year Graduated"
+             value={(user.start_year && user.end_year)  ? `${user.start_year} - ${user.end_year}` : (user.year_graduated ? `${parseInt(user.year_graduated) - 1} - ${user.year_graduated}` : '—')}/>
             <InfoItem label="Semester Graduated" value={user.semester_graduated ?? user.semester ?? '—'}/>
           </div>
         </section>
