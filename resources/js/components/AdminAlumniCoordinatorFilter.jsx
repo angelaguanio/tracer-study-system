@@ -35,35 +35,42 @@ export default function AdminAlumniCoordinatorFilter({
       {/* FILTERS + BUTTON */}
       <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto md:items-center">
         
-        {/* DEPARTMENT SELECT */}
-        <Select 
-          onValueChange={setDepartmentFilter} 
-          value={departmentFilter}
-        >
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm cursor-pointer">
-            <SelectValue placeholder="All Department"  />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all" className='cursor-pointer'>All Department</SelectItem>
-            <SelectItem value="CECT" className='cursor-pointer'>CECT</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* ITO ANG PINAGSAMA NA ROW PARA SA MOBILE VIEW */}
+        <div className="flex flex-row gap-2 w-full md:w-auto">
+          
+          {/* DEPARTMENT SELECT */}
+          <Select 
+            onValueChange={setDepartmentFilter} 
+            value={departmentFilter}
+          >
+            {/* Ginawang w-1/2 para sa mobile at md:w-[160px] para sa desktop */}
+            <SelectTrigger className="h-10 w-1/2 md:w-[160px] bg-white text-sm cursor-pointer">
+              <SelectValue placeholder="All Department"  />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className='cursor-pointer'>All Department</SelectItem>
+              <SelectItem value="CECT" className='cursor-pointer'>CECT</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* COURSE SELECT */}
-        <Select 
-          onValueChange={setCourseFilter} 
-          value={courseFilter}
-        >
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white text-sm cursor-pointer">
-            <SelectValue placeholder="All Courses" />
-          </SelectTrigger>
-          <SelectContent >
-            <SelectItem value="all" className='cursor-pointer'>All Courses</SelectItem>
-            <SelectItem value="BSIT" className='cursor-pointer'>BSIT</SelectItem>
-            <SelectItem value="BSCpE" className='cursor-pointer'>BSCpE</SelectItem>
-            <SelectItem value="BSEcE" className='cursor-pointer'>BSEcE</SelectItem>
-          </SelectContent>
-        </Select>
+          {/* COURSE SELECT */}
+          <Select 
+            onValueChange={setCourseFilter} 
+            value={courseFilter}
+          >
+            {/* Ginawang w-1/2 para sa mobile at md:w-[160px] para sa desktop */}
+            <SelectTrigger className="h-10 w-1/2 md:w-[160px] bg-white text-sm cursor-pointer">
+              <SelectValue placeholder="All Courses" />
+            </SelectTrigger>
+            <SelectContent >
+              <SelectItem value="all" className='cursor-pointer'>All Courses</SelectItem>
+              <SelectItem value="BSIT" className='cursor-pointer'>BSIT</SelectItem>
+              <SelectItem value="BSCpE" className='cursor-pointer'>BSCpE</SelectItem>
+              <SelectItem value="BSEcE" className='cursor-pointer'>BSEcE</SelectItem>
+            </SelectContent>
+          </Select>
+
+        </div>
 
         {/* ADD BUTTON */}
         <Button
@@ -71,7 +78,7 @@ export default function AdminAlumniCoordinatorFilter({
             setEditing(null);
             setShowForm(true);
           }}
-          className="bg-green-600 hover:bg-green-700 text-white h-10 flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white h-10 flex items-center gap-2 w-full md:w-auto justify-center"
         >
           <Plus size={16} />
           Add Alumni Coordinator

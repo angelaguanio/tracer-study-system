@@ -22,7 +22,7 @@ export default function HeaderAdmin({ navItems = [] }) {
     <header className='flex w-full justify-between py-3 px-2'>
       <div className='flex flex-row items-center'>
         <SidebarTrigger />
-        <h1 className='text-2xl font-medium'>
+        <h1 className='lg:text-2xl text-lg font-medium'>
           {activeItem ? activeItem.name : "Dashboard"}
         </h1>
       </div>

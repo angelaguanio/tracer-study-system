@@ -49,14 +49,15 @@ export default function AdminSurveyResponse({
   };
 
   return (
-    // 🔥 ())
     <div className="w-full h-full p-4 flex flex-col overflow-hidden">
 
-      {/* HEADER + FILTER AREA (IDENTICAL STRUCTURE) */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 w-full">
+      {/* MOBILE: Hiwalay ang title card sa filter card (flex-col).
+        DESKTOP: Pagsasamahin sa iisang mahabang card container (md:bg-white md:rounded-2xl md:shadow-sm md:border)
+      */}
+      <div className="flex flex-col gap-3 mb-4 w-full md:bg-white md:rounded-2xl md:shadow-sm md:border md:border-gray-100 md:px-5 md:py-4 md:flex-row md:items-center md:justify-between md:gap-4">
 
-        {/* BACK + TITLE */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* TITLE CARD (Para sa Mobile) -> Nagiging transparent at walang style sa Desktop */}
+        <div className="flex items-center gap-3 shrink-0 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm md:p-0 md:border-0 md:shadow-none md:bg-transparent">
           <button
             onClick={handleBack}
             className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors shrink-0 p-1 rounded-md cursor-pointer"
@@ -64,12 +65,12 @@ export default function AdminSurveyResponse({
             <ArrowLeft size={24} className="stroke-[2]" />
           </button>
 
-          <h1 className="text-xl font-bold text-gray-800 tracking-tight whitespace-nowrap">
+          <h1 className="lg:text-xl text-md font-bold text-gray-800 tracking-tight whitespace-nowrap line-clamp-2">
             {survey.title}
           </h1>
         </div>
 
-        {/* FILTER () */}
+        {/* FILTER COMPONENT */}
         <AdminSurveyResponseFilter
           search={search}
           setSearch={setSearch}
@@ -80,7 +81,7 @@ export default function AdminSurveyResponse({
         />
       </div>
 
-      {/* (NO DELETE PROP) */}
+      {/* TABLE */}
       <AdminSurveyResponseTable
         responses={{ ...responses, data: localResponses }}
         page={page}

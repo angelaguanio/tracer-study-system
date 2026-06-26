@@ -60,7 +60,7 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="lg:max-w-lg max-w-sm">
                 <DialogHeader>
                     <DialogTitle className="flex items-start">
                         {isEdit ? "Edit Subheading" : "Add Subheading"}
@@ -96,10 +96,10 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                <DialogFooter className='flex flex-col-reverse sm:flex-row sm:justify-end gap-2'>
+                    <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">Cancel</Button>
                     <Button 
-                        className="bg-amber-600 hover:bg-amber-700 text-white" 
+                        className="bg-amber-600 hover:bg-amber-700 text-white  w-full sm:w-auto" 
                         onClick={handleSubmit}
                         disabled={!form.label.trim()}
                     >

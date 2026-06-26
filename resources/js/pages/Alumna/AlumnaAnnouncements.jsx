@@ -48,7 +48,7 @@ export default function AlumnaAnnouncements({ announcements }) {
               {list.map((ann) => (
                 <div
                   key={ann.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[420px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
+                  className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[320px] sm:h-[350px] md:h-[380px] lg:h-[420px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
                 >
                   
                   {/* IMAGE */}
@@ -56,7 +56,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                     <img
                       src={Array.isArray(ann.image) ? ann.image[0] : ann.image}
                       alt={ann.title}
-                      className="w-full h-56 object-cover"
+                      className="w-full h-36 sm:h-40 md:h-48 lg:h-56 object-cover"
                     />
                   ) : (
                     <div className="w-full h-56 flex items-center justify-center">
@@ -70,8 +70,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                       <h3 className="text-[#0042A8] text-base font-bold mb-2 line-clamp-1 break-words">
                         {ann.title}
                       </h3>
-
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 break-words">
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2 md:line-clamp-3 break-words">
                         {ann.details}
                       </p>
                     </div>

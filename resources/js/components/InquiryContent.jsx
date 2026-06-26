@@ -4,12 +4,13 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from './ui/button';
-import { ChevronDown, Send } from 'lucide-react';
+import { ChevronDown, Send, ArrowLeft } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
 
-export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'admin' }) {
+
+export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
     const bottomRef = useRef(null);
@@ -82,42 +83,76 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
     const replies = [...(inquiry.replies ?? [])].reverse();
 
     return (
-        <main className='flex flex-col w-full h-full p-4 gap-3'>
+        <main className='flex flex-col flex-1 min-w-0 min-h-full p-4 md:p-6 gap-4 overflow-hidden'>
             {/* Header */}
-            <header className='flex flex-row justify-between px-3 pb-3 border-b'>
-                <div className='flex gap-3 h-full items-center'>
-                    <AvatarBlock user={inquiry.alumni} size="lg" />
-                    <div>
-                        <h1 className='text-xl font-semibold'>
-                            {inquiry.alumni.first_name} {inquiry.alumni.last_name}
-                        </h1>
-                        <p className='text-sm text-gray-500'>{inquiry.alumni.email}</p>
-                        <p className='text-xs text-gray-400'>{inquiry.formatted_date}</p>
-                    </div>
-                </div>
+            <header className="border-b pb-3">
+                <div className="flex items-center justify-between gap-3">
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="gap-2 h-8 text-sm font-semibold">
-                            Mark as <ChevronDown className="h-3 w-3" />
+                    {/* Left side */}
+                    <div className="flex items-center gap-3 min-w-0">
+
+                        {/* Back button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onBack}
+                            className="md:hidden shrink-0 h-8 w-8"
+                        >
+                            <ArrowLeft className="h-5 w-5" />
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
-                            Change Status
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {statusItems.map((option) => (
-                            <DropdownMenuItem key={option.value} onClick={() => updateStatus(option.value)} className="cursor-pointer">
-                                {option.label}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                        <AvatarBlock user={inquiry.alumni} size="lg" />
+
+                        <div className="min-w-0">
+                            <h1 className="lg:text-lg text-md font-semibold leading-tight truncate">
+                                {inquiry.alumni.first_name} {inquiry.alumni.last_name}
+                            </h1>
+
+                            <p className="lg:text-sm text-xs text-gray-500 truncate">
+                                {inquiry.alumni.email}
+                            </p>
+
+                            <p className="text-xs text-gray-400">
+                                {inquiry.formatted_date}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Right side */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className="h-9 px-3 text-sm gap-1 shrink-0"
+                            >
+                                Mark as
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>
+                                Change Status
+                            </DropdownMenuLabel>
+
+                            <DropdownMenuSeparator />
+
+                            {statusItems.map((option) => (
+                                <DropdownMenuItem
+                                    key={option.value}
+                                    onClick={() => updateStatus(option.value)}
+                                >
+                                    {option.label}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                </div>
             </header>
 
             {/* Thread */}
-            <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
+            <div className='flex flex-col flex-1 min-h-0 overflow-y-auto gap-4 px-1 md:px-2 md:pb-4'>
                 {/* Original inquiry */}
                 <div className='flex gap-3'>
                     <AvatarBlock user={inquiry.alumni} />
@@ -140,7 +175,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
                     return (
                         <div key={reply.id} className={`flex gap-3 ${isStaff ? 'flex-row-reverse' : 'flex-row'}`}>
                             <AvatarBlock user={reply.sender} />
-                            <div className={`flex flex-col gap-1 max-w-[80%] ${isStaff ? 'items-end' : 'items-start'}`}>
+                            <div className={`flex flex-col gap-1 max-w-[85%] md:max-w-[70%] ${isStaff ? 'items-end' : 'items-start'}`}>
                                 <span className='text-xs text-gray-400'>
                                     {reply.sender.first_name} · {new Date(reply.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                 </span>
@@ -159,9 +194,9 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
             </div>
 
             {/* Reply box */}
-            <div className='flex gap-2 items-end border-t pt-3'>
+            <div className='flex gap-2 items-start lg:items-end border-t pt-3 sticky bottom-0 bg-white md:pb-0 '>
                 <textarea
-                    className='flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[60px] max-h-[140px]'
+                    className='flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 lg:min-h-[60px] min-h-[70px] max-h-[140px]'
                     placeholder='Write a reply...'
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}

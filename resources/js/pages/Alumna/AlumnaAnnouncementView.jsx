@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 export default function AlumnaAnnouncementView({ announcement }) {
   return (
     <div className="min-h-screen w-full">
-      <div className="px-4 sm:px-6 md:px-10 py-6 max-w-4xl mx-auto">
+      <div className="px-8 sm:px-12 md:px-10 py-6 max-w-4xl mx-auto">
 
         {/* BACK BUTTON */}
         <Link

@@ -95,7 +95,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
   console.log("All Coordinators:", coordinators);
   console.log("Filtered Coordinators:", filteredCoordinators);
   return (
-    <Card className='w-full max-w-3xl px-6 shadow-2xl border-0 rounded-3xl bg-white'>
+    <Card className='w-full max-w-3xl px-6 shadow-2xl border border-gray-100 rounded-3xl bg-white'>
         <CardHeader className='pb-6'>
             <div className='flex flex-col items-center justify-center py-6 space-y-3'>
                 <h1 className='text-3xl font-bold text-gray-800'>Send us a Message</h1>

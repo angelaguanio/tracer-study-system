@@ -54,7 +54,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
     };
 
   return (
-    <aside className='bg-blue-100 max-w-[300px] rounded-2xl flex flex-col h-full'>
+    <aside className='   bg-blue-100 w-full md:w-[340px] lg:w-[380px] shrink-0 flex  flex-col h-full rounded-lg'>
         {/* header */}
         <div className='flex flex-col gap-2 w-full'>
             <div className='flex justify-between items-center px-6 pt-5'>
@@ -99,7 +99,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
         
 
         {/* list of messages */}
-        <div className='flex flex-col gap-3 p-4 flex-1 w-full overflow-y-auto inquiry-scrollbar'>   
+        <div className='flex flex-col gap-3 p-4 flex-1 min-h-0 overflow-y-auto inquiry-scrollbar'>   
             {inquiries.data.map((data) => {
                 const isActive = Number(selectedId) === Number(data.id);
                 return(
