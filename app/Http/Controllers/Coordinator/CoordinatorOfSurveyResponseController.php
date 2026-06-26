@@ -88,7 +88,9 @@ class CoordinatorOfSurveyResponseController extends Controller
                 'year' => ($user->start_year && $user->end_year) 
                             ? "{$user->start_year}-{$user->end_year}" 
                             : ($user->end_year ?? 'N/A'),
-                'avatar' => $user->avatar ?? $user->profile_picture, 
+                'avatar' => $user->profile_picture
+                    ? \Illuminate\Support\Facades\Storage::url($user->profile_picture)
+                    : null,
             ];
         });
 

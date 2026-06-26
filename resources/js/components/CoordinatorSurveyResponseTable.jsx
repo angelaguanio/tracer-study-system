@@ -83,7 +83,7 @@ export default function CoordinatorSurveyResponseTable({
                         )}
                       </div>
                       <div className="w-full text-center">
-                        <span className="font-medium text-gray-800 truncate block">{res.name}</span>
+                        <span className="text-sm font-medium text-gray-800 truncate block">{res.name}</span>
                       </div>
                     </div>
                   </div>
@@ -92,8 +92,8 @@ export default function CoordinatorSurveyResponseTable({
                       {res.status === "completed" ? "Completed" : "Not Completed"}
                     </span>
                   </div>
-                  <div className="w-[17%] text-gray-600 truncate px-2">{res.course ?? "-"}</div>
-                  <div className="w-[17%] text-gray-600">{res.year ?? "-"}</div>
+                  <div className="w-[17%] text-gray-600 truncate px-2 text-sm">{res.course ?? "-"}</div>
+                  <div className="w-[17%] text-gray-600 text-sm">{res.year ?? "-"}</div>
                   <div className="w-[17%] flex items-center justify-center">
                     <button onClick={() => handleView(res)} className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium cursor-pointer">
                       <Eye size={14} /> View

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class CoordinatorAlumniController extends Controller
 {
@@ -38,7 +39,9 @@ class CoordinatorAlumniController extends Controller
         'year' => ($user->start_year && $user->end_year)
                        ? "{$user->start_year}-{$user->end_year}"
                        : ($user->end_year ?? 'N/A'),
-        'avatar' => $user->avatar_url,
+        'avatar' => $user->profile_picture
+            ? Storage::url($user->profile_picture)
+            : null,
         'survey_status' => 'Not Completed', 
     ]);
 
