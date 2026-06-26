@@ -45,7 +45,7 @@ export default function CoordinatorViewProfile({ user }) {
           <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><IconUser /> Personal Information</div>
           <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 mb-4">
             <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
-              {imageSrc ? <img src={imageSrc} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{user.first_name ? user.first_name[0].toUpperCase() : 'U'}</div>}
+              {imageSrc ? <img src={imageSrc} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{(user.first_name?.[0] || 'U') + (user.last_name?.[0] || '')}</div>}
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight capitalize">{fullName}</h3>

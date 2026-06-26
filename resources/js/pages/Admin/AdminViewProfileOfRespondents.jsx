@@ -40,8 +40,8 @@ export default function AdminViewProfileOfRespondents(props) {
       <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5 pb-12">
         
         <div className="flex justify-start">
-          <Button onClick={() => router.visit(route("admin.alumni.index"))} variant="outline" className="h-auto p-0 bg-transparent border-0 shadow-none hover:bg-transparent text-gray-500 flex items-center gap-2 text-[11px] font-bold uppercase">
-            <ArrowLeft size={14} /> BACK TO LIST
+          <Button onClick={() => router.visit(route("coordinator.alumni.index"))} variant="outline" className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2 border-gray-200 text-gray-500 hover:text-gray-700">
+             <ArrowLeft size={14} /> BACK TO LIST
           </Button>
         </div>
 
@@ -49,8 +49,8 @@ export default function AdminViewProfileOfRespondents(props) {
         <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 md:p-8 flex flex-col gap-6">
           <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase"><IconUser /> Personal Information</div>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
-            <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center font-bold text-xl text-gray-500">
-              {imageSrc ? <img src={imageSrc} className="w-full h-full object-cover" /> : user.first_name?.[0] || 'U'}
+            <div className="h-16 w-16 rounded-full overflow-hidden shadow-inner border-2 border-gray-200 bg-gray-100 shrink-0 flex items-center justify-center">
+              {imageSrc ? <img src={imageSrc} alt="Profile" className="w-full h-full object-cover" /> : <div className="h-full w-full bg-[#6c757d] text-white flex items-center justify-center text-xl font-bold">{(user.first_name?.[0] || 'U') + (user.last_name?.[0] || '')}</div>}
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900 capitalize">{fullName}</h3>
