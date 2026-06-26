@@ -71,9 +71,10 @@ class StudentProfileController extends Controller
         $isEmployed = (strtolower($request->is_employed ?? '') === 'yes') ? 'Yes' : 'No';
         $salaryValue = $request->monthly_salary ?? null;
         $unemploymentReason = ($isEmployed === 'No') ? $request->reason_unemployed : null;
+        $isPresent = $request->boolean('is_present');
 
         try {
-            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason) {
+            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason, $isPresent) {
                 
                 // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
@@ -101,7 +102,7 @@ class StudentProfileController extends Controller
                     $hasChanged = (
                        $oldEmp->company_name !== $request->company ||
                        $oldEmp->employment_start_year != $request->employment_start_year ||
-                      ($request->employment_end_year === 'current' ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
+                      ($isPresent ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
                     );
 
                     if ($hasChanged) {
@@ -115,8 +116,8 @@ class StudentProfileController extends Controller
                             'monthly_salary'     => $salaryValue,
                             'unemployment_reason'=> null,
                             'employment_start_year' => ($isEmployed === 'Yes') ? $request->employment_start_year : null,
-                            'employment_end_year' => ($request->employment_end_year === 'current') ? null : $request->employment_end_year,
-                            'is_present'           => ($request->employment_end_year === 'current') ? 1 : 0,
+                            'employment_end_year' => $isPresent ? null : $request->employment_end_year,
+                            'is_present'           => $isPresent ? 1 : 0,
                         ]);
                     }
                 }
@@ -133,8 +134,8 @@ class StudentProfileController extends Controller
                         'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
                         'unemployment_reason' => $unemploymentReason,
                         'employment_start_year'=> $isEmployed === 'Yes' ? $request->employment_start_year : null,
-                        'employment_end_year'  => $isEmployed === 'Yes' ? ($request->employment_end_year === 'current' ? null : $request->employment_end_year) : null,
-                        'is_present'           => ($isEmployed === 'Yes' && $request->employment_end_year === 'current') ? 1 : 0,
+                        'employment_end_year'  => $isEmployed === 'Yes' ? ($isPresent ? null : $request->employment_end_year) : null,
+                        'is_present'           => ($isEmployed === 'Yes' && $isPresent) ? 1 : 0,
                     ]
                 );
             });
