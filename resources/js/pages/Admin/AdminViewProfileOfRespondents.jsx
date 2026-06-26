@@ -78,7 +78,8 @@ export default function AdminViewProfileOfRespondents(props) {
           </div>
           {emp?.currently_employed === 'Yes' ? (
             <div className="flex flex-col gap-5 pt-2">
-              <div className="font-bold text-gray-800 text-[15px] flex items-center gap-2"><IconBuilding /> {emp.company_name} <span className="text-gray-400 font-normal text-xs">({emp.employment_type})</span></div>
+              <div className="flex items-center gap-2 font-bold text-gray-800 text-[15px]">
+                 <IconBuilding /> {emp.company_name} <span className="text-gray-400 text-xs font-normal">({emp.employment_type})</span></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                 <InfoItem label="Position" value={emp.position} />
                 <InfoItem label="Location" value={emp.location} />

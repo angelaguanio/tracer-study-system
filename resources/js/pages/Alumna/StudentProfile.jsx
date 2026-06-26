@@ -112,7 +112,8 @@ export default function StudentProfile() {
                 {normalizeYes(emp?.currently_employed) ? (
 
                     <div className="flex flex-col gap-5">
-                        <div className="flex items-center gap-2 font-bold text-gray-800 text-[15px]"><IconBuilding /> {emp.company_name || '—'} <span className="text-gray-400 text-xs font-normal">({emp.employment_type})</span></div>
+                        <div className="flex items-center gap-2 font-bold text-gray-800 text-[15px]">
+                 <IconBuilding /> {emp.company_name} <span className="text-gray-400 text-xs font-normal">({emp.employment_type})</span></div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6">
                             <InfoItem label="Position" value={emp.position} />
                             <InfoItem label="Location" value={emp.location} />
