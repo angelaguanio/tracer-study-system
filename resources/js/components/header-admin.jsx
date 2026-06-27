@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import ModeToggle from './mode-toggle'
 import ProfileTemp from './profile-temp'
 import NotificationBell from './NotificationBell'
 import {LogOut} from 'lucide-react'
@@ -28,8 +27,6 @@ export default function HeaderAdmin({ navItems = [] }) {
       </div>
 
       <div className='flex flex-row items-center gap-2'>
-        <ModeToggle />
-
         <NotificationBell/>
         
         {/* profile dropdown - only logout option for admin */}

@@ -1,9 +1,8 @@
 import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "../components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
 import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail, FileText, BarChart2 } from 'lucide-react';
-import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
 import ChatWidget from '../components/chat/ChatWidget';
@@ -57,7 +56,7 @@ export default function CoordinatorLayout({ children }) {
   ];
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <>
       <SidebarProvider>
           <SidebarCoord navItemsCoord={navItemsCoord}/>
           <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
@@ -69,6 +68,6 @@ export default function CoordinatorLayout({ children }) {
       </SidebarProvider>
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
-    </ThemeProvider>
+    </>
   )
 }

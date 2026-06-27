@@ -12,7 +12,6 @@ import {
   FileChartColumn,
   ChartNoAxesCombined,
 } from "lucide-react";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { usePage } from "@inertiajs/react";
 import ChatWidget from "../components/chat/ChatWidget";
@@ -76,7 +75,7 @@ export default function AdminLayout({ children }) {
   ]
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <>
       <SidebarProvider>
          <SidebarAdmin navItems={navItems}/>
           <SidebarInset className="max-h-screen flex flex-col overflow-hidden">
@@ -88,6 +87,6 @@ export default function AdminLayout({ children }) {
       </SidebarProvider>
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
-    </ThemeProvider>
+    </>
   );
 }
