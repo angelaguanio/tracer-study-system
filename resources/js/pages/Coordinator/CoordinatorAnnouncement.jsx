@@ -79,7 +79,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
   const filteredAnnouncements = list;
 
   return (
-    <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-hidden">
+    <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-y-auto">
 
       {/* INFO BANNER */}
       <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -101,7 +101,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
         </Link>
       </div>
 
-      <div className="flex flex-col h-full justify-evenly gap-5 p-10 border shadow-lg rounded-2xl bg-white "> 
+      <div className="flex flex-col justify-evenly gap-5 px-6 py-7 border shadow-lg rounded-2xl bg-white "> 
       {/* FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
