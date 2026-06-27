@@ -46,18 +46,35 @@ class StudentProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
-            'email'      => 'required|email|max:255',
+            'first_name'     => 'required|string|max:255',
+            'last_name'      => 'required|string|max:255',
+            'middle_name'    => 'nullable|string|max:255',
+            'address'        => 'required|string|max:255',
+            'contact_number' => 'required|string|max:20',
+            'email'          => 'required|email|max:255|unique:users,email,' . $user->id,
+            'profile_picture'=> 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+
+            'is_employed'    => 'required|in:yes,no',
+
+            'company'                => 'required_if:is_employed,yes|string|max:255',
+            'employment_type'        => 'required_if:is_employed,yes|string|max:255',
+            'position'                => 'required_if:is_employed,yes|string|max:255',
+            'employment_start_year'   => 'required_if:is_employed,yes|numeric',
+            'employment_end_year'     => 'nullable',
+            'location'                => 'required_if:is_employed,yes|string|max:255',
+            'monthly_salary'          => 'nullable|numeric|min:0',
+
+            'reason_unemployed' => 'required_if:is_employed,no|string|max:255',
         ]);
 
         // 1. Define variables clearly before usage to prevent crashes
-        $isEmployed = (strtolower($request->is_employed) === 'yes') ? 'Yes' : 'No';
+        $isEmployed = (strtolower($request->is_employed ?? '') === 'yes') ? 'Yes' : 'No';
         $salaryValue = $request->monthly_salary ?? null;
         $unemploymentReason = ($isEmployed === 'No') ? $request->reason_unemployed : null;
+        $isPresent = $request->boolean('is_present');
 
         try {
-            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason) {
+            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason, $isPresent) {
                 
                 // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
@@ -85,7 +102,7 @@ class StudentProfileController extends Controller
                     $hasChanged = (
                        $oldEmp->company_name !== $request->company ||
                        $oldEmp->employment_start_year != $request->employment_start_year ||
-                      ($request->employment_end_year === 'current' ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
+                      ($isPresent ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
                     );
 
                     if ($hasChanged) {
@@ -99,8 +116,8 @@ class StudentProfileController extends Controller
                             'monthly_salary'     => $salaryValue,
                             'unemployment_reason'=> null,
                             'employment_start_year' => ($isEmployed === 'Yes') ? $request->employment_start_year : null,
-                            'employment_end_year' => ($request->employment_end_year === 'current') ? null : $request->employment_end_year,
-                            'is_present'           => ($request->employment_end_year === 'current') ? 1 : 0,
+                            'employment_end_year' => $isPresent ? null : $request->employment_end_year,
+                            'is_present'           => $isPresent ? 1 : 0,
                         ]);
                     }
                 }
@@ -117,8 +134,8 @@ class StudentProfileController extends Controller
                         'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
                         'unemployment_reason' => $unemploymentReason,
                         'employment_start_year'=> $isEmployed === 'Yes' ? $request->employment_start_year : null,
-                        'employment_end_year'  => $isEmployed === 'Yes' ? ($request->employment_end_year === 'current' ? null : $request->employment_end_year) : null,
-                        'is_present'           => ($isEmployed === 'Yes' && $request->employment_end_year === 'current') ? 1 : 0,
+                        'employment_end_year'  => $isEmployed === 'Yes' ? ($isPresent ? null : $request->employment_end_year) : null,
+                        'is_present'           => ($isEmployed === 'Yes' && $isPresent) ? 1 : 0,
                     ]
                 );
             });
@@ -126,7 +143,8 @@ class StudentProfileController extends Controller
             return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');
             
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
+            \Log::error('Profile update failed: ' . $e->getMessage(), ['user_id' => $user->id]);
+            return back()->withErrors(['error' => 'Something went wrong while updating your profile. Please try again.']);
         }
     }
 }
