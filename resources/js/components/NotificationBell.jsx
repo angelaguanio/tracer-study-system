@@ -152,57 +152,82 @@ export default function NotificationBell() {
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-xl border z-50 overflow-hidden">
-                    {/* Header */}
-                    <div className="flex justify-between items-center px-4 py-3 border-b">
-                        <h3 className="font-semibold text-gray-800">Notifications</h3>
-                        {hasUnread && (
-                            <button
-                                onClick={() => {
-                                    markAllRead();
-                                    setHasUnread(false);}}
-                                className="text-xs text-blue-600 hover:underline"
-                            >
-                                Mark all as read
-                            </button>
-                        )}
-                    </div>
+              <>
+              {/* Backdrop — mobile only */}
+              <div
+                  className="fixed inset-0 bg-black/40 z-40 sm:hidden"
+                  onClick={() => {
+                      setOpen(false);
+                      setHasUnread(false);
+                  }}
+              />
 
-                    {/* List */}
-                    <div className="max-h-96 overflow-y-auto divide-y">
-                        {loading && (
-                            <p className="text-center text-sm text-gray-400 py-6">Loading...</p>
-                        )}
-                        {!loading && notifications.length === 0 && (
-                            <p className="text-center text-sm text-gray-400 py-6">No notifications yet</p>
-                        )}
-                        {!loading && notifications.map(notif => (
-                            <div
-                                key={notif.id}
-                                onClick={() => handleNotificationClick(notif)}
-                                className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ${
-                                    !notif.is_read ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'
-                                }`}
-                                title="Click to view details"
-                            >
-                                <span className="text-xl mt-0.5">{icons[notif.type] ?? '🔔'}</span>
-                                <div className="flex-1 min-w-0">
-                                    <p className={`text-sm ${!notif.is_read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                                        {notif.title}
-                                    </p>
-                                    <p className="text-xs text-gray-500 truncate">{notif.message}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{notif.created_at}</p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center">
-                                    {!notif.is_read && (
-                                        <span className="w-2 h-2 bg-blue-500 rounded-full mb-1" />
-                                    )}
-                                    <span className="text-xs text-gray-400">→</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+              <div
+                  className="
+                      fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl
+                      max-h-[80vh]
+                      sm:absolute sm:bottom-auto sm:left-auto sm:right-0 sm:top-full sm:mt-2
+                      sm:w-96 sm:rounded-xl sm:max-h-96
+                      bg-white shadow-xl border overflow-hidden flex flex-col
+                  "
+              >
+                  {/* Drag handle — mobile only */}
+                  <div className="sm:hidden flex justify-center pt-2 pb-1 shrink-0">
+                      <span className="w-10 h-1.5 bg-gray-300 rounded-full" />
+                  </div>
+
+                  {/* Header */}
+                  <div className="flex justify-between items-center px-4 py-3 border-b shrink-0">
+                      <h3 className="font-semibold text-gray-800">Notifications</h3>
+                      {hasUnread && (
+                          <button
+                              onClick={() => {
+                                  markAllRead();
+                                  setHasUnread(false);
+                              }}
+                              className="text-xs text-blue-600 hover:underline"
+                          >
+                              Mark all as read
+                          </button>
+                      )}
+                  </div>
+
+                  {/* List */}
+                  <div className="overflow-y-auto divide-y flex-1">
+                      {loading && (
+                          <p className="text-center text-sm text-gray-400 py-6">Loading...</p>
+                      )}
+                      {!loading && notifications.length === 0 && (
+                          <p className="text-center text-sm text-gray-400 py-6">No notifications yet</p>
+                      )}
+                      {!loading && notifications.map(notif => (
+                          <div
+                              key={notif.id}
+                              onClick={() => handleNotificationClick(notif)}
+                              className={`flex gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ${
+                                  !notif.is_read ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'
+                              }`}
+                              title="Click to view details"
+                          >
+                              <span className="text-xl mt-0.5">{icons[notif.type] ?? '🔔'}</span>
+                              <div className="flex-1 min-w-0">
+                                  <p className={`text-sm ${!notif.is_read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                                      {notif.title}
+                                  </p>
+                                  <p className="text-xs text-gray-500 truncate">{notif.message}</p>
+                                  <p className="text-xs text-gray-400 mt-1">{notif.created_at}</p>
+                              </div>
+                              <div className="flex flex-col items-center justify-center">
+                                  {!notif.is_read && (
+                                      <span className="w-2 h-2 bg-blue-500 rounded-full mb-1" />
+                                  )}
+                                  <span className="text-xs text-gray-400">→</span>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          </>
             )}
         </div>
     );
