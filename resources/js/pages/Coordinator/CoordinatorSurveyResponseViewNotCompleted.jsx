@@ -11,10 +11,10 @@ export default function CoordinatorSurveyResponseViewNotCompleted({ survey }) {
   return (
     <div className="bg-[#F3FAFF] min-h-screen w-full px-4 sm:px-6 lg:px-10 py-6 flex flex-col">
       {/* Header Container */}
-      <div className="flex items-center gap-3 mb-6 shrink-0 w-full max-w-4xl mx-auto">
+      <div className="flex items-center gap-3 mb-6 shrink-0 w-full max-w-6xl mx-auto">
         <button
           onClick={handleBack}
-          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 rounded-md"
+          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 p-1 rounded-md cursor-pointer"
           title="Back"
         >
           <ArrowLeft size={24} className="stroke-[2]" />
@@ -26,7 +26,7 @@ export default function CoordinatorSurveyResponseViewNotCompleted({ survey }) {
       </div>
 
       {/* Centered Message Container */}
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="flex justify-center mt-16 px-4">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-blue-100 max-w-sm w-full text-center">
             {/* Opsyonal: Icon para mas visual ang state */}
             <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
     const [open, setOpen] = useState(false);
@@ -22,8 +31,12 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
         });
     };
 
-    const currentList  = tab === "active" ? surveys : archivedSurveys;
+    const currentData = tab === "active" ? surveys : archivedSurveys;
+    const currentList = currentData.data ?? [];
     const isArchivedTab = tab === "archived";
+
+    const pageParam =
+        tab === "active" ? "active_page" : "archived_page";
 
     return (
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
@@ -81,6 +94,137 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
                     {currentList.map((survey) => (
                         <SurveyCard key={survey.id} survey={survey} isArchived={isArchivedTab} />
                     ))}
+                </div>
+            )}
+
+            {/* Pagination */}
+            {currentData.last_page > 1 && (
+                <div className="flex justify-start items-center mt-6">
+                    <Pagination className="justify-start">
+                        <PaginationContent>
+
+                            {/* Previous */}
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+
+                                        if (currentData.current_page > 1) {
+                                            router.get(
+                                                route("admin.surveys.index"),
+                                                {
+                                                    [pageParam]:
+                                                        currentData.current_page - 1,
+                                                },
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                }
+                                            );
+                                        }
+                                    }}
+                                    className={`h-9 transition-colors ${
+                                        currentData.current_page === 1
+                                            ? "pointer-events-none opacity-40"
+                                            : "cursor-pointer hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
+                                    }`
+                                    }
+                                />
+                            </PaginationItem>
+
+                            {/* Pages */}
+                            {Array.from(
+                                { length: currentData.last_page },
+                                (_, i) => i + 1
+                            )
+                                .filter((page) => {
+                                    const current = currentData.current_page;
+
+                                    return (
+                                        page === 1 ||
+                                        page === currentData.last_page ||
+                                        (page >= current - 1 &&
+                                            page <= current + 1)
+                                    );
+                                })
+                                .map((page, index, arr) => {
+                                    const prevPage = arr[index - 1];
+
+                                    return (
+                                        <PaginationItem key={page}>
+                                            {prevPage &&
+                                                page - prevPage > 1 && (
+                                                    <PaginationEllipsis />
+                                                )}
+
+                                            <PaginationLink
+                                                href="#"
+                                                isActive={currentData.current_page === page}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+
+                                                    router.get(
+                                                        route("admin.surveys.index"),
+                                                        {
+                                                            [pageParam]: page,
+                                                        },
+                                                        {
+                                                            preserveState: true,
+                                                            preserveScroll: true,
+                                                            replace: true,
+                                                        }
+                                                    );
+                                                }}
+                                                className={`h-9 w-9 p-0 transition-colors ${
+                                                    currentData.current_page === page
+                                                        ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white"
+                                                        : "hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
+                                                }`}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                })}
+
+                            {/* Next */}
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+
+                                        if (
+                                            currentData.current_page <
+                                            currentData.last_page
+                                        ) {
+                                            router.get(
+                                                route("admin.surveys.index"),
+                                                {
+                                                    [pageParam]:
+                                                        currentData.current_page + 1,
+                                                },
+                                                {
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    replace: true,
+                                                }
+                                            );
+                                        }
+                                    }}
+                                    className={`h-9 transition-colors ${
+                                        currentData.current_page === currentData.last_page
+                                            ? "pointer-events-none opacity-40"
+                                            : "cursor-pointer hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
+                                    }`
+                                    }
+                                />
+                            </PaginationItem>
+
+                        </PaginationContent>
+                    </Pagination>
                 </div>
             )}
 

@@ -36,7 +36,8 @@ export default function CoordinatorViewProfile({ user }) {
       <Head title={`Alumna Profile - ${fullName}`} />
       <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5 pb-12">
         <div className="flex justify-between items-center">
-          <Button onClick={() => router.visit(route("coordinator.alumni.index"))} variant="outline" className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2 border-gray-200 text-gray-500 hover:text-gray-700">
+          <Button onClick={() => router.visit(route("coordinator.alumni.index"))} v variant="ghost"
+  className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-transparent">
             <ArrowLeft size={14} /> BACK TO LIST
           </Button>
         </div>

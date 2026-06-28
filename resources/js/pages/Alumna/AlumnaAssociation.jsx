@@ -1,6 +1,6 @@
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { departments } from "../../lib/AlumnaAssociation_Datalist";
-import { DepartmentSection } from "@/components/AlumnaAssociation_Components";
+import { DepartmentSection } from "@/components/alumna/AlumnaAssociation_Components";
 import graduationBg from "@/assets/graduation-bg.jpg";
 
 /* ── icon ─────────────────────────────────────────────────── */

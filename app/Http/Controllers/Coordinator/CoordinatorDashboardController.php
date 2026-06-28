@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Coordinator;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Survey;
 use App\Models\Response;

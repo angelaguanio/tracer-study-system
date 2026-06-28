@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
 import AdminLayout from "@/layouts/admin-layout";
-import AdminAlumniFilters from "@/components/AdminAlumniFilters";
-import AdminAlumniTable from "@/components/AdminAlumniTable";
+import AdminAlumniFilters from "@/components/admin/AdminAlumniFilters";
+import AdminAlumniTable from "@/components/admin/AdminAlumniTable";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

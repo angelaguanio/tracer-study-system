@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import { Check, ArrowLeft } from "lucide-react";
 
-import CoordinatorSurveyDeletePrompt from "@/components/CoordinatorSurveyDeletePrompt";
-import CoordinatorSurveyResponseTable from "@/components/CoordinatorSurveyResponseTable";
-import CoordinatorSurveyResponseFilter from "@/components/CoordinatorSurveyResponseFilter";
+import CoordinatorSurveyDeletePrompt from "@/components/coordinator/CoordinatorSurveyDeletePrompt";
+import CoordinatorSurveyResponseTable from "@/components/coordinator/CoordinatorSurveyResponseTable";
+import CoordinatorSurveyResponseFilter from "@/components/coordinator/CoordinatorSurveyResponseFilter";
 import CoordinatorLayout from "@/layouts/coord-layout";
 
 export default function CoordinatorSurveyResponse({ responses, filters, survey }) {

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
 import AlumnaLayout from '@/layouts/alumna-layout';
-import AlumnaInquiryList from '@/components/AlumnaInquiryList';
-import AlumnaInquiryContent from '@/components/AlumnaInquiryContent';
+import AlumnaInquiryList from '@/components/alumna/AlumnaInquiryList';
+import AlumnaInquiryContent from '@/components/alumna/AlumnaInquiryContent';
 
 export default function AlumnaInquiries({ inquiries, filters, openId }) {
     const initialInquiry = openId

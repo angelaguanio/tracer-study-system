@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import CoordinatorLayout from "@/layouts/coord-layout";
-import CoordinatorAlumniFilters from "@/components/CoordinatorAlumniFilters";
-import CoordinatorAlumniTable from "@/components/CoordinatorAlumniTable";
+import CoordinatorAlumniFilters from "@/components/coordinator/CoordinatorAlumniFilters";
+import CoordinatorAlumniTable from "@/components/coordinator/CoordinatorAlumniTable";
 
 export default function CoordinatorAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");

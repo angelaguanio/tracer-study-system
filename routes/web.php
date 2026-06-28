@@ -7,8 +7,8 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AlumnaHomeController;
-use App\Http\Controllers\CoordinatorDashboardController;
-use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Coordinator\CoordinatorDashboardController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\QuestionnaireController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SurveyAnalyticsController;
@@ -17,13 +17,13 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SubheadingController;
 use App\Http\Controllers\SurveyResponseController;
-use App\Http\Controllers\AdminAlumniController;
+use App\Http\Controllers\Admin\AdminAlumniController;
 use App\Http\Controllers\Admin\AdminOfSurveyResponseController;
 use App\Http\Controllers\Coordinator\CoordinatorOfSurveyResponseController;
 use App\Http\Controllers\Admin\AdminAlumniCoordinatorController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\InquiriesController;
-use App\Http\Controllers\CoordinatorAlumniController;
+use App\Http\Controllers\Coordinator\CoordinatorAlumniController;
 use App\Http\Controllers\Coordinator\CoordinatorProfileController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -222,20 +222,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
           // Analytics
-        Route::get('/analytics', function () {
-            // Only admins can access analytics
-            if (!auth()->user()->isAdmin()) {
-                abort(403, 'Only admins can access survey analytics.');
-            }
-            $surveys = \App\Models\Survey::withCount('sections')->orderBy('created_at', 'desc')->get();
-            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys->map(fn($s) => [
-                'id'             => $s->id,
-                'title'          => $s->title,
-                'status'         => $s->status,
-                'sections_count' => $s->sections_count,
-                'is_tracer_study'=> (bool) $s->is_tracer_study,
-            ])]);
-        })->name('analytics');
+       Route::get('/analytics', function () {
+        // Only admins can access analytics
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only admins can access survey analytics.');
+        }
+
+        $surveys = \App\Models\Survey::withCount('sections')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5)
+            ->through(fn ($s) => [
+                'id'              => $s->id,
+                'title'           => $s->title,
+                'status'          => $s->status,
+                'sections_count'  => $s->sections_count,
+                'is_tracer_study' => (bool) $s->is_tracer_study,
+            ])
+            ->withQueryString();
+
+        return Inertia::render('Admin/AnalyticsIndex', [
+            'surveys' => $surveys,
+        ]);
+    })->name('analytics');
 
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
@@ -309,11 +317,13 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
                 ->whereNull('archived_at')
                 ->whereHas('responses')
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->paginate(5)
+                ->withQueryString();
             return \Inertia\Inertia::render('Coordinator/CoordinatorAnalyticsIndex', [
                 'surveys' => $surveys,
             ]);
         })->name('analytics');
+        
         Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])
             ->name('analytics.cect-show');
         Route::get('/analytics/{survey}/cect/download', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'download'])
@@ -321,21 +331,21 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
         // Survey Response (Coordinator)
         Route::get('/survey-response', [CoordinatorOfSurveyResponseController::class, 'index'])
-            ->name('coordinator.survey-response.index');
+            ->name('survey-response.index');
 
         Route::get('/survey-response/{id}', [CoordinatorOfSurveyResponseController::class, 'show'])
-            ->name('coordinator.survey-response.show');
+            ->name('survey-response.show');
 
         // Completed response
         Route::get('/survey-response/{surveyId}/{userId}', [CoordinatorOfSurveyResponseController::class, 'viewUserResponse'])
-            ->name('coordinator.survey-response.view');
+            ->name('survey-response.view');
 
         // Not completed response
         Route::get('/survey-response/{surveyId}/{userId}/not-complete', [CoordinatorOfSurveyResponseController::class, 'notComplete'])
-            ->name('coordinator.survey-response.not-complete');
+            ->name('survey-response.not-complete');
 
         Route::delete('/survey-response/{surveyId}/{userId}', [CoordinatorOfSurveyResponseController::class, 'destroy'])
-            ->name('coordinator.survey-response.destroy');
+            ->name('survey-response.destroy');
 
         // ANNOUNCEMENT CRUD ONLY
 

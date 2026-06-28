@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import { ArrowLeft } from "lucide-react";
 
-import AdminSurveyResponseTable from "@/components/AdminSurveyResponseTable";
-import AdminSurveyResponseFilter from "@/components/AdminSurveyResponseFilter";
+import AdminSurveyResponseTable from "@/components/admin/AdminSurveyResponseTable";
+import AdminSurveyResponseFilter from "@/components/admin/AdminSurveyResponseFilter";
 import AdminLayout from "@/layouts/admin-layout";
 
 export default function AdminSurveyResponse({
