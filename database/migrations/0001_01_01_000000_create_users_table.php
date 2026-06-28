@@ -22,9 +22,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('password_changed')->default(false);
 
             // Role & academic info
-            $table->string('user_role');
+            $table->string('user_role')->index();
+            $table->string('status')->default('active');
             $table->smallInteger('start_year')->nullable(); // smallInteger is sufficient for a 4-digit year
             $table->smallInteger('end_year')->nullable();
             $table->string('semester')->nullable(); // smallInteger is sufficient for a 4-digit year

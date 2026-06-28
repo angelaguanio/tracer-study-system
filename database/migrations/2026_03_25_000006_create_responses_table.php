@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->restrictOnDelete();
             $table->foreignId('question_id')->constrained()->restrictOnDelete();
             $table->text('answer_value')->nullable();
-            $table->timestamp('submitted_at');
+            $table->timestamp('submitted_at')->index();
             $table->timestamps();
 
             // Composite index for the most common query pattern:
