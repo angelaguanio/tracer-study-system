@@ -27,19 +27,21 @@ class SurveyController extends Controller
 
         // Active surveys (not archived)
         $surveys = (clone $base)
-            ->notArchived()
-            ->get()
-            ->map(fn ($s) => array_merge($s->toArray(), [
-                'has_responses' => $s->responses()->exists(),
-            ]));
+        ->notArchived()
+        ->paginate(5, ['*'], 'active_page')
+        ->through(fn ($s) => array_merge($s->toArray(), [
+            'has_responses' => $s->responses()->exists(),
+        ]))
+        ->withQueryString();
 
         // Archived surveys
         $archivedSurveys = (clone $base)
-            ->archived()
-            ->get()
-            ->map(fn ($s) => array_merge($s->toArray(), [
-                'has_responses' => true, // archived always had responses
-            ]));
+        ->archived()
+        ->paginate(5, ['*'], 'archived_page')
+        ->through(fn ($s) => array_merge($s->toArray(), [
+            'has_responses' => true,
+        ]))
+        ->withQueryString();
 
         return Inertia::render($viewPath, [
             'surveys'         => $surveys,

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Avatar } from './ui/avatar';
+import { Button } from '../ui/button';
+import { Avatar } from '../ui/avatar';
 import { Send } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';

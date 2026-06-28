@@ -1,58 +1,22 @@
 import AdminLayout from "@/layouts/admin-layout";
 import AdminAnnouncementCard from "@/components/admin/AdminAnnouncementCard";
-import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function AdminAnnouncement({ announcements }) {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
 
-  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
-
   const { props } = usePage();
 
-  // auto-hide modal after 3 seconds
+  // Show toast only for delete (create/edit already fire their own toasts)
   useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccess]);
-
-  // detect update modal
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const updated = url.searchParams.get("updated");
-
-    if (updated === "1") {
-      setShowUpdatedSuccess(true);
-
-      setTimeout(() => {
-        setShowUpdatedSuccess(false);
-
-        router.replace("/admin/announcement", {
-          preserveState: true,
-          preserveScroll: true,
-        });
-      }, 2500);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (props.flash?.success === "Deleted") {
-      setShowSuccess(true);
-
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
+    if (props.flash?.success === "Deleted") toast.success("Deleted successfully!");
   }, [props.flash?.success]);
 
   // GLOBAL SEARCH
@@ -60,18 +24,10 @@ export default function AdminAnnouncement({ announcements }) {
     const delay = setTimeout(() => {
       router.get(
         "/admin/announcement",
-        {
-          search,
-          status: statusFilter,
-          sort: sortOrder,
-        },
-        {
-          preserveState: true,
-          replace: true,
-        }
+        { search, status: statusFilter, sort: sortOrder },
+        { preserveState: true, replace: true }
       );
     }, 300);
-
     return () => clearTimeout(delay);
   }, [search, statusFilter, sortOrder]);
 
@@ -200,10 +156,7 @@ export default function AdminAnnouncement({ announcements }) {
 
       {/* TABLE */}
       <div className="flex-1 rounded-md">
-        <AdminAnnouncementCard
-          announcements={filteredAnnouncements}
-          onDeleteSuccess={() => setShowSuccess(true)}
-        />
+        <AdminAnnouncementCard announcements={filteredAnnouncements} />
       </div>
 
       {/* PAGINATION */}
@@ -278,60 +231,7 @@ export default function AdminAnnouncement({ announcements }) {
 
         </div>
 
-      {/* DELETE SUCCESS MODAL */}
-      {showSuccess && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
-          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
-
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-            >
-              <X size={20} />
-            </button>
-
-            {/* GREEN CIRCLE WITH CHECK */}
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white stroke-[3]" />
-            </div>
-
-            {/* TEXT */}
-            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Deleted successfully!
-            </p>
-
-          </div>
-        </div>
-      )}
-
-      {/* UPDATE SUCCESS MODAL */}
-      {showUpdatedSuccess && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
-          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
-
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() => setShowUpdatedSuccess(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-            >
-              <X size={20} />
-            </button>
-
-            {/* GREEN ICON */}
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white stroke-[3]" />
-            </div>
-
-            {/* TEXT */}
-            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Updated successfully!
-            </p>
-
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
     </div>
   );
 }

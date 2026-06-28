@@ -75,19 +75,6 @@ export default function SurveyCard({ survey, isArchived = false }) {
                         </Button>
                     )}
 
-                    {/* Analytics button — shown when responses exist */}
-                    {!isArchived && survey.has_responses && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-purple-300 text-purple-700 hover:bg-purple-50"
-                            onClick={() => router.get(route("admin.surveys.cect-analytics", survey.id))}
-                        >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                            Analytics
-                        </Button>
-                    )}
-
                     {/* Unarchive button for archived surveys */}
                     {isArchived ? (
                         <AlertDialog>

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, X  } from "lucide-react";
-import AdminAnnouncementEditUpdate from "@/components/AdminAnnouncementEditUpdate";
+import { toast } from "sonner";
 
 export default function AdminAnnouncementEdit({ announcement }) {
   const fileInputRef = useRef(null);
@@ -117,10 +117,8 @@ export default function AdminAnnouncementEdit({ announcement }) {
       forceFormData: true,
 
       onSuccess: () => {
-        router.visit("/admin/announcement?updated=1", {
-          replace: true,
-          preserveScroll: true,
-        });
+        toast.success("Updated successfully!");
+        // router.visit("/admin/announcement");
       },
 
       onError: (errors) => {

@@ -19,8 +19,8 @@ class AdminOfSurveyResponseController extends Controller
         $surveys = Survey::withCount('sections')
             ->with('creator')
             ->latest()
-            ->get()
-            ->map(function ($survey) {
+            ->paginate(5)
+            ->through(function ($survey) {
                 return [
                     'id'             => $survey->id,
                     'title'          => $survey->title,
@@ -31,7 +31,8 @@ class AdminOfSurveyResponseController extends Controller
                         ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
                         : 'Unknown',
                 ];
-            });
+            })
+            ->withQueryString();
 
         return Inertia::render('Admin/AdminSurveyResponseIndex', [
             'surveys' => $surveys

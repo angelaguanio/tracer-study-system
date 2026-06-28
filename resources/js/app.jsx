@@ -5,6 +5,15 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
+// Force light mode globally — remove dark class and always apply light
+(function enforceLightMode() {
+    const root = window.document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
+    // Override localStorage so ThemeProvider (if any remains) can't flip it back
+    localStorage.setItem('vite-ui-theme', 'light');
+})();
+
 // Configure axios globally
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

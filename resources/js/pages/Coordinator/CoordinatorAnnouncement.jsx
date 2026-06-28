@@ -1,58 +1,24 @@
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAnnouncementCard from "@/components/coordinator/CoordinatorAnnouncementCard";
-import { Plus, X, Check, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function CoordinatorAnnouncement({ announcements }) {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
 
-  const [showUpdatedSuccess, setShowUpdatedSuccess] = useState(false);
-
   const { props } = usePage();
 
-  // auto-hide modal after 3 seconds
   useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccess]);
-
-  // detect update modal
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const updated = url.searchParams.get("updated");
-
-    if (updated === "1") {
-      setShowUpdatedSuccess(true);
-
-      setTimeout(() => {
-        setShowUpdatedSuccess(false);
-
-        router.replace("/coordinator/announcement", {
-          preserveState: true,
-          preserveScroll: true,
-        });
-      }, 2500);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (props.flash?.success === "Deleted") {
-      setShowSuccess(true);
-
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
+    const flash = props.flash;
+    if (flash?.success === "Deleted") toast.success("Deleted successfully!");
+    else if (flash?.success === "Updated") toast.success("Updated successfully!");
+    else if (flash?.success) toast.success(flash.success);
   }, [props.flash?.success]);
 
   // GLOBAL SEARCH
@@ -60,18 +26,10 @@ export default function CoordinatorAnnouncement({ announcements }) {
     const delay = setTimeout(() => {
       router.get(
         "/coordinator/announcement",
-        {
-          search,
-          status: statusFilter,
-          sort: sortOrder,
-        },
-        {
-          preserveState: true,
-          replace: true,
-        }
+        { search, status: statusFilter, sort: sortOrder },
+        { preserveState: true, replace: true }
       );
     }, 300);
-
     return () => clearTimeout(delay);
   }, [search, statusFilter, sortOrder]);
 
@@ -200,10 +158,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
       {/* TABLE */}
       <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
-        <CoordinatorAnnouncementCard
-          announcements={filteredAnnouncements}
-          onDeleteSuccess={() => setShowSuccess(true)}
-        />
+        <CoordinatorAnnouncementCard announcements={filteredAnnouncements} />
       </div>
 
       {/* PAGINATION */}
@@ -249,7 +204,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
                         { preserveState: true, preserveScroll: true }
                       )
                     }
-                    className={`w-9 h-9 flex items-center justify-center rounded-lg border text-sm font-medium transition ${
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg border text-sm font-medium transitionx ${
                       announcements.current_page === page
                         ? "bg-blue-500 text-white border-blue-500"
                         : "bg-white hover:bg-gray-50 text-gray-600"
@@ -278,60 +233,7 @@ export default function CoordinatorAnnouncement({ announcements }) {
 
         </div>
 
-      {/* DELETE SUCCESS MODAL */}
-      {showSuccess && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
-          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
-
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-            >
-              <X size={20} />
-            </button>
-
-            {/* GREEN CIRCLE WITH CHECK */}
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white stroke-[3]" />
-            </div>
-
-            {/* TEXT */}
-            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Deleted successfully!
-            </p>
-
-          </div>
-        </div>
-      )}
-
-      {/* UPDATE SUCCESS MODAL */}
-      {showUpdatedSuccess && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-4">
-          <div className="relative bg-white w-full max-w-md sm:max-w-lg rounded-xl shadow-xl p-5 sm:p-6 flex flex-col items-center justify-center h-60">
-
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={() => setShowUpdatedSuccess(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-            >
-              <X size={20} />
-            </button>
-
-            {/* GREEN ICON */}
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-              <Check size={28} className="text-white stroke-[3]" />
-            </div>
-
-            {/* TEXT */}
-            <p className="text-gray-700 text-base sm:text-lg font-medium text-center">
-              Updated successfully!
-            </p>
-
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
     </div>
   );
 }

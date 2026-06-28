@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete()->index();
             $table->string('title');
             $table->text('details');
 
@@ -18,9 +18,11 @@ return new class extends Migration
 
             // Workflow states: pending → approved | rejected
             $table->string('status')->default('pending');
+            $table->text('revision_note')->nullable();
             $table->timestamps();
 
             $table->index('status');
+            $table->index(['status', 'user_id']);
         });
     }
 

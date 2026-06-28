@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, X } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CoordinatorAnnouncementCreate() {
     const fileInputRef = useRef(null); // Reference para sa hidden file input
@@ -30,20 +31,12 @@ export default function CoordinatorAnnouncementCreate() {
         post("/coordinator/announcement", {
             forceFormData: true,
             onSuccess: () => {
-                setData({
-                    title: "",
-                    details: "",
-                    images: [],
-                });
-
+                toast.success("Announcement created! It will be reviewed by an admin.");
+                setData({ title: "", details: "", images: [] });
                 setPreviews([]);
                 setFileError("");
-
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = null;
-                }
-
-                router.visit("/coordinator/announcement");
+                if (fileInputRef.current) fileInputRef.current.value = null;
+                // router.visit("/coordinator/announcement");
             },
         });
     };

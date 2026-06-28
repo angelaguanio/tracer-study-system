@@ -1,4 +1,4 @@
-    import { Badge } from './ui/badge';
+    import { Badge } from '../ui/badge';
 import {
     Card,
     CardHeader,
@@ -7,8 +7,8 @@ import {
     CardContent,
     CardFooter,
 } from '@/components/ui/card';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { router } from '@inertiajs/react';
 

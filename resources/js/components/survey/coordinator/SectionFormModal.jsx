@@ -83,8 +83,13 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
 
                     <div className="flex flex-col gap-2">
                         <Label>Likert Scale <span className="text-gray-400 text-xs">(optional — for rating questions)</span></Label>
+                        <p className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded px-2 py-1.5 leading-relaxed">
+                            <strong>Scoring order matters:</strong> The first item you add = score 1 (lowest), the last = highest score.
+                            Add labels from least to most favorable (e.g. "Strongly Disagree" → "Strongly Agree").
+                        </p>
                         {likertScale.map((item, i) => (
                             <div key={i} className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400 w-5 text-right shrink-0">{i + 1}.</span>
                                 <span className="flex-1 text-sm bg-gray-50 border rounded px-2 py-1">{item}</span>
                                 <Button size="icon" variant="ghost" className="h-7 w-7 text-[#E70813]" onClick={() => removeScaleItem(i)}>
                                     <X size={12} />
@@ -95,13 +100,15 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
                             <Input
                                 value={newScaleItem}
                                 onChange={(e) => setNewScaleItem(e.target.value)}
-                                placeholder="e.g. Very Much"
+                                placeholder="e.g. Strongly Disagree"
                                 onKeyDown={(e) => e.key === "Enter" && addScaleItem()}
                             />
                             <Button size="sm" variant="outline" onClick={addScaleItem}><Plus size={14} /></Button>
                         </div>
                         {likertScale.length > 0 && (
-                            <p className="text-xs text-gray-400">Scale order: {likertScale.join(" → ")}</p>
+                            <p className="text-xs text-gray-400">
+                                Score range: <strong>1</strong> ({likertScale[0]}) → <strong>{likertScale.length}</strong> ({likertScale[likertScale.length - 1]})
+                            </p>
                         )}
                     </div>
                 </div>

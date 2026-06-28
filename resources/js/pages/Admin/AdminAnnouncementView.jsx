@@ -4,6 +4,7 @@ import { Link, router } from "@inertiajs/react";
 import { ArrowLeft, Pencil, Trash2, Check, X } from "lucide-react";
 import { useState } from "react";
 import AdminAnnouncementDeletePromptandConfirmation from "@/components/admin/AdminAnnouncementDeletePromptandConfirmation";
+import { toast } from "sonner";
 
 export default function AdminAnnouncementView({ announcement }) {
   const isPending = announcement?.status === "pending";
@@ -19,7 +20,10 @@ export default function AdminAnnouncementView({ announcement }) {
       {},
       {
         preserveScroll: true,
-        onSuccess: () => router.reload({ preserveScroll: true }),
+        onSuccess: () => {
+          toast.success("Announcement approved!");
+          router.reload({ preserveScroll: true });
+        },
       }
     );
   };
@@ -34,6 +38,7 @@ export default function AdminAnnouncementView({ announcement }) {
       {
         preserveScroll: true,
         onSuccess: () => {
+          toast.success("Marked for revision.");
           setOpenModal(false);
           setNote("");
           router.reload({ preserveScroll: true });
@@ -136,14 +141,14 @@ export default function AdminAnnouncementView({ announcement }) {
                     setOpenModal(false);
                     setNote("");
                   }}
-                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md border hover:bg-gray-100"
+                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md border hover:bg-gray-100 cursor-pointer"
                 >
                   Cancel
                 </button>
 
                 <button
                   onClick={submitRevision}
-                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
+                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
                 >
                   Submit
                 </button>

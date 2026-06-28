@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('title')->nullable(); 
             $table->string('subject'); 
             $table->text('message');
-            $table->string('status')->default('pending'); 
+            $table->string('status')->default('pending')->index(); 
             $table->timestamps();
         });
     }

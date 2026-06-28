@@ -7,7 +7,7 @@
   import { Button } from "@/components/ui/button";
   import { Label } from "@/components/ui/label";
   import { ArrowLeft, X, AlertCircle } from "lucide-react";
-  import CoordinatorAnnouncementEditUpdate from "../../components/CoordinatorAnnouncementEditUpdate";
+  import { toast } from "sonner";
 
   export default function CoordinatorAnnouncementEdit({ announcement }) {
     const fileInputRef = useRef(null);
@@ -115,10 +115,9 @@
       router.post(`/coordinator/announcement/${announcement.id}`, data, {
         forceFormData: true,
         onSuccess: () => {
-          router.visit("/coordinator/announcement?updated=1", {
-            replace: true,
-            preserveState: false,
-          });
+          const msg = isRevise ? "Resubmitted successfully!" : "Updated successfully!";
+          toast.success(msg);
+          // router.visit("/coordinator/announcement");
         },
       });
     };
@@ -311,8 +310,6 @@
             </div>
           </div>
 
-          {/* MODAL */}
-          <CoordinatorAnnouncementEditUpdate show={showModal} />
         </>
       </CoordinatorLayout>
     );

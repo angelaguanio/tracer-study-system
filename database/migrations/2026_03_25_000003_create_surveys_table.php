@@ -12,9 +12,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            $table->enum('status', ['active', 'inactive'])->default('inactive')->index();
+            $table->boolean('is_tracer_study')->default(false);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('archived_at')->nullable();
         });
     }
 
