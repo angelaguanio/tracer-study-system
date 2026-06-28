@@ -5,7 +5,7 @@ export default function ProfileTemp({
   showName = true,
   className = '',
   avatarClassName = '',
-  nameClassName = 'lg:text-lg text-sm',
+  nameClassName = 'lg:text-md text-sm',
 }) {
 
   if (!user) return null
@@ -14,11 +14,7 @@ export default function ProfileTemp({
     user.initials ||
     `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.toUpperCase()
 
-  const displayName =
-    user.first_name ||
-    user.name ||
-    user.username ||
-    'User'
+  const displayName = `${user.first_name} ${user.last_name}`;
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -38,7 +34,7 @@ export default function ProfileTemp({
       </div>
 
       {showName && (
-        <span className={nameClassName}>
+        <span className={`hidden sm:inline ${nameClassName}`}>
           {displayName}
         </span>
       )}

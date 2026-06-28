@@ -31,7 +31,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
         {/* profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="nav" className="py-6 hover:bg-gray-300">
+            <Button variant="ghost" className="py-6 hover:bg-transparent hover:ring-1 hover:ring-border">
               <ProfileTemp user={user} /> 
             </Button>
           </DropdownMenuTrigger>

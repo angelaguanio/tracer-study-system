@@ -280,12 +280,7 @@ export default function AlumnaQuestionnaire({
       </div>
 
       {/* Tab Content */}
-      {justCompleted
-        ? renderJustCompleted()
-        : selectedTab === 'tracer-study'
-          ? renderTracerStudyTab()
-          : renderCectSurveysTab()
-      }
+      {selectedTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
     </div>
   );
 }

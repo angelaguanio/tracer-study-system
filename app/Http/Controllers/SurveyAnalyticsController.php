@@ -454,46 +454,7 @@ class SurveyAnalyticsController extends Controller
             'trendByYear'         => $trendByYear,
             'textAnalysis'        => $textAnalysis,
             'filters'             => compact('yearGraduated', 'semester'),
-            'locationMigration'   => $this->getLocationMigrationData($respondentIds),
         ]);
-    }
-
-    /**
-     * Get location migration summary for a specific set of respondent IDs
-     * Used to embed migration data directly in the survey analytics view
-     */
-    private function getLocationMigrationData(\Illuminate\Support\Collection $respondentIds): array
-    {
-        $users = User::whereIn('id', $respondentIds)
-            ->whereHas('employment', function($q) {
-                $q->whereNotNull('location')
-                  ->where('location', '!=', '');
-            })
-            ->whereNotNull('address')
-            ->where('address', '!=', '')
-            ->with('employment')
-            ->get();
-
-        $local = 0;
-        $external = 0;
-
-        foreach ($users as $user) {
-            $isLocal = $this->isSameArea(
-                strtolower(trim($user->address)),
-                strtolower(trim($user->employment->location))
-            );
-            $isLocal ? $local++ : $external++;
-        }
-
-        $total = $local + $external;
-
-        return [
-            'local'              => $local,
-            'external'           => $external,
-            'total'              => $total,
-            'local_percentage'   => $total > 0 ? round(($local / $total) * 100, 1) : 0,
-            'external_percentage'=> $total > 0 ? round(($external / $total) * 100, 1) : 0,
-        ];
     }
 
     /**
@@ -513,8 +474,6 @@ class SurveyAnalyticsController extends Controller
             ->with('employment')
             ->get();
 
-        $localCount = 0;
-        $externalCount = 0;
         $cityDistribution = [];
         $detailedData = [];
 
@@ -522,97 +481,39 @@ class SurveyAnalyticsController extends Controller
             $companyLocation = strtolower(trim($user->employment->location));
             $homeAddress = $user->address ? strtolower(trim($user->address)) : '';
 
-            // Extract cities
             $companyCity = $this->extractCity($companyLocation);
-            $homeCity = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
+            $homeCity    = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
 
-            // Check if employment is local (within Cabanatuan) or external
-            $isLocal = $this->isSameArea($homeAddress ?: 'unknown', $companyLocation);
-            
-            if ($isLocal) {
-                $localCount++;
-            } else {
-                $externalCount++;
-            }
-
-            // Track city distribution
             if (!isset($cityDistribution[$companyCity])) {
-                $cityDistribution[$companyCity] = [
-                    'city' => $companyCity,
-                    'count' => 0,
-                ];
+                $cityDistribution[$companyCity] = ['city' => $companyCity, 'count' => 0];
             }
             $cityDistribution[$companyCity]['count']++;
 
             $detailedData[] = [
-                'name' => $user->first_name . ' ' . $user->last_name,
-                'home_city' => $homeCity,
-                'company_city' => $companyCity,
-                'company_name' => $user->employment->company_name,
-                'is_local' => $isLocal,
-                'start_year' => $user->start_year,
-                'end_year' => $user->end_year,
-                'year_graduated' => $user->year_graduated,
-                'course' => $user->courses,
+                'name'           => $user->first_name . ' ' . $user->last_name,
+                'home_city'      => $homeCity,
+                'company_city'   => $companyCity,
+                'company_name'   => $user->employment->company_name,
+                'start_year'     => $user->start_year,
+                'end_year'       => $user->end_year,
+                'year_graduated' => ($user->start_year && $user->end_year)
+                                     ? "{$user->start_year}-{$user->end_year}" : null,
+                'course'         => $user->courses,
             ];
         }
 
         $totalEmployed = count($detailedData);
-        $externalPercentage = $totalEmployed > 0 ? round(($externalCount / $totalEmployed) * 100, 1) : 0;
 
-        // Sort city distribution by count
         usort($cityDistribution, fn($a, $b) => $b['count'] <=> $a['count']);
 
         return Inertia::render('Admin/EmploymentLocationAnalytics', [
             'summary' => [
                 'total_employed' => $totalEmployed,
-                'total_cities' => count($cityDistribution),
-                'external_count' => $externalCount,
-                'external_percentage' => $externalPercentage,
+                'total_cities'   => count($cityDistribution),
             ],
             'cityDistribution' => $cityDistribution,
-            'detailedData' => $detailedData,
+            'detailedData'     => $detailedData,
         ]);
-    }
-
-    /**
-     * Check if two addresses are in the same area/city
-     */
-    private function isSameArea(string $address1, string $address2): bool
-    {
-        // Normalize addresses by removing barangay prefixes
-        $address1 = $this->normalizeAddress($address1);
-        $address2 = $this->normalizeAddress($address2);
-
-        // Common city/area keywords to check
-        $cities = [
-            'cabanatuan', 'cabanatuan city', 'manila', 'quezon', 'quezon city', 'makati', 'makati city',
-            'taguig', 'taguig city', 'pasig', 'pasig city', 'mandaluyong', 'mandaluyong city',
-            'san juan', 'san juan city', 'caloocan', 'caloocan city', 'malabon', 'malabon city',
-            'navotas', 'navotas city', 'valenzuela', 'valenzuela city', 'marikina', 'marikina city',
-            'pasay', 'pasay city', 'paranaque', 'paranaque city', 'las pinas', 'las pinas city',
-            'muntinlupa', 'muntinlupa city', 'pateros', 'cebu', 'cebu city', 'davao', 'davao city',
-            'baguio', 'baguio city', 'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan',
-            'bataan', 'zambales', 'laguna', 'cavite', 'rizal', 'batangas', 'iloilo', 'bacolod',
-        ];
-
-        foreach ($cities as $city) {
-            $inAddress1 = str_contains($address1, $city);
-            $inAddress2 = str_contains($address2, $city);
-
-            if ($inAddress1 && $inAddress2) {
-                return true; // Both contain the same city
-            }
-        }
-
-        // Fallback: check if they share significant common words (3+ chars)
-        // Exclude common address words
-        $excludeWords = ['city', 'street', 'road', 'avenue', 'barangay', 'brgy', 'subdivision', 'subd', 'village', 'phase', 'block', 'lot'];
-        $words1 = array_filter(explode(' ', $address1), fn($w) => strlen($w) > 3 && !in_array($w, $excludeWords));
-        $words2 = array_filter(explode(' ', $address2), fn($w) => strlen($w) > 3 && !in_array($w, $excludeWords));
-        $common = array_intersect($words1, $words2);
-
-        return count($common) >= 2; // At least 2 common significant words
     }
 
     /**

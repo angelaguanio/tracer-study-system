@@ -141,7 +141,7 @@ export default function NotificationBell() {
                     handleOpen();
                 }
             }}
-                className="relative p-2 rounded-full hover:bg-gray-100"
+                className="relative p-2 rounded-full hover:bg-gray-100 cursor-pointer"
             >
                 <Bell size={22} />
                 {unreadCount > 0 && (
@@ -179,17 +179,15 @@ export default function NotificationBell() {
                   {/* Header */}
                   <div className="flex justify-between items-center px-4 py-3 border-b shrink-0">
                       <h3 className="font-semibold text-gray-800">Notifications</h3>
-                      {hasUnread && (
-                          <button
-                              onClick={() => {
-                                  markAllRead();
-                                  setHasUnread(false);
-                              }}
-                              className="text-xs text-blue-600 hover:underline"
-                          >
-                              Mark all as read
-                          </button>
-                      )}
+                      <button
+                          onClick={() => {
+                              markAllRead();
+                              setHasUnread(false);
+                          }}
+                          className="text-xs text-blue-600 hover:underline cursor-pointer"
+                      >
+                          Mark all as read
+                      </button>
                   </div>
 
                   {/* List */}
