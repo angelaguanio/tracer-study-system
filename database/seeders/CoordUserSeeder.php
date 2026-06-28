@@ -13,8 +13,15 @@ class CoordUserSeeder extends Seeder
     public function run()
 {
     User::updateOrCreate(
-        ['email' => 'k@gmail.com'],
+        [   'email' => 'tugaff.macatalina@wesleyan.edu.ph',
+            'last_name' => 'Tugaff',
+            'first_name' => 'Catalina',
+            'password' => Hash::make('admin123'),
+            'user_role' => 'coordinator',
+            'courses' => 'BSIT',
+            'department' => 'CECT'],
         [
+            'email' => 'k@gmail.com',
             'last_name' => 'Tugaff',
             'first_name' => 'Catalina',
             'password' => Hash::make('admin123'),
