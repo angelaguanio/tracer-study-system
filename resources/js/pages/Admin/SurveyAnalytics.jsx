@@ -139,7 +139,7 @@ export default function SurveyAnalytics({
                         value={localFilters.year_graduated || "All Years"}
                         onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
                     >
-                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-8 text-sm cursor-pointer"><SelectValue /></SelectTrigger>
                         <SelectContent className="max-h-48 overflow-y-auto">
                             {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
                         </SelectContent>
