@@ -53,11 +53,11 @@ const purposes = [
 
 /* ── core values ──────────────────────────────────────────── */
 const coreValues = [
-  { emoji: <Heart/>,  en: "COMPASSION",    fil: "Malasakit",     desc: "Caring deeply for others and the community.",                  border: "border-red-400"   },
-  { emoji: <Handshake/> ,  en: "HARMONY",       fil: "Pagkakaisa",    desc: "Working together in unity and respect.",                       border: "border-yellow-400"},
-  { emoji: <Scale/>,  en: "ACCOUNTABILITY",fil: "Pananagutan",   desc: "Taking responsibility for actions and decisions.",             border: "border-blue-400"  },
-  { emoji: <Sparkles/>,  en: "SPIRITUALITY",  fil: "Espiritwalidad",desc: "Nurturing values, faith, and inner strength.",                 border: "border-cyan-400"  },
-  { emoji: <Trophy/>,  en: "EXCELLENCE",    fil: "Husay",         desc: "Striving for the highest standards in all endeavors.",         border: "border-orange-400"},
+  { emoji: <Heart/>,  en: "COMPASSION",    fil: "Malasakit",     desc: "We express profound empathy through selfless acts of service to alleviate suffering, promote understanding, and cultivate kindness in our interactions with living beings and the environment transcending boundaries of cultural differences.",                  border: "border-red-400"   },
+  { emoji: <Handshake/> ,  en: "HARMONY",       fil: "Pagkakaisa",    desc: "We ardently cultivate a collaborative spirit, cherishing diverse perspectives that enrich our academic landscape. We embody interdisciplinary synergy that dismantles academic boundaries, fostering an environment where ideas converge for innovation. Rooted in Christian values and traditions, we thrive on principles of integrity and mutual respect in creating an inclusive academic community.",                       border: "border-yellow-400"},
+  { emoji: <Scale/>,  en: "ACCOUNTABILITY",fil: "Pananagutan",   desc: "We ensure responsibility for all actions, behaviors, performance, and their consequences, and demonstrate stewardship in utilizing both tangible and intangible resources. We uphold integrity in fulfilling our roles and capacities as models of servant leadership.",             border: "border-blue-400"  },
+  { emoji: <Sparkles/>,  en: "SPIRITUALITY",  fil: "Espiritwalidad",desc: "We live by the principles of ecumenism and interfaith dialogues as part of our spiritual formation with great dependence on the graces flowing from God. We live a life ruled by social holiness in accordance with His mission and teachings until we are formed in Him.",                 border: "border-cyan-400"  },
+  { emoji: <Trophy/>,  en: "EXCELLENCE",    fil: "Husay",         desc: "We strive for greatness through a relentless commitment to the highest standards across all aspects of academic and institutional life reflected in the active pursuit of scholarly distinction by undertaking knowledge-generation endeavors, cultivation of critical thinking, and fostering an environment that encourages continuous improvement and development.",         border: "border-orange-400"},
 ];
 
 export default function AlumnaAbout() {
@@ -103,7 +103,7 @@ export default function AlumnaAbout() {
         <div className="max-w-3xl mx-auto text-center">
 
           {/* icon */}
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-600 mb-5">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-600 mb-5 mt-5">
             <IconPeople />
           </div>
 
@@ -156,7 +156,7 @@ export default function AlumnaAbout() {
           4. WHY IT MATTERS — white bg, left icon accent
       ═══════════════════════════════════════════════════════ */}
       <section className="bg-white py-14 sm:py-16 px-6 sm:px-10">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-8 items-start">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-8 items-center">
 
           {/* icon blob */}
           <div className="shrink-0 w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
@@ -251,8 +251,8 @@ export default function AlumnaAbout() {
       {/* ═══════════════════════════════════════════════════════
           6. CORE VALUES — dark navy bg, icon cards in a row
       ═══════════════════════════════════════════════════════ */}
-      <section className="bg-gradient-to-r from-[#004680] to-[#4484BA] py-14 sm:py-16 px-6 sm:px-10">
-        <div className="max-w-5xl mx-auto">
+      <section className="bg-gradient-to-r from-[#004680] to-[#4484BA] py-14 px-4 sm:py-16 sm:px-10">
+        <div className="max-w-8xl mx-auto">
 
           {/* heading */}
           <div className="text-center mb-10">
@@ -269,9 +269,9 @@ export default function AlumnaAbout() {
                 className={`flex flex-col items-center text-white text-center gap-2 border-t-4 ${border} bg-white/10 rounded-xl p-5 hover:bg-white/20 transition-colors`}
               >
                 <span className="text-4xl p-6 rounded-full bg-blue-100/20">{emoji}</span>
-                <h4 className='font-extrabold text-xs sm:text-sm tracking-wide'>{en}</h4>
-                <p className="text-[11px]">({fil})</p>
-                <p className="text-[11px] sm:text-xs leading-relaxed">{desc}</p>
+                <h4 className='font-extrabold lg:text-lg sm:text-sm tracking-wide leading-8'>{en}</h4>
+                <p className="lg:text-[15px]">({fil})</p>
+                <p className="lg:text-[14px] text-xs leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
