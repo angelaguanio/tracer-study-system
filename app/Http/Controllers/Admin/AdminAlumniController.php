@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AlumniBroadcastEmail;
-use App\Jobs\SendAlumniBroadcastJob;
+// use App\Jobs\SendAlumniBroadcastJob;
 
 class AdminAlumniController extends Controller
 {
@@ -223,25 +223,94 @@ class AdminAlumniController extends Controller
     /**
      * Send bulk email to selected alumni
      */
+    // public function sendBulkEmail(Request $request)
+    // {
+    //     $request->validate([
+    //         'subject' => 'required|string|max:255',
+    //         'message' => 'required|string',
+    //         'user_ids' => 'required|array',
+    //         'user_ids.*' => 'exists:users,id',
+    //     ]);
+
+    //     foreach ($request->user_ids as $index => $userId) {
+    //         $delaySeconds = 60 + ($index * 60);
+            
+    //         SendAlumniBroadcastJob::dispatch(
+    //             $request->subject,
+    //             $request->message,
+    //             [$userId]
+    //         )->delay(now()->addSeconds($delaySeconds));
+    //     }
+
+    //     return back()->with('success', 'Bulk email queued successfully ' . count($request->user_ids));
+    // }
+
     public function sendBulkEmail(Request $request)
     {
         $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-            'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id',
+            'subject'   => 'required|string|max:255',
+            'message'   => 'required|string',
+            'user_ids'  => 'required|array',
+            'user_ids.*'=> 'exists:users,id',
+
+            // batching
+            'offset'    => 'nullable|integer|min:0',
+            'batch_size'=> 'nullable|integer|min:1|max:20',
         ]);
 
-        foreach ($request->user_ids as $index => $userId) {
-            $delaySeconds = 60 + ($index * 60);
-            
-            SendAlumniBroadcastJob::dispatch(
-                $request->subject,
-                $request->message,
-                [$userId]
-            )->delay(now()->addSeconds($delaySeconds));
+        $offset = $request->offset ?? 0;
+        $batchSize = $request->batch_size ?? 10;
+
+        $ids = $request->user_ids;
+
+        // Get only the next batch
+        $batchIds = array_slice($ids, $offset, $batchSize);
+
+        $users = User::whereIn('id', $batchIds)->get();
+
+        $sent = 0;
+        $failed = [];
+
+        foreach ($users as $user) {
+            try {
+
+                Mail::to($user->email)->send(
+                    new AlumniBroadcastEmail(
+                        $request->subject,
+                        $request->message
+                    )
+                );
+
+                $sent++;
+
+                // small pause to avoid rate limits
+                usleep(500000); // 0.5 second
+
+            } catch (\Throwable $e) {
+
+                $failed[] = [
+                    'email' => $user->email,
+                    'error' => $e->getMessage(),
+                ];
+
+                \Log::error("Bulk mail failed to {$user->email}: ".$e->getMessage());
+            }
         }
 
-        return back()->with('success', 'Bulk email queued successfully ' . count($request->user_ids));
+        $nextOffset = $offset + count($batchIds);
+
+        return response()->json([
+            'finished' => $nextOffset >= count($ids),
+
+            'next_offset' => $nextOffset,
+
+            'processed' => $nextOffset,
+
+            'total' => count($ids),
+
+            'sent' => $sent,
+
+            'failed' => $failed,
+        ]);
     }
 }

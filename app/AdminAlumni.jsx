@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail } from "lucide-react";
-import axios from "axios";
 
 export default function AdminAlumni({ alumni, filters }) {
   const { flash } = usePage().props;
@@ -36,10 +35,6 @@ export default function AdminAlumni({ alumni, filters }) {
   const [bulkSubject, setBulkSubject]     = useState("");
   const [bulkMessage, setBulkMessage]     = useState("");
   const [bulkSending, setBulkSending]     = useState(false);
-  const [bulkProgress, setBulkProgress] = useState({
-    processed: 0,
-    total: 0,
-});
 
   // ── Individual email modal ────────────────────────────────
   const [indivModalOpen, setIndivModalOpen] = useState(false);
@@ -127,184 +122,28 @@ export default function AdminAlumni({ alumni, filters }) {
   };
 
   // ── Bulk email submit ─────────────────────────────────────
-  // const handleSendBulk = () => {
-  //   if (!bulkSubject.trim() || !bulkMessage.trim()) {
-  //     toast.error("Subject and message are required.");
-  //     return;
-  //   }
-
-  //   setBulkSending(true);
-  //   router.post(
-  //     route("admin.alumni.email.bulk"),
-  //     { subject: bulkSubject, message: bulkMessage, send_all: false, user_ids: selectedIds },
-  //     {
-  //       onSuccess: () => {
-  //         setBulkModalOpen(false);
-  //         setBulkSubject("");
-  //         setBulkMessage("");
-  //         setSelectedIds([]);
-  //       },
-  //       onError: () => toast.error("Failed to queue emails. Please try again."),
-  //       onFinish: () => setBulkSending(false),
-  //     }
-  //   );
-  // };
   const handleSendBulk = () => {
-    console.log("HANDLE SEND BULK");
-  
     if (!bulkSubject.trim() || !bulkMessage.trim()) {
-        toast.error("Subject and message are required.");
-        return;
+      toast.error("Subject and message are required.");
+      return;
     }
-  
-    console.log("CALLING sendNextBatch");
-  
+
     setBulkSending(true);
-  
-    setBulkProgress({
-        processed: 0,
-        total: selectedIds.length,
-    });
-  
-    sendNextBatch(0);
-  };
-
-//====================================================
-//   const sendNextBatch = async (offset) => {
-
-//     console.log("USING AXIOS");
-
-//     try {
-
-//         const { data } = await axios.post(
-//             route("admin.alumni.email.bulk"),
-//             {
-//                 subject: bulkSubject,
-//                 message: bulkMessage,
-//                 user_ids: selectedIds,
-//                 offset,
-//                 batch_size: 10,
-//             },
-//             {
-//                 headers: {
-//                     Accept: "application/json",
-//                     "X-Requested-With": "XMLHttpRequest",
-//                 },
-//             }
-//         );
-
-//         setBulkProgress({
-//             processed: data.processed,
-//             total: data.total,
-//         });
-
-//         if (!data.finished) {
-
-//             setTimeout(() => {
-//                 sendNextBatch(data.next_offset);
-//             }, 500);
-
-//             return;
-//         }
-
-//         toast.success("Bulk email completed!");
-
-//         setBulkSending(false);
-
-//         setBulkModalOpen(false);
-
-//         setBulkSubject("");
-
-//         setBulkMessage("");
-
-//         setSelectedIds([]);
-
-//     } catch (error) {
-
-//         console.error(error);
-
-//         toast.error("Failed sending emails.");
-
-//         setBulkSending(false);
-
-//     }
-// };
-
-const sendNextBatch = async (offset) => {
-
-  console.log("1");
-
-  try {
-
-      console.log("2");
-
-      const { data } = await axios.post(
-          route("admin.alumni.email.bulk"),
-          {
-              subject: bulkSubject,
-              message: bulkMessage,
-              user_ids: selectedIds,
-              offset,
-              batch_size: 10,
-          }
-      );
-
-      console.log("3", data);
-
-      setBulkProgress({
-          processed: data.processed,
-          total: data.total,
-      });
-
-      console.log("4");
-
-      if (!data.finished) {
-
-          console.log("5");
-
-          setTimeout(() => {
-              sendNextBatch(data.next_offset);
-          }, 500);
-
-          return;
+    router.post(
+      route("admin.alumni.email.bulk"),
+      { subject: bulkSubject, message: bulkMessage, send_all: false, user_ids: selectedIds },
+      {
+        onSuccess: () => {
+          setBulkModalOpen(false);
+          setBulkSubject("");
+          setBulkMessage("");
+          setSelectedIds([]);
+        },
+        onError: () => toast.error("Failed to queue emails. Please try again."),
+        onFinish: () => setBulkSending(false),
       }
-
-      console.log("6");
-
-      toast.success("Bulk email completed!");
-
-      console.log("7");
-
-      setBulkSending(false);
-
-      console.log("8");
-
-      setBulkModalOpen(false);
-
-      console.log("9");
-
-      setBulkSubject("");
-
-      console.log("10");
-
-      setBulkMessage("");
-
-      console.log("11");
-
-      setSelectedIds([]);
-
-      console.log("12");
-
-  } catch (error) {
-
-      console.error(error);
-
-      toast.error("Failed sending emails.");
-
-      setBulkSending(false);
-
-  }
-};
+    );
+  };
 
   return (
     <div className="w-full h-full p-4 flex flex-col overflow-hidden">
@@ -455,9 +294,7 @@ const sendNextBatch = async (offset) => {
               disabled={bulkSending}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {bulkSending
-              ? `Sending ${bulkProgress.processed}/${bulkProgress.total}`
-              : "Send Email"}
+              {bulkSending ? "Sending..." : "Send Email"}
             </Button>
           </DialogFooter>
         </DialogContent>
