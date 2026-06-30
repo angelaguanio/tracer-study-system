@@ -100,7 +100,7 @@ export default function AlumnaQuestionnaire({
     return (
       <div className='flex items-center justify-center w-full px-4'>
         <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-1 bg-white text-gray-800">
-          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 px-8 py-6 text-white space-y-4">
+         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 px-6 sm:px-8 py-6 text-white space-y-4">
               <div className='space-y-2'>
                 <div className='flex flex-row gap-2'>
                   <SparkleIcon/>
@@ -108,13 +108,13 @@ export default function AlumnaQuestionnaire({
                 </div>
 
                 <div>
-                  <h1 className='text-2xl sm:text-3xl'>Your Voice Matters</h1>
-                  <p>Share your post-graduation experience</p>
+                  <h1 className='text-3xl sm:text-4xl font-bold'>Your Voice Matters</h1>
+                  <p className="text-sm sm:text-base">Share your post-graduation experience</p>
                 </div>
               </div>
           </CardHeader>
 
-          <CardContent className="flex flex-col px-10 py-3 gap-5">
+          <CardContent className="flex flex-col px-6 sm:px-10 py-6 gap-6">
             <div className='space-y-4'>
               <p>Help us improve our programs by sharing your post-graduation experience. 
                 Your feedback is invaluable for future students and curriculum development.
@@ -143,11 +143,20 @@ export default function AlumnaQuestionnaire({
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col justify-center p-3">
-            <Button asChild className="flex bg-blue-btn text-[15px] font" size="survey_btn">
-              <Link href={route('alumna.start-survey')}>Start Tracer Study</Link>
-            </Button>
-            <span className='text-sm text-gray-400 pt-7 pb-2'>Estimated completion time: 5-10 minutes.</span>
+          <CardFooter className="flex flex-col items-center px-6 sm:px-8 py-6 gap-4">
+          <Button
+            asChild
+            className="w-full bg-blue-btn hover:bg-bluehover-btn"
+            size="survey_btn"
+        >
+            <Link href={route('alumna.start-survey')}>
+                Start Tracer Study
+            </Link>
+        </Button>
+
+        <span className="text-xs sm:text-sm text-gray-400 text-center">
+            Estimated completion time: 5–10 minutes.
+        </span>
           </CardFooter>
         </Card>
       </div>
@@ -194,7 +203,7 @@ export default function AlumnaQuestionnaire({
             <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
                 <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
-                  <div className='flex items-center gap-3'>
+                  <div className='flex items-center gap-3 bg-blue-100 p-4 sm:p-5 rounded-2xl'>
                     <div className='p-3 rounded-full bg-white/30 w-fit'>
                       <NotebookPen size={20} />
                     </div>

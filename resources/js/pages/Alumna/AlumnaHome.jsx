@@ -48,29 +48,27 @@ export default function AlumnaHome({ announcements }) {
 
         {/* HERO SECTION */}
         <section
-          className="relative w-screen h-[600px] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `url(${alumniHomeImg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '10% 42%',
-            backgroundRepeat: 'no-repeat',
-          }}
+              className="relative h-[600px] bg-cover bg-no-repeat bg-[position:65%_center] md:bg-[position:45%_center] lg:bg-[position:10%_42%]"
+              style={{
+                backgroundImage: `url(${alumniHomeImg}`,
+              }}
         >
           <div
             className="absolute inset-0 z-10"
             style={{
               background:
-                'linear-gradient(to right, rgba(6,51,167,0.85) 0%, rgba(0,0,0,0.2) 70%)',
+                "linear-gradient(to right, rgba(6,51,167,0.85) 0%, rgba(0,0,0,0.2) 70%)",
             }}
-          ></div>
+          />
 
-          <div className="relative z-20 px-12 md:px-20 max-w-[680px] flex flex-col gap-5">
-            <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+          <div className="relative z-20 h-full flex items-center">
+              <div className="px-6 sm:px-10 md:px-20 max-w-xl lg:max-w-[680px] space-y-3">
+            <h1 className="text-2xl md:text-6xl font-bold text-white leading-tight">
               Stay Connected <br />
               With Your Alumni <br />
               Community
             </h1>
-            <p className="text-blue-100 text-lg md:text-xl leading-relaxed">
+            <p className="text-blue-100 text-md md:text-xl leading-relaxed">
               Reconnect with fellow graduates, explore new opportunities,
               and participate in our tracer survey to help improve the
               future of our institution.
@@ -84,6 +82,7 @@ export default function AlumnaHome({ announcements }) {
                 Take the Survey
                 <ArrowRight size={16} />
               </Link>
+            </div>
             </div>
           </div>
         </section>

@@ -170,74 +170,9 @@ export default function AdminAlumni({ alumni, filters }) {
   };
 
 //====================================================
-//   const sendNextBatch = async (offset) => {
-
-//     console.log("USING AXIOS");
-
-//     try {
-
-//         const { data } = await axios.post(
-//             route("admin.alumni.email.bulk"),
-//             {
-//                 subject: bulkSubject,
-//                 message: bulkMessage,
-//                 user_ids: selectedIds,
-//                 offset,
-//                 batch_size: 10,
-//             },
-//             {
-//                 headers: {
-//                     Accept: "application/json",
-//                     "X-Requested-With": "XMLHttpRequest",
-//                 },
-//             }
-//         );
-
-//         setBulkProgress({
-//             processed: data.processed,
-//             total: data.total,
-//         });
-
-//         if (!data.finished) {
-
-//             setTimeout(() => {
-//                 sendNextBatch(data.next_offset);
-//             }, 500);
-
-//             return;
-//         }
-
-//         toast.success("Bulk email completed!");
-
-//         setBulkSending(false);
-
-//         setBulkModalOpen(false);
-
-//         setBulkSubject("");
-
-//         setBulkMessage("");
-
-//         setSelectedIds([]);
-
-//     } catch (error) {
-
-//         console.error(error);
-
-//         toast.error("Failed sending emails.");
-
-//         setBulkSending(false);
-
-//     }
-// };
 
 const sendNextBatch = async (offset) => {
-
-  console.log("1");
-
   try {
-
-      console.log("2");
-
       const { data } = await axios.post(
           route("admin.alumni.email.bulk"),
           {
@@ -249,19 +184,12 @@ const sendNextBatch = async (offset) => {
           }
       );
 
-      console.log("3", data);
-
       setBulkProgress({
           processed: data.processed,
           total: data.total,
       });
 
-      console.log("4");
-
       if (!data.finished) {
-
-          console.log("5");
-
           setTimeout(() => {
               sendNextBatch(data.next_offset);
           }, 500);
@@ -269,40 +197,18 @@ const sendNextBatch = async (offset) => {
           return;
       }
 
-      console.log("6");
-
       toast.success("Bulk email completed!");
 
-      console.log("7");
-
       setBulkSending(false);
-
-      console.log("8");
-
       setBulkModalOpen(false);
-
-      console.log("9");
-
       setBulkSubject("");
-
-      console.log("10");
-
       setBulkMessage("");
-
-      console.log("11");
-
       setSelectedIds([]);
 
-      console.log("12");
-
   } catch (error) {
-
       console.error(error);
-
       toast.error("Failed sending emails.");
-
       setBulkSending(false);
-
   }
 };
 

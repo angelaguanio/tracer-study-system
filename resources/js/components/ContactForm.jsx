@@ -90,15 +90,11 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
     }
   ]
 
-  console.log("Selected Department:", data.department);
-  console.log("Auth User Dept:", auth?.user?.department);
-  console.log("All Coordinators:", coordinators);
-  console.log("Filtered Coordinators:", filteredCoordinators);
   return (
-    <Card className='w-full max-w-3xl px-6 shadow-2xl border border-gray-100 rounded-3xl bg-white'>
+    <Card className='w-full max-w-3xl px-4 sm:px-6 shadow-2xl border rounded-3xl'>
         <CardHeader className='pb-6'>
             <div className='flex flex-col items-center justify-center py-6 space-y-3'>
-                <h1 className='text-3xl font-bold text-gray-800'>Send us a Message</h1>
+                <h1 className='text-2xl sm:text-3xl font-bold text-center text-gray-800'>Send us a Message</h1>
                 <p className='text-gray-600 text-center max-w-xl'>Fill out the form below and we will get back to you as soon as possible.</p>
             </div>
         </CardHeader>
@@ -107,8 +103,8 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
         <CardContent>
 
           <div className='flex flex-col w-full py-3 px-4 bg-blue-200/20 rounded-2xl border border-blue-300'>
-            <div className='flex w-full justify-between'>
-              <div className='flex'>
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
                 <Select onValueChange={(value) => setData('title', value)} value={data.title}>
                     <SelectTrigger className=" text-black border-gray-400 text-sm bg-white">
                       <SelectValue placeholder="Select Title" />
@@ -125,20 +121,25 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                   </Select>
 
                 {/* user details */}
-                <div className='flex flex-col gap-2 py-1.5 px-3'>
-                  <h1 className='text-md'>{userName}</h1>
-                  <p className='text-sm text-gray-500'>{userEmail}</p>
+                <div className="flex flex-col min-w-0">
+                  <h1 className="text-base font-medium break-words">
+                    {userName}
+                  </h1>
+
+                  <p className="text-sm text-gray-500 break-all">
+                    {userEmail}
+                  </p>
                 </div>
             </div>
-            <h1 className='px-2 py-1 text-sm text-blue-500'>Logged in</h1>
+            <h1 className='text-sm text-blue-500 self-start sm:self-end'>Logged in</h1>
           </div>
           </div>
 
           
-            <div className='flex flex-row gap-3 w-full justify-around py-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 py-4'>
 
               {/* department */}
-              <div className='flex flex-col gap-3 w-1/2 px-3 py-2'>
+              <div className='flex flex-col gap-3 w-full'>
               <Label>Department</Label>
                 <Select onValueChange={(value) => setData('department', value)} value={data.department}>
                   <SelectTrigger className="w-full text-black border-gray-400 text-sm bg-white">
@@ -159,7 +160,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
 
               
               {/* coord */}
-              <div className='flex flex-col gap-3 w-1/2 px-3 py-2'>
+              <div className='flex flex-col gap-3 w-full'>
               <Label>
                 Alumni Coordinator
                 {data.department && data.department !== 'admin' && (
@@ -211,7 +212,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                 </div>
               </div>
 
-              <div className='flex flex-col gap-5 px-3 py-5'>
+              <div className='space-y-5 pt-4'>
                 <div className='space-y-2 '>
                   <Label>Subject</Label>
                   <Input 
@@ -222,10 +223,10 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                     onChange={handleChange}
                   />
                 </div>
-                <div className='space-y-2 h-20'>
+                <div className='space-y-2'>
                   <Label>Your Message</Label>
                   <Textarea 
-                    className='px-3 border border-gray-400 h-20' 
+                    className='px-3 border border-gray-400 min-h-32 resize-none' 
                     placeholder="Tell us how we can help you..."
                     name="message"
                     value={data.message}
@@ -237,7 +238,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
           
         </CardContent>
 
-        <CardFooter className='py-4'>
+        <CardFooter className="pt-8 pb-4">
           <Button 
             type='submit' 
             size='login2' 

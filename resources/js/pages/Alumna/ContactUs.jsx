@@ -58,7 +58,7 @@ export default function ContactUs({auth, userEmail, userName, coordinators, depa
       </section>
 
       {/* form */}
-      <div className='flex justify-center items-center py-16 px-4'>
+      <div className='w-full flex justify-center py-10 sm:py-16 px-4'>
         <ContactForm 
           userEmail={userEmail} 
           userName={userName} 

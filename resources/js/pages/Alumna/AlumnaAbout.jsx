@@ -262,16 +262,18 @@ export default function AlumnaAbout() {
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Core Values</h2>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
             {coreValues.map(({ emoji, en, fil, desc, border }) => (
               <div
-                key={en}
-                className={`flex flex-col items-center text-white text-center gap-2 border-t-4 ${border} bg-white/10 rounded-xl p-5 hover:bg-white/20 transition-colors`}
+              key={en}
+              className={`flex flex-col items-center text-center text-white gap-2 border-t-4 ${border}
+                bg-white/10 rounded-xl p-5 hover:bg-white/20 transition-colors
+                w-full`}
               >
                 <span className="text-4xl p-6 rounded-full bg-blue-100/20">{emoji}</span>
-                <h4 className='font-extrabold lg:text-lg sm:text-sm tracking-wide leading-8'>{en}</h4>
-                <p className="lg:text-[15px]">({fil})</p>
-                <p className="lg:text-[14px] text-xs leading-relaxed">{desc}</p>
+                <h4 className='font-extrabold text-lg sm:text-base lg:text-lg tracking-wide leading-tight'>{en}</h4>
+                <p className="text-sm lg:text-[15px]">({fil})</p>
+                <p className="text-xs sm:text-sm lg:text-[14px] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
