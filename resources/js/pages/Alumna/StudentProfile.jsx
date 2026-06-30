@@ -78,7 +78,11 @@ export default function StudentProfile() {
                 <div className="flex items-center gap-5 mb-8">
                     <div className="h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white shrink-0 flex items-center justify-center">
                         {profile?.profile_picture ? (
-                            <img src={`/storage/${profile.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
+                            <img
+                            src={profile.profile_picture}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
                         ) : (
                             <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 text-white flex items-center justify-center text-2xl font-bold">
                                {(profile?.first_name?.[0] || '') + (profile?.last_name?.[0] || '') || 'R'}

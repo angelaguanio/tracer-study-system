@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Announcement;
-use Illuminate\Support\Facades\Storage;
 use App\Services\NotificationService;
 
 
@@ -110,8 +109,14 @@ class AnnouncementController extends Controller
         $imageUrls = [];
 
         foreach ($files as $file) {
-            $path = $file->store('announcements', 'public');
-            $imageUrls[] = Storage::url($path);
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('uploads/announcements'),
+                $filename
+            );
+            
+            $imageUrls[] = '/uploads/announcements/' . $filename;
         }
 
         $announcement = Announcement::create([
@@ -253,14 +258,12 @@ class AnnouncementController extends Controller
         $totalSize = 0;
 
         foreach ($existing as $imageUrl) {
-            $path = str_replace(
-                '/storage/',
-                '',
-                parse_url($imageUrl, PHP_URL_PATH)
+            $filePath = public_path(
+                ltrim(parse_url($imageUrl, PHP_URL_PATH), '/')
             );
-
-            if (Storage::disk('public')->exists($path)) {
-                $totalSize += Storage::disk('public')->size($path);
+            
+            if (file_exists($filePath)) {
+                $totalSize += filesize($filePath);
             }
         }
 
@@ -275,11 +278,30 @@ class AnnouncementController extends Controller
         }
 
         // SAVE IMAGES
+        $oldImages = is_string($announcement->image)
+        ? json_decode($announcement->image, true)
+        : ($announcement->image ?? []);
+
+    foreach ($oldImages as $oldImage) {
+        if (!in_array($oldImage, $existing)) {
+            $file = public_path(ltrim($oldImage, '/'));
+
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
         $imagePaths = $existing;
 
         foreach ($newFiles as $file) {
-            $path = $file->store('announcements', 'public');
-            $imagePaths[] = Storage::url($path);
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('uploads/announcements'),
+                $filename
+            );
+
+            $imagePaths[] = '/uploads/announcements/' . $filename;
         }
 
         // Capture original status BEFORE update() syncs it
@@ -310,8 +332,20 @@ class AnnouncementController extends Controller
     /* ================= DELETE ================= */
     public function destroy(Announcement $announcement)
     {
+        $images = is_string($announcement->image)
+            ? json_decode($announcement->image, true)
+            : ($announcement->image ?? []);
+    
+        foreach ($images as $image) {
+            $file = public_path(ltrim($image, '/'));
+    
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    
         $announcement->delete();
-
+    
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Deleted');

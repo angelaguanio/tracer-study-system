@@ -27,7 +27,7 @@ export default function AdminViewProfileOfRespondents(props) {
   const emp = user.employment;
   const fullName = (user.first_name || user.last_name) ? `${user.first_name ?? ''} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name ?? ''}`.trim() : (user.name ?? 'Unknown Alumna');
   const validEmploymentHistory = Array.isArray(user.employment_history) ? user.employment_history.sort((a, b) => Number(b?.employment_start_year || 0) - Number(a?.employment_start_year || 0)) : [];
-  const imageSrc = user.profile_picture ? (user.profile_picture.startsWith('http') || user.profile_picture.startsWith('/storage/') ? user.profile_picture : `/storage/${user.profile_picture}`) : null;
+  const imageSrc = user.profile_picture || null;
 
   const handleViewDetails = (history) => {
     setSelectedHistory(history);

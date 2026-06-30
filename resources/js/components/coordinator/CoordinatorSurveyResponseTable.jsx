@@ -77,7 +77,7 @@ export default function CoordinatorSurveyResponseTable({
                     <div className="relative w-full flex items-center px-4">
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
                         {res.avatar || res.profile_picture ? (
-                          <img src={res.avatar || `/storage/${res.profile_picture}`} alt={res.name} className="w-full h-full object-cover" />
+                          <img src={res.avatar || res.profile_picture} alt={res.name} className="w-full h-full object-cover" />
                         ) : (
                           getInitials(res.name)
                         )}
@@ -117,7 +117,7 @@ export default function CoordinatorSurveyResponseTable({
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
                     {res.avatar || res.profile_picture ? (
-                       <img src={res.avatar || `/storage/${res.profile_picture}`} alt={res.name} className="w-full h-full object-cover" />
+                       <img src={res.avatar || res.profile_picture} alt={res.name} className="w-full h-full object-cover" />
                     ) : (
                       getInitials(res.name)
                     )}

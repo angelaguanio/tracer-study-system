@@ -31,7 +31,6 @@ export default function CoordinatorAnnouncementCreate() {
         post("/coordinator/announcement", {
             forceFormData: true,
             onSuccess: () => {
-                toast.success("Announcement created! It will be reviewed by an admin.");
                 setData({ title: "", details: "", images: [] });
                 setPreviews([]);
                 setFileError("");

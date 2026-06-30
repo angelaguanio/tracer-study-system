@@ -42,7 +42,7 @@ export default function StudentProfileEdit() {
     const fileInputRef = useRef(null);
 
     const [avatarPreview, setAvatarPreview] = useState(
-        profile?.profile_picture ? `/storage/${profile.profile_picture}` : null
+        profile?.profile_picture || null
     );
 
     const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();

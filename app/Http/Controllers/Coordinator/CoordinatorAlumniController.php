@@ -40,9 +40,7 @@ class CoordinatorAlumniController extends Controller
         'year' => ($user->start_year && $user->end_year)
                        ? "{$user->start_year}-{$user->end_year}"
                        : ($user->end_year ?? 'N/A'),
-        'avatar' => $user->profile_picture
-            ? Storage::url($user->profile_picture)
-            : null,
+        'avatar' => $user->profile_picture,
         'survey_status' => 'Not Completed', 
     ]);
 

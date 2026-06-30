@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmploymentHistory;
 
@@ -78,11 +77,25 @@ class StudentProfileController extends Controller
                 
                 // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
+
+                    // Delete old profile picture
                     if ($user->profile_picture) {
-                        Storage::disk('public')->delete($user->profile_picture);
+                        $oldFile = public_path(ltrim($user->profile_picture, '/'));
+                
+                        if (file_exists($oldFile)) {
+                            unlink($oldFile);
+                        }
                     }
-                    $path = $request->file('profile_picture')->store('avatars', 'public');
-                    $user->profile_picture = $path;
+                
+                    $filename = uniqid() . '_' . time() . '.' .
+                        $request->file('profile_picture')->getClientOriginalExtension();
+                
+                    $request->file('profile_picture')->move(
+                        public_path('uploads/profile-pictures'),
+                        $filename
+                    );
+                
+                    $user->profile_picture = '/uploads/profile-pictures/' . $filename;
                 }
 
                 // Update User Basic Info
@@ -93,6 +106,7 @@ class StudentProfileController extends Controller
                     'contact_number' => $request->contact_number,
                     'address'        => $request->address,
                     'email'          => $request->email,
+                    'profile_picture' => $user->profile_picture,
                 ]);
 
                 $oldEmp = $user->employment;

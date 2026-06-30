@@ -29,7 +29,7 @@ export default function CoordinatorViewProfile({ user }) {
     setDetailsModalOpen(true);
   };
 
-  const imageSrc = user.profile_picture ? (user.profile_picture.startsWith('http') || user.profile_picture.startsWith('/storage/') ? user.profile_picture : `/storage/${user.profile_picture}`) : null;
+ const imageSrc = user.profile_picture || null;
 
   return (
     <>
