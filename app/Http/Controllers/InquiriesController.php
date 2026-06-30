@@ -53,7 +53,26 @@ class InquiriesController extends Controller
             'status'         => 'pending',
         ]);
 
-        NotificationService::inquiryReceived($inquiry->id, auth()->user()->name, auth()->id());
+        if ($inquiry->recipient_type === 'admin') {
+
+            NotificationService::inquiryReceived(
+                $inquiry->id,
+                auth()->user()->name,
+                auth()->id(),
+                'admin'
+            );
+        
+        } else {
+        
+            NotificationService::inquiryReceived(
+                $inquiry->id,
+                auth()->user()->name,
+                auth()->id(),
+                'coordinator_specific',
+                $inquiry->recipient_id
+            );
+        
+        }
 
         return redirect()->back()->with('success', 'Message sent successfully!');
     }

@@ -58,15 +58,21 @@ class NotificationService
     }
 
     // ── Alumni sent an inquiry ────────────────────────────────
-    public static function inquiryReceived(int $inquiryId, string $alumniName, int $alumniId): Notification
-    {
+    public static function inquiryReceived(
+        int $inquiryId,
+        string $alumniName,
+        int $alumniId,
+        string $targetRole,
+        ?int $targetUserId = null
+    ): Notification {
         return self::send(
             type: 'inquiry_received',
-            targetRole: 'all',          // admin + coordinator
+            targetRole: $targetRole,
             title: 'New Inquiry',
             message: "{$alumniName} sent an inquiry.",
             data: ['inquiry_id' => $inquiryId],
             triggeredBy: $alumniId,
+            targetUserId: $targetUserId,
         );
     }
 

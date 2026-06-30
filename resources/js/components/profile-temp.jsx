@@ -24,7 +24,7 @@ export default function ProfileTemp({
       >
         {user.profile_picture ? (
           <img 
-            src={`/storage/${user.profile_picture}`} 
+            src={user.profile_picture} 
             alt={displayName} 
             className="w-full h-full object-cover"
           />
