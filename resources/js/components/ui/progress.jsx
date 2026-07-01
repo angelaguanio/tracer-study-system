@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 function Progress({
   className,
   value,
+  indicatorClassName,
   ...props
 }) {
   return (

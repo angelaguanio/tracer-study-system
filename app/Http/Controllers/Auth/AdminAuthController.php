@@ -10,7 +10,9 @@ use Inertia\Inertia;
 class AdminAuthController extends Controller
 {
     public function showLogin() {
-        return Inertia::render('Auth/AdminLogin');
+        return Inertia::render('Auth/AdminLogin', [
+            'sessionExpired' => $request->boolean('expired'),
+        ]);
     }
 
     public function loginAdmin(Request $request) {

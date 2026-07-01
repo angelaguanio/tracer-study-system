@@ -10,6 +10,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,13 +26,18 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance']);
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+
+            $route = route('alumna.login');
+        
             if (str_starts_with($request->path(), 'admin')) {
-                return route('admin.login');
+                $route = route('admin.login');
             }
+        
             if (str_starts_with($request->path(), 'coordinator')) {
-                return route('coordinator.login');
+                $route = route('coordinator.login');
             }
-            return route('alumna.login');
+        
+            return $route . '?expired=1';
         });
         $middleware->web(append: [
             HandleInertiaRequests::class,

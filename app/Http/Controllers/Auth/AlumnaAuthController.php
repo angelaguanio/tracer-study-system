@@ -153,7 +153,9 @@ class AlumnaAuthController extends Controller
      */
     public function showLogin(): Response 
     {
-        return Inertia::render('Auth/AlumnaLogin');
+        return Inertia::render('Auth/AlumnaLogin', [
+        'sessionExpired' => $request->boolean('expired'),
+    ]);
     }
 
     /**

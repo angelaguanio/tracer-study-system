@@ -11,7 +11,7 @@ import { Link } from "@inertiajs/react";
 import axios from 'axios';
 
 
-export default function AdminLogin() {
+export default function AdminLogin({sessionExpired,}) {
   //form
   const { data, setData, post, processing, errors } = useForm({
     email: "",
@@ -40,6 +40,19 @@ export default function AdminLogin() {
 
 return (
   <AuthLayout>
+    {/* expired session */}
+    {sessionExpired && (
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <h3 className="font-semibold text-blue-800">
+                Session Expired
+            </h3>
+
+            <p className="mt-1 text-sm text-blue-700">
+                Your session expired due to inactivity.
+                Please log in again.
+            </p>
+        </div>
+    )}
     <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
       <CardHeader className="relative flex flex-col items-center justify-center">
          {/* Back Button */}

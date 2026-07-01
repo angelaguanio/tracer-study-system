@@ -55,8 +55,10 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
                     <img src={logo} className='aspect-square h-40'/>
                     <img src={cectlogo} className='aspect-square h-18'/>
                 </div>
-                <h1 className='font-bruno text-xl'>ALUMNI CONNECT</h1>
-                <p className='font-inria text-xl'>COLLEGE OF ENGINEERING AND COMPUTER TECHNOLOGY</p>
+                <div className='flex flex-col justify-center items-center gap-2'>
+                    <h1 className='font-bruno text-xl'>ALUMNI CONNECT</h1>
+                    <p className='font-inria text-xl text-center'>COLLEGE OF ENGINEERING AND COMPUTER TECHNOLOGY</p>
+                </div>
             </header>
 
             <main className='w-full sm:w-3/4 md:w-2/3 lg:w-1/2 px-4'>

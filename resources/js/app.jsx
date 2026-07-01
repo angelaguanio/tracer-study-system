@@ -5,6 +5,8 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
+
+
 // Force light mode globally — remove dark class and always apply light
 (function enforceLightMode() {
     const root = window.document.documentElement;
@@ -44,6 +46,18 @@ router.on('finish', () => {
     updateCsrfToken();
 });
 
+router.on('invalid', (event) => {
+    const response = event.detail.response;
+
+    if (response?.status === 419) {
+        event.preventDefault();
+
+        alert("Your session has expired. Please log in again.");
+
+        window.location.reload();
+    }
+});
+
 // Session keep-alive: ping server every 2 minutes to keep session active
 // This prevents CSRF token expiration during long form fills
 let keepAliveInterval = null;
@@ -77,32 +91,32 @@ router.on('navigate', () => {
     startKeepAlive();
 });
 
-// Handle 419 CSRF token mismatch errors globally for Inertia requests
-// Show user-friendly message instead of reloading
-router.on('error', (event) => {
-    // Check multiple possible locations for the status code
-    const status = event.detail?.response?.status || 
-                   event.detail?.status || 
-                   event?.response?.status;
+// // Handle 419 CSRF token mismatch errors globally for Inertia requests
+// // Show user-friendly message instead of reloading
+// router.on('error', (event) => {
+//     // Check multiple possible locations for the status code
+//     const status = event.detail?.response?.status || 
+//                    event.detail?.status || 
+//                    event?.response?.status;
     
-    if (status === 419) {
-        console.log('CSRF token expired');
-        // Show alert to user instead of auto-reloading (which loses form data)
-        alert('Your session has expired. Please refresh the page and try again.');
-    }
-});
+//     if (status === 419) {
+//         console.log('CSRF token expired');
+//         // Show alert to user instead of auto-reloading (which loses form data)
+//         alert('Your session has expired. Please refresh the page and try again.');
+//     }
+// });
 
 // Also handle 419 errors from axios requests
-axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 419) {
-            console.log('CSRF token expired (axios)');
-            alert('Your session has expired. Please refresh the page and try again.');
-        }
-        return Promise.reject(error);
-    }
-);
+// axios.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//         if (error.response?.status === 419) {
+//             console.log('CSRF token expired (axios)');
+//             alert('Your session has expired. Please refresh the page and try again.');
+//         }
+//         return Promise.reject(error);
+//     }
+// );
 
 const appName = import.meta.env.VITE_APP_NAME || 'Alumni Connect';
 
@@ -111,8 +125,16 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./pages/${name}.jsx`, import.meta.glob('./pages/**/*.jsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);
-
-        root.render(<App {...props} />);
+    
+        root.render(
+            <SessionExpiredProvider>
+                <SessionExpiredListener />
+    
+                <App {...props} />
+    
+                <SessionExpiredDialog />
+            </SessionExpiredProvider>
+        );
     },
    
 });
