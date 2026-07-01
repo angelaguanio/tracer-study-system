@@ -203,17 +203,31 @@ export default function AlumnaQuestionnaire({
             <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
                 <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
-                  <div className='flex items-center gap-3 bg-blue-100 p-4 sm:p-5 rounded-2xl'>
-                    <div className='p-3 rounded-full bg-white/30 w-fit'>
-                      <NotebookPen size={20} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white text-shadow line-clamp-2">{survey.title}</h3>
-                    {survey.completed && (
-                      <Badge className="bg-green-100 text-green-700 border-green-300 py-1 rounded-full flex-shrink-0">
-                        Completed
-                      </Badge>
-                    )}
+                <div className="bg-white/20 rounded-2xl p-4">
+                  <div className="flex items-start gap-3">
+
+                      <div className="p-3 rounded-full bg-white/30 shrink-0">
+                          <NotebookPen size={20} />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+
+                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words">
+                                  {survey.title}
+                              </h3>
+
+                              {survey.completed && (
+                                  <Badge className="bg-green-100 text-green-700 border-green-300 whitespace-nowrap self-start">
+                                      Completed
+                                  </Badge>
+                              )}
+
+                          </div>
+                      </div>
+
                   </div>
+              </div>
                   {survey.description && (
                     <p className="text-sm font-normal text-white line-clamp-2">{survey.description}</p>
                   )}

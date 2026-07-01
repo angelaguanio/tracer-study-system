@@ -284,7 +284,7 @@ class AdminDashboardController extends Controller
         // 4.1: Query 5 most recent inquiries ordered by created_at DESC with eager loading of alumni relationship
         $recentInquiries = Inquiries::with('alumni')
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->map(function ($inquiry) {
                 return [
@@ -302,7 +302,7 @@ class AdminDashboardController extends Controller
         $recentAnnouncements = Announcement::with('author')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->map(function ($announcement) {
                 return [
@@ -321,12 +321,12 @@ class AdminDashboardController extends Controller
         $recentResponses = Response::with(['user', 'survey'])
             ->whereNotNull('submitted_at')
             ->orderBy('submitted_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->unique(function ($response) {
                 return $response->user_id . '-' . $response->survey_id;
             })
-            ->take(5)
+            ->take(3)
             ->map(function ($response) {
                 return [
                     'survey_id' => $response->survey_id,

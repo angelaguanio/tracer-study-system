@@ -98,7 +98,7 @@ export default function CoordinatorDashboard({
               title="Survey Response Overview" 
               description="Track response rates for active surveys"
               data={survey_overview}
-              type="bar"
+              type="progress"
               height={350}
               emptyMessage="No active surveys to display"
             />
@@ -121,7 +121,7 @@ export default function CoordinatorDashboard({
             <div className="h-8 w-1 bg-primary rounded-full" />
             Recent Activity
           </h2>
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <RecentActivityList 
               title="Recent Inquiries" 
               items={recent_inquiries}
@@ -133,6 +133,7 @@ export default function CoordinatorDashboard({
               items={recent_announcements}
               linkPattern="/coordinator/announcement/{id}"
               emptyMessage="No recent announcements"
+              showAuthor={false}
             />
             <RecentActivityList 
               title="Recent Survey Responses" 

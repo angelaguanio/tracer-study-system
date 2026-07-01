@@ -107,7 +107,7 @@ export default function AdminDashboard({
             <div className="h-8 w-1 bg-primary rounded-full" />
             Recent Activity
           </h2>
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <RecentActivityList 
               title="Recent Inquiries" 
               items={recent_inquiries}

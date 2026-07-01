@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
@@ -42,7 +43,38 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
               <p>{emptyMessage}</p>
             </div>
           </div>
+        ) : type === "progress" ? (
+
+          <div className="space-y-5">
+            {data.map((survey) => (
+              <div key={survey.survey_title}>
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-medium text-sm truncate">
+                      {survey.survey_title}
+                    </h4>
+        
+                    <p className="text-xs text-gray-500">
+                      {survey.completed_responses} Responses
+                    </p>
+                  </div>
+        
+                  <span className="text-sm font-semibold text-blue-600">
+                    {survey.completion_rate}%
+                  </span>
+                </div>
+        
+                <Progress
+                  value={survey.completion_rate}
+                  className="h-2"
+                  indicatorClassName="bg-blue-600"
+                />
+              </div>
+            ))}
+          </div>
+        
         ) : (
+          
           <ResponsiveContainer width="100%" height={height}>
             {type === 'bar' && (
               <BarChart data={data}>

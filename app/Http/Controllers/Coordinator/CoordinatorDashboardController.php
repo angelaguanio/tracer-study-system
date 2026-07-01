@@ -292,7 +292,7 @@ class CoordinatorDashboardController extends Controller
         $recentInquiries = Inquiries::with('alumni')
             ->where('recipient_id', $userId)
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->map(function ($inquiry) {
                 return [
@@ -309,12 +309,13 @@ class CoordinatorDashboardController extends Controller
         // 8.3: Query 5 most recent announcements created by current user ordered by created_at DESC
         $recentAnnouncements = Announcement::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get(['id', 'title', 'status', 'created_at'])
             ->map(function ($announcement) {
                 return [
                     'id' => $announcement->id,
                     'title' => $announcement->title,
+                    'author_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
                     'status' => $announcement->status,
                     'created_at' => $announcement->created_at->format('M d, Y'),
                 ];
@@ -325,12 +326,12 @@ class CoordinatorDashboardController extends Controller
         $recentResponses = Response::with(['user', 'survey'])
             ->whereNotNull('submitted_at')
             ->orderBy('submitted_at', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->unique(function ($response) {
                 return $response->user_id . '-' . $response->survey_id;
             })
-            ->take(5)
+            ->take(3)
             ->map(function ($response) {
                 return [
                     'survey_id' => $response->survey_id,
