@@ -126,15 +126,7 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
     
-        root.render(
-            <SessionExpiredProvider>
-                <SessionExpiredListener />
-    
-                <App {...props} />
-    
-                <SessionExpiredDialog />
-            </SessionExpiredProvider>
-        );
+        root.render(<App {...props} />);
     },
    
 });

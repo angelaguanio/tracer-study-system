@@ -7,7 +7,7 @@ export default function ConversationList({ currentUser, onSelect, onlineStatus =
 
     useEffect(() => {
         axios
-            .get('/chat/conversations')
+            .get('/messenger/conversations')
             .then((res) => {
                 // Admin gets an array; coordinator gets a single object
                 const data = Array.isArray(res.data) ? res.data : [res.data];

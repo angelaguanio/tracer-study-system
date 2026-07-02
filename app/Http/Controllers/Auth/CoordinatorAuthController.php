@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class CoordinatorAuthController extends Controller
 {
-    public function showLogin() {
+    public function showLogin(Request $request) {
        return Inertia::render('Auth/CoordinatorLogin', [
         'sessionExpired' => $request->boolean('expired'),
     ]);

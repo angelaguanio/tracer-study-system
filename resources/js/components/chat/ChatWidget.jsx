@@ -43,7 +43,7 @@ export default function ChatWidget({ user }) {
 
     // Fetch initial unread count on mount
     useEffect(() => {
-        axios.get('/chat/conversations').then((res) => {
+        axios.get('/messenger/conversations').then((res) => {
             if (isAdmin) {
                 const convs = Array.isArray(res.data) ? res.data : [];
                 const total = convs.reduce((sum, c) => sum + (c.unread_count ?? 0), 0);

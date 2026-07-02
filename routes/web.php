@@ -415,11 +415,11 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
 
 //============== CHAT ROUTES =========================
-Route::middleware(['auth', 'chat.participant'])->group(function () {
-    Route::get('/chat/conversations', [ChatController::class, 'index']);
-    Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages']);
-    Route::post('/chat/messages', [ChatController::class, 'store']);
-    Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
+Route::middleware(['auth'])->prefix('messenger')->group(function () {
+    Route::get('/conversations', [ChatController::class, 'index']);
+    Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/messages', [ChatController::class, 'store']);
+    Route::post('/conversations/{conversation}/read', [ChatController::class, 'markRead']);
 });
 
 // routes/web.php (Inertia uses web routes)

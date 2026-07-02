@@ -48,22 +48,22 @@ export default function ChartWidget({ title, description, data, type = 'bar', he
           <div className="space-y-5">
             {data.map((survey) => (
               <div key={survey.survey_title}>
-                <div className="flex items-start justify-between gap-4 mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4 mb-2">
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-sm truncate">
+                    <h4 className="font-medium text-sm break-words">
                       {survey.survey_title}
                     </h4>
-        
+
                     <p className="text-xs text-gray-500">
                       {survey.completed_responses} Responses
                     </p>
                   </div>
-        
-                  <span className="text-sm font-semibold text-blue-600">
+
+                  <span className="self-start sm:self-auto text-sm font-semibold text-blue-600 whitespace-nowrap">
                     {survey.completion_rate}%
                   </span>
                 </div>
-        
+
                 <Progress
                   value={survey.completion_rate}
                   className="h-2"

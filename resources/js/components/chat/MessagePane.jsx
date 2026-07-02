@@ -13,6 +13,7 @@ function formatTime(dateStr) {
 }
 
 export default function MessagePane({ conversationId, currentUser, echoChannel }) {
+    console.log("MessagePane conversationId =", conversationId);
     const [messages, setMessages] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -43,8 +44,9 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
         setLoadingMore(true);
         const nextPage = page + 1;
         try {
+            console.log("Conversation ID:", conversationId);
             const res = await axios.get(
-                `/chat/conversations/${conversationId}/messages`,
+                `/messenger/conversations/${conversationId}/messages`,
                 { params: { page: nextPage } }
             );
             const older = res.data.data ?? [];
@@ -74,8 +76,9 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
         let cancelled = false;
         const init = async () => {
             try {
+                console.log("Conversation ID:", conversationId);
                 const res = await axios.get(
-                    `/chat/conversations/${conversationId}/messages`,
+                    `/messenger/conversations/${conversationId}/messages`,
                     { params: { page: 1 } }
                 );
                 if (!cancelled) {
@@ -90,7 +93,7 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
             }
             // Mark as read
             try {
-                await axios.post(`/chat/conversations/${conversationId}/read`);
+                await axios.post(`/messenger/conversations/${conversationId}/read`);
             } catch {
                 // silently ignore
             }
@@ -114,7 +117,7 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
             });
             
             // Mark as read immediately since the chat is open and user is viewing
-            axios.post(`/chat/conversations/${conversationId}/read`).catch(() => {});
+            axios.post(`/messenger/conversations/${conversationId}/read`).catch(() => {});
             
             if (isNearBottomRef.current) {
                 setTimeout(scrollToBottom, 50);
@@ -154,7 +157,7 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
         setTimeout(scrollToBottom, 50);
 
         try {
-            const res = await axios.post('/chat/messages', {
+            const res = await axios.post('/messenger/messages', {
                 conversation_id: conversationId,
                 body,
             });
