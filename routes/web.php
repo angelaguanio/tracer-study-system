@@ -414,18 +414,41 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 });
 
 
-//============== CHAT ROUTES =========================
+// //============== CHAT ROUTES =========================
+// Route::middleware(['auth', 'chat.participant'])->group(function () {
+//     Route::get('/chat/conversations', [ChatController::class, 'index']);
+//     Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+//     Route::post('/chat/messages', [ChatController::class, 'store']);
+//     Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
+// });
+
+// // routes/web.php (Inertia uses web routes)
+// Route::middleware(['auth'])->prefix('notifications')->group(function () {
+//     Route::get('/', [NotificationController::class, 'index']);         // paginated list
+//     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+//     Route::post('/{id}/read', [NotificationController::class, 'markRead']);
+//     Route::post('/read-all', [NotificationController::class, 'markAllRead']);
+// });
+
 Route::middleware(['auth'])->prefix('messenger')->group(function () {
+
     Route::get('/conversations', [ChatController::class, 'index']);
     Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
     Route::post('/messages', [ChatController::class, 'store']);
     Route::post('/conversations/{conversation}/read', [ChatController::class, 'markRead']);
+
 });
 
-// routes/web.php (Inertia uses web routes)
-Route::middleware(['auth'])->prefix('notifications')->group(function () {
-    Route::get('/', [NotificationController::class, 'index']);         // paginated list
-    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
-    Route::post('/{id}/read', [NotificationController::class, 'markRead']);
-    Route::post('/read-all', [NotificationController::class, 'markAllRead']);
+// ===================== TEMP TEST ROUTES =====================
+
+Route::get('/abc123', function () {
+    return 'OK';
+});
+
+Route::get('/chat-test', function () {
+    return 'OK';
+});
+
+Route::get('/chat/conversations-test', function () {
+    return 'OK';
 });
