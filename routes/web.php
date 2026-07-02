@@ -439,16 +439,4 @@ Route::middleware(['auth'])->prefix('messenger')->group(function () {
 
 });
 
-// ===================== TEMP TEST ROUTES =====================
 
-Route::get('/abc123', function () {
-    return 'OK';
-});
-
-Route::get('/chat-test', function () {
-    return 'OK';
-});
-
-Route::get('/chat/conversations-test', function () {
-    return 'OK';
-});
