@@ -132,13 +132,26 @@ class AlumnaAuthController extends Controller
 
         // Handle employment_end_year and is_current properly
         if ($validation['currently_employed'] === 'Yes') {
-            $isPresent = isset($validation['is_present']) && ($validation['is_present'] === true || $validation['is_present'] === 'true' || $validation['is_current'] === 1);
-            $employmentData['is_present'] = $isPresent;
-            $employmentData['employment_end_year'] = $isPresent ? null : (isset($validation['employment_end_year']) ? (int) $validation['employment_end_year'] : null);
-        } else {
-            $employmentData['is_present'] = false;
-            $employmentData['employment_end_year'] = null;
-        }
+
+        $isPresent = filter_var(
+            $validation['is_present'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+
+        $employmentData['is_present'] = $isPresent;
+
+        $employmentData['employment_end_year'] = $isPresent
+            ? null
+            : (isset($validation['employment_end_year'])
+                ? (int) $validation['employment_end_year']
+                : null);
+
+    } else {
+
+        $employmentData['is_present'] = false;
+        $employmentData['employment_end_year'] = null;
+
+    }
 
         Employment::create($employmentData);
 
@@ -151,7 +164,7 @@ class AlumnaAuthController extends Controller
     /**
      * Show the login page.
      */
-    public function showLogin(): Response 
+    public function showLogin(Request $request): Response 
     {
         return Inertia::render('Auth/AlumnaLogin', [
         'sessionExpired' => $request->boolean('expired'),
