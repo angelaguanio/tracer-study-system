@@ -117,11 +117,11 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                         <div className='flex gap-3 items-start min-w-0'>
                             <Avatar className='h-10 w-10 shrink-0 overflow-hidden border border-gray-200'>
                                 {data.alumni.profile_picture ? (
-                                    <img 
-                                        src={`/storage/${data.alumni.profile_picture}`} 
-                                        alt={`${data.alumni.first_name}'s profile`}
-                                        className="w-full h-full object-cover"
-                                    />
+                                   <img
+                                   src={data.alumni.profile_picture}
+                                   alt={`${data.alumni.first_name}'s profile`}
+                                   className="w-full h-full object-cover"
+                               />
                                 ) : (
                                     <div className="h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">
                                         {data.alumni.first_name[0]}{data.alumni.last_name[0]}

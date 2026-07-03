@@ -172,28 +172,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
             ->name('alumni.show');
 
-            //Send email (individual — handled via modal, route kept for controller compatibility)
+         //Send email (individual — handled via modal, route kept for controller compatibility)
         Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
             ->name('alumni.email.send');
 
-            // Bulk email (selected IDs or all alumni)
+        // Bulk email (selected IDs or all alumni)
         Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
             ->name('alumni.email.bulk');
 
         //AdminSurveyResponse
         Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
-            ->name('admin.survey-response.index');
+            ->name('survey-response.index');
 
         Route::get('/survey-response/{id}', [AdminOfSurveyResponseController::class, 'show'])
-            ->name('admin.survey-response.show');
+            ->name('survey-response.show');
 
         // Route para sa COMPLETED response
         Route::get('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'viewUserResponse'])
-            ->name('admin.survey-response.view');
+            ->name('survey-response.view');
 
         // Route para sa NOT COMPLETED response
         Route::get('/survey-response/{surveyId}/{userId}/not-complete', [AdminOfSurveyResponseController::class, 'notComplete'])
-            ->name('admin.survey-response.not-complete');
+            ->name('survey-response.not-complete');
 
         Route::delete('/survey-response/{surveyId}/{userId}', [AdminOfSurveyResponseController::class, 'destroy'])
             ->name('survey-response.destroy');

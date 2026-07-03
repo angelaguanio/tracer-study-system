@@ -34,10 +34,10 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
             <Avatar className={`${dim} shrink-0 overflow-hidden border border-gray-200`}>
                 {user?.profile_picture ? (
                     <img
-                        src={`/storage/${user.profile_picture}`}
-                        alt='avatar'
-                        className='w-full h-full object-cover'
-                    />
+                    src={user.profile_picture}
+                    alt={`${user.first_name}'s profile`}
+                    className="w-full h-full object-cover"
+                />
                 ) : (
                     <div className='h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white font-bold'>
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
