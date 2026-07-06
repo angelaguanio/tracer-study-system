@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Notifications\ResetPasswordNotification;
+use Illuminate\Support\Facades\Hash;
 
 class ForgotPasswordController extends Controller
 {
@@ -26,14 +27,14 @@ class ForgotPasswordController extends Controller
 
         // Generate password reset token
         $token = Str::random(64);
-        
-        // Store token in password_reset_tokens table
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-        DB::table('password_reset_tokens')->insert([
-            'email' => $request->email,
-            'token' => $token,
-            'created_at' => Carbon::now()
-        ]);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
 
         // Send reset email
         try {

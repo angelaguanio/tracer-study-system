@@ -27,10 +27,14 @@ class NotificationCreated implements ShouldBroadcastNow
                 new Channel('role.admin'),
                 new Channel('role.coordinator')
             ),
-            'admin' => array_push($channels, new Channel('role.admin')),
+            'admin'       => array_push($channels, new Channel('role.admin')),
             'coordinator' => array_push($channels, new Channel('role.coordinator')),
-            // Specific coordinator gets their own private-ish channel
             'coordinator_specific' => array_push(
+                $channels,
+                new Channel("user.{$this->notification->target_user_id}")
+            ),
+            'alumna' => array_push($channels, new Channel('role.alumna')),
+            'alumna_specific' => array_push(
                 $channels,
                 new Channel("user.{$this->notification->target_user_id}")
             ),

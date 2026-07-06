@@ -422,13 +422,13 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 //     Route::post('/chat/conversations/{conversation}/read', [ChatController::class, 'markRead']);
 // });
 
-// // routes/web.php (Inertia uses web routes)
-// Route::middleware(['auth'])->prefix('notifications')->group(function () {
-//     Route::get('/', [NotificationController::class, 'index']);         // paginated list
-//     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
-//     Route::post('/{id}/read', [NotificationController::class, 'markRead']);
-//     Route::post('/read-all', [NotificationController::class, 'markAllRead']);
-// });
+// routes/web.php (Inertia uses web routes)
+Route::middleware(['auth'])->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);         // paginated list
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/{id}/read', [NotificationController::class, 'markRead']);
+    Route::post('/read-all', [NotificationController::class, 'markAllRead']);
+});
 
 Route::middleware(['auth'])->prefix('messenger')->group(function () {
 

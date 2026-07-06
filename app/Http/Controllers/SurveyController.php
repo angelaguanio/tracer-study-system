@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateSurveyRequest;
 use App\Models\Survey;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Inertia\Inertia;
+use App\Services\NotificationService;
 
 class SurveyController extends Controller
 {
@@ -71,6 +72,8 @@ class SurveyController extends Controller
     {
         $this->authorize('update', $survey);
 
+        $wasActive = $survey->status === 'active';
+
         if ($request->input('status') === 'active') {
             $this->authorize('activate', $survey);
             // Multiple surveys can now be active at the same time
@@ -85,6 +88,14 @@ class SurveyController extends Controller
         }
 
         $survey->update($request->validated());
+
+        if (!$wasActive && $survey->status === 'active') {
+            NotificationService::surveyPublished(
+                $survey->id,
+                $survey->title,
+                $survey->is_tracer_study ? 'tracer' : 'normal'
+            );
+        }
 
         return back();
     }

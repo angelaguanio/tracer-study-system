@@ -143,4 +143,45 @@ class NotificationService
             triggeredBy: $coordinatorId,
         );
     }
+
+    public static function announcementPublished(int $announcementId, string $announcementTitle): Notification
+    {
+        return self::send(
+            type: 'announcement_published',
+            targetRole: 'alumna',
+            title: 'New Announcement',
+            message: "A new announcement has been posted: \"{$announcementTitle}\".",
+            data: ['announcement_id' => $announcementId],
+            triggeredBy: auth()->check() ? auth()->id() : null,
+        );
+    }
+
+    // ── Coordinator/admin replied to an alumni's inquiry ───────
+    public static function inquiryReplied(int $inquiryId, int $alumniId, string $subject = ''): Notification
+    {
+        return self::send(
+            type: 'inquiry_replied',
+            targetRole: 'alumna_specific',
+            title: 'Reply to Your Inquiry',
+            message: $subject
+                ? "You have a new reply to your inquiry: \"{$subject}\"."
+                : "You have a new reply to your inquiry.",
+            data: ['inquiry_id' => $inquiryId],
+            triggeredBy: auth()->check() ? auth()->id() : null,
+            targetUserId: $alumniId,
+        );
+    }
+
+    // ── New survey (tracer or normal) available ────────────────
+    public static function surveyPublished(int $surveyId, string $surveyTitle, string $surveyType = 'normal'): Notification
+    {
+        return self::send(
+            type: 'survey_published',
+            targetRole: 'alumna',
+            title: $surveyType === 'tracer' ? 'New Tracer Study Survey' : 'New Survey Available',
+            message: "A new survey is available: \"{$surveyTitle}\".",
+            data: ['survey_id' => $surveyId, 'survey_type' => $surveyType],
+            triggeredBy: auth()->check() ? auth()->id() : null,
+        );
+    }
 }

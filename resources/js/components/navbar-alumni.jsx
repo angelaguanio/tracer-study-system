@@ -13,6 +13,7 @@ import {
   User, Mail, LogOut, Menu, X,
   ClipboardList, Megaphone, Home, Info, Phone, Users, Building2, ChevronRight
 } from 'lucide-react'
+import NotificationBell from './NotificationBell'
 
 const navBtns = [
   { id: "questionnaire", name: "Questionnaire", href: "/alumna/questionnaire", icon: ClipboardList },
@@ -84,6 +85,11 @@ export default function NavbarAlumni({ children }) {
           </ul>
         </nav>
 
+        {/* Notification bell — visible on all screen sizes */}
+        <div className="hidden md:flex items-center gap-2">
+          <NotificationBell/>
+        
+
         {/* Profile dropdown - desktop only */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -106,14 +112,19 @@ export default function NavbarAlumni({ children }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Hamburger - mobile only, right side */}
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="md:hidden p-2 mr-2 text-navbar-text cursor-pointer"
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
+        </div>
+
+        {/* Mobile: bell + hamburger — right side */}
+        <div className="md:hidden flex items-center gap-1">
+          <NotificationBell/>
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 text-navbar-text cursor-pointer"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
       </header>
 
       {/* Mobile full-screen overlay menu */}
@@ -125,13 +136,16 @@ export default function NavbarAlumni({ children }) {
               <img src={logo} className="h-10" alt="Alumni Connect logo" />
               <p className="font-bruno text-sm">Alumni Connect</p>
             </div>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className=" bg-gray-300/40 rounded-full p-2 transition mr-2 cursor-pointer"
-              aria-label="Close menu"
-            >
-              <X className="h-5 w-5 " />
-            </button>
+            <div className="flex items-center gap-1 mr-2">
+              <NotificationBell/>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className=" bg-gray-300/40 rounded-full p-2 transition cursor-pointer"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5 " />
+              </button>
+            </div>
           </div>
 
           {/* Profile card */}

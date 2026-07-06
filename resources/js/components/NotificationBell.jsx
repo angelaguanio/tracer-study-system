@@ -6,6 +6,9 @@ import { Bell } from 'lucide-react';
 
 export default function NotificationBell() {
     const { auth } = usePage().props;
+
+    // Don't render if not authenticated
+    if (!auth?.user) return null;
    
     const [open, setOpen] = useState(false);
 
@@ -93,12 +96,27 @@ export default function NotificationBell() {
                     ? route('admin.announcement.show', data.announcement_id)
                     : route('admin.announcement.index');
 
+            case 'announcement_published':
+                return data.announcement_id
+                    ? route('alumna.announcement.view', data.announcement_id)
+                    : route('alumna.announcements');
+            
+            case 'inquiry_replied':
+                return route('alumna.inquiries.index'); // or a specific-thread route if you have one
+            
+            case 'survey_published':
+                return data.survey_id
+                    ? route('alumna.surveys.show', data.survey_id)
+                    : route('alumna.surveys.index');
+
             default:
                 // Default to dashboard
                 if (userRole === 'admin') {
                     return route('admin.dashboard');
                 } else if (userRole === 'coordinator') {
                     return route('coordinator.dashboard');
+                } else if (userRole === 'alumna') {
+                    return route('alumna.home');
                 }
         }
 
@@ -128,6 +146,9 @@ export default function NotificationBell() {
         inquiry_received: '💬',
         announcement_revision: '✏️',
         announcement_resubmitted: '🔄', 
+        announcement_published: '📢',
+        inquiry_replied: '💬',
+        survey_published: '📋',
     };
 
     return (

@@ -221,8 +221,14 @@ class InquiriesController extends Controller
             $inquiry->update(['status' => 'replied']);
         }
 
-        if (Auth::user()->user_role !== 'alumni') {
+        if (Auth::user()->user_role !== 'alumna') {
         Mail::to($inquiry->alumni->email)->send(new InquiryReplied($reply));
+
+        NotificationService::inquiryReplied(
+            $inquiry->id,
+            $inquiry->user_id,   // the alumnus who owns this inquiry
+            $inquiry->subject
+        );
     }
 
         return redirect()->back();

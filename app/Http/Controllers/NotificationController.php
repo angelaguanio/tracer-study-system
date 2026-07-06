@@ -14,20 +14,33 @@ class NotificationController extends Controller
         $role = $user->user_role; // 'admin' or 'coordinator'
 
         return Notification::query()
-            ->where(function ($q) use ($role, $user) {
-                // Role-wide notifications (all, admin, coordinator)
+        ->where(function ($q) use ($role, $user) {
+            if (in_array($role, ['admin', 'coordinator'])) {
+                // 'all' historically means "admin + coordinator" only
                 $q->whereIn('target_role', [$role, 'all'])
-                ->whereNull('target_user_id');
+                  ->whereNull('target_user_id');
+            } else {
+                // alumna: only their own role-wide broadcasts
+                $q->where('target_role', $role)
+                  ->whereNull('target_user_id');
+            }
 
-                // Coordinator-specific notifications targeted at this user
-                if ($role === 'coordinator') {
-                    $q->orWhere(function ($q2) use ($user) {
-                        $q2->where('target_role', 'coordinator_specific')
-                        ->where('target_user_id', $user->id);
-                    });
-                }
-            })
-            ->orderByDesc('created_at');
+            if ($role === 'coordinator') {
+                $q->orWhere(function ($q2) use ($user) {
+                    $q2->where('target_role', 'coordinator_specific')
+                       ->where('target_user_id', $user->id);
+                });
+            }
+
+            if ($role === 'alumna') {
+                $q->orWhere(function ($q2) use ($user) {
+                    $q2->where('target_role', 'alumna_specific')
+                       ->where('target_user_id', $user->id);
+                });
+            }
+        })
+        ->orderByDesc('created_at');
+            
     }
 
 
@@ -80,14 +93,19 @@ class NotificationController extends Controller
         $userId = auth()->id();
 
         $unread = Notification::where(function ($q) use ($role, $user) {
-                // Role-wide notifications (all, admin, coordinator)
                 $q->whereIn('target_role', [$role, 'all'])
                 ->whereNull('target_user_id');
 
-                // Coordinator-specific notifications targeted at this user
                 if ($role === 'coordinator') {
                     $q->orWhere(function ($q2) use ($user) {
                         $q2->where('target_role', 'coordinator_specific')
+                        ->where('target_user_id', $user->id);
+                    });
+                }
+
+                if ($role === 'alumna') {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('target_role', 'alumna_specific')
                         ->where('target_user_id', $user->id);
                     });
                 }

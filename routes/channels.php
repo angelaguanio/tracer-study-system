@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 Broadcast::channel('role.{role}', function ($user, $role) {
-    return in_array($user->user_role, ['admin', 'coordinator']);
+    return in_array($role, ['admin', 'coordinator', 'alumna'])
+        && $user->user_role === $role;
 });
 
 Broadcast::channel('user.{userId}', function ($user, $userId) {

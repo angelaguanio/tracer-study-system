@@ -138,6 +138,14 @@ class AnnouncementController extends Controller
                 auth()->user()->name
             );
         }
+
+        if ($announcement->status === 'approved') {
+            NotificationService::announcementPublished(
+                $announcement->id,
+                $announcement->title
+            );
+        }
+        
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Announcement created successfully!');
@@ -154,6 +162,11 @@ class AnnouncementController extends Controller
             $announcement->id,
             $announcement->title,
             $announcement->user_id   // coordinator's user_id
+        );
+
+        NotificationService::announcementPublished(
+            $announcement->id,
+            $announcement->title
         );
 
         return redirect()
