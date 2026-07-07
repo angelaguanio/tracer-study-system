@@ -8,9 +8,9 @@ import { ChevronDown, Send, ArrowLeft } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
+import axios from "axios";
 
-
-export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'admin', onBack }) {
+export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
     const bottomRef = useRef(null);
@@ -39,21 +39,29 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
         });
     };
 
-    const sendReply = () => {
+    const sendReply = async () => {
         if (!replyText.trim()) return;
         const routeName = userRole === 'coordinator'
             ? 'coordinator.inquiries.reply'
             : 'admin.inquiries.reply';
 
         setSending(true);
-        router.post(route(routeName, inquiry.id), { message: replyText }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setReplyText('');
-                toast.success('Reply sent!');
-            },
-            onFinish: () => setSending(false),
-        });
+        try {
+            const { data } = await axios.post(route(routeName, inquiry.id), {
+                
+                message: replyText,
+            });
+
+        
+            onReplyAdded(data.reply);
+        
+            setReplyText('');
+            toast.success('Reply sent!');
+        } catch (error) {
+            toast.error('Failed to send reply.');
+        } finally {
+            setSending(false);
+        }
     };
 
     const AvatarBlock = ({ user, size = 'sm' }) => {
@@ -84,10 +92,10 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
     }
 
     // Sort replies oldest-first for display
-    const replies = [...(inquiry.replies ?? [])].reverse();
+    const replies = inquiry.replies ?? [];
 
     return (
-        <main className='flex flex-col flex-1 min-w-0 min-h-full p-4 md:p-6 gap-4 overflow-y-auto'>
+        <main className='flex flex-col flex-1 md:h-full min-w-0 p-4 md:p-6 gap-4 overflow-hidden'>
             {/* Header */}
             <header className="border-b pb-3">
                 <div className="flex items-center justify-between gap-3">

@@ -60,10 +60,10 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
 
     return (
         <div
-            className="flex flex-col md:flex-row h-[calc(100vh-80px)] w-full overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm"
+            className="flex flex-col md:flex-row h-full w-full overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm"
         >
             {/* Mobile */}
-            <div className="md:hidden h-full w-full">
+            <div className="md:hidden flex h-full w-full">
                 {!selectedInquiry ? (
                     <InquiryList
                         inquiries={inquiries}

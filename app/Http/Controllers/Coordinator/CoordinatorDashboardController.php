@@ -184,6 +184,7 @@ class CoordinatorDashboardController extends Controller
                 'completed_responses' => $completedResponses,
                 'in_progress_responses' => $inProgressResponses,
                 'completion_rate' => (float) round($completionRate, 2),
+                'created_at' => $survey->created_at,
             ];
         }
 

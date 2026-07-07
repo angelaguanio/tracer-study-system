@@ -231,7 +231,13 @@ class InquiriesController extends Controller
         );
     }
 
-        return redirect()->back();
+    $reply = $reply->fresh()->load([
+        'sender:id,first_name,last_name,profile_picture',
+    ]);
+    
+    return response()->json([
+        'reply' => $reply,
+    ]);
     }
 }
 

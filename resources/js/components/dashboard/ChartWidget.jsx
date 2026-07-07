@@ -21,9 +21,10 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
  */
 export default function ChartWidget({ title, description, data, type = 'bar', height = 300, emptyMessage = 'No data available' }) {
   const hasData = data && (Array.isArray(data) ? data.length > 0 : Object.keys(data).length > 0);
-  const recentSurveys = [...data]
-  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-  .slice(0, 5);
+  const recentSurveys =
+    type === "progress" && Array.isArray(data)
+      ? data.slice(0, 5)
+      : [];
 
   return (
     <Card className="hover:shadow-md transition-shadow duration-300">
