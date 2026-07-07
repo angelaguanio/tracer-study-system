@@ -87,7 +87,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, userRole = 'ad
     const replies = [...(inquiry.replies ?? [])].reverse();
 
     return (
-        <main className='flex flex-col flex-1 min-w-0 min-h-full p-4 md:p-6 gap-4 overflow-hidden'>
+        <main className='flex flex-col flex-1 min-w-0 min-h-full p-4 md:p-6 gap-4 overflow-y-auto'>
             {/* Header */}
             <header className="border-b pb-3">
                 <div className="flex items-center justify-between gap-3">
