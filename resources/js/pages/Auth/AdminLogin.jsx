@@ -4,10 +4,8 @@ import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
-import { useForm } from '@inertiajs/react'
-import { UserRound, Lock } from 'lucide-react';
-import { ArrowLeft } from "lucide-react";
-import { Link } from "@inertiajs/react";
+import { useForm, Link } from '@inertiajs/react'
+import { UserRound, Lock, ArrowLeft, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 
@@ -35,8 +33,11 @@ export default function AdminLogin({sessionExpired,}) {
   //submit
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (processing) return;
+
     post("/admin/login");
-  }
+}
 
 return (
   <AuthLayout>
@@ -94,11 +95,20 @@ return (
           />
 
           <Button
-            variant="blue"
-            size="login2"
-            className="w-full h-11 text-sm sm:h-12 sm:text-base md:h-14"
+              type="submit"
+              variant="blue"
+              size="login2"
+              disabled={processing}
+              className="w-full h-11 text-sm sm:h-12 sm:text-base md:h-14"
           >
-            Login
+              {processing ? (
+                  <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Logging in...
+                  </>
+              ) : (
+                  "Login"
+              )}
           </Button>
         </form>
       </CardContent>

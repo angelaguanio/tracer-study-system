@@ -5,7 +5,7 @@ import {
   User, MapPin, Phone, Mail, Lock,
   GraduationCap, BookOpen, CalendarDays,
   Briefcase, Building2, BadgeDollarSign, Users,
-  Eye, EyeOff,
+  Eye, EyeOff, Loader2
 } from 'lucide-react';
 
 import AuthLayout from '@/layouts/auth-layout';
@@ -224,6 +224,7 @@ export default function AlumnaSignup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (processing) return;
     const [start_year, end_year] = data.school_year.split('-');
   
     transform((formData) => ({
@@ -410,12 +411,14 @@ export default function AlumnaSignup() {
         <div className="flex w-full gap-3">
           {/* Back */}
           <Button
-            type="button" variant="outline" onClick={prevStep}
-            disabled={step === 1}
+            type="button"
+            variant="outline"
+            onClick={prevStep}
+            disabled={step === 1 || processing}
             className="flex-1 rounded-xl h-12 font-semibold"
-          >
+        >
             Back
-          </Button>
+        </Button>
 
           {/* Next — steps 1-4 */}
           {step < 5 && (
@@ -430,11 +433,23 @@ export default function AlumnaSignup() {
           {/* Submit — steps 5 & 6 */}
           {(step === 5 || step === 6) && (
             <Button
-              form="signupForm" type="submit" disabled={processing}
-              className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
-            >
-              Sign Up <ArrowRight className="h-4 w-4" />
-            </Button>
+            form="signupForm"
+            type="submit"
+            disabled={processing}
+            className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
+        >
+            {processing ? (
+                <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating Account...
+                </>
+            ) : (
+                <>
+                    Sign Up
+                    <ArrowRight className="h-4 w-4" />
+                </>
+            )}
+        </Button>
           )}
         </div>
 

@@ -4,10 +4,9 @@ import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup';
 import TextInput from '../../components/text-input';
 import { useForm } from '@inertiajs/react';
-import { UserRound, Lock } from 'lucide-react';
 import TextLink from '../../components/text-link';
 import AuthLayout from "@/layouts/auth-layout";
-import { ArrowLeft } from "lucide-react";
+import { UserRound, Lock, Loader2, ArrowLeft } from 'lucide-react';
 import { Link } from "@inertiajs/react";
 import axios from 'axios';
 
@@ -39,6 +38,7 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
   //submit
   function handleSubmit(e) {
     e.preventDefault();
+    if (processing) return;
 
     //alerts user to input all fields
     if (!data.email || !data.password) {
@@ -117,12 +117,21 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
         <div className='text-end text-[12px] -mt-2 underline'>
           <Link href={route('alumna.forgot-password')} >Forgot Password?</Link>
         </div>
-        <Button 
+        <Button
+          type="submit"
           variant="blue" 
           size="login2" 
+          disabled={processing}
           className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base"
         >
-          Login
+          {processing ? (
+              <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Logging in...
+              </>
+          ) : (
+              "Login"
+          )}
         </Button>
 
       </form>
