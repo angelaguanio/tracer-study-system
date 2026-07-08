@@ -19,15 +19,16 @@ export default function AnalyticsIndex({ surveys }) {
 
     return (
         <div className="w-full max-w-full px-4 py-6 flex flex-col gap-4 self-start">
-            <h1 className="text-xl font-bold text-gray-800">List of Analytics</h1>
+            <h1 className="text-xl font-bold text-gray-800">Reports & Analytics</h1>
 
+            <p className="text-md text-gray-500 pt-2 pl-2">Employment Analytics</p>
             {/* EMPLOYMENT LOCATION ANALYTICS CARD */}
             <Card className="bg-white border shadow-sm">
                 <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
                     <div className="flex flex-col gap-1 pl-2">
                         <h2 className="font-semibold text-gray-800 flex items-center gap-2">
                             <MapPin size={20} className="text-blue-600" />
-                            Employment Location Analytics
+                            Employment Location Report
                         </h2>
                     </div>
                     <Button
@@ -41,8 +42,8 @@ export default function AnalyticsIndex({ surveys }) {
                 </CardContent>
             </Card>
 
-            <div className="border-t border-gray-100 pt-2">
-                <p className="text-xl font-bold text-gray-800 mt-4 mb-2">Survey Response Analytics</p>
+            <div className="pt-2">
+                <p className="text-md text-gray-500  mt-2 mb-2 pl-2">Survey Response Analytics</p>
             </div>
 
             {currentList.length === 0 ? (

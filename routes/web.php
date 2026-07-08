@@ -229,6 +229,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         }
 
         $surveys = \App\Models\Survey::withCount('sections')
+            ->whereNull('archived_at')
             ->orderBy('created_at', 'desc')
             ->paginate(5)
             ->through(fn ($s) => [

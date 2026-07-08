@@ -18,11 +18,11 @@ export default function CoordinatorAnalyticsIndex({ surveys = [] }) {
     const currentList = surveys.data ?? [];
 
     return (
-        <div className="w-full max-w-4xl px-4 py-6 flex flex-col gap-4 self-start">
-            <h1 className="text-xl font-bold text-gray-800">Analytics</h1>
+        <div className="w-full max-w-full px-4 py-6 flex flex-col gap-4 self-start">
+            <h1 className="text-xl font-bold text-gray-800">Reports & Analytics</h1>
 
-            <div className="border-t border-gray-100 pt-2">
-                <p className="text-sm text-gray-500 mb-3">Survey Response Analytics</p>
+            <div className=" py-2">
+                <p className="text-sm text-gray-500">Survey Analytics</p>
             </div>
 
             {currentList.length === 0 ? (
