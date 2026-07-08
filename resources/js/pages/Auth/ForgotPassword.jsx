@@ -9,14 +9,57 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { ArrowLeft, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logotracer.png'
+import { useState, useEffect } from "react";
 
-export default function ForgotPassword({status}) {
-  const { data, setData, post, processing, errors } = useForm({ email: '' });
+export default function ForgotPassword() {
+    console.log(status);
+    const [cooldown, setCooldown] = useState(0);
+    const [emailSent, setEmailSent] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    post('/alumna/forgot-password');
-  };
+    const { data, setData, post, processing, errors } = useForm({
+        email: '',
+    });
+
+    useEffect(() => {
+        const expiry = localStorage.getItem("forgot-password-expiry");
+
+        if (!expiry) return;
+
+        const remaining = Math.ceil((Number(expiry) - Date.now()) / 1000);
+
+        if (remaining > 0) {
+            setCooldown(remaining);
+        } else {
+            localStorage.removeItem("forgot-password-expiry");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (cooldown <= 0) {
+            localStorage.removeItem("forgot-password-expiry");
+            return;
+        }
+    
+        const timer = setTimeout(() => {
+            setCooldown(cooldown - 1);
+        }, 1000);
+    
+        return () => clearTimeout(timer);
+    }, [cooldown]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    
+        post('/alumna/forgot-password', {
+            onSuccess: () => {
+                setEmailSent(true);
+    
+                const expiry = Date.now() + 60000;
+                localStorage.setItem("forgot-password-expiry", expiry);
+                setCooldown(60);
+            }
+        });
+    };
 
   return (
     <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg gap-4 ">
@@ -40,12 +83,37 @@ export default function ForgotPassword({status}) {
             </div>
 
             {/* Success Message */}
-            {status && (
-                <div className="bg-green-100 border border-green-300 text-green-700 p-3 rounded-lg text-sm mt-4 w-full flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 flex-shrink-0" />
-                    <span>{status}</span>
+            {emailSent && (
+                <div className="bg-green-50 border border-green-300 rounded-lg p-4 flex gap-3">
+
+                    <CheckCircle className="text-green-600 mt-1 h-5 w-5"/>
+
+                    <div>
+                        <h3 className="font-semibold text-green-800">
+                            Password Reset Email Sent
+                        </h3>
+
+                        <p className="text-green-700 text-sm mt-1">
+                            If an account exists with this email address,
+                            a password reset link has been sent.
+                            Please check your inbox and spam folder.
+                        </p>
+
+                        {cooldown > 0 && (
+                            <p className="text-xs text-green-600 mt-2">
+                                You can request another email in <strong>{cooldown}s</strong>.
+                            </p>
+                        )}
+
+                        {cooldown === 0 && (
+                            <p className="text-xs text-green-600 mt-2">
+                                Didn't receive it? You may send another reset email now.
+                            </p>
+                        )}
+                    </div>
+
                 </div>
-            )}
+                )}
         </CardHeader>
 
         <CardContent>
@@ -70,14 +138,18 @@ export default function ForgotPassword({status}) {
                     </div>
                 )}
 
-                <Button 
-                    type="submit" 
-                    disabled={processing}
-                    variant="blue" 
-                    size="login2" 
-                    className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base mt-2"
+                <Button
+                    type="submit"
+                    disabled={processing || cooldown > 0}
+                    variant="blue"
+                    size="login2"
+                    className="w-full"
                 >
-                    {processing ? 'Sending...' : 'Send Reset Link'}
+                    {processing
+                        ? "Sending..."
+                        : cooldown > 0
+                            ? `Send Again (${cooldown}s)`
+                            : "Send Reset Link"}
                 </Button>
             </form>
         </CardContent>
