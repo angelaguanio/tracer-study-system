@@ -4,7 +4,8 @@ import { usePage, router } from '@inertiajs/react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Bell } from 'lucide-react';
 
-export default function NotificationBell() {
+
+export default function NotificationBell({ className = "", notifications: sharedNotifications, }) {
     const { auth } = usePage().props;
 
     // Don't render if not authenticated
@@ -12,8 +13,11 @@ export default function NotificationBell() {
    
     const [open, setOpen] = useState(false);
 
-    const [hasUnread, setHasUnread] = useState(false);
-
+    const localNotifications = useNotifications(
+        auth.user.user_role,
+        auth.user.id
+    );
+    
     const {
         notifications,
         unreadCount,
@@ -22,12 +26,12 @@ export default function NotificationBell() {
         markRead,
         markAllRead,
         clearBadge,
-    } = useNotifications(auth.user.user_role, auth.user.id);
+    } = sharedNotifications ?? localNotifications;
 
     const handleOpen = () => {
         setOpen(true);
         fetchNotifications();
-        if (unreadCount > 0) setHasUnread(true);
+        if (unreadCount > 0);
         clearBadge();
     };
 
@@ -157,12 +161,12 @@ export default function NotificationBell() {
                 onClick={() => {
                 if (open) {
                     setOpen(false);
-                    setHasUnread(false); 
+                    
                 } else {
                     handleOpen();
                 }
             }}
-                className="relative p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+            className={`relative p-2 rounded-full cursor-pointer ${className}`}
             >
                 <Bell size={22} />
                 {unreadCount > 0 && (
@@ -179,7 +183,7 @@ export default function NotificationBell() {
                   className="fixed inset-0 bg-black/40 z-40 sm:hidden"
                   onClick={() => {
                       setOpen(false);
-                      setHasUnread(false);
+                      
                   }}
               />
 
@@ -203,7 +207,7 @@ export default function NotificationBell() {
                       <button
                           onClick={() => {
                               markAllRead();
-                              setHasUnread(false);
+                             
                           }}
                           className="text-xs text-blue-600 hover:underline cursor-pointer"
                       >

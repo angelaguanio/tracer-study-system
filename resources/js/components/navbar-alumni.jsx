@@ -14,6 +14,7 @@ import {
   ClipboardList, Megaphone, Home, Info, Phone, Users, Building2, ChevronRight
 } from 'lucide-react'
 import NotificationBell from './NotificationBell'
+import { useNotifications } from '@/hooks/useNotifications';
 
 const navBtns = [
   { id: "questionnaire", name: "Questionnaire", href: "/alumna/questionnaire", icon: ClipboardList },
@@ -42,8 +43,10 @@ export default function NavbarAlumni({ children }) {
   const { auth } = usePage().props
   const { url } = usePage()
   const user = auth?.user
+  const notifications = useNotifications(user.user_role, user.id);
   const currentPath = url.split('?')[0]
   const [mobileOpen, setMobileOpen] = useState(false)
+  
 
   return (
     <>
@@ -87,7 +90,7 @@ export default function NavbarAlumni({ children }) {
 
         {/* Notification bell — visible on all screen sizes */}
         <div className="hidden md:flex items-center gap-2">
-          <NotificationBell/>
+          <NotificationBell className='hover:bg-blue-600 active:border' notifications={notifications}/>
         
 
         {/* Profile dropdown - desktop only */}
@@ -116,7 +119,7 @@ export default function NavbarAlumni({ children }) {
 
         {/* Mobile: bell + hamburger — right side */}
         <div className="md:hidden flex items-center gap-1">
-          <NotificationBell/>
+          <NotificationBell className='hover:bg-blue-800 active:border' notifications={notifications}/>
           <button
             onClick={() => setMobileOpen(true)}
             className="p-2 text-navbar-text cursor-pointer"
