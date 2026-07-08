@@ -58,54 +58,62 @@ export default function CoordinatorAlumniTable({ alumni, onView }) {
     <div className="flex flex-col h-full w-full gap-3">
       
       {/* ================= DESKTOP VIEW (TABLE) ================= */}
-      <div className="hidden md:block rounded-xl shadow bg-white border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-[#70CAFF]">
-            <tr className="h-12 text-gray-800">
-              <th className="text-center font-semibold pl-8">Name</th>
-              <th className="text-center font-semibold">Course</th>
-              <th className="text-center font-semibold">Year</th>
-              <th className="text-center font-semibold">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {alumniData.length > 0 ? (
-              alumniData.map((item) => (
-                <tr key={item.id} className="h-[64px] hover:bg-gray-50 transition-colors">
-                 <td className="px-4 h-[64px]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
-                      {item.avatar ? (
-                        <img
-                          src={item.avatar}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        getInitials(item.name)
-                      )}
-                    </div>
-                    <span className="flex-1 text-center text-sm font-medium text-gray-800">{item.name}</span>
-                  </div>
-                </td>
-                  <td className="text-center">
-                    <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
-                      {item.course ?? "N/A"}
-                    </span>
-                  </td>
-                  <td className="text-center text-gray-600 font-medium">{item.year ?? "—"}</td>
-                  <td className="text-center">
-                    <Button size="sm" variant="outline" className="border-blue-500 text-blue-600 gap-1" onClick={() => onView && onView(item.id)}>
-                      <Eye size={14} /> View
-                    </Button>
-                  </td>
+      <div className="hidden md:flex flex-col flex-1 min-h-0 rounded-xl shadow overflow-hidden bg-white border border-gray-100">
+         {/* Header */}
+          <div className="overflow-x-auto shrink-0">
+            <table className="w-full text-sm">
+              <thead className="bg-[#70CAFF]">
+                <tr className="h-12 text-gray-800">
+                  <th className="text-center font-semibold pl-8">Name</th>
+                  <th className="text-center font-semibold">Course</th>
+                  <th className="text-center font-semibold">Year</th>
+                  <th className="text-center font-semibold">Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr><td colSpan="4" className="text-center py-6 text-gray-500">No alumni found.</td></tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+            </table>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">    
+            <table className="w-full text-sm">
+            <tbody className="divide-y divide-gray-100">
+              {alumniData.length > 0 ? (
+                alumniData.map((item) => (
+                  <tr key={item.id} className="h-[64px] hover:bg-gray-50 transition-colors">
+                  <td className="px-4 h-[64px]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                        {item.avatar ? (
+                          <img
+                            src={item.avatar}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitials(item.name)
+                        )}
+                      </div>
+                      <span className="flex-1 text-center text-sm font-medium text-gray-800">{item.name}</span>
+                    </div>
+                  </td>
+                    <td className="text-center">
+                      <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
+                        {item.course ?? "N/A"}
+                      </span>
+                    </td>
+                    <td className="text-center text-gray-600 font-medium">{item.year ?? "—"}</td>
+                    <td className="text-center">
+                      <Button size="sm" variant="outline" className="border-blue-500 text-blue-600 gap-1" onClick={() => onView && onView(item.id)}>
+                        <Eye size={14} /> View
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan="4" className="text-center py-6 text-gray-500">No alumni found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* ================= MOBILE VIEW (CARD LIST) ================= */}
