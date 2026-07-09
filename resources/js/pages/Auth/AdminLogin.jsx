@@ -94,6 +94,10 @@ return (
             className="pl-10 text-black border-gray-400 w-full text-sm sm:text-base"
           />
 
+          <div className='text-end text-[12px] -mt-2 underline'>
+            <Link href={route('admin.forgot-password')} >Forgot Password?</Link>
+          </div>
+
           <Button
               type="submit"
               variant="blue"

@@ -60,7 +60,10 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //forgot & reset pass routes
         Route::get('/forgot-password', function () {
-            return \Inertia\Inertia::render('Auth/ForgotPassword');
+            return \Inertia\Inertia::render('Auth/ForgotPassword', [
+                'backRoute' => 'alumna.login',
+                'submitUrl' => '/alumna/forgot-password',
+            ]);
         })->name('forgot-password');
         Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
         Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
@@ -117,6 +120,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
+
+        // Forgot & Reset Password
+        Route::get('/forgot-password', function () {
+            return \Inertia\Inertia::render('Auth/ForgotPassword', [
+                'backRoute' => 'admin.login',
+                'submitUrl' => '/admin/forgot-password',
+            ]);
+        })->name('forgot-password');
+
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+            ->name('password.email');
+
+        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+            ->name('password.reset');
+
+        Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+            ->name('password.update');
 
     });
 

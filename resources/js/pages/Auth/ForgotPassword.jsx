@@ -11,7 +11,7 @@ import { ArrowLeft, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logotracer.png'
 import { useState, useEffect } from "react";
 
-export default function ForgotPassword() {
+export default function ForgotPassword({backRoute, submitUrl,}) {
     console.log(status);
     const [cooldown, setCooldown] = useState(0);
     const [emailSent, setEmailSent] = useState(false);
@@ -50,7 +50,7 @@ export default function ForgotPassword() {
     const handleSubmit = (e) => {
         e.preventDefault();
     
-        post('/alumna/forgot-password', {
+        post(submitUrl, {
             onSuccess: () => {
                 setEmailSent(true);
     
@@ -66,7 +66,7 @@ export default function ForgotPassword() {
         <CardHeader className="relative flex flex-col items-center justify-center gap-5">
             {/* Back Button */}
             <Link
-                href={route('alumna.login')}
+                href={route(backRoute)}
                 className="absolute left-1 top-4 flex items-center justify-center h-9 w-9 rounded-full hover:bg-gray-100"
             >
                 <ArrowLeft className="h-5 w-5 text-gray-700" />

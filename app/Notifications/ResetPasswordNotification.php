@@ -36,7 +36,11 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = url(route('alumna.password.reset', [
+        $route = $notifiable->user_role === 'admin'
+            ? 'admin.password.reset'
+            : 'alumna.password.reset';
+
+        $url = url(route($route, [
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
         ], false));

@@ -12,7 +12,7 @@ import { Eye, EyeOff, ArrowLeft, Mail, Lock } from 'lucide-react';
 import logo from '../../assets/logotracer.png'
 
 
-export default function ResetPassword({ token, email }) {
+export default function ResetPassword({ token, email, backRoute, submitUrl, loginRoute, }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordErrors, setPasswordErrors] = useState([]);
@@ -85,7 +85,7 @@ export default function ResetPassword({ token, email }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/alumna/reset-password');
+        post(submitUrl);
     };
 
     return (
@@ -93,7 +93,7 @@ export default function ResetPassword({ token, email }) {
             <CardHeader className="relative flex flex-col items-center justify-center">
                 {/* Back Button */}
                 <Link
-                    href={route('alumna.login')}
+                    href={route(backRoute)}
                     className="absolute left-4 top-4 flex items-center justify-center h-9 w-9 rounded-full hover:bg-gray-100"
                 >
                     <ArrowLeft className="h-5 w-5 text-gray-700" />

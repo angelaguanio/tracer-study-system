@@ -44,4 +44,19 @@ class ForgotPasswordController extends Controller
             return back()->withErrors(['email' => 'Unable to send reset link. Please try again.']);
         }
     }
+
+    public function create(Request $request)
+    {
+        $isAdmin = $request->routeIs('admin.password.request');
+
+        return Inertia::render('Auth/ForgotPassword', [
+            'backRoute' => $isAdmin
+                ? 'admin.login'
+                : 'alumna.login',
+
+            'submitUrl' => $isAdmin
+                ? '/admin/forgot-password'
+                : '/alumna/forgot-password',
+        ]);
+    }
 }

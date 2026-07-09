@@ -10,12 +10,19 @@ use Inertia\Inertia;
 
 class ResetPasswordController extends Controller
 {
-    public function create(string $token) {
-        return Inertia::render('Auth/ResetPassword', [
-            'token' => $token,
-            'email' => request('email')
-        ]);
-    }
+    public function create(Request $request, string $token)
+{
+    return Inertia::render('Auth/ResetPassword', [
+        'token' => $token,
+        'email' => $request->email,
+        'backRoute' => $request->routeIs('admin.password.reset')
+            ? 'admin.login'
+            : 'alumna.login',
+        'submitUrl' => $request->routeIs('admin.password.reset')
+            ? '/admin/reset-password'
+            : '/alumna/reset-password',
+    ]);
+}
 
     public function store(Request $request) {
         $request->validate([
@@ -42,7 +49,13 @@ class ResetPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('alumna.login')->with('status', 'Password reset successfully!')
-            : back()->withErrors(['email' => __($status)]);
+            ? redirect()->route(
+                $request->routeIs('admin.reset-password.store')
+                    ? 'admin.login'
+                    : 'alumna.login'
+            )->with('status', 'Password reset successfully!')
+            : back()->withErrors([
+                'email' => __($status),
+            ]);
     }
 }
