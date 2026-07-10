@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CoordinatorWelcomeMail;
+use App\Mail\CoordinatorResetPasswordMail;
 
 class AdminAlumniCoordinatorController extends Controller
 {
@@ -64,7 +67,7 @@ class AdminAlumniCoordinatorController extends Controller
         // Permanenteng default password para sa lahat ng bagong gawa
         $defaultPassword = 'CoordinatorCECT@2026'; 
 
-        User::create([
+        $coordinator =  User::create([
             'first_name'       => $validated['first_name'],
             'last_name'        => $validated['last_name'],
             'middle_name'      => $validated['middle_name'] ?? null,
@@ -79,7 +82,15 @@ class AdminAlumniCoordinatorController extends Controller
             'user_role'        => 'coordinator',
         ]);
 
-        return back();
+        Mail::to($coordinator->email)
+        ->send(new CoordinatorWelcomeMail(
+            $coordinator,
+            $defaultPassword
+        ));
+
+        return back()->with(
+            'success',
+            'Coordinator created successfully. A temporary password has been sent to the coordinator\'s email.');
     }
 
     public function update(Request $request, User $alumni_coordinator)
@@ -119,13 +130,27 @@ class AdminAlumniCoordinatorController extends Controller
         // FIXED RESET LOGIC: 
         // Sumasalo kung ang field ay may manual string OR kung ang checkbox mula sa frontend ay nagpasa ng `reset_password: true`
        if ($request->boolean('reset_password')) {
+            $tempPassword = 'CoordinatorCECT@2026';
             $updateData['password'] = Hash::make('CoordinatorCECT@2026');
             $updateData['password_changed'] = false;
         }
 
         $alumni_coordinator->update($updateData);
 
-        return back();
+        $message = 'Coordinator updated successfully.';
+
+        if ($request->boolean('reset_password')) {
+
+            Mail::to($alumni_coordinator->email)
+                ->send(new CoordinatorResetPasswordMail(
+                    $alumni_coordinator,
+                    $tempPassword
+                ));
+
+                $message = 'Coordinator updated successfully. A temporary password has been sent to the coordinator\'s email.';
+        }
+
+        return back()->with('success', $message);
     }
 
     public function destroy(User $alumni_coordinator)

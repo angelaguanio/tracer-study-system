@@ -3,7 +3,6 @@ import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/select";
 
 export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
-  const [showPassword, setShowPassword] = useState(false);
   const [isResetChecked, setIsResetChecked] = useState(false);
 
   // DYNAMIC YEAR OPTIONS (2017 to 2026)
@@ -77,8 +75,8 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
       put(`/admin/alumni-coordinators/${editing.id}`, {
         preserveScroll: true,
         preserveState: false,
-        onSuccess: () => {
-          toast.success("Coordinator updated successfully!");
+        onSuccess: (page) => {
+          toast.success(page.props.flash.success);
           reset();
           closeForm();
         },
@@ -89,8 +87,8 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     } else {
       post("/admin/alumni-coordinators", {
         preserveScroll: true,
-        onSuccess: () => {
-          toast.success("Coordinator created successfully!");
+        onSuccess: (page) => {
+          toast.success(page.props.flash.success);
           reset();
           closeForm();
         },
@@ -299,25 +297,15 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
 
               {isResetChecked && (
                 <div className="space-y-1 animate-in fade-in duration-200">
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value="CoordinatorCECT@2026"
-                      readOnly
-                      className="pr-10 bg-gray-50 text-gray-600 border-blue-200 font-mono font-bold text-xs sm:text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((v) => !v)}
-                      className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <p className="text-[10px] sm:text-[11px] text-blue-600">
-                    This will restore their access using the corporate temporary credentials.
-                  </p>
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+                    <p className="text-sm text-blue-700">
+                        A new temporary password will be generated and sent to the coordinator's registered email address.
+                    </p>
+
+                    <p className="text-xs text-blue-600 mt-1">
+                        The coordinator will be required to change their password after signing in.
+                    </p>
+                </div>
                 </div>
               )}
 
@@ -326,12 +314,8 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
               )}
             </div>
           ) : (
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-[11px] sm:text-xs mt-2">
-              <strong>Notice:</strong> A default password{" "}
-              <span className="font-mono bg-blue-100 px-1 py-0.5 rounded mx-1 font-bold">
-                CoordinatorCECT@2026
-              </span>{" "}
-              will be automatically generated. The coordinator will be forced to change it upon their first login.
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-sm mt-2">
+              <strong>Notice:</strong> A temporary password will automatically be generated and sent to the coordinator's registered email address. The coordinator will be required to change their password upon their first login.
             </div>
           )}
 

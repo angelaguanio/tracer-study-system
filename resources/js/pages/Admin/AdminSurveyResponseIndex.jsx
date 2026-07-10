@@ -96,17 +96,17 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
         </div>
 
         {/* Sort */}
-        <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-0.5 shadow-sm">
+        <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-0.5 shadow-sm text-gray-500">
           <ArrowUpDown className="h-4 w-4 text-gray-500" />
 
           <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="border-0 shadow-none h-8 w-[150px] focus:ring-0">
+              <SelectTrigger className="border-0 shadow-none h-8 w-[150px] focus:ring-0 text-gray-500">
                   <SelectValue />
               </SelectTrigger>
 
               <SelectContent>
-                  <SelectItem value="newest" className="text-gray-500">Newest First</SelectItem>
-                  <SelectItem value="oldest" className="text-gray-500">Oldest First</SelectItem>
+                  <SelectItem value="newest" >Newest</SelectItem>
+                  <SelectItem value="oldest" >Oldest</SelectItem>
               </SelectContent>
           </Select>
       </div>

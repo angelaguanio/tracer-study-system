@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
 import AdminLayout from "@/layouts/admin-layout";
 
 import AdminAlumniCoordinatorTable from "@/components/admin/AdminAlumniCoordinatorTable";
-import AdminAlumniCoordinatorFilter from "@/components//admin/AdminAlumniCoordinatorFilter";
-import AdminAlumniCoordinatorForm from "@/components//admin/AdminAlumniCoordinatorForm";
+import AdminAlumniCoordinatorFilter from "@/components/admin/AdminAlumniCoordinatorFilter";
+import AdminAlumniCoordinatorForm from "@/components/admin/AdminAlumniCoordinatorForm";
 import AdminAlumniCoordinatorDeletePrompt from "@/components/admin/AdminAlumniCoordinatorDeletePrompt";
 
 export default function AdminAlumniCoordinator({ coordinators }) {
