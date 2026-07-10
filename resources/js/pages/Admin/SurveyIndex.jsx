@@ -23,11 +23,26 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
     const [tab, setTab] = useState("active"); // "active" | "archived"
     const [form, setForm] = useState({ title: "", description: "" });
     const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
 
     const handleCreate = () => {
+        if (submitting) return;
+    
+        setSubmitting(true);
+    
         router.post(route("admin.surveys.store"), form, {
-            onError: (e) => setErrors(e),
-            onSuccess: () => { setOpen(false); setForm({ title: "", description: "" }); },
+            onError: (e) => {
+                setErrors(e);
+                setSubmitting(false);
+            },
+            onSuccess: () => {
+                setOpen(false);
+                setForm({ title: "", description: "" });
+                setSubmitting(false);
+            },
+            onFinish: () => {
+                setSubmitting(false);
+            },
         });
     };
 
@@ -246,8 +261,21 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
                         </div>
                     </div>
                     <DialogFooter className=" flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                        <Button variant="outline" className="w-full sm:w-auto" onClick={() => setOpen(false)}>Cancel</Button>
-                        <Button className="bg-[#008236] hover:bg-green-700 text-white  w-full sm:w-auto" onClick={handleCreate}>Create</Button>
+                        <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            onClick={() => setOpen(false)}
+                            disabled={submitting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-[#008236] hover:bg-green-700 text-white w-full sm:w-auto"
+                            onClick={handleCreate}
+                            disabled={submitting}
+                        >
+                            {submitting ? "Creating..." : "Create"}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

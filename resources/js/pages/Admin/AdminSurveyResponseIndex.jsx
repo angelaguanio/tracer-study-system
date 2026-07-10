@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "@/layouts/admin-layout";
-import { Archive } from "lucide-react";
+import { Archive, ArrowUpDown  } from "lucide-react";
 import {
   Pagination, PaginationContent, PaginationEllipsis,
   PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys = [] }) {
+export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys = [], filters = {} }) {
   const [tab, setTab] = useState("active");
+  const [sort, setSort] = useState(filters?.sort || "newest");
 
   const currentData  = tab === "active" ? surveys : archivedSurveys;
   const currentList  = currentData.data ?? [];
@@ -17,11 +25,34 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
 
   const goToPage = (page) => {
     router.get(
-      route("admin.admin.survey-response.index"),
-      { [pageParam]: page },
-      { preserveState: true, preserveScroll: true, replace: true }
+        route("admin.survey-response.index"),
+        {
+            [pageParam]: page,
+            sort,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
     );
-  };
+};
+
+  useEffect(() => {
+    router.get(
+        route("admin.survey-response.index"),
+        {
+            sort,
+            page: 1,
+            archived_page: 1,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    );
+}, [sort]);
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
@@ -32,35 +63,53 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
         <p className="text-sm text-gray-500">Review survey submissions</p>
       </div>
 
-      {/* TABS */}
-      <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-1 w-fit shadow-sm">
-        <button
-          onClick={() => setTab("active")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            tab === "active" ? "bg-[#008236] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
-          }`}
-        >
-          Active
-          {(surveys.total ?? 0) > 0 && (
-            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${tab === "active" ? "bg-white/20" : "bg-gray-100"}`}>
-              {surveys.total}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => setTab("archived")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-            tab === "archived" ? "bg-amber-500 text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
-          }`}
-        >
-          <Archive size={13} />
-          Archived
-          {(archivedSurveys.total ?? 0) > 0 && (
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === "archived" ? "bg-white/20" : "bg-gray-100"}`}>
-              {archivedSurveys.total}
-            </span>
-          )}
-        </button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* TABS */}
+        <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-1 w-fit shadow-sm">
+          <button
+            onClick={() => setTab("active")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              tab === "active" ? "bg-[#008236] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            Active
+            {(surveys.total ?? 0) > 0 && (
+              <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${tab === "active" ? "bg-white/20" : "bg-gray-100"}`}>
+                {surveys.total}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTab("archived")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              tab === "archived" ? "bg-amber-500 text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            <Archive size={13} />
+            Archived
+            {(archivedSurveys.total ?? 0) > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === "archived" ? "bg-white/20" : "bg-gray-100"}`}>
+                {archivedSurveys.total}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Sort */}
+        <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-0.5 shadow-sm">
+          <ArrowUpDown className="h-4 w-4 text-gray-500" />
+
+          <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="border-0 shadow-none h-8 w-[150px] focus:ring-0">
+                  <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent>
+                  <SelectItem value="newest" className="text-gray-500">Newest First</SelectItem>
+                  <SelectItem value="oldest" className="text-gray-500">Oldest First</SelectItem>
+              </SelectContent>
+          </Select>
+      </div>
       </div>
 
       {/* LIST */}

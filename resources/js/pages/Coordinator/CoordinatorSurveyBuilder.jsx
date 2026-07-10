@@ -201,23 +201,19 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
 
                     {/* Right: Status Badge + Toggle */}
                     {!isEditingHeader && (
-                        <div className="flex items-center gap-3 shrink-0 self-center ">
-                            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
-                                <Switch
-                                    id="status-toggle"
-                                    checked={survey.status === "active"}
-                                    onCheckedChange={handleStatusToggle}
-                                    className="data-[state=checked]:bg-green-600"
-                                />
-                                <Label 
-                                    htmlFor="status-toggle" 
-                                    className={`text-sm font-medium cursor-pointer ${
-                                        survey.status === "active" ? "text-green-700" : "text-gray-500"
-                                    }`}
-                                >
-                                    {survey.status === "active" ? "Active" : "Inactive"}
-                                </Label>
-                            </div>
+                        <div className="flex items-center gap-3 shrink-0 self-center "> 
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleStatusToggle}
+                                className={`min-w-[90px] ${
+                                    survey.status === "active"
+                                        ? "bg-green-600 hover:bg-green-700 text-white"
+                                        : "bg-red-600 hover:bg-red-700 text-white"
+                                }`}
+                            >
+                                {survey.status === "active" ? "Active" : "Inactive"}
+                            </Button>
                         </div>
                     )}
                 </div>

@@ -14,6 +14,7 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
     const [likertScale, setLikertScale] = useState([]);
     const [newScaleItem, setNewScaleItem] = useState("");
     const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         setTitle(section?.title ?? "");
@@ -32,22 +33,38 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
     const removeScaleItem = (i) => setLikertScale((prev) => prev.filter((_, idx) => idx !== i));
 
     const handleSubmit = () => {
+        if (submitting) return;
+    
+        setSubmitting(true);
+    
         const payload = {
             title,
             description,
             likert_scale: likertScale.length > 0 ? likertScale : null,
         };
-        const onError = (e) => setError(e.title ?? "");
-
-        // Determine route prefix from current route name
+    
         const currentRoute = route().current();
-        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
-        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
-
+        const isCoordinator = currentRoute?.startsWith("coordinator.");
+        const routePrefix = isCoordinator ? "coordinator" : "admin";
+    
+        const options = {
+            onError: (e) => {
+                setError(e.title ?? "");
+                setSubmitting(false);
+            },
+            onSuccess: () => {
+                setSubmitting(false);
+                onClose();
+            },
+            onFinish: () => {
+                setSubmitting(false);
+            },
+        };
+    
         if (isEdit) {
-            router.put(route(`${routePrefix}.sections.update`, section.id), payload, { onError, onSuccess: onClose });
+            router.put(route(`${routePrefix}.sections.update`, section.id), payload, options);
         } else {
-            router.post(route(`${routePrefix}.sections.store`, surveyId), payload, { onError, onSuccess: onClose });
+            router.post(route(`${routePrefix}.sections.store`, surveyId), payload, options);
         }
     };
 
@@ -66,7 +83,11 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Section title"
                             autoFocus
-                            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !submitting) {
+                                    handleSubmit();
+                                }
+                            }}
                         />
                         {error && <p className="text-xs text-red-500">{error}</p>}
                     </div>
@@ -114,9 +135,22 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
                 </div>
 
                 <DialogFooter className=" flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                    <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">Cancel</Button>
-                    <Button className="bg-[#008236] hover:bg-green-700 text-white  w-full sm:w-auto" onClick={handleSubmit}>
-                        {isEdit ? "Save" : "Add Section"}
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        disabled={submitting}
+                        className="w-full sm:w-auto"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        className="bg-[#008236] hover:bg-green-700 text-white w-full sm:w-auto"
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                    >
+                        {submitting
+                            ? (isEdit ? "Saving..." : "Adding...")
+                            : (isEdit ? "Save" : "Add Section")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

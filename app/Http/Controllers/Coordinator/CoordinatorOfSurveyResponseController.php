@@ -14,12 +14,19 @@ class CoordinatorOfSurveyResponseController extends Controller
     /**
      * PAGE 1: List of Surveys
      */
-    public function index()
+    public function index(Request $request)
     {
+        $sort = $request->get('sort', 'newest');
+    
         $base = Survey::withCount('sections')
-            ->with('creator')
-            ->latest();
-
+            ->with('creator');
+    
+        if ($sort === 'oldest') {
+            $base->oldest();
+        } else {
+            $base->latest();
+        }
+    
         $surveys = (clone $base)
             ->whereNull('archived_at')
             ->paginate(5)
@@ -36,7 +43,7 @@ class CoordinatorOfSurveyResponseController extends Controller
                 ];
             })
             ->withQueryString();
-
+    
         $archivedSurveys = (clone $base)
             ->whereNotNull('archived_at')
             ->paginate(5, ['*'], 'archived_page')
@@ -53,13 +60,15 @@ class CoordinatorOfSurveyResponseController extends Controller
                 ];
             })
             ->withQueryString();
-
+    
         return Inertia::render('Coordinator/CoordinatorSurveyResponseIndex', [
             'surveys'         => $surveys,
             'archivedSurveys' => $archivedSurveys,
+            'filters' => [
+                'sort' => $sort,
+            ],
         ]);
     }
-
     /**
      * PAGE 2: Survey Responses (Main Page)
      */

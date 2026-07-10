@@ -28,6 +28,7 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
     const [form, setForm] = useState({ label: "", type: "text", is_required: false, options: [] });
     const [newOption, setNewOption] = useState("");
     const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         if (question?.id) {
@@ -67,20 +68,35 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
     const removeOption = (i) => setForm((f) => ({ ...f, options: f.options.filter((_, idx) => idx !== i) }));
 
     const handleSubmit = () => {
+        if (submitting) return;
+    
+        setSubmitting(true);
+    
         const payload = { ...form };
         if (!CHOICE_TYPES.includes(form.type)) delete payload.options;
-
-        const onError = (e) => setErrors(e);
-
-        // Determine route prefix from current route name
+    
         const currentRoute = route().current();
-        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
-        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
-
+        const isCoordinator = currentRoute?.startsWith("coordinator.");
+        const routePrefix = isCoordinator ? "coordinator" : "admin";
+    
+        const options = {
+            onError: (e) => {
+                setErrors(e);
+                setSubmitting(false);
+            },
+            onSuccess: () => {
+                setSubmitting(false);
+                onClose();
+            },
+            onFinish: () => {
+                setSubmitting(false);
+            },
+        };
+    
         if (isEdit) {
-            router.put(route(`${routePrefix}.questions.update`, question.id), payload, { onError, onSuccess: onClose });
+            router.put(route(`${routePrefix}.questions.update`, question.id), payload, options);
         } else {
-            router.post(route(`${routePrefix}.questions.store`, sectionId), payload, { onError, onSuccess: onClose });
+            router.post(route(`${routePrefix}.questions.store`, sectionId), payload, options);
         }
     };
 
@@ -199,7 +215,7 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                     <Button
                         variant="outline"
                         onClick={onClose}
-                        className="w-full sm:w-auto"
+                        disabled={submitting}
                     >
                         Cancel
                     </Button>
@@ -207,8 +223,11 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                     <Button
                         className="bg-[#008236] hover:bg-green-700 text-white w-full sm:w-auto"
                         onClick={handleSubmit}
+                        disabled={submitting}
                     >
-                        {isEdit ? "Save Question" : "Add Question"}
+                        {submitting
+                            ? (isEdit ? "Saving..." : "Adding...")
+                            : (isEdit ? "Save Question" : "Add Question")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

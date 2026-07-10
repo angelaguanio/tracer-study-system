@@ -206,22 +206,18 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
                     {/* Right: Status Badge + Toggle */}
                     {!isEditingHeader && (
                         <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end ">
-                            <div className="flex items-center justify-center gap-2 flex-1 sm:flex-none bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200 ">
-                                <Switch
-                                    id="status-toggle"
-                                    checked={survey.status === "active"}
-                                    onCheckedChange={handleStatusToggle}
-                                    className="data-[state=checked]:bg-green-600"
-                                />
-                                <Label 
-                                    htmlFor="status-toggle" 
-                                    className={`text-sm font-medium cursor-pointer ${
-                                        survey.status === "active" ? "text-green-700" : "text-gray-500"
-                                    }`}
-                                >
-                                    {survey.status === "active" ? "Active" : "Inactive"}
-                                </Label>
-                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleStatusToggle}
+                                className={`min-w-[90px] ${
+                                    survey.status === "active"
+                                        ? "bg-green-600 hover:bg-green-700 text-white"
+                                        : "bg-red-600 hover:bg-red-700 text-white"
+                                }`}
+                            >
+                                {survey.status === "active" ? "Active" : "Inactive"}
+                            </Button>
                             
                             <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1.5 border border-blue-200 ">
                                 <Switch

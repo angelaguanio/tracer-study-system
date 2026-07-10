@@ -9,6 +9,7 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
     const isEdit = !!subheading?.id;
     const [form, setForm] = useState({ label: "" });
     const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         if (subheading?.id) {
@@ -22,39 +23,56 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
     }, [subheading, open]);
 
     const handleSubmit = () => {
+        if (submitting) return;
+    
         if (!sectionId && !isEdit) {
-            setErrors({ general: 'Section ID is required' });
+            setErrors({ general: "Section ID is required" });
             return;
         }
-
+    
+        setSubmitting(true);
+    
         const payload = {
-            label: form.label
+            label: form.label,
         };
-
-        const onError = (e) => {
-            console.error('Subheading submission error:', e);
-            setErrors(e);
-        };
-
-        const onSuccess = () => {
-            console.log('Subheading created/updated successfully');
-            onClose();
-        };
-
-        // Determine route prefix from current route name
+    
         const currentRoute = route().current();
-        const isCoordinator = currentRoute && currentRoute.indexOf('coordinator.') === 0;
-        const routePrefix = isCoordinator ? 'coordinator' : 'admin';
-
+        const isCoordinator = currentRoute?.startsWith("coordinator.");
+        const routePrefix = isCoordinator ? "coordinator" : "admin";
+    
+        const options = {
+            onError: (e) => {
+                console.error("Subheading submission error:", e);
+                setErrors(e);
+                setSubmitting(false);
+            },
+            onSuccess: () => {
+                setSubmitting(false);
+                onClose();
+            },
+            onFinish: () => {
+                setSubmitting(false);
+            },
+        };
+    
         try {
             if (isEdit) {
-                router.put(route(`${routePrefix}.subheadings.update`, subheading.id), payload, { onError, onSuccess });
+                router.put(
+                    route(`${routePrefix}.subheadings.update`, subheading.id),
+                    payload,
+                    options
+                );
             } else {
-                router.post(route(`${routePrefix}.subheadings.store`, sectionId), payload, { onError, onSuccess });
+                router.post(
+                    route(`${routePrefix}.subheadings.store`, sectionId),
+                    payload,
+                    options
+                );
             }
         } catch (error) {
-            console.error('Route error:', error);
-            setErrors({ general: 'Failed to submit form' });
+            console.error("Route error:", error);
+            setErrors({ general: "Failed to submit form" });
+            setSubmitting(false);
         }
     };
 
@@ -97,13 +115,22 @@ export default function SubheadingFormModal({ open, onClose, sectionId, subheadi
                 </div>
 
                 <DialogFooter className='flex flex-col-reverse sm:flex-row sm:justify-end gap-2'>
-                    <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">Cancel</Button>
-                    <Button 
-                        className="bg-amber-600 hover:bg-amber-700 text-white  w-full sm:w-auto" 
-                        onClick={handleSubmit}
-                        disabled={!form.label.trim()}
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        disabled={submitting}
+                        className="w-full sm:w-auto"
                     >
-                        {isEdit ? "Save Subheading" : "Add Subheading"}
+                        Cancel
+                    </Button>
+                    <Button
+                        className="bg-amber-600 hover:bg-amber-700 text-white w-full sm:w-auto"
+                        onClick={handleSubmit}
+                        disabled={!form.label.trim() || submitting}
+                    >
+                        {submitting
+                            ? (isEdit ? "Saving..." : "Adding...")
+                            : (isEdit ? "Save Subheading" : "Add Subheading")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

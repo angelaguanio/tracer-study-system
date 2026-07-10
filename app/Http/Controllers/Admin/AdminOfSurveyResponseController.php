@@ -14,51 +14,61 @@ class AdminOfSurveyResponseController extends Controller
     /**
      * PAGE 1: List of Surveys
      */
-    public function index()
-    {
-        $base = Survey::withCount('sections')
-            ->with('creator')
-            ->latest();
+    public function index(Request $request)
+{
+    $sort = $request->get('sort', 'newest');
 
-        $surveys = (clone $base)
-            ->whereNull('archived_at')
-            ->paginate(5)
-            ->through(function ($survey) {
-                return [
-                    'id'             => $survey->id,
-                    'title'          => $survey->title,
-                    'status'         => $survey->status,
-                    'sections_count' => $survey->sections_count,
-                    'created_at'     => $survey->created_at,
-                    'created_by'     => $survey->creator
-                        ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
-                        : 'Unknown',
-                ];
-            })
-            ->withQueryString();
+    $base = Survey::withCount('sections')
+        ->with('creator');
 
-        $archivedSurveys = (clone $base)
-            ->whereNotNull('archived_at')
-            ->paginate(5, ['*'], 'archived_page')
-            ->through(function ($survey) {
-                return [
-                    'id'             => $survey->id,
-                    'title'          => $survey->title,
-                    'status'         => $survey->status,
-                    'sections_count' => $survey->sections_count,
-                    'created_at'     => $survey->created_at,
-                    'created_by'     => $survey->creator
-                        ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
-                        : 'Unknown',
-                ];
-            })
-            ->withQueryString();
-
-        return Inertia::render('Admin/AdminSurveyResponseIndex', [
-            'surveys'         => $surveys,
-            'archivedSurveys' => $archivedSurveys,
-        ]);
+    if ($sort === 'oldest') {
+        $base->oldest();
+    } else {
+        $base->latest();
     }
+
+    $surveys = (clone $base)
+        ->whereNull('archived_at')
+        ->paginate(5)
+        ->through(function ($survey) {
+            return [
+                'id'             => $survey->id,
+                'title'          => $survey->title,
+                'status'         => $survey->status,
+                'sections_count' => $survey->sections_count,
+                'created_at'     => $survey->created_at,
+                'created_by'     => $survey->creator
+                    ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
+                    : 'Unknown',
+            ];
+        })
+        ->withQueryString();
+
+    $archivedSurveys = (clone $base)
+        ->whereNotNull('archived_at')
+        ->paginate(5, ['*'], 'archived_page')
+        ->through(function ($survey) {
+            return [
+                'id'             => $survey->id,
+                'title'          => $survey->title,
+                'status'         => $survey->status,
+                'sections_count' => $survey->sections_count,
+                'created_at'     => $survey->created_at,
+                'created_by'     => $survey->creator
+                    ? trim($survey->creator->first_name . ' ' . $survey->creator->last_name)
+                    : 'Unknown',
+            ];
+        })
+        ->withQueryString();
+
+    return Inertia::render('Admin/AdminSurveyResponseIndex', [
+        'surveys'         => $surveys,
+        'archivedSurveys' => $archivedSurveys,
+        'filters' => [
+            'sort' => $sort,
+        ],
+    ]);
+}
 
     /**
      * PAGE 2: Survey Responses (Main Page)
