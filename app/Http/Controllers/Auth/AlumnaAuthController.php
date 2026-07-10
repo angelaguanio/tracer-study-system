@@ -66,7 +66,7 @@ class AlumnaAuthController extends Controller
             
             // Address and Contact Number to validation
             'address' => 'nullable|string|max:500',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => 'nullable|regex:/^09\d{9}$/',
 
             'currently_employed' => 'required|in:Yes,No',
 
@@ -153,12 +153,20 @@ class AlumnaAuthController extends Controller
 
     }
 
-        Employment::create($employmentData);
+    Employment::create($employmentData);
 
-        Auth::login($user);
-        NotificationService::alumniRegistered($user->id, $user->name);
-        
-        return redirect()->route('alumna.home')->with('success', 'Account created successfully!');
+    // Send email verification
+    $user->sendEmailVerificationNotification();
+
+    NotificationService::alumniRegistered($user->id, $user->name);
+
+    return Inertia::location(
+        route('alumna.verification.notice', [
+            'from' => 'signup',
+            'email' => $user->email,
+        ])
+    );
+
     }
 
     /**
@@ -167,37 +175,59 @@ class AlumnaAuthController extends Controller
     public function showLogin(Request $request): Response 
     {
         return Inertia::render('Auth/AlumnaLogin', [
-        'sessionExpired' => $request->boolean('expired'),
-    ]);
+            'sessionExpired' => $request->boolean('expired'),
+            'status' => $request->query('verified') === 'pending'
+                ? 'Account created successfully! Please verify your email before logging in.'
+                : session('status'),
+        ]);
     }
 
     /**
      * Handle login authentication.
      */
-    public function loginAlumna(Request $request) 
+    public function loginAlumna(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
+    
         if (Auth::attempt($credentials)) {
+    
+            // Regenerate session ONCE after successful login
             $request->session()->regenerate();
+    
+            $user = Auth::user();
+    
+            // Email not verified
+            if (!$user->hasVerifiedEmail()) {
 
-            if (Auth::user()->user_role === 'alumna') { 
-                // Use Inertia::location() to force full page reload with fresh CSRF token
+                Auth::logout();
+            
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            
+                return Inertia::location(
+                    route('alumna.verification.notice', [
+                        'from' => 'login',
+                        'email' => $user->email,
+                    ])
+                );
+            }
+    
+            if ($user->user_role === 'alumna') {
                 return Inertia::location(route('alumna.home'));
             }
-
+    
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            
+    
             throw ValidationException::withMessages([
                 'email' => 'Access denied. You do not have alumna privileges.',
             ]);
-        };
-
+        }
+    
         throw ValidationException::withMessages([
             'credentials' => 'The username or password is incorrect.'
         ]);

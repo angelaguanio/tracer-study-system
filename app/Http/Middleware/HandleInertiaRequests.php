@@ -63,6 +63,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'section'       => $request->session()->get('section'),
                 'success'       => $request->session()->get('success'),
+                'warning'       => $request->session()->get('warning'),
                 'justCompleted' => $request->session()->get('justCompleted'),
             ],
             'notifications' => [

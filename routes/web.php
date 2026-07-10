@@ -26,6 +26,10 @@ use App\Http\Controllers\InquiriesController;
 use App\Http\Controllers\Coordinator\CoordinatorAlumniController;
 use App\Http\Controllers\Coordinator\CoordinatorProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -57,6 +61,22 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::post('/signup', [AlumnaAuthController::class, 'signupAlumna']);
         Route::get('/login', [AlumnaAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AlumnaAuthController::class, 'loginAlumna']);
+
+        // Show "Verify Your Email" page
+        Route::get('/verify-email', function (Request $request) {
+        return Inertia::render('Auth/VerifyEmail', [
+            'from'  => $request->query('from'),
+            'email' => $request->query('email'),
+            ]);
+        })->name('verification.notice');
+
+        // User clicks the email link
+        Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware('signed')->name('verification.verify');
+
+        // Resend verification email
+        Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 
         //forgot & reset pass routes
         Route::get('/forgot-password', function () {
