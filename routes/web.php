@@ -37,20 +37,24 @@ use Inertia\Inertia;
 // with ['middleware' => ['web', 'auth']] to ensure unauthenticated requests are rejected.
 
 // Session keep-alive endpoint
-Route::get('/api/keep-alive', function () {
-    return response()->json(['status' => 'ok']);
-})->middleware('web');
-
-// Role-select / root — redirect authenticated users to their dashboard
 Route::get('/', function () {
+
     if (auth()->check()) {
+
         $role = auth()->user()->user_role;
-        if ($role === 'admin') return redirect()->route('admin.dashboard');
-        if ($role === 'coordinator') return redirect()->route('coordinator.dashboard');
-        if ($role === 'alumna') return redirect()->route('alumna.home');
+
+        if ($role === 'admin')
+            return redirect()->route('admin.dashboard');
+
+        if ($role === 'coordinator')
+            return redirect()->route('coordinator.dashboard');
+
+        return redirect()->route('alumna.home');
     }
-    return Inertia::render('Auth/Login');
-})->name('role.select');
+
+    return redirect()->route('alumna.login');
+
+});
 
 
 //============= ALUMNA ROUTES =======================
@@ -132,33 +136,34 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     });
 });
 
+ //==================HIDDEN URL ADMIN ROUTES=========================
+ Route::middleware('guest')->group(function () {
+
+    Route::get('/portal/9fJ4kLm2Q/login', [AdminAuthController::class, 'showLogin'])
+        ->name('admin.login');
+
+    Route::post('/portal/9fJ4kLm2Q/login', [AdminAuthController::class, 'loginAdmin'])
+        ->name('admin.login.submit');
+
+    Route::get('/portal/9fJ4kLm2Q/forgot-password', function () {
+        return \Inertia\Inertia::render('Auth/ForgotPassword', [
+            'backRoute' => 'admin.login',
+            'submitUrl' => route('admin.password.email'),
+        ]);
+    })->name('admin.forgot-password');
+
+    Route::post('/portal/9fJ4kLm2Q/forgot-password', [ForgotPasswordController::class, 'store'])
+        ->name('admin.password.email');
+
+    Route::get('/portal/9fJ4kLm2Q/reset-password/{token}', [ResetPasswordController::class, 'create'])
+        ->name('admin.password.reset');
+
+    Route::post('/portal/9fJ4kLm2Q/reset-password', [ResetPasswordController::class, 'store'])
+        ->name('admin.password.update');
+});
 
 //============== ADMIN ROUTES =========================
 Route::prefix('admin')->name('admin.')->group(function () {
-
-    //guest onlyy
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [AdminAuthController::class, 'loginAdmin']);
-
-        // Forgot & Reset Password
-        Route::get('/forgot-password', function () {
-            return \Inertia\Inertia::render('Auth/ForgotPassword', [
-                'backRoute' => 'admin.login',
-                'submitUrl' => '/admin/forgot-password',
-            ]);
-        })->name('forgot-password');
-
-        Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
-            ->name('password.email');
-
-        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
-            ->name('password.reset');
-
-        Route::post('/reset-password', [ResetPasswordController::class, 'store'])
-            ->name('password.update');
-
-    });
 
     //AUTH ADMIN
     Route::middleware('auth')->group(function () {

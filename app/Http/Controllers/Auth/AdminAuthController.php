@@ -16,7 +16,10 @@ class AdminAuthController extends Controller
     }
 
     public function loginAdmin(Request $request) {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
         if (
             Auth::attempt([
@@ -40,6 +43,6 @@ class AdminAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Inertia::location(route('role.select'));
+        return Inertia::location(route('admin.login'));
     }
 }

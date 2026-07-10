@@ -191,22 +191,24 @@ class AlumnaAuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-    
-        if (Auth::attempt($credentials)) {
-    
-            // Regenerate session ONCE after successful login
+
+        if (Auth::attempt([
+            'email' => $credentials['email'],
+            'password' => $credentials['password'],
+            'user_role' => 'alumna',
+        ])) {
+
             $request->session()->regenerate();
-    
+
             $user = Auth::user();
-    
-            // Email not verified
+
             if (!$user->hasVerifiedEmail()) {
 
                 Auth::logout();
-            
+
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-            
+
                 return Inertia::location(
                     route('alumna.verification.notice', [
                         'from' => 'login',
@@ -214,25 +216,14 @@ class AlumnaAuthController extends Controller
                     ])
                 );
             }
-    
-            if ($user->user_role === 'alumna') {
-                return Inertia::location(route('alumna.home'));
-            }
-    
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-    
-            throw ValidationException::withMessages([
-                'email' => 'Access denied. You do not have alumna privileges.',
-            ]);
+
+            return Inertia::location(route('alumna.home'));
         }
-    
+
         throw ValidationException::withMessages([
-            'credentials' => 'The username or password is incorrect.'
+            'credentials' => 'The username or password is incorrect.',
         ]);
     }
-
     /**
      * Handle logout.
      */
@@ -242,6 +233,6 @@ class AlumnaAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return Inertia::location(route('role.select'));
+        return Inertia::location(route('alumna.login'));
     }
 }

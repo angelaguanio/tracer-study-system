@@ -68,13 +68,13 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
 
   function handleSubmit(e) {
     e.preventDefault();
-    post("/coordinator/login");
+    post(route('coordinator.login'));
   }
 
   function handlePasswordChange(e) {
     e.preventDefault();
     if (!validatePassword(pwData.password)) return;
-    pwPost("/coordinator/change-password");
+    pwPost(route('coordinator.change-password'));
   }
 
   // ─── CHANGE PASSWORD VIEW ───────────────────────────────────────────────
@@ -164,12 +164,6 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
     )}
       <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
         <CardHeader className="relative flex flex-col items-center justify-center">
-          <Link
-            href={route('role.select')}
-            className="absolute left-4 top-4 flex items-center justify-center h-9 w-9 rounded-full hover:bg-gray-100"
-          >
-            <ArrowLeft className="h-5 w-5 text-gray-700" />
-          </Link>
           <Wup />
         </CardHeader>
 

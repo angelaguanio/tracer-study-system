@@ -45,7 +45,7 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
       alert("Please fill in all fields");
       return;
   }
-    post("/alumna/login", {
+    post(route('alumna.login'), {
       onError: (err) => console.log("Errors:", err),
       onSuccess: () => console.log("Login successful"),
     });
@@ -70,13 +70,6 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
   <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
     
     <CardHeader className="relative flex flex-col items-center justify-center">
-       {/* Back Button */}
-      <Link
-        href={route('role.select')}
-        className="absolute left-4 top-4 flex items-center justify-center h-9 w-9 rounded-full hover:bg-gray-100"
-      >
-        <ArrowLeft className="h-5 w-5 text-gray-700" />
-      </Link>
       <Wup />
     </CardHeader>
 

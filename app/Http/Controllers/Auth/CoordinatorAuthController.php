@@ -22,7 +22,10 @@ class CoordinatorAuthController extends Controller
     }
 
     public function loginCoordinator(Request $request) {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
         if (
             Auth::attempt([
@@ -39,7 +42,7 @@ class CoordinatorAuthController extends Controller
                 return Inertia::location(route('coordinator.show-change-password'));
             }
 
-            return Inertia::location('/coordinator/dashboard');
+            return Inertia::location(route('coordinator.dashboard'));
         }
 
         return back()->withErrors([
@@ -52,7 +55,7 @@ class CoordinatorAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Inertia::location(route('role.select'));
+        return Inertia::location(route('coordinator.login'));
     }
 
     // change pass func
@@ -77,6 +80,6 @@ class CoordinatorAuthController extends Controller
         $user->password_changed = true;
         $user->save();
 
-        return Inertia::location('/coordinator/dashboard');
+        return Inertia::location(route('coordinator.dashboard'));
     }
 }
