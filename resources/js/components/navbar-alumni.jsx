@@ -153,18 +153,36 @@ export default function NavbarAlumni({ children }) {
 
           {/* Profile card */}
           <Link
-            href={route('alumna.profile')}
-            onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 px-5 py-4 border-b border-gray-100"
-          >
-            <div className="h-11 w-11 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm shrink-0">
-              {getInitials(user?.first_name, user?.last_name)}
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900 text-[15px]">{user?.first_name} {user?.last_name}</p>
-              <p className="text-sm text-gray-500">{user?.courses}</p>
-            </div>
-          </Link>
+              href={route('alumna.profile')}
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 px-5 py-4 border-b border-gray-100"
+            >
+              <div className="h-11 w-11 rounded-full overflow-hidden bg-blue-500 shrink-0 flex items-center justify-center">
+                {user?.profile_picture ? (
+                  <img
+                    src={user.profile_picture}
+                    alt={`${user.first_name} ${user.last_name}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white font-semibold text-sm">
+                    {getInitials(user?.first_name, user?.last_name)}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 text-[15px] truncate">
+                  {user?.first_name} {user?.last_name}
+                </p>
+
+                <p className="text-sm text-gray-500 truncate">
+                  {user?.courses}
+                </p>
+              </div>
+
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </Link>
 
           {/* MAIN section */}
           <div className="px-5 pt-5 pb-1">

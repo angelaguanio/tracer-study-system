@@ -113,6 +113,18 @@ class InquiriesController extends Controller
         ]);
     }
 
+    public function replies($id)
+    {
+        $inquiry = Inquiries::with([
+            'replies.sender',
+            'alumni:id,first_name,last_name,email,profile_picture',
+        ])
+        ->where('user_id', Auth::id())
+        ->findOrFail($id);
+
+        return response()->json($inquiry);
+    }
+
     //-------------admin-----------------------
     public function adminIndex(Request $request) {
         $query = Inquiries::with(['alumni:id,first_name,last_name,email,profile_picture', 'replies.sender'])
@@ -238,6 +250,39 @@ class InquiriesController extends Controller
     return response()->json([
         'reply' => $reply,
     ]);
+    }
+
+    public function staffReplies($id)
+    {
+        if (auth()->user()->user_role === 'admin') {
+
+            $inquiry = Inquiries::with([
+                'replies.sender',
+                'alumni:id,first_name,last_name,email,profile_picture',
+            ])
+            ->where('recipient_type', 'admin')
+            ->whereKey($id)
+            ->firstOrFail();
+
+        } elseif (auth()->user()->user_role === 'coordinator') {
+
+            $inquiry = Inquiries::with([
+                'replies.sender',
+                'alumni:id,first_name,last_name,email,profile_picture',
+            ])
+            ->where('recipient_type', 'coordinator')
+            ->where('recipient_id', auth()->id())
+            ->whereKey($id)
+            ->firstOrFail();
+
+        } else {
+            abort(403);
+        }
+
+        return response()->json([
+            'status' => $inquiry->status,
+            'replies' => $inquiry->replies,
+        ]);
     }
 }
 

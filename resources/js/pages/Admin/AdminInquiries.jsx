@@ -3,7 +3,7 @@ import InquiryList from '../../components/InquiryList';
 import InquiryContent from '../../components/InquiryContent';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import usePolling from '@/hooks/usePolling';
+
 
 export default function AdminInquiries({inquiries, filters}) {
     const [selectedInquiry, setSelectedInquiry] = useState(
@@ -17,29 +17,43 @@ export default function AdminInquiries({inquiries, filters}) {
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             router.get('/admin/inquiries', {
-                search: search,
+                search,
                 status: statusFilter.length > 0 ? statusFilter.join(',') : null,
             }, {
                 preserveState: true,
                 preserveScroll: true,
                 replace: true,
+                only: ['inquiries', 'filters'],
             });
-        }, 300);
-
+        }, 500);
+    
         return () => clearTimeout(delayDebounceFn);
     }, [search, statusFilter]);
-
+    
     useEffect(() => {
-        if (window.innerWidth >= 768) {
-            setSelectedInquiry(inquiries.data[0] || null);
-        }
+        setSelectedInquiry(prev => {
+            if (!prev) {
+                return inquiries.data[0] ?? null;
+            }
+    
+            const updated = inquiries.data.find(i => i.id === prev.id);
+    
+            if (!updated) {
+                return inquiries.data[0] ?? null;
+            }
+
+            // Only sync non-reply fields from the page prop.
+            // Replies are managed exclusively by the polling path in InquiryContent.
+            return {
+                ...prev,
+                status: updated.status,
+                title: updated.title,
+                subject: updated.subject,
+                message: updated.message,
+            };
+        });
     }, [inquiries.data]);
 
-    usePolling({
-        interval: 3000,
-        only: ['inquiries'],
-
-    });
 
     const handleUpdateStatus = (id, newStatus) => {
         setSelectedInquiry(prev =>
@@ -47,14 +61,32 @@ export default function AdminInquiries({inquiries, filters}) {
         );
     };
 
-    const handleReplyAdded = (reply) => {
-        setSelectedInquiry(prev => ({
-            ...prev,
-            status: 'replied',
-            replies: [...(prev.replies ?? []), reply],
-        }));
-    };
+    const handleReplyAdded = (data) => {
+        if (!data) return;
+        console.log("handleReplyAdded", data);
+        setSelectedInquiry(prev => {
+            if (!prev) return prev;
+    
+            // Polling update — replace replies wholesale
+            if (data.replace) {
+                return {
+                    ...prev,
+                    status: data.status,
+                    replies: data.replies,
+                };
+            }
+    
+            // New reply sent locally — deduplicate by id to prevent doubling
+            const exists = (prev.replies ?? []).some(r => r.id === data.id);
+            if (exists) return prev;
 
+            return {
+                ...prev,
+                status: 'replied',
+                replies: [...(prev.replies ?? []), data],
+            };
+        });
+    };
     return (
         <div className="flex flex-col md:flex-row h-full w-full overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm">
 
@@ -96,6 +128,7 @@ export default function AdminInquiries({inquiries, filters}) {
                 inquiry={selectedInquiry}
                 onUpdateStatus={handleUpdateStatus}
                 onReplyAdded={handleReplyAdded}
+                userRole="admin"
             />
         </div>
 

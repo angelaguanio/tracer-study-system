@@ -5,27 +5,72 @@ import { Send } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
+    const [currentInquiry, setCurrentInquiry] = useState(inquiry);
     const bottomRef = useRef(null);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [inquiry?.replies]);
+        setCurrentInquiry(inquiry);
+    }, [inquiry]);
+
+    useEffect(() => {
+        if (!currentInquiry) return;
+    
+        const interval = setInterval(async () => {
+            try {
+                const { data } = await axios.get(
+                    route('alumna.inquiries.replies', currentInquiry.id)
+                );
+    
+                setCurrentInquiry(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }, 3000);
+    
+        return () => clearInterval(interval);
+    
+    }, [currentInquiry?.id]);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({
+            behavior: 'smooth',
+        });
+    }, [currentInquiry?.replies]);
 
     const sendReply = () => {
         if (!replyText.trim()) return;
+    
         setSending(true);
-        router.post(route('alumna.inquiries.reply', inquiry.id), { message: replyText }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setReplyText('');
-                toast.success('Reply sent!');
+    
+        router.post(
+            route('alumna.inquiries.reply', currentInquiry.id),
+            {
+                message: replyText,
             },
-            onFinish: () => setSending(false),
-        });
+            {
+                preserveScroll: true,
+    
+                onSuccess: () => {
+                    setReplyText('');
+    
+                    // Immediately refresh this conversation
+                    axios
+                        .get(route('alumna.inquiries.replies', currentInquiry.id))
+                        .then(({ data }) => {
+                            setCurrentInquiry(data);
+                        });
+    
+                    toast.success('Reply sent!');
+                },
+    
+                onFinish: () => setSending(false),
+            }
+        );
     };
 
     const AvatarBlock = ({ user, size = 'sm' }) => {
@@ -55,8 +100,8 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
         );
     }
 
-    const replies = [...(inquiry.replies ?? [])].reverse();
-    const isResolved = inquiry.status === 'resolved';
+    const replies = [...(currentInquiry?.replies ?? [])].reverse();
+    const isResolved = currentInquiry?.status === 'resolved';
 
     return (
         <main className='flex flex-col w-full h-full p-4 gap-3'>
@@ -74,16 +119,16 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
 
             <div className="min-w-0">
                 <h1 className="text-xl font-semibold break-words">
-                    {inquiry.subject}
+                    {currentInquiry.subject}
                 </h1>
 
                 <p className="text-xs text-gray-400">
-                    {inquiry.formatted_date}
+                    {currentInquiry.formatted_date}
                 </p>
 
-                {inquiry.department && (
+                {currentInquiry.department && (
                     <p className="text-sm text-gray-500">
-                        Department: {inquiry.department}
+                        Department: {currentInquiry.department}
                     </p>
                 )}
             </div>
@@ -92,17 +137,17 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
             <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
                 {/* Original inquiry — alumna's message, shown on the right */}
                 <div className='flex gap-3 flex-row-reverse'>
-                    <AvatarBlock user={inquiry.alumni} />
+                    <AvatarBlock user={currentInquiry.alumni} />
                     <div className='flex flex-col gap-1 max-w-[80%] items-end'>
                         <span className='text-xs text-gray-400'>
-                            You · {inquiry.formatted_date}
+                            You · {currentInquiry.formatted_date}
                         </span>
                         <div
                             className='bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-3'
                             style={{ wordBreak: 'break-word' }}
                         >
-                            <p className='text-sm font-semibold mb-1'>{inquiry.subject}</p>
-                            <p className='text-sm'>{inquiry.message}</p>
+                            <p className='text-sm font-semibold mb-1'>{currentInquiry.subject}</p>
+                            <p className='text-sm'>{currentInquiry.message}</p>
                         </div>
                     </div>
                 </div>

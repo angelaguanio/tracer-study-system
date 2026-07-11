@@ -75,22 +75,28 @@ function IconInput({ icon: Icon, name, type = 'text', placeholder, value, onChan
 
   return (
     <div className="flex flex-col gap-1">
-      <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 bg-white transition-colors
-        ${error ? 'border-red-400' : 'border-gray-200 focus-within:border-emerald-500'}`}>
-        <Icon className="h-4 w-4 text-gray-400 shrink-0" />
+      <div
+        className={`flex items-center gap-3 rounded-lg border border-gray-400 bg-white px-4 py-2.5
+          ${
+            error
+              ? "border-red-400"
+              : "border-gray-400 focus-within:border-blue-500"
+          }`}
+      >
+        <Icon className="h-4 w-4 text-gray-500 shrink-0" />
         <input
           name={name}
           type={inputType}
           value={value}
           placeholder={placeholder}
           onChange={onChange}
-          className="flex-1 text-sm text-gray-800 placeholder:text-gray-400 outline-none bg-transparent"
+          className="flex-1 text-sm text-black placeholder:text-gray-500"
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
-            className="shrink-0 text-gray-400 hover:text-gray-600 focus:outline-none"
+            className="shrink-0 text-black hover:text-gray-600 focus:outline-none"
             tabIndex={-1}
           >
             {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -109,7 +115,7 @@ function StepHeader({ step }) {
   // Map step to display number (steps 5/6 both count as step 4 in display)
   const displayStep = Math.min(step, 4);
   return (
-    <div className="flex flex-col items-center gap-1.5 pb-3 border-b border-gray-100">
+    <div className="flex flex-col items-center gap-1.5 pb-3 border-b border-gray-200">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
         <Icon className="h-6 w-6 text-emerald-500" />
       </div>
@@ -126,16 +132,23 @@ function StepHeader({ step }) {
 function IconSelect({ icon: Icon, placeholder, value, onValueChange, children, error, disabled = false }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className={`flex items-center gap-3 rounded-xl border px-4 bg-white transition-colors
-        ${error ? 'border-red-400' : 'border-gray-200 focus-within:border-emerald-500'}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
-        <Icon className="h-4 w-4 text-gray-400 shrink-0" />
-        <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-          <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-3 text-sm focus:ring-0 text-gray-800">
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent className="max-h-48">{children}</SelectContent>
-        </Select>
+      <div
+        className={`w-full flex items-center gap-3 rounded-lg border px-4 bg-white overflow-hidden transition-colors
+          ${error ? "border-red-400" : "border-gray-400 focus-within:border-blue-500"}
+          ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+        `}
+      >
+          <Icon className="h-4 w-4 text-gray-500 shrink-0" />
+
+          <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+              <SelectTrigger className="flex-1 min-w-0 w-full border-0 shadow-none px-0 py-3 text-sm text-black focus:ring-0 [&>span]:truncate">
+                  <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+
+              <SelectContent className="max-h-48">
+                  {children}
+              </SelectContent>
+          </Select>
       </div>
       {error && <p className="text-xs text-red-500 pl-1">{error}</p>}
     </div>
@@ -248,16 +261,6 @@ export default function AlumnaSignup() {
 
   return (
     <Card className="relative w-full max-w-md rounded-2xl bg-white shadow-lg flex flex-col overflow-hidden" style={{ maxHeight: 'min(90vh, 660px)' }}>
-
-      {/* Back arrow — step 1 only */}
-      {step === 1 && (
-        <Link
-          href={route('role.select')}
-          className="absolute left-8 top-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 z-10"
-        >
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
-        </Link>
-      )}
 
       <CardContent className="custom-scrollbar overflow-y-auto px-6 py-4 flex-1">
         <form id="signupForm" className="flex flex-col gap-5" onSubmit={handleSubmit}>

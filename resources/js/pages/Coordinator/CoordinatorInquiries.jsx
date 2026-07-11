@@ -35,6 +35,7 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                     preserveState: true,
                     preserveScroll: true,
                     replace: true,
+                    only: ['inquiries', 'filters'],
                 }
             );
         }, 300);
@@ -42,27 +43,63 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
         return () => clearTimeout(delayDebounceFn);
     }, [search, statusFilter]);
 
-    // Desktop auto-select first inquiry
+    // Sync selectedInquiry when inquiries.data updates (e.g. after polling/search)
     useEffect(() => {
-        if (window.innerWidth >= 768) {
-            setSelectedInquiry(
-                inquiries.data.length > 0
-                    ? inquiries.data[0]
-                    : null
-            );
-        }
+        setSelectedInquiry(prev => {
+            if (!prev) {
+                return inquiries.data[0] ?? null;
+            }
+
+            const updated = inquiries.data.find(i => i.id === prev.id);
+
+            if (!updated) {
+                return inquiries.data[0] ?? null;
+            }
+
+            // Only sync non-reply fields from the page prop.
+            // Replies are managed exclusively by the polling path in InquiryContent.
+            return {
+                ...prev,
+                status: updated.status,
+                title: updated.title,
+                subject: updated.subject,
+                message: updated.message,
+            };
+        });
     }, [inquiries.data]);
 
-    usePolling({
-        interval: 3000,
-        only: ['inquiries'],
-
-    });
 
     const handleUpdateStatus = (id, newStatus) => {
         setSelectedInquiry((prev) =>
             prev ? { ...prev, status: newStatus } : prev
         );
+    };
+
+    const handleReplyAdded = (data) => {
+        if (!data) return;
+        console.log("handleReplyAdded", data);
+        setSelectedInquiry(prev => {
+            if (!prev) return prev;
+    
+            // Polling update — replace replies wholesale
+            if (data.replace) {
+                return {
+                    ...prev,
+                    status: data.status,
+                    replies: data.replies,
+                };
+            }
+    
+            // New reply sent locally — deduplicate by id to prevent doubling
+            const exists = (prev.replies ?? []).some(r => r.id === data.id);
+            if (exists) return prev;
+
+            return {
+                ...prev,
+                status: 'replied',
+                replies: [...(prev.replies ?? []), data],
+            };
+        });
     };
 
     return (
@@ -85,6 +122,7 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                     <InquiryContent
                         inquiry={selectedInquiry}
                         onUpdateStatus={handleUpdateStatus}
+                        onReplyAdded={handleReplyAdded}
                         userRole="coordinator"
                         onBack={() => setSelectedInquiry(null)}
                     />
@@ -106,7 +144,9 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                 <InquiryContent
                     inquiry={selectedInquiry}
                     onUpdateStatus={handleUpdateStatus}
+                    onReplyAdded={handleReplyAdded}
                     userRole="coordinator"
+                    onBack={() => setSelectedInquiry(null)}
                 />
             </div>
         </div>

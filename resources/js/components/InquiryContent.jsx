@@ -25,6 +25,65 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [inquiry?.replies]);
 
+    // Fetch fresh replies immediately when switching to a different inquiry
+    useEffect(() => {
+        if (!inquiry) return;
+
+        const routeName =
+            userRole === 'coordinator'
+                ? 'coordinator.inquiries.replies'
+                : 'admin.inquiries.replies';
+
+        axios.get(route(routeName, inquiry.id))
+            .then(({ data }) => {
+                onReplyAdded?.({
+                    status: data.status,
+                    replies: data.replies ?? [],
+                    replace: true,
+                });
+            })
+            .catch(console.error);
+
+    // Only re-run when the selected inquiry changes, not on every reply update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inquiry?.id, userRole]);
+
+    // Poll for new replies every 3 seconds
+    useEffect(() => {
+        if (!inquiry) return;
+    
+        const routeName =
+            userRole === 'coordinator'
+                ? 'coordinator.inquiries.replies'
+                : 'admin.inquiries.replies';
+
+        const currentRepliesLength = inquiry.replies?.length ?? 0;
+        const currentStatus = inquiry.status;
+    
+        const interval = setInterval(async () => {
+            if (sending) return;
+            try {
+                const { data } = await axios.get(route(routeName, inquiry.id));
+    
+                if (
+                    (data.replies?.length ?? 0) !== currentRepliesLength ||
+                    data.status !== currentStatus
+                ) {
+                    onReplyAdded?.({
+                        status: data.status,
+                        replies: data.replies ?? [],
+                        replace: true,
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }, 3000);
+    
+        return () => clearInterval(interval);
+    
+    }, [inquiry?.id, inquiry?.replies?.length, inquiry?.status, userRole, sending]);
+
     const updateStatus = (newStatus) => {
         const routeName = userRole === 'coordinator'
             ? 'coordinator.inquiries.update'
@@ -53,7 +112,8 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
             });
 
         
-            onReplyAdded(data.reply);
+            onReplyAdded?.(data.reply);
+            console.log("after reply", data.reply.id);
         
             setReplyText('');
             toast.success('Reply sent!');
@@ -91,8 +151,12 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
         );
     }
 
+    console.log("Inquiry", inquiry);
+    console.log("Replies", inquiry.replies);
     // Sort replies oldest-first for display
-    const replies = inquiry.replies ?? [];
+    const replies = [...(inquiry.replies ?? [])].sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    );
 
     return (
         <main className='flex flex-col flex-1 md:h-full min-w-0 p-4 md:p-6 gap-4 overflow-hidden'>

@@ -90,6 +90,6 @@ class Inquiries extends Model
 
     public function replies()
     {
-        return $this->hasMany(InquiryReply::class, 'inquiry_id')->with('sender')->latest();
+        return $this->hasMany(InquiryReply::class, 'inquiry_id')->with('sender')->oldest();
     }
 }

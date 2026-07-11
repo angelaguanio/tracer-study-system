@@ -131,6 +131,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 
         //inquiries
         Route::get('/inquiries', [InquiriesController::class, 'alumniInquiriesList'])->name('inquiries.index');
+        Route::get('/inquiries/{id}/replies', [InquiriesController::class, 'replies'])->name('inquiries.replies');
         Route::get('/inquiries/{id}', [InquiriesController::class, 'alumniShow'])->name('inquiries.show');
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
@@ -266,6 +267,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
   
         //Inquiries
         Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries.index');
+        Route::get('/inquiries/{id}/replies',[InquiriesController::class, 'staffReplies'])->name('inquiries.replies');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
@@ -439,6 +441,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
 
         //inquiries
         Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries.index');
+        Route::get('/inquiries/{id}/replies',[InquiriesController::class, 'staffReplies'])->name('inquiries.replies');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
