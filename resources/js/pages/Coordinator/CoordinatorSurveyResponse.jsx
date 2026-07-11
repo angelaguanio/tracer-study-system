@@ -9,7 +9,7 @@ import CoordinatorLayout from "@/layouts/coord-layout";
 import usePolling from '@/hooks/usePolling';
 
 export default function CoordinatorSurveyResponse({ responses, filters, survey }) {
-  console.log(responses);
+ 
   const [search, setSearch] = useState(filters?.search || "");
   const [year, setYear] = useState(filters?.year || "all");
   const [course, setCourse] = useState(filters?.course || "all");

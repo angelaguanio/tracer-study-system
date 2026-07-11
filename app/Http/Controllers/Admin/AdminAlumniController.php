@@ -212,10 +212,13 @@ class AdminAlumniController extends Controller
 
         $user = User::findOrFail($id);
 
-        Mail::to($user->email)->send(new AlumniBroadcastEmail(
-            $request->subject,
-            $request->message
-        ));
+        Mail::to($user->email)->send(
+            new AlumniBroadcastEmail(
+                $request->subject,
+                $request->message,
+                'admin'
+            )
+        );
 
         return back()->with('success', 'Email sent successfully to ' . $user->first_name . ' ' . $user->last_name);
     }
@@ -273,11 +276,11 @@ class AdminAlumniController extends Controller
 
         foreach ($users as $user) {
             try {
-
                 Mail::to($user->email)->send(
                     new AlumniBroadcastEmail(
                         $request->subject,
-                        $request->message
+                        $request->message,
+                        'admin'
                     )
                 );
 

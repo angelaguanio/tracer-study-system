@@ -15,6 +15,7 @@ class AlumniBroadcastEmail extends Mailable
     public function __construct(
         public string $emailSubject,
         public string $body,
+        public string $senderType = 'admin',
     ) {}
 
     public function envelope(): Envelope

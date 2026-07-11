@@ -4,8 +4,6 @@ import { Link, usePage } from '@inertiajs/react'
 import logo from '../assets/logotracer.png'
 
 export default function SidebarCoord({ navItemsCoord = [] }) {
-  console.log('navItemsCoord:', navItemsCoord)
-  console.log('received:', navItemsCoord.length, navItemsCoord) 
   const {url} = usePage();
 
   return (

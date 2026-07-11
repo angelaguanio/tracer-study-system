@@ -365,6 +365,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
         Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
+        //send email
+        Route::post('/alumni/{id}/email', [CoordinatorAlumniController::class, 'sendEmail'])->name('alumni.email.send');
+        Route::post('/alumni/email/bulk', [CoordinatorAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
+
         // Coordinator Analytics Index
         Route::get('/analytics', function () {
             $user = auth()->user();

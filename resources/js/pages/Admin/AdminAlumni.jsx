@@ -156,14 +156,11 @@ export default function AdminAlumni({ alumni, filters }) {
   //   );
   // };
   const handleSendBulk = () => {
-    console.log("HANDLE SEND BULK");
   
     if (!bulkSubject.trim() || !bulkMessage.trim()) {
         toast.error("Subject and message are required.");
         return;
     }
-  
-    console.log("CALLING sendNextBatch");
   
     setBulkSending(true);
   

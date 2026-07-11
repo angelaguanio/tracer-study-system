@@ -12,7 +12,6 @@ import logo from '../../assets/logotracer.png'
 import { useState, useEffect } from "react";
 
 export default function ForgotPassword({backRoute, submitUrl,}) {
-    console.log(status);
     const [cooldown, setCooldown] = useState(0);
     const [emailSent, setEmailSent] = useState(false);
 

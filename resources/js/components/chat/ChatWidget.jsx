@@ -52,8 +52,8 @@ export default function ChatWidget({ user }) {
                 const conv = Array.isArray(res.data) ? res.data[0] : res.data;
                 if (conv) {
                     // Don't set totalUnread for coordinator since they auto-open the chat
-                    setActiveConversation(conv);
-                    subscribeToChannel(conv);
+                    // setActiveConversation(conv);
+                    // subscribeToChannel(conv);
                 }
             }
         }).catch(() => {});

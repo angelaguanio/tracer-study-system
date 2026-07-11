@@ -13,7 +13,6 @@ function formatTime(dateStr) {
 }
 
 export default function MessagePane({ conversationId, currentUser, echoChannel }) {
-    console.log("MessagePane conversationId =", conversationId);
     const [messages, setMessages] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -44,7 +43,6 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
         setLoadingMore(true);
         const nextPage = page + 1;
         try {
-            console.log("Conversation ID:", conversationId);
             const res = await axios.get(
                 `/messenger/conversations/${conversationId}/messages`,
                 { params: { page: nextPage } }
@@ -76,7 +74,6 @@ export default function MessagePane({ conversationId, currentUser, echoChannel }
         let cancelled = false;
         const init = async () => {
             try {
-                console.log("Conversation ID:", conversationId);
                 const res = await axios.get(
                     `/messenger/conversations/${conversationId}/messages`,
                     { params: { page: 1 } }
