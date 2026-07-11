@@ -17,6 +17,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import usePolling from '@/hooks/usePolling';
 
 export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
     const [open, setOpen] = useState(false);
@@ -52,6 +53,11 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
 
     const pageParam =
         tab === "active" ? "active_page" : "archived_page";
+
+    usePolling({
+        interval: 5000,
+        only: ['surveys', 'archivedSurveys'],
+    });
 
     return (
         <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">

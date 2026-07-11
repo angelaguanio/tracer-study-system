@@ -33,10 +33,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 // Broadcasting auth route is registered via withBroadcasting() in bootstrap/app.php
 // with ['middleware' => ['web', 'auth']] to ensure unauthenticated requests are rejected.
 
 // Session keep-alive endpoint
+
+
+Route::get('/keep-alive', function () {
+    return response()->json([
+        'success' => true,
+    ]);
+})->middleware('auth');
+
+
 Route::get('/', function () {
 
     if (auth()->check()) {

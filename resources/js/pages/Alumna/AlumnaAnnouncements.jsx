@@ -2,8 +2,14 @@ import React from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { Link, router } from '@inertiajs/react';
 import { ImageOff, ChevronLeft, ChevronRight } from "lucide-react";
+import usePolling from '@/hooks/usePolling';
 
 export default function AlumnaAnnouncements({ announcements }) {
+
+  usePolling({
+    interval: 3000,
+    only: ['announcements'],
+  });
 
   const list = announcements?.data ?? [];
 

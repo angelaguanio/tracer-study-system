@@ -10,7 +10,6 @@ use App\Models\Announcement;
 use App\Models\Inquiries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -62,9 +61,8 @@ class CoordinatorDashboardController extends Controller
     {
         try {
             $userId = auth()->id();
-            return Cache::remember("coordinator_dashboard_metrics_{$userId}", 300, function () {
                 return $this->calculateCoordinatorMetrics();
-            });
+            
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard metrics calculation failed', [
                 'user_id' => auth()->id(),
@@ -120,9 +118,7 @@ class CoordinatorDashboardController extends Controller
     private function calculateSurveyOverviewWithErrorHandling(): array
     {
         try {
-            return Cache::remember('coordinator_dashboard_survey_overview', 300, function () {
-                return $this->calculateSurveyOverview();
-            });
+            return $this->calculateSurveyOverview();
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard survey overview calculation failed', [
                 'user_id' => auth()->id(),
@@ -201,9 +197,7 @@ class CoordinatorDashboardController extends Controller
     {
         try {
             $userId = auth()->id();
-            return Cache::remember("coordinator_dashboard_announcement_distribution_{$userId}", 300, function () {
-                return $this->calculateAnnouncementDistribution();
-            });
+                return $this->calculateAnnouncementDistribution();          
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard announcement distribution calculation failed', [
                 'user_id' => auth()->id(),
@@ -259,10 +253,8 @@ class CoordinatorDashboardController extends Controller
     private function getRecentActivityWithErrorHandling(): array
     {
         try {
-            $userId = auth()->id();
-            return Cache::remember("coordinator_dashboard_recent_activity_{$userId}", 300, function () {
+            $userId = auth()->id();  
                 return $this->getRecentActivity();
-            });
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard recent activity query failed', [
                 'user_id' => auth()->id(),
@@ -363,9 +355,7 @@ class CoordinatorDashboardController extends Controller
     private function getAlumniByYearWithErrorHandling(): array
     {
         try {
-            return Cache::remember('coordinator_dashboard_alumni_by_year', 300, function () {
                 return $this->getAlumniByYear();
-            });
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard alumni by year query failed', [
                 'user_id' => auth()->id(),
@@ -413,9 +403,7 @@ class CoordinatorDashboardController extends Controller
     private function getAlumniByCourseWithErrorHandling(): array
     {
         try {
-            return Cache::remember('coordinator_dashboard_alumni_by_course', 300, function () {
-                return $this->getAlumniByCourse();
-            });
+            return $this->getAlumniByCourse();   
         } catch (\Exception $e) {
             Log::error('Coordinator dashboard alumni by course query failed', [
                 'user_id' => auth()->id(),

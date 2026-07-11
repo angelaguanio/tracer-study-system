@@ -12,15 +12,17 @@ class QuestionnaireController extends Controller
     public function showQuestionnaire()
     {
         $user = Auth::user();
+
+        $completedSurveyIds = \App\Models\Response::where('user_id', $user->id)
+        ->pluck('survey_id')
+        ->toArray();
         
         // Get the tracer study survey
         $tracerStudySurvey = \App\Models\Survey::tracerStudy()->first();
         $tracerStudyCompleted = $tracerStudySurvey
-            ? \App\Models\Response::where('user_id', $user->id)
-                ->where('survey_id', $tracerStudySurvey->id)
-                ->exists()
+            ? in_array($tracerStudySurvey->id, $completedSurveyIds)
             : false;
-
+                
         // Get CECT surveys (active surveys that are not tracer study, and not archived)
         $cectSurveys = \App\Models\Survey::where('status', 'active')
             ->where('is_tracer_study', false)
@@ -28,10 +30,11 @@ class QuestionnaireController extends Controller
             ->withCount(['questions'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($survey) use ($user) {
-                $survey->completed = \App\Models\Response::where('user_id', $user->id)
-                    ->where('survey_id', $survey->id)
-                    ->exists();
+            ->map(function ($survey) use ($completedSurveyIds) {
+                $survey->completed = in_array(
+                    $survey->id,
+                    $completedSurveyIds
+                );
                 return $survey;
             });
 

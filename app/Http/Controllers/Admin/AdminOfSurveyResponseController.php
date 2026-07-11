@@ -77,6 +77,10 @@ class AdminOfSurveyResponseController extends Controller
 {
     $survey = Survey::findOrFail($id);
 
+    $completedUserIds = Response::where('survey_id', $survey->id)
+    ->pluck('user_id')
+    ->toArray();
+
     $query = User::where('user_role', 'alumna');
 
     // SEARCH
@@ -108,15 +112,12 @@ class AdminOfSurveyResponseController extends Controller
 
     $users = $query->latest()->paginate(10)->withQueryString();
 
-    $users->getCollection()->transform(function ($user) use ($survey) {
-        $hasResponse = Response::where('survey_id', $survey->id)
-            ->where('user_id', $user->id)
-            ->exists();
+    $users->getCollection()->transform(function ($user) use ($completedUserIds) {
 
         return [
             'id' => $user->id,
             'name' => trim($user->first_name . ' ' . $user->last_name),
-            'status' => $hasResponse ? 'completed' : 'incomplete',
+            'status' => in_array($user->id, $completedUserIds) ? 'completed' : 'incomplete',
             'course' => $user->courses ?? '-',
             'year' => ($user->start_year && $user->end_year) 
                         ? "{$user->start_year}-{$user->end_year}" 

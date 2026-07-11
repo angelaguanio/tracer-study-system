@@ -71,7 +71,7 @@ const startKeepAlive = () => {
     // Ping server every 2 minutes (120000ms) - well before the session expires
     keepAliveInterval = setInterval(() => {
         // Make a lightweight request to keep session alive
-        fetch('/api/keep-alive', {
+        fetch('/keep-alive', {
             method: 'GET',
             credentials: 'same-origin',
             headers: {

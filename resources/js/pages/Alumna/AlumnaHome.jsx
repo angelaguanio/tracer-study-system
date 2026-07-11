@@ -2,6 +2,7 @@ import React from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import alumniHomeImg from '../../assets/cect_home.png';
 import { Link } from '@inertiajs/react';
+import usePolling from '@/hooks/usePolling';
 
 import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 'lucide-react';
 
@@ -42,6 +43,12 @@ function AnnouncementCard({ id, date, title, description, image }) {
 }
 
 export default function AlumnaHome({ announcements }) {
+
+  usePolling({
+    interval: 5000,
+    only: ['announcements'],
+});
+
   return (
     
       <div className="bg-white -mt-6 md:-mt-4 overflow-x-hidden w-full">

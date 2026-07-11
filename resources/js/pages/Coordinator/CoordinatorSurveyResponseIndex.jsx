@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import usePolling from '@/hooks/usePolling';
 
 export default function CoordinatorSurveyResponseIndex({ surveys = [], archivedSurveys = [], filters = {} }) {
   const [tab, setTab] = useState("active");
@@ -53,6 +54,11 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [], archivedS
         }
     );
   }, [sort]);
+
+  usePolling({
+    interval: 5000,
+    only: ['surveys', 'archivedSurveys'],
+  });
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
@@ -101,7 +107,7 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [], archivedS
           <ArrowUpDown className="h-4 w-4 text-gray-500" />
 
           <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="border-0 shadow-none h-8 w-[150px] focus:ring-0 text-gray-500">
+              <SelectTrigger className="border-0 shadow-none h-8 w-fit focus:ring-0 text-gray-500">
                   <SelectValue />
               </SelectTrigger>
 

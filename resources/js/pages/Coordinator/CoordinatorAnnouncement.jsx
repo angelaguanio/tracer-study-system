@@ -4,6 +4,7 @@ import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from 
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import usePolling from '@/hooks/usePolling';
 
 export default function CoordinatorAnnouncement({ announcements }) {
   const [statusFilter, setStatusFilter] = useState("");
@@ -32,6 +33,13 @@ export default function CoordinatorAnnouncement({ announcements }) {
     }, 300);
     return () => clearTimeout(delay);
   }, [search, statusFilter, sortOrder]);
+
+  usePolling({
+      interval: 5000,
+      only: ['announcements'],
+
+  });
+
 
   const list = announcements?.data ?? [];
   const filteredAnnouncements = list;

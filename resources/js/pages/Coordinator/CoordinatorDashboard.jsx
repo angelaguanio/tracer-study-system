@@ -6,6 +6,7 @@ import RecentActivityList from '@/components/dashboard/RecentActivityList';
 import QuickActionButton from '@/components/dashboard/QuickActionButton';
 import { Users, FileText, Clock, Plus, Eye, AlertCircle, GraduationCap, BookOpen } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import usePolling from '@/hooks/usePolling';
 
 /**
  * CoordinatorDashboard Component
@@ -32,7 +33,25 @@ export default function CoordinatorDashboard({
   alumni_by_year = [],
   alumni_by_course = [],
   error 
-}) {
+})
+
+
+{
+
+  usePolling({
+    interval: 10000,
+    only: [
+        'metrics',
+        'survey_overview',
+        'announcement_distribution',
+        'recent_inquiries',
+        'recent_announcements',
+        'recent_responses',
+        'alumni_by_year',
+        'alumni_by_course',
+    ],
+});
+
   return (
     <div className="flex w-full min-h-screen ">
       <div className="w-full space-y-8 p-8">

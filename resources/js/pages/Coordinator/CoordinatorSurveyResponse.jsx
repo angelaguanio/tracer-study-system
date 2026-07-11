@@ -6,6 +6,7 @@ import CoordinatorSurveyDeletePrompt from "@/components/coordinator/CoordinatorS
 import CoordinatorSurveyResponseTable from "@/components/coordinator/CoordinatorSurveyResponseTable";
 import CoordinatorSurveyResponseFilter from "@/components/coordinator/CoordinatorSurveyResponseFilter";
 import CoordinatorLayout from "@/layouts/coord-layout";
+import usePolling from '@/hooks/usePolling';
 
 export default function CoordinatorSurveyResponse({ responses, filters, survey }) {
   console.log(responses);
@@ -62,6 +63,11 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
       },
     });
   };
+
+  usePolling({
+    interval: 5000,
+    only: ['responses'],
+  });
 
 
   return (

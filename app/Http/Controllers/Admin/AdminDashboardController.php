@@ -11,7 +11,6 @@ use App\Models\Announcement;
 use App\Models\Employment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -56,9 +55,7 @@ class AdminDashboardController extends Controller
     private function calculateOverviewMetricsWithCache(): array
     {
         try {
-            return Cache::remember('admin_dashboard_metrics', 300, function () {
-                return $this->calculateOverviewMetrics();
-            });
+            return $this->calculateOverviewMetrics();
         } catch (\Exception $e) {
             Log::error('Dashboard overview metrics calculation failed', [
                 'user_id' => auth()->id(),
@@ -115,9 +112,7 @@ class AdminDashboardController extends Controller
     private function calculateSurveyAnalyticsWithErrorHandling(): array
     {
         try {
-            return Cache::remember('admin_dashboard_survey_analytics', 300, function () {
-                return $this->calculateSurveyAnalytics();
-            });
+            return $this->calculateSurveyAnalytics();
         } catch (\Exception $e) {
             Log::error('Dashboard survey analytics calculation failed', [
                 'user_id' => auth()->id(),
@@ -186,9 +181,7 @@ class AdminDashboardController extends Controller
     private function calculateEmploymentDistributionWithErrorHandling(): array
     {
         try {
-            return Cache::remember('admin_dashboard_employment_distribution', 300, function () {
-                return $this->calculateEmploymentDistribution();
-            });
+            return $this->calculateEmploymentDistribution();
         } catch (\Exception $e) {
             Log::error('Dashboard employment distribution calculation failed', [
                 'user_id' => auth()->id(),
@@ -254,9 +247,7 @@ class AdminDashboardController extends Controller
     private function getRecentActivityWithErrorHandling(): array
     {
         try {
-            return Cache::remember('admin_dashboard_recent_activity', 300, function () {
-                return $this->getRecentActivity();
-            });
+            return $this->getRecentActivity();
         } catch (\Exception $e) {
             Log::error('Dashboard recent activity query failed', [
                 'user_id' => auth()->id(),

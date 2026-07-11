@@ -3,6 +3,7 @@ import InquiryList from '../../components/InquiryList';
 import InquiryContent from '../../components/InquiryContent';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
+import usePolling from '@/hooks/usePolling';
 
 export default function AdminInquiries({inquiries, filters}) {
     const [selectedInquiry, setSelectedInquiry] = useState(
@@ -33,6 +34,12 @@ export default function AdminInquiries({inquiries, filters}) {
             setSelectedInquiry(inquiries.data[0] || null);
         }
     }, [inquiries.data]);
+
+    usePolling({
+        interval: 3000,
+        only: ['inquiries'],
+
+    });
 
     const handleUpdateStatus = (id, newStatus) => {
         setSelectedInquiry(prev =>

@@ -3,6 +3,7 @@ import { router } from "@inertiajs/react";
 import CoordinatorLayout from "@/layouts/coord-layout";
 import CoordinatorAlumniFilters from "@/components/coordinator/CoordinatorAlumniFilters";
 import CoordinatorAlumniTable from "@/components/coordinator/CoordinatorAlumniTable";
+import usePolling from '@/hooks/usePolling';
 
 export default function CoordinatorAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");
@@ -26,6 +27,11 @@ export default function CoordinatorAlumni({ alumni, filters }) {
     const delay = setTimeout(() => applyFilters(), 500);
     return () => clearTimeout(delay);
   }, [search]);
+
+  usePolling({
+    interval: 10000,
+    only: ['alumni'],
+  });
 
   return (
     <div className="w-full h-full flex flex-col p-4 gap-4 overflow-y-auto">
