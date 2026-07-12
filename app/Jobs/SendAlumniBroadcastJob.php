@@ -15,8 +15,8 @@ class SendAlumniBroadcastJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 5; // Retry up to 5 times
-    public int $timeout = 120;
+    public int $tries = 1; // Don't retry — bulk mail failures should be logged and skipped
+    public int $timeout = 600; // 10 minutes to handle large batches with delays
     public int $backoff = 15; // Wait 15 seconds between retries
 
     /**
@@ -50,16 +50,18 @@ class SendAlumniBroadcastJob implements ShouldQueue
         
         foreach ($users as $user) {
             try {
-                // Add a 2-second delay before sending to ensure we don't hit rate limits
-                // even if multiple jobs somehow run close together
-                sleep(2);
+                // Respect Mailtrap free tier rate limit (1 email/second).
+                // 1.5s delay gives comfortable headroom.
+                sleep(5);
                 
                 Mail::to($user->email)
                     ->send(new AlumniBroadcastEmail($this->subject, $this->body));
                 $emailsSent++;
                 \Log::info("Email sent to: {$user->email}");
             } catch (\Exception $e) {
-                \Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
+                \Log::error("Bulk mail failed to {$user->email}: " . $e->getMessage());
+                // Don't rethrow — skip this recipient and continue with the rest.
+                // On rate limit errors (550), retrying immediately won't help.
             }
         }
 
