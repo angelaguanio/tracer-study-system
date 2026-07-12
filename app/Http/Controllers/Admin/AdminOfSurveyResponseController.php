@@ -19,7 +19,8 @@ class AdminOfSurveyResponseController extends Controller
     $sort = $request->get('sort', 'newest');
 
     $base = Survey::withCount('sections')
-        ->with('creator');
+        ->with('creator')
+        ->has('responses'); // Only surveys with at least one response
 
     if ($sort === 'oldest') {
         $base->oldest();

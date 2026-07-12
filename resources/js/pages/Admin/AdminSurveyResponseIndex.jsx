@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "@/layouts/admin-layout";
-import { Archive, ArrowUpDown  } from "lucide-react";
+import { Archive, ListFilter } from "lucide-react";
 import {
   Pagination, PaginationContent, PaginationEllipsis,
   PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import usePolling from '@/hooks/usePolling';
 
 export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys = [], filters = {} }) {
@@ -69,7 +72,7 @@ usePolling({
         <p className="text-sm text-gray-500">Review survey submissions</p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between">
         {/* TABS */}
         <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-1 w-fit shadow-sm">
           <button
@@ -101,21 +104,26 @@ usePolling({
           </button>
         </div>
 
-        {/* Sort */}
-        <div className="flex items-center gap-2 bg-white border rounded-lg px-2 py-0.5 shadow-sm text-gray-500">
-          <ArrowUpDown className="h-4 w-4 text-gray-500" />
-
-          <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="border-0 shadow-none h-8 w-fit focus:ring-0 text-gray-500">
-                  <SelectValue />
-              </SelectTrigger>
-
-              <SelectContent>
-                  <SelectItem value="newest" >Newest</SelectItem>
-                  <SelectItem value="oldest" >Oldest</SelectItem>
-              </SelectContent>
-          </Select>
-      </div>
+        {/* Sort — icon only, all breakpoints */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className={`bg-white shadow-sm ${sort !== "newest" ? "ring-2 ring-blue-500" : ""}`}
+            >
+              <ListFilter className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel className="text-xs">Sort by date</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
+              <DropdownMenuRadioItem value="newest">Newest first</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="oldest">Oldest first</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* LIST */}
