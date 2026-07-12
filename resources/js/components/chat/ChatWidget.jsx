@@ -51,12 +51,14 @@ export default function ChatWidget({ user }) {
             } else if (isCoordinator) {
                 const conv = Array.isArray(res.data) ? res.data[0] : res.data;
                 if (conv) {
-                    // Don't set totalUnread for coordinator since they auto-open the chat
-                    // setActiveConversation(conv);
-                    // subscribeToChannel(conv);
+                    setTotalUnread(conv.unread_count ?? 0);
+                    setActiveConversation(conv);
+                    subscribeToChannel(conv);
                 }
             }
         }).catch(() => {});
+    // subscribeToChannel is stable (doesn't change), safe to omit from deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAdmin, isCoordinator]);
 
     const subscribeToChannel = (conv) => {

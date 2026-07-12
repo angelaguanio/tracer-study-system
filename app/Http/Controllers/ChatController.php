@@ -19,7 +19,6 @@ class ChatController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-         dd('Reached ChatController@index');
         $user = $request->user();
 
         if ($user->user_role === 'admin') {

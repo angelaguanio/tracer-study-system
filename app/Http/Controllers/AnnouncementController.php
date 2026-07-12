@@ -85,7 +85,8 @@ class AnnouncementController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'details' => 'required|string',
-            'images.*' => 'image',
+            'images' => 'nullable|array',
+            'images.*' => 'file|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
 
         $files = $request->file('images', []);
@@ -245,7 +246,8 @@ class AnnouncementController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'details' => 'required|string',
-            'images.*' => 'image',
+            'images' => 'nullable|array',
+            'images.*' => 'file|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
 
         $existing = json_decode($request->existing_images, true) ?? [];

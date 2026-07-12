@@ -55,15 +55,15 @@ class StudentProfileController extends Controller
 
             'is_employed'    => 'required|in:yes,no',
 
-            'company'                => 'required_if:is_employed,yes|string|max:255',
-            'employment_type'        => 'required_if:is_employed,yes|string|max:255',
-            'position'                => 'required_if:is_employed,yes|string|max:255',
-            'employment_start_year'   => 'required_if:is_employed,yes|numeric',
-            'employment_end_year'     => 'nullable',
-            'location'                => 'required_if:is_employed,yes|string|max:255',
-            'monthly_salary'          => 'nullable|numeric|min:0',
+            'company'                => 'required_if:is_employed,yes|nullable|string|max:255',
+            'employment_type'        => 'required_if:is_employed,yes|nullable|string|max:255',
+            'position'               => 'required_if:is_employed,yes|nullable|string|max:255',
+            'employment_start_year'  => 'required_if:is_employed,yes|nullable|numeric',
+            'employment_end_year'    => 'nullable',
+            'location'               => 'required_if:is_employed,yes|nullable|string|max:255',
+            'monthly_salary'         => 'nullable|numeric|min:0',
 
-            'reason_unemployed' => 'required_if:is_employed,no|string|max:255',
+            'reason_unemployed' => 'required_if:is_employed,no|nullable|string|max:255',
         ]);
 
         // 1. Define variables clearly before usage to prevent crashes
