@@ -25,14 +25,13 @@ export default function NotificationBell({ className = "", notifications: shared
         fetchNotifications,
         markRead,
         markAllRead,
-        clearBadge,
+        markSeen,
     } = sharedNotifications ?? localNotifications;
 
     const handleOpen = () => {
         setOpen(true);
         fetchNotifications();
-        if (unreadCount > 0);
-        clearBadge();
+        markSeen(); // persists seen timestamp to DB so count stays 0 on refresh
     };
 
     const getNotificationRoute = (notification) => {

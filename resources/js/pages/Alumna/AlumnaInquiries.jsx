@@ -17,6 +17,7 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
+        if (!initialized) return; // don't fire on mount
         const delayDebounceFn = setTimeout(() => {
             router.get('/alumna/inquiries', {
                 search: search || null,
@@ -39,25 +40,28 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
         }
     
         setSelectedInquiry((current) => {
-            if (!current) {
-                return null; // don't auto-select again after user pressed Back
-            }
+            if (!current) return null;
     
-            const updated = inquiries.data.find(
-                (i) => i.id === current.id
-            );
-    
-            return updated ?? inquiries.data[0];
+            const updated = inquiries.data.find(i => i.id === current.id);
+            if (!updated) return inquiries.data[0];
+
+            // Only sync safe fields — replies are managed by polling in AlumnaInquiryContent
+            return {
+                ...current,
+                status: updated.status,
+                subject: updated.subject,
+                message: updated.message,
+                department: updated.department,
+                formatted_date: updated.formatted_date,
+            };
         });
     }, [inquiries.data]);
 
     useEffect(() => {
         if (initialized) return;
-    
         if (inquiries.data.length > 0) {
             setSelectedInquiry(initialInquiry);
         }
-    
         setInitialized(true);
     }, []);
 

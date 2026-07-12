@@ -8,56 +8,64 @@ import axios from 'axios';
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
-    const [currentInquiry, setCurrentInquiry] = useState(inquiry);
+    // Only replies and status are managed locally — everything else comes from the inquiry prop
+    const [liveReplies, setLiveReplies] = useState(inquiry?.replies ?? []);
+    const [liveStatus, setLiveStatus] = useState(inquiry?.status ?? null);
     const bottomRef = useRef(null);
 
+    // When inquiry id changes (user switched), reset live state to the new inquiry's data
     useEffect(() => {
-        setCurrentInquiry(inquiry);
-    }, [inquiry]);
+        setLiveReplies(inquiry?.replies ?? []);
+        setLiveStatus(inquiry?.status ?? null);
+        prevReplyCountRef.current = inquiry?.replies?.length ?? 0;
+    }, [inquiry?.id]);
 
+    // Polling
     useEffect(() => {
-        if (!currentInquiry) return;
-    
+        if (!inquiry) return;
+
         const interval = setInterval(async () => {
             try {
                 const { data } = await axios.get(
-                    route('alumna.inquiries.replies', currentInquiry.id)
+                    route('alumna.inquiries.replies', inquiry.id)
                 );
-    
-                setCurrentInquiry(data);
+                setLiveReplies(data.replies ?? []);
+                setLiveStatus(data.status ?? null);
             } catch (e) {
                 console.error(e);
             }
         }, 3000);
-    
+
         return () => clearInterval(interval);
-    
-    }, [currentInquiry?.id]);
+    }, [inquiry?.id]);
+
+    const prevReplyCountRef = useRef(0);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({
-            behavior: 'smooth',
-        });
-    }, [currentInquiry?.replies]);
+        const newCount = liveReplies.length;
+        if (newCount > prevReplyCountRef.current) {
+            bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+        prevReplyCountRef.current = newCount;
+    }, [liveReplies]);
 
     const sendReply = async () => {
         if (!replyText.trim()) return;
-    
+
         setSending(true);
-    
         try {
             await axios.post(
-                route('alumna.inquiries.reply', currentInquiry.id),
+                route('alumna.inquiries.reply', inquiry.id),
                 { message: replyText }
             );
-
             setReplyText('');
 
-            // Immediately refresh this conversation
+            // Immediately refresh replies
             const { data } = await axios.get(
-                route('alumna.inquiries.replies', currentInquiry.id)
+                route('alumna.inquiries.replies', inquiry.id)
             );
-            setCurrentInquiry(data);
+            setLiveReplies(data.replies ?? []);
+            setLiveStatus(data.status ?? null);
 
             toast.success('Reply sent!');
         } catch (e) {
@@ -74,10 +82,10 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
             <Avatar className={`${dim} shrink-0 overflow-hidden border border-gray-200`}>
                 {user?.profile_picture ? (
                     <img
-                    src={user.profile_picture}
-                    alt={`${user.first_name}'s profile`}
-                    className="w-full h-full object-cover"
-                />
+                        src={user.profile_picture}
+                        alt={`${user.first_name}'s profile`}
+                        className="w-full h-full object-cover"
+                    />
                 ) : (
                     <div className='h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white font-bold'>
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
@@ -95,56 +103,43 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
         );
     }
 
-    const replies = [...(currentInquiry?.replies ?? [])].sort(
+    const replies = [...liveReplies].sort(
         (a, b) => new Date(a.created_at) - new Date(b.created_at)
     );
-    const isResolved = currentInquiry?.status === 'resolved';
+    const isResolved = liveStatus === 'resolved';
 
     return (
         <main className='flex flex-col w-full h-full p-4 gap-3'>
-          <header className="flex items-center gap-2 px-3 pb-3 border-b">
-            <div className="md:hidden">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onBack}
-                    className="shrink-0"
-                >
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
-            </div>
+            <header className="flex items-center gap-2 px-3 pb-3 border-b">
+                <div className="md:hidden">
+                    <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
+                        <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                </div>
+                <div className="min-w-0">
+                    <h1 className="text-xl font-semibold break-words">{inquiry.subject}</h1>
+                    <p className="text-xs text-gray-400">{inquiry.formatted_date}</p>
+                    {inquiry.department && (
+                        <p className="text-sm text-gray-500">Department: {inquiry.department}</p>
+                    )}
+                </div>
+            </header>
 
-            <div className="min-w-0">
-                <h1 className="text-xl font-semibold break-words">
-                    {currentInquiry.subject}
-                </h1>
-
-                <p className="text-xs text-gray-400">
-                    {currentInquiry.formatted_date}
-                </p>
-
-                {currentInquiry.department && (
-                    <p className="text-sm text-gray-500">
-                        Department: {currentInquiry.department}
-                    </p>
-                )}
-            </div>
-        </header>
             {/* Thread */}
             <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
-                {/* Original inquiry — alumna's message, shown on the right */}
+                {/* Original inquiry */}
                 <div className='flex gap-3 flex-row-reverse'>
-                    <AvatarBlock user={currentInquiry.alumni} />
+                    <AvatarBlock user={inquiry.alumni} />
                     <div className='flex flex-col gap-1 max-w-[80%] items-end'>
                         <span className='text-xs text-gray-400'>
-                            You · {currentInquiry.formatted_date}
+                            You · {inquiry.formatted_date}
                         </span>
                         <div
                             className='bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-3'
                             style={{ wordBreak: 'break-word' }}
                         >
-                            <p className='text-sm font-semibold mb-1'>{currentInquiry.subject}</p>
-                            <p className='text-sm'>{currentInquiry.message}</p>
+                            <p className='text-sm font-semibold mb-1'>{inquiry.subject}</p>
+                            <p className='text-sm'>{inquiry.message}</p>
                         </div>
                     </div>
                 </div>
@@ -157,15 +152,11 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                             <AvatarBlock user={reply.sender} />
                             <div className={`flex flex-col gap-1 max-w-[80%] ${isMe ? 'items-end' : 'items-start'}`}>
                                 <span className='text-xs text-gray-400'>
-                                    {isMe
-                                        ? 'You'
-                                        : `${reply.sender?.first_name} ${reply.sender?.last_name}`}
+                                    {isMe ? 'You' : `${reply.sender?.first_name} ${reply.sender?.last_name}`}
                                     {' · '}
                                     {new Date(reply.created_at).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
+                                        month: 'short', day: 'numeric',
+                                        hour: '2-digit', minute: '2-digit',
                                     })}
                                 </span>
                                 <div
@@ -182,7 +173,6 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                         </div>
                     );
                 })}
-
                 <div ref={bottomRef} />
             </div>
 

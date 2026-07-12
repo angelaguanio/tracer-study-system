@@ -30,7 +30,7 @@ const STEP_META = [
 // ─── Options ──────────────────────────────────────────────────────────────────
 const CECT_COURSES = [
   { value: 'BSCpE', label: 'Bachelor of Science in Computer Engineering' },
-  { value: 'BSECE', label: 'Bachelor of Science in Electronics Engineering' },
+  { value: 'BSEcE', label: 'Bachelor of Science in Electronics Engineering' },
   { value: 'BSIT',  label: 'Bachelor of Science in Information Technology' },
 ];
 
@@ -47,9 +47,7 @@ const EMPLOYMENT_TYPE_OPTIONS = [
 ];
 
 const UNEMPLOYMENT_REASONS = [
-  'Studying', 'Job Hunting', 'Family Reasons', 'Health Reasons',
-  'Personal Reasons', 'Career Break', 'Recently Resigned',
-  'Laid Off', 'Relocating', 'Other',
+  'Studying', 'Job Hunting', 'Career Break',
 ];
 
 const INITIAL_FORM = {

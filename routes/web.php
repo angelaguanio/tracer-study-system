@@ -492,6 +492,7 @@ Route::middleware(['auth'])->prefix('notifications')->group(function () {
     Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/{id}/read', [NotificationController::class, 'markRead']);
     Route::post('/read-all', [NotificationController::class, 'markAllRead']);
+    Route::post('/seen', [NotificationController::class, 'markSeen']);  // update seen timestamp
 });
 
 Route::middleware(['auth'])->prefix('messenger')->group(function () {

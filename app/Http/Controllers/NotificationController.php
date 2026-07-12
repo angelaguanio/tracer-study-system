@@ -65,13 +65,27 @@ class NotificationController extends Controller
 
     public function unreadCount()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
+        $userId = $user->id;
 
-        $count = $this->getNotificationsQuery()
-            ->whereDoesntHave('reads', fn($q) => $q->where('user_id', $userId))
-            ->count();
+        $query = $this->getNotificationsQuery();
+
+        // Only count notifications created after the user last saw the bell
+        if ($user->notifications_seen_at) {
+            $query->where('created_at', '>', $user->notifications_seen_at);
+        }
+
+        $count = $query->count();
 
         return response()->json(['count' => $count]);
+    }
+
+    public function markSeen()
+    {
+        $user = auth()->user();
+        $user->update(['notifications_seen_at' => now()]);
+
+        return response()->json(['success' => true]);
     }
 
     public function markRead($id)

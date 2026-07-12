@@ -51,7 +51,7 @@ export default function AdminAlumniTable({
         return "bg-blue-100 text-blue-600";
       case "BSCpE":
         return "bg-yellow-100 text-yellow-600";
-      case "BSECE":
+      case "BSEcE":
         return "bg-purple-100 text-purple-600";
       default:
         return "bg-gray-100 text-gray-600";

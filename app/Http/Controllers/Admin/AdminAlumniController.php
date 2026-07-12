@@ -53,7 +53,7 @@ class AdminAlumniController extends Controller
     $query->orderBy('created_at', 'desc');
 
     // Pag-paginate ng data
-    $users = $query->paginate(6)->appends($request->query());
+    $users = $query->paginate(10)->appends($request->query());
 
     // Transformation ng data para sa frontend
     $users->getCollection()->transform(function ($user) {

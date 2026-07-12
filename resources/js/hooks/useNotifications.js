@@ -7,11 +7,21 @@ export function useNotifications(userRole, userId) {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
     
+    // clearBadge is kept for local immediate feedback but the real
+    // persistence is done via markSeen() which updates the DB timestamp
     const clearBadge = useCallback(() => {
         setUnreadCount(0);
     }, []);
 
-    
+    const markSeen = useCallback(async () => {
+        try {
+            await axios.post('/notifications/seen');
+            setUnreadCount(0);
+        } catch (error) {
+            console.error('Failed to mark notifications as seen:', error);
+        }
+    }, []);
+
     const fetchNotifications = useCallback(async () => {
         try {
             setLoading(true);
@@ -38,13 +48,11 @@ export function useNotifications(userRole, userId) {
         setNotifications(prev =>
             prev.map(n => n.id === id ? { ...n, is_read: true } : n)
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
     }, []);
 
     const markAllRead = useCallback(async () => {
         await axios.post('/notifications/read-all');
         setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-        setUnreadCount(0);
     }, []);
 
     useEffect(() => {
@@ -78,5 +86,6 @@ export function useNotifications(userRole, userId) {
         markRead,
         markAllRead,
         clearBadge,
+        markSeen,
     };
 }

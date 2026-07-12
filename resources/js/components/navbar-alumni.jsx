@@ -90,7 +90,7 @@ export default function NavbarAlumni({ children }) {
 
         {/* Notification bell — visible on all screen sizes */}
         <div className="hidden md:flex items-center gap-2">
-          <NotificationBell className='hover:bg-blue-600 active:border' notifications={notifications}/>
+          <NotificationBell className='hover:bg-bluehover-btn active:border' notifications={notifications}/>
         
 
         {/* Profile dropdown - desktop only */}
@@ -119,7 +119,7 @@ export default function NavbarAlumni({ children }) {
 
         {/* Mobile: bell + hamburger — right side */}
         <div className="md:hidden flex items-center gap-1">
-          <NotificationBell className='hover:bg-blue-800 active:border' notifications={notifications}/>
+          <NotificationBell className='hover:bg-bluehover-btn active:border' notifications={notifications}/>
           <button
             onClick={() => setMobileOpen(true)}
             className="p-2 text-navbar-text cursor-pointer"

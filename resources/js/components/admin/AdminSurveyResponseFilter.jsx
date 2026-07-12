@@ -53,7 +53,7 @@ export default function AdminSurveyResponseFilter({
             <SelectItem value="all">All Courses</SelectItem>
             <SelectItem value="BSIT">BSIT</SelectItem>
             <SelectItem value="BSCpE">BSCpE</SelectItem>
-            <SelectItem value="BSECE">BSECE</SelectItem>
+            <SelectItem value="BSEcE">BSEcE</SelectItem>
           </SelectContent>
         </Select>
 
