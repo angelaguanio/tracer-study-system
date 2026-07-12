@@ -13,11 +13,9 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
             : null
     );
 
-    const [statusFilter, setStatusFilter] = useState(
-        filters?.status ? filters.status.split(",") : []
-    );
-
+    const [statusFilter, setStatusFilter] = useState(filters?.status || '');
     const [search, setSearch] = useState(filters?.search || "");
+    const [sort, setSort] = useState(filters?.sort || "newest");
 
     // Search and filter
     useEffect(() => {
@@ -26,10 +24,8 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                 "/coordinator/inquiries",
                 {
                     search,
-                    status:
-                        statusFilter.length > 0
-                            ? statusFilter.join(",")
-                            : null,
+                    status: statusFilter || null,
+                    sort: sort !== "newest" ? sort : null,
                 },
                 {
                     preserveState: true,
@@ -41,7 +37,7 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [search, statusFilter]);
+    }, [search, statusFilter, sort]);
 
     // Sync selectedInquiry when inquiries.data updates (e.g. after polling/search)
     useEffect(() => {
@@ -117,6 +113,8 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                         setStatusFilter={setStatusFilter}
                         search={search}
                         setSearch={setSearch}
+                        sort={sort}
+                        setSort={setSort}
                     />
                 ) : (
                     <InquiryContent
@@ -139,6 +137,8 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                     setStatusFilter={setStatusFilter}
                     search={search}
                     setSearch={setSearch}
+                    sort={sort}
+                    setSort={setSort}
                 />
 
                 <InquiryContent

@@ -1,10 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
 import { Button } from './ui/button';
-import { ChevronDown, Send, ArrowLeft } from 'lucide-react';
+import { CheckCircle, RotateCcw, Send, ArrowLeft } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
@@ -13,13 +9,8 @@ import axios from "axios";
 export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
     const bottomRef = useRef(null);
-
-    const statusItems = [
-        { value: 'pending', label: 'Pending' },
-        { value: 'replied', label: 'Replied' },
-        { value: 'resolved', label: 'Resolved' },
-    ];
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -84,17 +75,24 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
     
     }, [inquiry?.id, inquiry?.replies?.length, inquiry?.status, userRole, sending]);
 
-    const updateStatus = (newStatus) => {
+    const toggleResolved = async () => {
+        const newStatus = inquiry.status === 'resolved' ? 'replied' : 'resolved';
         const routeName = userRole === 'coordinator'
             ? 'coordinator.inquiries.update'
             : 'admin.inquiries.update';
 
+        setUpdatingStatus(true);
         router.patch(route(routeName, inquiry.id), { status: newStatus }, {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success(`Inquiry marked as ${newStatus}`);
+                toast.success(
+                    newStatus === 'resolved'
+                        ? 'Inquiry marked as resolved'
+                        : 'Inquiry reopened'
+                );
                 onUpdateStatus(inquiry.id, newStatus);
-            }
+            },
+            onFinish: () => setUpdatingStatus(false),
         });
     };
 
@@ -195,34 +193,28 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                     </div>
 
                     {/* Right side */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="outline"
-                                className="h-9 px-3 text-sm gap-1 shrink-0"
-                            >
-                                Mark as
-                                <ChevronDown className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>
-                                Change Status
-                            </DropdownMenuLabel>
-
-                            <DropdownMenuSeparator />
-
-                            {statusItems.map((option) => (
-                                <DropdownMenuItem
-                                    key={option.value}
-                                    onClick={() => updateStatus(option.value)}
-                                >
-                                    {option.label}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                        onClick={toggleResolved}
+                        disabled={updatingStatus}
+                        variant={inquiry.status === 'resolved' ? 'default' : 'outline'}
+                        className={`h-9 px-3 text-sm gap-2 shrink-0 ${
+                            inquiry.status === 'resolved'
+                                ? 'bg-green-600 hover:bg-green-700 text-white border-transparent'
+                                : 'text-gray-700'
+                        }`}
+                    >
+                        {inquiry.status === 'resolved' ? (
+                            <>
+                                <RotateCcw className="h-4 w-4" />
+                                Unresolve
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircle className="h-4 w-4" />
+                                Mark Resolved
+                            </>
+                        )}
+                    </Button>
 
                 </div>
             </header>

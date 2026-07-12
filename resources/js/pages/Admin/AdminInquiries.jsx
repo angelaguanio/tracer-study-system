@@ -11,14 +11,16 @@ export default function AdminInquiries({inquiries, filters}) {
             ? inquiries.data[0] || null
             : null
     );
-    const [statusFilter, setStatusFilter] = useState(filters?.status ? filters.status.split(',') : []);
+    const [statusFilter, setStatusFilter] = useState(filters?.status || '');
     const [search, setSearch] = useState(filters?.search || '');
+    const [sort, setSort] = useState(filters?.sort || 'newest');
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             router.get('/admin/inquiries', {
                 search,
-                status: statusFilter.length > 0 ? statusFilter.join(',') : null,
+                status: statusFilter || null,
+                sort: sort !== 'newest' ? sort : null,
             }, {
                 preserveState: true,
                 preserveScroll: true,
@@ -28,7 +30,7 @@ export default function AdminInquiries({inquiries, filters}) {
         }, 500);
     
         return () => clearTimeout(delayDebounceFn);
-    }, [search, statusFilter]);
+    }, [search, statusFilter, sort]);
     
     useEffect(() => {
         setSelectedInquiry(prev => {
@@ -101,6 +103,8 @@ export default function AdminInquiries({inquiries, filters}) {
                     setStatusFilter={setStatusFilter}
                     search={search}
                     setSearch={setSearch}
+                    sort={sort}
+                    setSort={setSort}
                 />
             ) : (
                 <InquiryContent
@@ -122,6 +126,8 @@ export default function AdminInquiries({inquiries, filters}) {
                 setStatusFilter={setStatusFilter}
                 search={search}
                 setSearch={setSearch}
+                sort={sort}
+                setSort={setSort}
             />
 
             <InquiryContent

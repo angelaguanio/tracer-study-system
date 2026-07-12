@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Avatar } from '../ui/avatar';
-import { Send } from 'lucide-react';
-import { router } from '@inertiajs/react';
+import { Send, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
@@ -42,35 +40,32 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
         });
     }, [currentInquiry?.replies]);
 
-    const sendReply = () => {
+    const sendReply = async () => {
         if (!replyText.trim()) return;
     
         setSending(true);
     
-        router.post(
-            route('alumna.inquiries.reply', currentInquiry.id),
-            {
-                message: replyText,
-            },
-            {
-                preserveScroll: true,
-    
-                onSuccess: () => {
-                    setReplyText('');
-    
-                    // Immediately refresh this conversation
-                    axios
-                        .get(route('alumna.inquiries.replies', currentInquiry.id))
-                        .then(({ data }) => {
-                            setCurrentInquiry(data);
-                        });
-    
-                    toast.success('Reply sent!');
-                },
-    
-                onFinish: () => setSending(false),
-            }
-        );
+        try {
+            await axios.post(
+                route('alumna.inquiries.reply', currentInquiry.id),
+                { message: replyText }
+            );
+
+            setReplyText('');
+
+            // Immediately refresh this conversation
+            const { data } = await axios.get(
+                route('alumna.inquiries.replies', currentInquiry.id)
+            );
+            setCurrentInquiry(data);
+
+            toast.success('Reply sent!');
+        } catch (e) {
+            console.error(e);
+            toast.error('Failed to send reply.');
+        } finally {
+            setSending(false);
+        }
     };
 
     const AvatarBlock = ({ user, size = 'sm' }) => {
@@ -100,7 +95,9 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
         );
     }
 
-    const replies = [...(currentInquiry?.replies ?? [])].reverse();
+    const replies = [...(currentInquiry?.replies ?? [])].sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    );
     const isResolved = currentInquiry?.status === 'resolved';
 
     return (

@@ -12,12 +12,16 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
 
     const [selectedInquiry, setSelectedInquiry] = useState(initialInquiry);
     const [search, setSearch] = useState(filters?.search || '');
+    const [sort, setSort] = useState(filters?.sort || 'newest');
+    const [recipient, setRecipient] = useState(filters?.recipient || '');
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             router.get('/alumna/inquiries', {
                 search: search || null,
+                sort: sort !== 'newest' ? sort : null,
+                recipient: recipient || null,
             }, {
                 preserveState: true,
                 preserveScroll: true,
@@ -26,7 +30,7 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [search]);
+    }, [search, sort, recipient]);
 
     useEffect(() => {
         if (inquiries.data.length === 0) {
@@ -70,6 +74,10 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
                         onSelect={setSelectedInquiry}
                         search={search}
                         setSearch={setSearch}
+                        sort={sort}
+                        setSort={setSort}
+                        recipient={recipient}
+                        setRecipient={setRecipient}
                     />
                 ) : (
                     <AlumnaInquiryContent
@@ -87,6 +95,10 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
                     onSelect={setSelectedInquiry}
                     search={search}
                     setSearch={setSearch}
+                    sort={sort}
+                    setSort={setSort}
+                    recipient={recipient}
+                    setRecipient={setRecipient}
                 />
 
                 <AlumnaInquiryContent inquiry={selectedInquiry} />

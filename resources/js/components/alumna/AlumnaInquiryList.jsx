@@ -1,4 +1,4 @@
-    import { Badge } from '../ui/badge';
+import { Badge } from '../ui/badge';
 import {
     Card,
     CardHeader,
@@ -9,15 +9,31 @@ import {
 } from '@/components/ui/card';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ListFilter } from 'lucide-react';
 import { router } from '@inertiajs/react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
-export default function AlumnaInquiryList({ inquiries, selectedId, onSelect, search, setSearch }) {
+export default function AlumnaInquiryList({
+    inquiries, selectedId, onSelect,
+    search, setSearch,
+    sort, setSort,
+    recipient, setRecipient,
+}) {
     const handlePageChange = (url) => {
         if (url) {
             router.get(url, {}, { preserveState: true, preserveScroll: true });
         }
     };
+
+    const hasActiveFilters = sort !== 'newest' || recipient !== '';
 
     return (
         <aside className='bg-blue-100 w-full md:w-[380px] md:min-w-[380px] rounded-2xl flex flex-col h-full'>
@@ -28,8 +44,9 @@ export default function AlumnaInquiryList({ inquiries, selectedId, onSelect, sea
                     <Badge className='bg-slate-700 text-sm px-3'>{inquiries.total}</Badge>
                 </div>
 
-                <div className='px-4 py-2'>
-                    <div className='relative flex items-center w-full'>
+                {/* Search + filter button */}
+                <div className='flex gap-2 px-4 py-2'>
+                    <div className='relative flex items-center flex-1'>
                         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500' />
                         <Input
                             placeholder='Search'
@@ -38,6 +55,34 @@ export default function AlumnaInquiryList({ inquiries, selectedId, onSelect, sea
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant='outline'
+                                size='icon'
+                                className={`shrink-0 bg-white ${hasActiveFilters ? 'ring-2 ring-blue-500' : ''}`}
+                            >
+                                <ListFilter className='h-4 w-4' />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end' className='w-44'>
+                            <DropdownMenuLabel className='text-xs'>Sort by date</DropdownMenuLabel>
+                            <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
+                                <DropdownMenuRadioItem value='newest'>Newest first</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value='oldest'>Oldest first</DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuLabel className='text-xs'>Filter by recipient</DropdownMenuLabel>
+                            <DropdownMenuRadioGroup value={recipient} onValueChange={setRecipient}>
+                                <DropdownMenuRadioItem value=''>All</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value='coordinator'>Department</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value='admin'>Alumni Office</DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 

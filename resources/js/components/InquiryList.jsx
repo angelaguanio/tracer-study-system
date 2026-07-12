@@ -10,9 +10,12 @@ import {
 
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 
 import {Avatar} from './ui/avatar';
@@ -24,12 +27,7 @@ import { router } from '@inertiajs/react';
 
 
 export default function InquiryList({inquiries, selectedId, onSelect, statusFilter, setStatusFilter, search,
-  setSearch}) {
-    const statusItems = [
-        { value: 'pending', label: 'Pending' },
-        { value: 'replied', label: 'Replied' },
-        { value: 'resolved', label: 'Resolved' },
-    ];
+  setSearch, sort, setSort}) {
     
     const getStatusColor = (status) => {
         switch (status) {
@@ -53,6 +51,8 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
         }
     };
 
+    const hasActiveFilters = statusFilter !== '' || (sort && sort !== 'newest');
+
   return (
     <aside className='   bg-blue-100 w-full md:w-[340px] lg:w-[380px] shrink-0 flex  flex-col h-full rounded-lg'>
         {/* header */}
@@ -72,26 +72,32 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <DropdownMenu >
+                <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                            <ListFilter/>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className={`shrink-0 ${hasActiveFilters ? 'ring-2 ring-blue-500' : ''}`}
+                        >
+                            <ListFilter className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>  
-                        {statusItems.map((status) => (
-                            <DropdownMenuCheckboxItem key={status.value} checked={statusFilter.includes(status.value)}
-                                 onCheckedChange={(checked) => {
-                                if (checked) {
-                                setStatusFilter(prev => [...prev, status.value]);
-                                } else {
-                                setStatusFilter(prev =>
-                                    prev.filter(item => item !== status.value)
-                                );
-                                }}}>
-                                {status.label}
-                            </DropdownMenuCheckboxItem>
-                        ))}   
+                    <DropdownMenuContent align="end" className="w-44">
+                        <DropdownMenuLabel className="text-xs">Sort by date</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup value={sort ?? 'newest'} onValueChange={setSort}>
+                            <DropdownMenuRadioItem value="newest">Newest first</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="oldest">Oldest first</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuLabel className="text-xs">Filter by status</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup value={statusFilter} onValueChange={setStatusFilter}>
+                            <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="pending">Pending</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="replied">Replied</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="resolved">Resolved</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

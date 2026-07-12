@@ -91,9 +91,26 @@ class InquiriesController extends Controller
             });
         }
 
+        // Filter by recipient type: 'coordinator' = dept, 'admin' = alumni office
+        if ($request->filled('recipient')) {
+            if ($request->recipient === 'admin') {
+                $query->where('recipient_type', 'admin');
+            } elseif ($request->recipient === 'coordinator') {
+                $query->where('recipient_type', 'coordinator');
+            }
+        }
+
+        // Sort order: oldest first or newest first (default newest)
+        $sort = $request->input('sort', 'newest');
+        $query->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc');
+
         return Inertia::render('Alumna/AlumnaInquiries', [
-            'inquiries' => $query->latest()->paginate(10)->withQueryString(),
-            'filters'   => ['search' => $request->search],
+            'inquiries' => $query->paginate(10)->withQueryString(),
+            'filters'   => [
+                'search'    => $request->search,
+                'sort'      => $sort,
+                'recipient' => $request->recipient,
+            ],
             'openId'    => $request->integer('open') ?: null,
         ]);
     }
@@ -145,16 +162,20 @@ class InquiriesController extends Controller
         }
 
         // Filter by status
-        if ($request->has('status') && $request->status) {
-            $statuses = explode(',', $request->status);
-            $query->whereIn('status', $statuses);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
+        // Sort order
+        $sort = $request->input('sort', 'newest');
+        $query->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc');
+
         return Inertia::render('Admin/AdminInquiries', [
-            'inquiries' => $query->latest()->paginate(10)->withQueryString(),
+            'inquiries' => $query->paginate(10)->withQueryString(),
             'filters' => [
                 'search' => $request->search,
                 'status' => $request->status,
+                'sort'   => $sort,
             ]
         ]);
     }
@@ -164,7 +185,7 @@ class InquiriesController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,replied,resolved',
+            'status' => 'required|in:replied,resolved',
         ]);
 
         $inquiry = Inquiries::findOrFail($id);
@@ -199,16 +220,20 @@ class InquiriesController extends Controller
         }
 
         // Filter by status
-        if ($request->has('status') && $request->status) {
-            $statuses = explode(',', $request->status);
-            $query->whereIn('status', $statuses);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
+        // Sort order
+        $sort = $request->input('sort', 'newest');
+        $query->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc');
+
         return Inertia::render('Coordinator/CoordinatorInquiries', [
-            'inquiries' => $query->latest()->paginate(10)->withQueryString(),
+            'inquiries' => $query->paginate(10)->withQueryString(),
             'filters' => [
                 'search' => $request->search,
                 'status' => $request->status,
+                'sort'   => $sort,
             ]
         ]);
     }
