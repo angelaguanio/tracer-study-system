@@ -50,10 +50,17 @@ class AdminAlumniController extends Controller
         $query->whereRaw('TRIM(courses) = ?', [$request->course]);
     }
 
+    // Employment status filter
+    if ($request->filled('employment') && $request->employment !== 'all') {
+        $query->whereHas('employment', function ($q) use ($request) {
+            $q->where('currently_employed', $request->employment);
+        });
+    }
+
     $query->orderBy('created_at', 'desc');
 
     // Pag-paginate ng data
-    $users = $query->paginate(10)->appends($request->query());
+    $users = $query->with('employment')->paginate(10)->appends($request->query());
 
     // Transformation ng data para sa frontend
     $users->getCollection()->transform(function ($user) {
@@ -66,12 +73,13 @@ class AdminAlumniController extends Controller
                         : ($user->end_year ?? 'N/A'),
             'avatar' => $user->profile_picture,
             'email' => $user->email,
+            'employment_status' => $user->employment?->currently_employed === 'Yes' ? 'Employed' : 'Unemployed',
         ];
     });
 
     return Inertia::render('Admin/AdminAlumni', [
         'alumni' => $users,
-        'filters' => $request->only(['search', 'year', 'course']),
+        'filters' => $request->only(['search', 'year', 'course', 'employment']),
     ]);
 }
 

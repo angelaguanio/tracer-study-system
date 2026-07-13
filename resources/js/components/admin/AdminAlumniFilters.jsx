@@ -15,6 +15,8 @@ export default function AdminAlumniFilters({
   setYear,
   course,
   setCourse,
+  employment,
+  setEmployment,
 }) {
   const latestYear = new Date().getFullYear() - 1;
   const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
@@ -58,6 +60,17 @@ export default function AdminAlumniFilters({
             <SelectItem value="BSIT">BSIT</SelectItem>
             <SelectItem value="BSCpE">BSCpE</SelectItem>
             <SelectItem value="BSEcE">BSEcE</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={setEmployment} value={employment}>
+          <SelectTrigger className="w-full md:w-[150px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="Yes">Employed</SelectItem>
+            <SelectItem value="No">Unemployed</SelectItem>
           </SelectContent>
         </Select>
       </div>

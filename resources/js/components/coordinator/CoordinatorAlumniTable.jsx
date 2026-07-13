@@ -83,6 +83,14 @@ export default function CoordinatorAlumniTable({
       <div className="hidden md:flex flex-col flex-1 min-h-0 rounded-xl shadow overflow-hidden bg-white border border-gray-100">
         <div className="overflow-x-auto shrink-0">
           <Table className="w-full table-fixed min-w-[700px]">
+            <colgroup>
+              <col className="w-12" />
+              <col className="w-[35%]" />
+              <col className="w-[15%]" />
+              <col className="w-[15%]" />
+              <col className="w-[13%]" />
+              <col className="w-[22%]" />
+            </colgroup>
             <TableHeader>
               <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
                 <TableHead className="w-12 text-center">
@@ -95,13 +103,16 @@ export default function CoordinatorAlumniTable({
                 <TableHead className="w-[35%] text-left text-gray-800 font-semibold pl-4">
                   Alumni
                 </TableHead>
-                <TableHead className="w-[18%] text-center text-gray-800 font-semibold">
-                  Course
+                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                  Status
                 </TableHead>
                 <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                  Course
+                </TableHead>
+                <TableHead className="w-[13%] text-center text-gray-800 font-semibold">
                   Year
                 </TableHead>
-                <TableHead className="w-[24%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[22%] text-center text-gray-800 font-semibold">
                   Actions
                 </TableHead>
               </TableRow>
@@ -111,6 +122,14 @@ export default function CoordinatorAlumniTable({
 
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
           <Table className="w-full table-fixed min-w-[700px]">
+            <colgroup>
+              <col className="w-12" />
+              <col className="w-[35%]" />
+              <col className="w-[15%]" />
+              <col className="w-[15%]" />
+              <col className="w-[13%]" />
+              <col className="w-[22%]" />
+            </colgroup>
             <TableBody>
               {alumniData.map((item) => (
                 <TableRow
@@ -146,17 +165,27 @@ export default function CoordinatorAlumniTable({
                     </div>
                   </TableCell>
 
-                  <TableCell className="w-[18%] text-center">
+                  <TableCell className="w-[15%] text-center">
+                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full ${
+                      item.employment_status === 'Employed'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {item.employment_status ?? 'N/A'}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="w-[15%] text-center">
                     <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                       {item.course ?? "N/A"}
                     </span>
                   </TableCell>
 
-                  <TableCell className="w-[15%] text-center text-gray-600 font-medium">
+                  <TableCell className="w-[13%] text-center text-gray-600 font-medium">
                     {item.year ?? "N/A"}
                   </TableCell>
 
-                  <TableCell className="w-[24%] text-center">
+                  <TableCell className="w-[22%] text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         size="sm"
@@ -181,7 +210,7 @@ export default function CoordinatorAlumniTable({
 
               {alumniData.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-[64px] text-center text-gray-500">
+                  <TableCell colSpan={6} className="h-[64px] text-center text-gray-500">
                     No records found.
                   </TableCell>
                 </TableRow>
@@ -242,8 +271,19 @@ export default function CoordinatorAlumniTable({
                 </div>
               </div>
 
-              {/* MOBILE ROW 2: COURSE & YEAR LAYOUT PATTERN */}
+              {/* MOBILE ROW 2: STATUS, COURSE & YEAR LAYOUT PATTERN */}
               <div className="px-2 flex flex-col gap-1.5 text-xs ">
+                {/* Status Row */}
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-gray-800 font-medium">Status:</span>
+                  <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full ${
+                    item.employment_status === 'Employed'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {item.employment_status ?? 'N/A'}
+                  </span>
+                </div>
                 {/* Course Row */}
                 <div className="flex justify-between items-center w-full">
                   <span className="text-gray-800 font-medium">Course:</span>
