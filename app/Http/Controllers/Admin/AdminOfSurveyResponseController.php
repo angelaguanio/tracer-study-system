@@ -99,15 +99,20 @@ class AdminOfSurveyResponseController extends Controller
 
     // UPDATED YEAR FILTERING LOGIC
     if ($request->filled('year') && $request->year !== 'all') {
-        // I-handle ang "2017-2018" format
         if (strpos($request->year, '-') !== false) {
-            // Kunin ang "2018" mula sa "2017-2018"
-            // Note: Siguraduhin na ang column name sa DB ay tugma (e.g., 'end_year' o 'year_graduated')
             $endYear = explode('-', $request->year)[1];
             $query->where('end_year', $endYear); 
         } else {
-            // Fallback
             $query->where('end_year', $request->year);
+        }
+    }
+
+    // STATUS FILTER
+    if ($request->filled('status') && $request->status !== 'all') {
+        if ($request->status === 'completed') {
+            $query->whereIn('id', $completedUserIds);
+        } else {
+            $query->whereNotIn('id', $completedUserIds);
         }
     }
 
@@ -129,7 +134,7 @@ class AdminOfSurveyResponseController extends Controller
 
     return Inertia::render('Admin/AdminSurveyResponse', [
         'responses' => $users,
-        'filters' => $request->only(['search', 'course', 'year', 'page']),
+        'filters' => $request->only(['search', 'course', 'year', 'status', 'page']),
         'survey' => [
             'id' => $survey->id,
             'title' => $survey->title,

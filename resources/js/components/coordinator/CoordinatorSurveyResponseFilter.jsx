@@ -14,6 +14,8 @@ export default function CoordinatorSurveyResponseFilter({
   setYear,
   course,
   setCourse,
+  status,
+  setStatus,
 }) {
   const latestYear = new Date().getFullYear() - 1;
   const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
@@ -53,6 +55,17 @@ export default function CoordinatorSurveyResponseFilter({
                 {y}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={status} onValueChange={(val) => setStatus(val)}>
+          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="incomplete">Not Completed</SelectItem>
           </SelectContent>
         </Select>
       </div>

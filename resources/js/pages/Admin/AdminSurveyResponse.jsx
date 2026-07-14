@@ -15,6 +15,7 @@ export default function AdminSurveyResponse({
   const [search, setSearch] = useState(filters?.search || "");
   const [year, setYear] = useState(filters?.year || "all");
   const [course, setCourse] = useState(filters?.course || "all");
+  const [status, setStatus] = useState(filters?.status || "all");
   const [page, setPage] = useState(filters?.page || 1);
 
   const [localResponses, setLocalResponses] = useState(
@@ -27,13 +28,13 @@ export default function AdminSurveyResponse({
 
   useEffect(() => {
     setPage(1);
-  }, [search, year, course]);
+  }, [search, year, course, status]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
       router.get(
         `/admin/survey-response/${survey.id}`,
-        { search, year, course, page },
+        { search, year, course, status, page },
         {
           preserveState: true,
           replace: true,
@@ -43,7 +44,7 @@ export default function AdminSurveyResponse({
     }, 500);
 
     return () => clearTimeout(delay);
-  }, [search, year, course, page]);
+  }, [search, year, course, status, page]);
 
   const handleBack = () => {
     router.get("/admin/survey-response");
@@ -84,6 +85,8 @@ export default function AdminSurveyResponse({
           setYear={setYear}
           course={course}
           setCourse={setCourse}
+          status={status}
+          setStatus={setStatus}
         />
       </div>
 

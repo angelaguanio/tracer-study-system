@@ -98,14 +98,20 @@ class CoordinatorOfSurveyResponseController extends Controller
 
         // UPDATED YEAR FILTERING LOGIC
         if ($request->filled('year') && $request->year !== 'all') {
-            // I-handle ang "2017-2018" format
             if (strpos($request->year, '-') !== false) {
-                // Kunin ang "2018" mula sa "2017-2018" para i-match sa DB column
                 $endYear = explode('-', $request->year)[1];
-                $query->where('end_year', $endYear); // Siguraduhin na 'end_year' ang column mo
+                $query->where('end_year', $endYear);
             } else {
-                // Fallback para sa single year input
                 $query->where('end_year', $request->year);
+            }
+        }
+
+        // STATUS FILTER
+        if ($request->filled('status') && $request->status !== 'all') {
+            if ($request->status === 'completed') {
+                $query->whereIn('id', $completedUserIds);
+            } else {
+                $query->whereNotIn('id', $completedUserIds);
             }
         }
 
@@ -127,7 +133,7 @@ class CoordinatorOfSurveyResponseController extends Controller
 
         return Inertia::render('Coordinator/CoordinatorSurveyResponse', [
             'responses' => $users,
-            'filters' => $request->only(['search', 'course', 'year', 'page']),
+            'filters' => $request->only(['search', 'course', 'year', 'status', 'page']),
             'survey' => [
                 'id' => $survey->id,
                 'title' => $survey->title,

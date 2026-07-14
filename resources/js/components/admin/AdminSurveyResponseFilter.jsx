@@ -15,6 +15,8 @@ export default function AdminSurveyResponseFilter({
   setYear,
   course,
   setCourse,
+  status,
+  setStatus,
 }) {
   const latestYear = new Date().getFullYear() - 1;
   const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
@@ -42,7 +44,7 @@ export default function AdminSurveyResponseFilter({
       {/* MOBILE: Naka-grid grid-cols-2 para magkasama at pantay sa iisang row ang dalawang select filters.
         DESKTOP:md:flex md:flex-row para maging tuloy-tuloy sa tabi ng search input field.
       */}
-      <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
+      <div className="grid grid-cols-3 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
 
         {/* COURSE DROPDOWN */}
         <Select value={course} onValueChange={(val) => setCourse(val)}>
@@ -69,6 +71,18 @@ export default function AdminSurveyResponseFilter({
                 {y}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        {/* STATUS DROPDOWN */}
+        <Select value={status} onValueChange={(val) => setStatus(val)}>
+          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="incomplete">Not Completed</SelectItem>
           </SelectContent>
         </Select>
 
