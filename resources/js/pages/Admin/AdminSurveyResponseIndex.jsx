@@ -16,7 +16,6 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import usePolling from '@/hooks/usePolling';
 
 export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys = [], filters = {} }) {
   const [tab, setTab] = useState("active");
@@ -57,11 +56,6 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
         }
     );
 }, [sort]);
-
-usePolling({
-  interval: 5000,
-  only: ['surveys', 'archivedSurveys'],
-});
 
   return (
     <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">

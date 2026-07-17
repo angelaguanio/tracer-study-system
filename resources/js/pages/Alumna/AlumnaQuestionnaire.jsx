@@ -6,7 +6,6 @@ import { Button } from '../../components/ui/button';
 import { Link, usePage, router } from '@inertiajs/react';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import usePolling from '@/hooks/usePolling';
 
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
@@ -30,16 +29,6 @@ export default function AlumnaQuestionnaire({
       });
     }
   }, [justCompleted]);
-
-  usePolling({
-    interval: 5000,
-    only: [
-        'tracerStudySurvey',
-        'tracerStudyCompleted',
-        'cectSurveys',
-        'hasTracerStudy',
-      ],
-  });
 
   // Just finished this session → toast fires above; fall through to normal tab render
 

@@ -30,9 +30,8 @@ class MessageSent implements ShouldBroadcastNow
         $minId = min($conversation->admin_id, $conversation->coordinator_id);
         $maxId = max($conversation->admin_id, $conversation->coordinator_id);
 
-        // Use private channels for Pusher (instead of presence channels)
         return [
-            new Channel('chat.' . $minId . '.' . $maxId),
+            new \Illuminate\Broadcasting\PrivateChannel('chat.' . $minId . '.' . $maxId),
         ];
     }
 

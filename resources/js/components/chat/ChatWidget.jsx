@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { MessageCircle, ArrowLeft, X } from 'lucide-react';
 import echo from '../../echo';
 import ConversationList from './ConversationList';
@@ -7,6 +7,7 @@ import MessagePane from './MessagePane';
 
 export default function ChatWidget({ user }) {
     const [isOpen, setIsOpen] = useState(false);
+    const isOpenRef = useRef(false); // ref so Echo listeners always see current value
     const [activeConversation, setActiveConversation] = useState(null);
     const [totalUnread, setTotalUnread] = useState(0);
     const [onlineStatus, setOnlineStatus] = useState({});
@@ -16,6 +17,11 @@ export default function ChatWidget({ user }) {
 
     const isAdmin = user?.user_role === 'admin';
     const isCoordinator = user?.user_role === 'coordinator';
+
+    // Keep the ref in sync with state so stale closures always read the current value
+    useEffect(() => {
+        isOpenRef.current = isOpen;
+    }, [isOpen]);
 
     // Join global presence channel on mount
     useEffect(() => {
@@ -41,22 +47,65 @@ export default function ChatWidget({ user }) {
         };
     }, [isAdmin, isCoordinator]);
 
-    // Fetch initial unread count on mount
+    // Track channel names subscribed at mount for badge counting (never leave these)
+    const badgeChannelsRef = useRef([]);
+
+    // Fetch initial unread count and subscribe to ALL channels on mount for badge counting
     useEffect(() => {
         axios.get('/messenger/conversations').then((res) => {
             if (isAdmin) {
                 const convs = Array.isArray(res.data) ? res.data : [];
                 const total = convs.reduce((sum, c) => sum + (c.unread_count ?? 0), 0);
                 setTotalUnread(total);
+
+                // Subscribe to ALL coordinator channels permanently for badge increments.
+                // These are never left until component unmounts.
+                convs.forEach((conv) => {
+                    const adminId = parseInt(conv.admin_id, 10);
+                    const coordinatorId = parseInt(conv.coordinator_id, 10);
+                    if (!adminId || !coordinatorId) return;
+                    const min = Math.min(adminId, coordinatorId);
+                    const max = Math.max(adminId, coordinatorId);
+                    const channelName = `chat.${min}.${max}`;
+                    echo.private(channelName)
+                        .listen('.message.sent', (event) => {
+                            if (!isOpenRef.current && event.sender_id !== user.id) {
+                                setTotalUnread((n) => n + 1);
+                            }
+                        });
+                    badgeChannelsRef.current.push(channelName);
+                });
             } else if (isCoordinator) {
                 const conv = Array.isArray(res.data) ? res.data[0] : res.data;
                 if (conv) {
-                    // Don't set totalUnread for coordinator since they auto-open the chat
-                    // setActiveConversation(conv);
-                    // subscribeToChannel(conv);
+                    setTotalUnread(conv.unread_count ?? 0);
+                    setActiveConversation(conv);
+
+                    const adminId = parseInt(conv.admin_id, 10);
+                    const coordinatorId = parseInt(conv.coordinator_id, 10);
+                    if (adminId && coordinatorId) {
+                        const min = Math.min(adminId, coordinatorId);
+                        const max = Math.max(adminId, coordinatorId);
+                        const channelName = `chat.${min}.${max}`;
+                        const ch = echo.private(channelName)
+                            .listen('.message.sent', (event) => {
+                                if (!isOpenRef.current && event.sender_id !== user.id) {
+                                    setTotalUnread((n) => n + 1);
+                                }
+                            });
+                        setEchoChannel(ch);
+                        badgeChannelsRef.current.push(channelName);
+                    }
                 }
             }
         }).catch(() => {});
+
+        // Cleanup: leave badge channels only on unmount
+        return () => {
+            badgeChannelsRef.current.forEach(name => echo.leave(name));
+            badgeChannelsRef.current = [];
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAdmin, isCoordinator]);
 
     const subscribeToChannel = (conv) => {
@@ -72,40 +121,16 @@ export default function ChatWidget({ user }) {
         const max = Math.max(adminId, coordinatorId);
         const channelName = `chat.${min}.${max}`;
 
-        const channel = echo.join(channelName)
-            .here((members) => {
-                // Merge with existing global presence status
-                setOnlineStatus((prev) => {
-                    const status = { ...prev };
-                    members.forEach((m) => { status[m.id] = true; });
-                    return status;
-                });
-            })
-            .joining((member) => {
-                setOnlineStatus((prev) => ({ ...prev, [member.id]: true }));
-            })
-            .leaving((member) => {
-                setOnlineStatus((prev) => ({ ...prev, [member.id]: false }));
-            })
-            .listen('.message.sent', (event) => {
-                // Increment unread badge when panel is closed and message is from the other user
-                if (!isOpen && event.sender_id !== user.id) {
-                    setTotalUnread((n) => n + 1);
-                }
-            });
-
+        // Re-use the already-subscribed channel — Echo deduplicates by name.
+        // Just get the existing private channel reference for MessagePane to attach its handlers.
+        const channel = echo.private(channelName);
         setEchoChannel(channel);
         return channel;
     };
 
     const leaveChannel = (conv) => {
-        if (!conv) return;
-        const adminId = parseInt(conv.admin_id, 10);
-        const coordinatorId = parseInt(conv.coordinator_id, 10);
-        if (!adminId || !coordinatorId || isNaN(adminId) || isNaN(coordinatorId)) return;
-        const min = Math.min(adminId, coordinatorId);
-        const max = Math.max(adminId, coordinatorId);
-        echo.leave(`chat.${min}.${max}`);
+        // Don't actually leave the Pusher channel — the badge subscription must persist.
+        // Just clear the echoChannel ref so MessagePane detaches its handlers.
         setEchoChannel(null);
     };
 
@@ -138,15 +163,6 @@ export default function ChatWidget({ user }) {
         }
         setActiveConversation(null);
     };
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            if (activeConversation) {
-                leaveChannel(activeConversation);
-            }
-        };
-    }, []);
 
     if (!isAdmin && !isCoordinator) return null;
 

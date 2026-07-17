@@ -3,6 +3,7 @@ import InquiryList from '../../components/InquiryList';
 import InquiryContent from '../../components/InquiryContent';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
+import echo from '@/echo';
 
 
 export default function AdminInquiries({inquiries, filters}) {
@@ -31,6 +32,17 @@ export default function AdminInquiries({inquiries, filters}) {
     
         return () => clearTimeout(delayDebounceFn);
     }, [search, statusFilter, sort]);
+
+    // Realtime: refresh inquiry list when a new inquiry arrives
+    useEffect(() => {
+        const channel = echo.channel('role.admin');
+        channel.listen('.inquiry.created', () => {
+            router.reload({ only: ['inquiries'] });
+        });
+        return () => {
+            channel.stopListening('.inquiry.created');
+        };
+    }, []);
     
     useEffect(() => {
         setSelectedInquiry(prev => {
@@ -65,16 +77,26 @@ export default function AdminInquiries({inquiries, filters}) {
 
     const handleReplyAdded = (data) => {
         if (!data) return;
-        console.log("handleReplyAdded", data);
         setSelectedInquiry(prev => {
             if (!prev) return prev;
     
-            // Polling update — replace replies wholesale
+            // Full replace (initial fetch on inquiry selection)
             if (data.replace) {
                 return {
                     ...prev,
                     status: data.status,
                     replies: data.replies,
+                };
+            }
+
+            // Realtime single new reply from Echo event
+            if (data.newReply) {
+                const exists = (prev.replies ?? []).some(r => r.id === data.newReply.id);
+                if (exists) return prev;
+                return {
+                    ...prev,
+                    status: data.status ?? prev.status,
+                    replies: [...(prev.replies ?? []), data.newReply],
                 };
             }
     

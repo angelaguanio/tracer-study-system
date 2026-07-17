@@ -6,8 +6,6 @@ import RecentActivityList from '@/components/dashboard/RecentActivityList';
 import QuickActionButton from '@/components/dashboard/QuickActionButton';
 import { Users, FileText, Mail, Bell, Plus, Eye, AlertCircle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import usePolling from '@/hooks/usePolling';
-
 /**
  * AdminDashboard Component
  * 
@@ -24,18 +22,6 @@ export default function AdminDashboard({
 }) 
 
 {
-  usePolling({
-    interval: 10000,
-    only: [
-        'metrics',
-        'survey_analytics',
-        'employment_distribution',
-        'recent_inquiries',
-        'recent_announcements',
-        'recent_responses',
-    ],
-  });
-
   return (
     <div className="flex w-screen min-h-screen">
       <div className="w-full space-y-8 p-8">

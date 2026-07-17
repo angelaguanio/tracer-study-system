@@ -18,7 +18,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail } from "lucide-react";
 import axios from "axios";
-import usePolling from '@/hooks/usePolling';
 
 export default function AdminAlumni({ alumni, filters }) {
   const { flash } = usePage().props;
@@ -77,11 +76,6 @@ export default function AdminAlumni({ alumni, filters }) {
   useEffect(() => {
     if (!isFirstRender.current) applyFilters();
   }, [year, course]);
-
-  usePolling({
-    interval: 10000,
-    only: ['alumni'],
-  });
 
   // ── Bulk selection helpers ────────────────────────────────
   const currentPageIds = alumni?.data?.map((a) => a.id) ?? [];

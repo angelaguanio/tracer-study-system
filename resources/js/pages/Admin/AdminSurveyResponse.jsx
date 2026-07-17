@@ -3,9 +3,6 @@ import { router } from "@inertiajs/react";
 import { ArrowLeft } from "lucide-react";
 
 import AdminSurveyResponseTable from "@/components/admin/AdminSurveyResponseTable";
-import AdminSurveyResponseFilter from "@/components/admin/AdminSurveyResponseFilter";
-import AdminLayout from "@/layouts/admin-layout";
-import usePolling from '@/hooks/usePolling';
 
 export default function AdminSurveyResponse({
   responses,
@@ -48,11 +45,6 @@ export default function AdminSurveyResponse({
   const handleBack = () => {
     router.get("/admin/survey-response");
   };
-
-  usePolling({
-    interval: 5000,
-    only: ['responses'],
-  });
 
   return (
     <div className="w-full h-full p-4 flex flex-col overflow-hidden">

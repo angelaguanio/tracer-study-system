@@ -144,7 +144,10 @@ class AnnouncementController extends Controller
                 $announcement->id,
                 $announcement->title
             );
+            broadcast(new \App\Events\AnnouncementPublished($announcement));
         }
+
+        broadcast(new \App\Events\AnnouncementStatusChanged($announcement->id, $announcement->status));
         
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
@@ -161,13 +164,16 @@ class AnnouncementController extends Controller
         NotificationService::announcementApproved(
             $announcement->id,
             $announcement->title,
-            $announcement->user_id   // coordinator's user_id
+            $announcement->user_id
         );
 
         NotificationService::announcementPublished(
             $announcement->id,
             $announcement->title
         );
+
+        broadcast(new \App\Events\AnnouncementPublished($announcement));
+        broadcast(new \App\Events\AnnouncementStatusChanged($announcement->id, 'approved'));
 
         return redirect()
             ->route('admin.announcement.index')
@@ -191,6 +197,8 @@ class AnnouncementController extends Controller
             $announcement->user_id,
             $request->note        
         );
+
+        broadcast(new \App\Events\AnnouncementStatusChanged($announcement->id, 'revise'));
 
         return redirect()
             ->route('admin.announcement.index')
@@ -337,6 +345,9 @@ class AnnouncementController extends Controller
                 auth()->user()->first_name . ' ' . auth()->user()->last_name
             );
         }
+
+        broadcast(new \App\Events\AnnouncementStatusChanged($announcement->id, $newStatus));
+
         return redirect()
             ->route(auth()->user()->user_role . '.announcement.index')
             ->with('success', 'Updated');

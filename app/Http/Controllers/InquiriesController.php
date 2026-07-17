@@ -39,7 +39,7 @@ class InquiriesController extends Controller
             'department' => 'required|string',
             'alumni_coord' => 'required_unless:department,admin|nullable|integer',
             'subject' => 'required|string|max:50',
-            'message' => 'required|string|min:10',
+            'message' => 'required|string',
         ]);
 
         $inquiry = Inquiries::create([
@@ -73,6 +73,8 @@ class InquiriesController extends Controller
             );
         
         }
+
+        broadcast(new \App\Events\InquiryCreated($inquiry));
 
         return redirect()->back()->with('success', 'Message sent successfully!');
     }
@@ -271,6 +273,8 @@ class InquiriesController extends Controller
     $reply = $reply->fresh()->load([
         'sender:id,first_name,last_name,profile_picture',
     ]);
+
+    broadcast(new \App\Events\InquiryReplied($reply, $inquiry));
     
     return response()->json([
         'reply' => $reply,

@@ -2,10 +2,12 @@ import CoordinatorLayout from "@/layouts/coord-layout";
 import InquiryList from "../../components/InquiryList";
 import InquiryContent from "../../components/InquiryContent";
 import { useState, useEffect } from "react";
-import { router } from "@inertiajs/react";
-import usePolling from '@/hooks/usePolling';
+import { router, usePage } from "@inertiajs/react";
+import echo from "@/echo";
 
 export default function CoordinatorInquiries({ inquiries, filters }) {
+
+    const { auth } = usePage().props;
 
     const [selectedInquiry, setSelectedInquiry] = useState(
         typeof window !== "undefined" && window.innerWidth >= 768
@@ -38,6 +40,18 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
 
         return () => clearTimeout(delayDebounceFn);
     }, [search, statusFilter, sort]);
+
+    // Realtime: refresh inquiry list when a new inquiry is directed at this coordinator
+    useEffect(() => {
+        if (!auth?.user?.id) return;
+        const channel = echo.channel(`user.${auth.user.id}`);
+        channel.listen('.inquiry.created', () => {
+            router.reload({ only: ['inquiries'] });
+        });
+        return () => {
+            channel.stopListening('.inquiry.created');
+        };
+    }, [auth?.user?.id]);
 
     // Sync selectedInquiry when inquiries.data updates (e.g. after polling/search)
     useEffect(() => {
@@ -73,11 +87,10 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
 
     const handleReplyAdded = (data) => {
         if (!data) return;
-        console.log("handleReplyAdded", data);
         setSelectedInquiry(prev => {
             if (!prev) return prev;
     
-            // Polling update — replace replies wholesale
+            // Full replace (initial fetch on inquiry selection)
             if (data.replace) {
                 return {
                     ...prev,
@@ -85,8 +98,19 @@ export default function CoordinatorInquiries({ inquiries, filters }) {
                     replies: data.replies,
                 };
             }
+
+            // Realtime single new reply from Echo event
+            if (data.newReply) {
+                const exists = (prev.replies ?? []).some(r => r.id === data.newReply.id);
+                if (exists) return prev;
+                return {
+                    ...prev,
+                    status: data.status ?? prev.status,
+                    replies: [...(prev.replies ?? []), data.newReply],
+                };
+            }
     
-            // New reply sent locally — deduplicate by id to prevent doubling
+            // New reply sent locally — deduplicate by id
             const exists = (prev.replies ?? []).some(r => r.id === data.id);
             if (exists) return prev;
 

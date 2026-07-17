@@ -19,7 +19,6 @@ class ChatController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-         dd('Reached ChatController@index');
         $user = $request->user();
 
         if ($user->user_role === 'admin') {
@@ -165,7 +164,7 @@ class ChatController extends Controller
             public function __construct(public int $userId, public $readAt, public string $channel) {}
             
             public function broadcastOn(): array {
-                return [new \Illuminate\Broadcasting\PresenceChannel($this->channel)];
+                return [new \Illuminate\Broadcasting\PrivateChannel($this->channel)];
             }
             
             public function broadcastWith(): array {

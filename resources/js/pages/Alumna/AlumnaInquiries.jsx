@@ -3,6 +3,7 @@ import { router } from '@inertiajs/react';
 import AlumnaLayout from '@/layouts/alumna-layout';
 import AlumnaInquiryList from '@/components/alumna/AlumnaInquiryList';
 import AlumnaInquiryContent from '@/components/alumna/AlumnaInquiryContent';
+import echo from '@/echo';
 
 
 export default function AlumnaInquiries({ inquiries, filters, openId }) {
@@ -64,6 +65,26 @@ export default function AlumnaInquiries({ inquiries, filters, openId }) {
         }
         setInitialized(true);
     }, []);
+
+    // Realtime: when a staff member replies, the inquiry.replied event fires on that
+    // inquiry's channel. AlumnaInquiryContent also subscribes, but we update the
+    // list status badge here so the sidebar shows "replied" immediately.
+    useEffect(() => {
+        const channels = inquiries.data.map((inq) => {
+            const channel = echo.channel(`inquiry.${inq.id}`);
+            channel.listen('.inquiry.replied', (event) => {
+                // Update status badge in the list
+                router.reload({ only: ['inquiries'] });
+            });
+            return `inquiry.${inq.id}`;
+        });
+
+        return () => {
+            channels.forEach(name => echo.leaveChannel(name));
+        };
+    // Re-subscribe when the inquiry list page changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inquiries.data.map(i => i.id).join(',')]);
 
  
 

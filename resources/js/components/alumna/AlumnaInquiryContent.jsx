@@ -4,42 +4,46 @@ import { Avatar } from '../ui/avatar';
 import { Send, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
+import echo from '@/echo';
 
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
-    // Only replies and status are managed locally — everything else comes from the inquiry prop
     const [liveReplies, setLiveReplies] = useState(inquiry?.replies ?? []);
     const [liveStatus, setLiveStatus] = useState(inquiry?.status ?? null);
     const bottomRef = useRef(null);
+    const prevReplyCountRef = useRef(inquiry?.replies?.length ?? 0);
 
-    // When inquiry id changes (user switched), reset live state to the new inquiry's data
+    // Reset when switching inquiry
     useEffect(() => {
         setLiveReplies(inquiry?.replies ?? []);
         setLiveStatus(inquiry?.status ?? null);
         prevReplyCountRef.current = inquiry?.replies?.length ?? 0;
     }, [inquiry?.id]);
 
-    // Polling
+    // Subscribe to real-time replies via Echo instead of polling
     useEffect(() => {
         if (!inquiry) return;
 
-        const interval = setInterval(async () => {
-            try {
-                const { data } = await axios.get(
-                    route('alumna.inquiries.replies', inquiry.id)
-                );
-                setLiveReplies(data.replies ?? []);
-                setLiveStatus(data.status ?? null);
-            } catch (e) {
-                console.error(e);
+        const channel = echo.channel(`inquiry.${inquiry.id}`);
+
+        channel.listen('.inquiry.replied', (event) => {
+            if (event.reply) {
+                setLiveReplies(prev => {
+                    const exists = prev.some(r => r.id === event.reply.id);
+                    if (exists) return prev;
+                    return [...prev, event.reply];
+                });
             }
-        }, 3000);
+            if (event.status) {
+                setLiveStatus(event.status);
+            }
+        });
 
-        return () => clearInterval(interval);
+        return () => {
+            echo.leaveChannel(`inquiry.${inquiry.id}`);
+        };
     }, [inquiry?.id]);
-
-    const prevReplyCountRef = useRef(0);
 
     useEffect(() => {
         const newCount = liveReplies.length;
@@ -59,15 +63,8 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                 { message: replyText }
             );
             setReplyText('');
-
-            // Immediately refresh replies
-            const { data } = await axios.get(
-                route('alumna.inquiries.replies', inquiry.id)
-            );
-            setLiveReplies(data.replies ?? []);
-            setLiveStatus(data.status ?? null);
-
             toast.success('Reply sent!');
+            // Echo will deliver the reply back via .inquiry.replied event
         } catch (e) {
             console.error(e);
             toast.error('Failed to send reply.');

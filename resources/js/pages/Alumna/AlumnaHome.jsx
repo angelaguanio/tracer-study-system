@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import alumniHomeImg from '../../assets/cect_home.png';
 import { Link } from '@inertiajs/react';
-import usePolling from '@/hooks/usePolling';
+import { router } from '@inertiajs/react';
+import echo from '@/echo';
 
 import { ReceiptText, Megaphone, Brain, LibraryBig, ArrowRight, ImageOff } from 'lucide-react';
 
@@ -42,12 +43,23 @@ function AnnouncementCard({ id, date, title, description, image }) {
   );
 }
 
-export default function AlumnaHome({ announcements }) {
+export default function AlumnaHome({ announcements: initialAnnouncements }) {
+  const [announcements, setAnnouncements] = useState(initialAnnouncements ?? []);
 
-  usePolling({
-    interval: 5000,
-    only: ['announcements'],
-});
+  // Realtime: prepend new announcements when one is published
+  useEffect(() => {
+    const channel = echo.channel('announcements');
+    channel.listen('.announcement.published', (event) => {
+      setAnnouncements(prev => {
+        const exists = prev.some(a => a.id === event.id);
+        if (exists) return prev;
+        return [event, ...prev].slice(0, 3); // keep latest 3 on home
+      });
+    });
+    return () => {
+      echo.leaveChannel('announcements');
+    };
+  }, []);
 
   return (
     

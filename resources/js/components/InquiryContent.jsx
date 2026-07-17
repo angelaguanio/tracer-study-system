@@ -5,6 +5,7 @@ import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
 import axios from "axios";
+import echo from '@/echo';
 
 export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
@@ -35,45 +36,29 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
             })
             .catch(console.error);
 
-    // Only re-run when the selected inquiry changes, not on every reply update
+    // Only re-run when the selected inquiry changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inquiry?.id, userRole]);
 
-    // Poll for new replies every 3 seconds
+    // Subscribe to real-time reply updates via Pusher instead of polling
     useEffect(() => {
         if (!inquiry) return;
-    
-        const routeName =
-            userRole === 'coordinator'
-                ? 'coordinator.inquiries.replies'
-                : 'admin.inquiries.replies';
 
-        const currentRepliesLength = inquiry.replies?.length ?? 0;
-        const currentStatus = inquiry.status;
-    
-        const interval = setInterval(async () => {
-            if (sending) return;
-            try {
-                const { data } = await axios.get(route(routeName, inquiry.id));
-    
-                if (
-                    (data.replies?.length ?? 0) !== currentRepliesLength ||
-                    data.status !== currentStatus
-                ) {
-                    onReplyAdded?.({
-                        status: data.status,
-                        replies: data.replies ?? [],
-                        replace: true,
-                    });
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }, 3000);
-    
-        return () => clearInterval(interval);
-    
-    }, [inquiry?.id, inquiry?.replies?.length, inquiry?.status, userRole, sending]);
+        const channel = echo.channel(`inquiry.${inquiry.id}`);
+
+        channel.listen('.inquiry.replied', (event) => {
+            onReplyAdded?.({
+                status: event.status,
+                replies: event.reply ? undefined : undefined, // handled below
+                replace: false,
+                newReply: event.reply,
+            });
+        });
+
+        return () => {
+            echo.leaveChannel(`inquiry.${inquiry.id}`);
+        };
+    }, [inquiry?.id]);
 
     const toggleResolved = async () => {
         const newStatus = inquiry.status === 'resolved' ? 'replied' : 'resolved';
