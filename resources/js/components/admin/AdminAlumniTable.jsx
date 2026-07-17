@@ -82,7 +82,15 @@ export default function AdminAlumniTable({
       {/* ================= DESKTOP VIEW (TABLE - WALANG BINAGO) ================= */}
       <div className="hidden md:flex flex-col flex-1 min-h-0 rounded-xl shadow overflow-hidden bg-white border border-gray-100">
         <div className="overflow-x-auto shrink-0">
-          <Table className="w-full table-fixed min-w-[700px]">
+          <Table className="w-full table-fixed min-w-[800px]">
+            <colgroup>
+              <col className="w-12" />
+              <col className="w-[30%]" />
+              <col className="w-[15%]" />
+              <col className="w-[14%]" />
+              <col className="w-[14%]" />
+              <col className="w-[23%]" />
+            </colgroup>
             <TableHeader>
               <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
                 <TableHead className="w-12 text-center">
@@ -92,16 +100,19 @@ export default function AdminAlumniTable({
                     className="bg-white h-5 w-5 shadow-sm"
                   />
                 </TableHead>
-                <TableHead className="w-[35%] text-left text-gray-800 font-semibold pl-4">
+                <TableHead className="w-[30%] text-left text-gray-800 font-semibold pl-4">
                   Alumni
                 </TableHead>
-                <TableHead className="w-[18%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                  Employment
+                </TableHead>
+                <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
                   Course
                 </TableHead>
-                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
                   Year
                 </TableHead>
-                <TableHead className="w-[24%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[23%] text-center text-gray-800 font-semibold">
                   Actions
                 </TableHead>
               </TableRow>
@@ -110,7 +121,15 @@ export default function AdminAlumniTable({
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
-          <Table className="w-full table-fixed min-w-[700px]">
+          <Table className="w-full table-fixed min-w-[800px]">
+            <colgroup>
+              <col className="w-12" />
+              <col className="w-[30%]" />
+              <col className="w-[15%]" />
+              <col className="w-[14%]" />
+              <col className="w-[14%]" />
+              <col className="w-[23%]" />
+            </colgroup>
             <TableBody>
               {alumniData.map((item) => (
                 <TableRow
@@ -127,7 +146,7 @@ export default function AdminAlumniTable({
                     />
                   </TableCell>
 
-                  <TableCell className="w-[35%] pl-4">
+                  <TableCell className="w-[30%] pl-4">
                     <div className="flex items-center gap-3">
                       <div className="shrink-0 w-9 h-9 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs font-semibold overflow-hidden border border-gray-100">
                         {item.avatar ? (
@@ -146,17 +165,27 @@ export default function AdminAlumniTable({
                     </div>
                   </TableCell>
 
-                  <TableCell className="w-[18%] text-center">
+                  <TableCell className="w-[15%] text-center">
+                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full ${
+                      item.employment_status === 'Employed'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {item.employment_status ?? 'N/A'}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="w-[14%] text-center">
                     <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                       {item.course ?? "N/A"}
                     </span>
                   </TableCell>
 
-                  <TableCell className="w-[15%] text-center text-gray-600 font-medium">
+                  <TableCell className="w-[14%] text-center text-gray-600 font-medium">
                     {item.year ?? "N/A"}
                   </TableCell>
 
-                  <TableCell className="w-[24%] text-center">
+                  <TableCell className="w-[23%] text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Button
                         size="sm"
@@ -181,7 +210,7 @@ export default function AdminAlumniTable({
 
               {alumniData.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-[64px] text-center text-gray-500">
+                  <TableCell colSpan={6} className="h-[64px] text-center text-gray-500">
                     No records found.
                   </TableCell>
                 </TableRow>
@@ -242,8 +271,19 @@ export default function AdminAlumniTable({
                 </div>
               </div>
 
-              {/* MOBILE ROW 2: COURSE & YEAR LAYOUT PATTERN */}
+              {/* MOBILE ROW 2: EMPLOYMENT, COURSE & YEAR */}
               <div className="px-2 flex flex-col gap-1.5 text-xs ">
+                {/* Employment Status Row */}
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-gray-800 font-medium">Employment:</span>
+                  <span className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full ${
+                    item.employment_status === 'Employed'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {item.employment_status ?? 'N/A'}
+                  </span>
+                </div>
                 {/* Course Row */}
                 <div className="flex justify-between items-center w-full">
                   <span className="text-gray-800 font-medium">Course:</span>

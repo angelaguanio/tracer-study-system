@@ -33,7 +33,13 @@ class CoordinatorAlumniController extends Controller
         }
     }
 
-    $alumni = $query->paginate(10)->withQueryString();
+    if ($request->filled('employment') && $request->employment !== 'all') {
+        $query->whereHas('employment', function ($q) use ($request) {
+            $q->where('currently_employed', $request->employment);
+        });
+    }
+
+    $alumni = $query->with('employment')->paginate(10)->withQueryString();
     
     $alumni->through(fn ($user) => [
         'id' => $user->id,
@@ -45,11 +51,12 @@ class CoordinatorAlumniController extends Controller
             : ($user->end_year ?? 'N/A'),
         'avatar' => $user->profile_picture,
         'survey_status' => 'Not Completed',
+        'employment_status' => $user->employment?->currently_employed === 'Yes' ? 'Employed' : 'Unemployed',
     ]);
 
     return Inertia::render('Coordinator/CoordinatorAlumni', [
         'alumni' => $alumni,
-        'filters' => $request->only(['search', 'year', 'course'])
+        'filters' => $request->only(['search', 'year', 'course', 'employment'])
     ]);
 }
 

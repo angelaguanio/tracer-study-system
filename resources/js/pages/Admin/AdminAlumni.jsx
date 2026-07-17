@@ -26,6 +26,7 @@ export default function AdminAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");
   const [year, setYear]     = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
+  const [employment, setEmployment] = useState(filters.employment || "all");
   const isFirstRender = useRef(true);
 
   // ── Bulk selection ────────────────────────────────────────
@@ -62,7 +63,7 @@ export default function AdminAlumni({ alumni, filters }) {
   const applyFilters = (params = {}) => {
     router.get(
       "/admin/alumni",
-      { search, year, course, page: 1, ...params },
+      { search, year, course, employment, page: 1, ...params },
       { preserveState: true, replace: true }
     );
   };
@@ -75,7 +76,7 @@ export default function AdminAlumni({ alumni, filters }) {
 
   useEffect(() => {
     if (!isFirstRender.current) applyFilters();
-  }, [year, course]);
+  }, [year, course, employment]);
 
   // ── Bulk selection helpers ────────────────────────────────
   const currentPageIds = alumni?.data?.map((a) => a.id) ?? [];
@@ -217,6 +218,7 @@ const sendNextBatch = async (offset) => {
         search={search} setSearch={setSearch}
         year={year}     setYear={setYear}
         course={course} setCourse={setCourse}
+        employment={employment} setEmployment={setEmployment}
       />
 
       {/* BULK ACTION BAR */}

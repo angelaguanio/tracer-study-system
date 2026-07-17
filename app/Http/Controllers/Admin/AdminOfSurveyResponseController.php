@@ -111,6 +111,15 @@ class AdminOfSurveyResponseController extends Controller
         }
     }
 
+    // STATUS FILTER
+    if ($request->filled('status') && $request->status !== 'all') {
+        if ($request->status === 'completed') {
+            $query->whereIn('id', $completedUserIds);
+        } else {
+            $query->whereNotIn('id', $completedUserIds);
+        }
+    }
+
     $users = $query->latest()->paginate(10)->withQueryString();
 
     $users->getCollection()->transform(function ($user) use ($completedUserIds) {
@@ -129,7 +138,7 @@ class AdminOfSurveyResponseController extends Controller
 
     return Inertia::render('Admin/AdminSurveyResponse', [
         'responses' => $users,
-        'filters' => $request->only(['search', 'course', 'year', 'page']),
+        'filters' => $request->only(['search', 'course', 'year', 'status', 'page']),
         'survey' => [
             'id' => $survey->id,
             'title' => $survey->title,

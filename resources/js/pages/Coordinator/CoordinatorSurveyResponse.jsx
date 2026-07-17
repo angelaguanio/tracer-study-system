@@ -90,6 +90,8 @@ export default function CoordinatorSurveyResponse({ responses, filters, survey }
           setYear={setYear}
           course={course}
           setCourse={setCourse}
+          status={status}
+          setStatus={setStatus}
         />
         
       </div>

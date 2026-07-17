@@ -25,6 +25,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   const [search, setSearch] = useState(filters.search || "");
   const [year, setYear] = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
+  const [employment, setEmployment] = useState(filters.employment || "all");
   const isFirstRender = useRef(true);
 
     // ── Bulk selection ────────────────────────────────────────
@@ -49,7 +50,7 @@ export default function CoordinatorAlumni({ alumni, filters }) {
 
   const applyFilters = (params = {}) => {
     router.get("/coordinator/alumni", 
-      { search, year, course, page: 1, ...params }, 
+      { search, year, course, employment, page: 1, ...params }, 
       { preserveState: true, replace: true }
     );
   };
@@ -193,7 +194,8 @@ const sendNextBatch = async (offset) => {
         <CoordinatorAlumniFilters 
           search={search} setSearch={setSearch} 
           year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
-          course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}} 
+          course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}}
+          employment={employment} setEmployment={(v) => {setEmployment(v); applyFilters({employment: v})}}
         />
       </div>
 

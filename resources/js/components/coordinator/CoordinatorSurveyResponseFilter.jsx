@@ -14,12 +14,15 @@ export default function CoordinatorSurveyResponseFilter({
   setYear,
   course,
   setCourse,
+  status,
+  setStatus,
 }) {
   const latestYear = new Date().getFullYear() - 1;
   const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
     const s = latestYear - i;
     return `${s}-${s + 1}`;
   });
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -34,7 +37,7 @@ export default function CoordinatorSurveyResponseFilter({
           <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
-          <SelectContent >
+          <SelectContent>
             <SelectItem value="all">All Courses</SelectItem>
             <SelectItem value="BSIT">BSIT</SelectItem>
             <SelectItem value="BSCpE">BSCpE</SelectItem>
@@ -55,8 +58,18 @@ export default function CoordinatorSurveyResponseFilter({
             ))}
           </SelectContent>
         </Select>
+
+        <Select value={status} onValueChange={(val) => setStatus(val)}>
+          <SelectTrigger className="h-10 w-full sm:w-[160px] bg-white">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="incomplete">Not Completed</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
 }
-
