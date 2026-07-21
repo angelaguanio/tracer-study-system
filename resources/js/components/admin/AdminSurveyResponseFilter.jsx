@@ -38,9 +38,9 @@ export default function AdminSurveyResponseFilter({
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
+      {/* SELECTS — 2-col on mobile (status spans full), flex row on md+ */}
+      <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
 
-        {/* COURSE DROPDOWN */}
         <Select value={course} onValueChange={(val) => setCourse(val)}>
           <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
             <SelectValue placeholder="All Courses" />
@@ -53,7 +53,6 @@ export default function AdminSurveyResponseFilter({
           </SelectContent>
         </Select>
 
-        {/* YEAR DROPDOWN */}
         <Select value={year} onValueChange={(val) => setYear(val)}>
           <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
             <SelectValue placeholder="All Years" />
@@ -61,16 +60,13 @@ export default function AdminSurveyResponseFilter({
           <SelectContent className="max-h-48">
             <SelectItem value="all">All Years</SelectItem>
             {yearOptions.map((y) => (
-              <SelectItem key={y} value={y}>
-                {y}
-              </SelectItem>
+              <SelectItem key={y} value={y}>{y}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* STATUS DROPDOWN */}
         <Select value={status} onValueChange={(val) => setStatus(val)}>
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
+          <SelectTrigger className="h-10 w-full col-span-2 md:col-span-1 md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>

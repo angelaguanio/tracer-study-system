@@ -34,23 +34,21 @@ export default function CoordinatorAlumniFilters({
       />
 
       {/* FILTERS */}
-      <div className="flex gap-2 w-full md:w-auto ">
+      <div className="grid grid-cols-2 gap-2 w-full sm:grid-cols-3 md:flex md:flex-row md:items-center md:w-auto">
         <Select onValueChange={setYear} value={year}>
-          <SelectTrigger className="w-full md:w-[180px]">
+          <SelectTrigger className="h-10 w-full md:w-[160px]">
             <SelectValue placeholder="All Years" />
           </SelectTrigger>
           <SelectContent className="max-h-48">
-            <SelectItem value="all"  className="h-12">All Years</SelectItem>
+            <SelectItem value="all" className="h-12">All Years</SelectItem>
             {yearOptions.map((y) => (
-              <SelectItem key={y} value={y}>
-                {y}
-              </SelectItem>
+              <SelectItem key={y} value={y}>{y}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select onValueChange={setCourse} value={course}>
-          <SelectTrigger className="w-full md:w-[180px]">
+          <SelectTrigger className="h-10 w-full md:w-[160px]">
             <SelectValue placeholder="All Courses" />
           </SelectTrigger>
           <SelectContent>
@@ -62,7 +60,7 @@ export default function CoordinatorAlumniFilters({
         </Select>
 
         <Select onValueChange={setEmployment} value={employment}>
-          <SelectTrigger className="w-full md:w-[150px]">
+          <SelectTrigger className="h-10 w-full col-span-2 sm:col-span-1 md:w-[150px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
