@@ -169,7 +169,16 @@ export default function SurveyAnalytics({
                         <StatCard label="Total Respondents" value={totalRespondents} />
                         <StatCard label="Employment Rate" value={`${employment.rate ?? 0}%`} sub={`${employment.employed ?? 0} employed`} />
                         <StatCard label="Degrees Represented" value={Object.keys(descriptive.degree_distribution || {}).length} />
-                        <StatCard label="Year Range" value={yearData.length > 0 ? `${yearData[0].name} – ${yearData[yearData.length-1].name}` : "—"} />
+                        <StatCard 
+                            label="Year Range" 
+                            value={
+                                yearData.length > 0 
+                                    ? yearData[0].name === yearData[yearData.length-1].name
+                                        ? yearData[0].name
+                                        : `${yearData[0].name.split('-')[0]} – ${yearData[yearData.length-1].name.split('-')[1] || yearData[yearData.length-1].name}`
+                                    : "—"
+                            } 
+                        />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
