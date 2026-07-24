@@ -12,6 +12,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
   const [openModal, setOpenModal] = useState(false);
   const [note, setNote] = useState("");
+  const [processing, setProcessing] = useState(false);
 
   // APPROVE
   const handleApprove = () => {
@@ -30,8 +31,9 @@ export default function AdminAnnouncementView({ announcement }) {
 
   // SUBMIT REVISION
   const submitRevision = () => {
-    if (!note.trim()) return;
+    if (!note.trim() || processing) return;
 
+    setProcessing(true);
     router.put(
       `/admin/announcement/${announcement.id}/reject`,
       { note },
@@ -46,6 +48,9 @@ export default function AdminAnnouncementView({ announcement }) {
         onError: (err) => {
           console.log(err);
         },
+        onFinish: () => {
+          setProcessing(false);
+        }
       }
     );
   };
@@ -148,9 +153,10 @@ export default function AdminAnnouncementView({ announcement }) {
 
                 <button
                   onClick={submitRevision}
-                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
+                  disabled={processing}
+                  className="w-full sm:w-auto px-4 py-2 text-sm rounded-md bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Submit
+                  {processing ? "Submitting..." : "Submit"}
                 </button>
 
               </div>
