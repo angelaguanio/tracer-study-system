@@ -117,7 +117,9 @@
         onSuccess: () => {
           const msg = isRevise ? "Resubmitted successfully!" : "Updated successfully!";
           toast.success(msg);
-          // router.visit("/coordinator/announcement");
+        },
+        onError: (errs) => {
+          console.log(errs);
         },
       });
     };

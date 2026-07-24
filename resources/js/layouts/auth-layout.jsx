@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
 import authBg from '../assets/auth_bg.jfif'
+import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 
 export default function AuthLayout({ children }) {
     // Always force light mode on auth pages
@@ -48,6 +49,7 @@ export default function AuthLayout({ children }) {
             </div>
 
             <Toaster position="top-right" />
+            <GlobalOfflineOverlay />
         </div>
     );
 }

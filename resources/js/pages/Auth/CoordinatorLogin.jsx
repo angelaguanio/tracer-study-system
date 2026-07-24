@@ -6,8 +6,6 @@ import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
 import { useForm } from '@inertiajs/react'
 import { UserRound, Lock, ShieldCheck } from 'lucide-react';
-import { ArrowLeft } from "lucide-react";
-import { Link } from "@inertiajs/react";
 import axios from 'axios';
 
 export default function CoordinatorLogin({ forceChangePassword = false, sessionExpired, }) {
@@ -132,10 +130,9 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
               />
 
               <Button
-                variant="blue"
-                size="login2"
-                className="w-full h-11 text-sm sm:h-12 sm:text-base md:h-14"
+                type="submit"
                 disabled={pwProcessing || passwordErrors.length > 0}
+                className="w-full bg-[#2859C5] hover:bg-[#1f47a0] text-white font-medium h-11 text-sm sm:h-12 sm:text-base md:h-14"
               >
                 {pwProcessing ? "Saving..." : "Set New Password"}
               </Button>

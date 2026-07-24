@@ -132,7 +132,7 @@ class AlumnaSeeder extends Seeder
             60000
         ];
 
-        for ($i = 1; $i <= 80; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
 
             $startYear = rand(2000, 2025);
             $employed = rand(1, 100) <= 75;

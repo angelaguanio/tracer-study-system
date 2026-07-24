@@ -15,9 +15,10 @@ export default function AlumnaQuestionnaire({
 }) {
   const { props } = usePage();
   const justCompleted = props.flash?.justCompleted;
+  const completedSurveyType = props.flash?.completedSurveyType;
   const [selectedTab, setSelectedTab] = useState(
-    // Auto-switch to CECT tab when a CECT survey was just completed
-    justCompleted ? 'cect-surveys' : 'tracer-study'
+    // Stay on tracer-study tab when tracer was completed; switch to cect-surveys when a CECT survey was just completed
+    justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study'
   );
 
   // Fire a toast when arriving back after survey submission
@@ -199,10 +200,10 @@ export default function AlumnaQuestionnaire({
     return (
       <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 w-full max-w-7xl mx-auto py-6 px-4'>
         {cectSurveys.map((survey) => (
-          <Card key={survey.id} className="flex flex-col w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
-            <CardHeader className='h-38 bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
+          <Card key={survey.id} className="flex flex-col h-full w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
+            <CardHeader className='bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
-                <div className={`flex-col w-full items-center ${survey.description ? 'space-y-2' : ''}`}>
+                <div className="flex-col w-full items-center space-y-2">
                 <div className="bg-white/20 rounded-2xl p-4">
                   <div className="flex items-start gap-3">
 
@@ -213,7 +214,7 @@ export default function AlumnaQuestionnaire({
                       <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
-                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words">
+                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words min-h-[3.5rem]">
                                   {survey.title}
                               </h3>
 
@@ -228,14 +229,14 @@ export default function AlumnaQuestionnaire({
 
                   </div>
               </div>
-                  {survey.description && (
-                    <p className="text-sm font-normal text-white line-clamp-2">{survey.description}</p>
-                  )}
+                  <p className="text-sm font-normal text-white line-clamp-2 min-h-[2.5rem]">
+                    {survey.description || ""}
+                  </p>
                 </div>
                 
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col p-6">
+            <CardContent className="flex flex-col flex-1 p-6">
               <div className="mb-4">
                 <div className="flex flex-col items-start gap-3 text-sm text-gray-500">
                   <div className='flex gap-2 items-center'>
@@ -248,7 +249,7 @@ export default function AlumnaQuestionnaire({
                   </div>
                 </div>
               </div>
-              <div className="w-full">
+              <div className="w-full mt-auto pt-4">
                 {survey.completed ? (
                   <Button variant="outline" disabled className="w-full">
                     <CircleCheck size={16} className="mr-2" />

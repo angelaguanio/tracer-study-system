@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { router, Link } from '@inertiajs/react';
 import AlumnaLayout from '@/layouts/alumna-layout';
 import { toast } from 'sonner';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, WifiOff } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -159,7 +159,7 @@ export default function InquiryThread({ inquiry }) {
                 This inquiry has been resolved. No further replies needed.
             </div>
         ) : (
-            <div className="shrink-0 border-t pt-3">
+            <div className="shrink-0 border-t pt-3 flex flex-col gap-2">
                 <div className="flex gap-2 items-end">
                     <textarea
                         className="flex-1 resize-none rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[52px] max-h-[140px]"

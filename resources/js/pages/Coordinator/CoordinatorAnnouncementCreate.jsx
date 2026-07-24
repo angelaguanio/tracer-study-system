@@ -35,7 +35,6 @@ export default function CoordinatorAnnouncementCreate() {
                 setPreviews([]);
                 setFileError("");
                 if (fileInputRef.current) fileInputRef.current.value = null;
-                // router.visit("/coordinator/announcement");
             },
         });
     };

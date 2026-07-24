@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup';
@@ -44,11 +44,8 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
     if (!data.email || !data.password) {
       alert("Please fill in all fields");
       return;
-  }
-    post(route('alumna.login'), {
-      onError: (err) => console.log("Errors:", err),
-      onSuccess: () => console.log("Login successful"),
-    });
+    }
+    post(route('alumna.login'));
   }
 
   return (
@@ -113,17 +110,17 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
         <Button
           type="submit"
           variant="blue" 
-          size="login2" 
+          size="login2"            
           disabled={processing}
-          className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base"
+          className="w-full h-11 text-sm sm:h-12 sm:text-base md:h-14"
         >
           {processing ? (
-              <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Logging in...
-              </>
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Logging in...</span>
+            </div>
           ) : (
-              "Login"
+            "Login"
           )}
         </Button>
 

@@ -392,7 +392,8 @@ class SurveyAnalyticsController extends Controller
         // --- Per-question chart data (non-likert) ---
         $chartQuery = Response::where('survey_id', $survey->id)
             ->whereIn('user_id', $respondentIds)
-            ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea']))
+            ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea'])
+                                               ->where('label', 'not like', '%mobile number%'))
             ->select('question_id', 'answer_value', DB::raw('COUNT(*) as count'))
             ->groupBy('question_id', 'answer_value')
             ->with('question.section')
@@ -763,7 +764,8 @@ class SurveyAnalyticsController extends Controller
 
             $chartQuery = Response::where('survey_id', $survey->id)
                 ->whereIn('user_id', $respondentIds)
-                ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea']))
+                ->whereHas('question', fn($q) => $q->whereNotIn('type', ['text', 'textarea'])
+                                                   ->where('label', 'not like', '%mobile number%'))
                 ->select('question_id', 'answer_value', DB::raw('COUNT(*) as count'))
                 ->groupBy('question_id', 'answer_value')
                 ->with('question.section')

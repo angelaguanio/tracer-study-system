@@ -61,10 +61,11 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'flash' => [
-                'section'       => $request->session()->get('section'),
-                'success'       => $request->session()->get('success'),
-                'warning'       => $request->session()->get('warning'),
-                'justCompleted' => $request->session()->get('justCompleted'),
+                'section'             => $request->session()->get('section'),
+                'success'             => $request->session()->get('success'),
+                'warning'             => $request->session()->get('warning'),
+                'justCompleted'       => $request->session()->get('justCompleted'),
+                'completedSurveyType' => $request->session()->get('completedSurveyType'),
             ],
             'notifications' => [
             'unread_count' => $request->user()

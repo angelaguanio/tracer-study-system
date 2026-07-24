@@ -164,7 +164,7 @@ export default function SurveyAnalytics({
             ) : (
                 <>
                 {/* ── 1. Descriptive Statistics ── */}
-                <SectionCard title="1. Descriptive Statistics">
+                <SectionCard title="Descriptive Statistics">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <StatCard label="Total Respondents" value={totalRespondents} />
                         <StatCard label="Employment Rate" value={`${employment.rate ?? 0}%`} sub={`${employment.employed ?? 0} employed`} />
@@ -198,7 +198,7 @@ export default function SurveyAnalytics({
                 </SectionCard>
 
                 {/* ── 2. Employment Analysis ── */}
-                <SectionCard title="2. Employment Analysis">
+                <SectionCard title="Employment Analysis">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <StatCard label="Employed" value={employment.employed ?? 0} sub={`${employment.rate ?? 0}% of respondents`} />
                         <StatCard label="Unemployed" value={employment.unemployed ?? 0} />
@@ -228,7 +228,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 4. Grouped Likert Analysis ── */}
                 {likertGroups.length > 0 && (
-                    <SectionCard title="4. Grouped Likert Analysis">
+                    <SectionCard title="Grouped Likert Analysis">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-2">
                             {likertGroups.map((g) => (
                                 <div key={g.section_id} className="border rounded-lg p-3 bg-gray-50">
@@ -262,7 +262,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 4. Cross Analysis ── */}
                 {(crossAnalysis.section_vs_employment?.length > 0 || crossAnalysis.degree_vs_employment?.length > 0) && (
-                    <SectionCard title="5. Cross Analysis">
+                    <SectionCard title="Cross Analysis">
                         {crossAnalysis.section_vs_employment?.length > 0 && (
                             <div>
                                 <p className="text-xs font-semibold text-gray-500 mb-2">Section Score vs Employment Status</p>
@@ -321,7 +321,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 5. Trend Analysis ── */}
                 {trendData.length > 1 && (
-                    <SectionCard title="6. Trend Analysis by Year Graduated">
+                    <SectionCard title="Trend Analysis by Year Graduated">
                         <p className="text-xs font-semibold text-gray-500 mb-1">Employment Rate Over Time</p>
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart data={trendData}>
@@ -355,7 +355,7 @@ export default function SurveyAnalytics({
 
                 {/* ── 7. Text Response Analysis ── */}
                 {textAnalysis.length > 0 && (
-                    <SectionCard title="7. Text Response Analysis">
+                    <SectionCard title="Text Response Analysis">
                         {textAnalysis.map((t) => (
                             <div key={t.question_id} className="border rounded-lg p-3 bg-gray-50">
                                 <p className="text-xs font-semibold text-gray-600">{t.section_title} — {t.question_label}</p>

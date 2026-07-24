@@ -25,8 +25,8 @@ function PieChartView({ data }) {
                     cx="50%"
                     cy="50%"
                     outerRadius={65}
-                    label={({ label, value }) => `${label} (${Math.round((value / total) * 100)}%)`}
-                    labelLine={false}
+                    label={({ value }) => `${Math.round((value / total) * 100)}%`}
+                    labelLine={true}
                 >
                     {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
@@ -41,7 +41,14 @@ function BarChartView({ data }) {
     return (
         <ResponsiveContainer width="100%" height={200}>
             <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 28 }}>
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" interval={0} />
+                <XAxis 
+                    dataKey="label" 
+                    tick={{ fontSize: 10 }} 
+                    angle={-25} 
+                    textAnchor="end" 
+                    interval={0} 
+                    tickFormatter={(val) => val.length > 15 ? val.substring(0, 15) + '...' : val}
+                />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                 <Tooltip />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>

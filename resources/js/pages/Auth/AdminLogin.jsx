@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import AuthLayout from '../../layouts/auth-layout'
 import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
 import { useForm, Link } from '@inertiajs/react'
-import { UserRound, Lock, ArrowLeft, Loader2 } from 'lucide-react';
+import { UserRound, Lock, ArrowLeft, Loader2, WifiOff } from 'lucide-react';
 import axios from 'axios';
 
 
@@ -33,9 +33,7 @@ export default function AdminLogin({sessionExpired,}) {
   //submit
   function handleSubmit(e) {
     e.preventDefault();
-
     if (processing) return;
-
     post(route('admin.login.submit'));
 }
 
@@ -97,16 +95,16 @@ return (
               size="login2"
               disabled={processing}
               className="w-full h-11 text-sm sm:h-12 sm:text-base md:h-14"
-          >
+            >
               {processing ? (
-                  <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Logging in...
-                  </>
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Logging in...</span>
+                </div>
               ) : (
-                  "Login"
+                "Login"
               )}
-          </Button>
+            </Button>
         </form>
       </CardContent>
     </Card>

@@ -173,7 +173,6 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                 <div ref={bottomRef} />
             </div>
 
-            {/* Reply box */}
             {isResolved ? (
                 <div className='text-center text-sm text-gray-400 border-t pt-3'>
                     This inquiry has been resolved. No further replies needed.

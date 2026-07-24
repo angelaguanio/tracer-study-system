@@ -28,7 +28,6 @@ export default function AdminAnnouncementCreate() {
     // SUBMIT HANDLER
     const handleSubmit = (e) => {
         e.preventDefault();
-
         post("/admin/announcement", {
             forceFormData: true,
             onSuccess: () => {
@@ -37,7 +36,6 @@ export default function AdminAnnouncementCreate() {
                 setPreviews([]);
                 setFileError("");
                 if (fileInputRef.current) fileInputRef.current.value = null;
-                // router.visit("/admin/announcement");
             },
         });
     };

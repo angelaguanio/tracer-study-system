@@ -238,12 +238,13 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
           
         </CardContent>
 
-        <CardFooter className="pt-8 pb-4">
+        <CardFooter className="pt-8 pb-4 flex flex-col gap-3">
           <Button 
             type='submit' 
             size='login2' 
             variant='blue' 
             disabled={processing || (data.department && data.department !== 'admin' && !data.alumni_coord)}
+            className="w-full"
           >Submit</Button>
         </CardFooter>
         </form>

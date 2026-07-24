@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { usePage, useForm, Link, router } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import { User, Briefcase, Save, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { User, Briefcase, Save, ArrowLeft, Image as ImageIcon, WifiOff } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -239,6 +239,7 @@ export default function StudentProfileEdit() {
             </div>
 
             <form id="profile-form" className="flex flex-col gap-6" onSubmit={handleSubmit}>
+
                 {errors.error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-3">
                         {errors.error}

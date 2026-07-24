@@ -133,6 +133,8 @@ class SurveyResponseController extends Controller
             $draft->delete();
         });
 
-        return redirect()->route('alumna.questionnaire')->with('justCompleted', true);
+        return redirect()->route('alumna.questionnaire')
+            ->with('justCompleted', true)
+            ->with('completedSurveyType', $survey->is_tracer_study ? 'tracer' : 'cect');
     }
 }

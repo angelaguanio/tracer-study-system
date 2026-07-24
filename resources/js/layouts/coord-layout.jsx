@@ -6,6 +6,7 @@ import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail, FileText
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
 import ChatWidget from '../components/chat/ChatWidget';
+import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 
 export default function CoordinatorLayout({ children }) {
   const { auth } = usePage().props;
@@ -68,6 +69,7 @@ export default function CoordinatorLayout({ children }) {
       </SidebarProvider>
       <Toaster position="top-right" duration={1000} />
       <ChatWidget user={auth.user} />
+      <GlobalOfflineOverlay />
     </>
   )
 }

@@ -96,7 +96,7 @@ export default function QuestionRenderer({ question, value, onChange, error }) {
                         </SelectContent>
                     </Select>
                     {isOthersSelected(value) && (
-                        <Input placeholder="Please specify..." value={othersText(value)} onChange={(e) => handleOthersText(e.target.value)} />
+                        <Input className="mt-2 w-full max-w-sm" placeholder="Please specify..." value={othersText(value)} onChange={(e) => handleOthersText(e.target.value)} />
                     )}
                 </>
             )}
@@ -110,7 +110,7 @@ export default function QuestionRenderer({ question, value, onChange, error }) {
                                 <Label htmlFor={`${id}-${opt}`} className="font-normal">{opt}</Label>
                             </div>
                             {opt === "Others" && isOthersSelected(value) && (
-                                <Input className="ml-6" placeholder="Please specify..." value={othersText(value)} onChange={(e) => handleOthersText(e.target.value)} />
+                                <Input className="ml-6 mt-1 w-[calc(100%-1.5rem)] max-w-sm" placeholder="Please specify..." value={othersText(value)} onChange={(e) => handleOthersText(e.target.value)} />
                             )}
                         </div>
                     ))}
@@ -140,7 +140,7 @@ export default function QuestionRenderer({ question, value, onChange, error }) {
                                     <Label htmlFor={`${id}-${opt}`} className="font-normal">{opt}</Label>
                                 </div>
                                 {opt === "Others" && isChecked && (
-                                    <Input className="ml-6" placeholder="Please specify..." value={checkboxOthersCustom} onChange={(e) => handleCheckboxOthersText(e.target.value)} />
+                                    <Input className="ml-6 mt-1 w-[calc(100%-1.5rem)] max-w-sm" placeholder="Please specify..." value={checkboxOthersCustom} onChange={(e) => handleCheckboxOthersText(e.target.value)} />
                                 )}
                             </div>
                         );

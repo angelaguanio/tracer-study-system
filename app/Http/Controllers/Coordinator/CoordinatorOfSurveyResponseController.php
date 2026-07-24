@@ -162,9 +162,14 @@ class CoordinatorOfSurveyResponseController extends Controller
             $answers = $responses->filter(function ($response) use ($section) {
                 return optional($response->question)->section_id === $section->id;
             })->map(function ($r) {
+                $raw = $r->answer_value ?? '-';
+                $decoded = json_decode($raw, true);
+                $answer = is_array($decoded)
+                    ? implode(', ', $decoded)
+                    : $raw;
                 return [
                     'question' => $r->question->label ?? 'No question',
-                    'answer' => $r->answer_value ?? '-',
+                    'answer'   => $answer,
                 ];
             })->values();
 

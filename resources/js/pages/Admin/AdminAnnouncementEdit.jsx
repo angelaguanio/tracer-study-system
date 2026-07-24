@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, X  } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminAnnouncementEdit({ announcement }) {
@@ -118,7 +118,6 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
       onSuccess: () => {
         toast.success("Updated successfully!");
-        // router.visit("/admin/announcement");
       },
 
       onError: (errors) => {

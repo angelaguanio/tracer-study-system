@@ -48,15 +48,13 @@ export default function ForgotPassword({backRoute, submitUrl,}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
         post(submitUrl, {
             onSuccess: () => {
                 setEmailSent(true);
-    
                 const expiry = Date.now() + 60000;
                 localStorage.setItem("forgot-password-expiry", expiry);
                 setCooldown(60);
-            }
+            },
         });
     };
 
@@ -140,9 +138,7 @@ export default function ForgotPassword({backRoute, submitUrl,}) {
                 <Button
                     type="submit"
                     disabled={processing || cooldown > 0}
-                    variant="blue"
-                    size="login2"
-                    className="w-full"
+                    className="w-full bg-[#1b4398] hover:bg-[#143374] h-12 rounded-xl text-base font-semibold text-white transition-all shadow-md hover:shadow-lg"
                 >
                     {processing
                         ? "Sending..."

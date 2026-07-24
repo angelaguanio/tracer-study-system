@@ -9,11 +9,13 @@ import SurveySection from "@/components/survey/alumna/SurveySection";
 import SurveyCompletedCard from "@/components/survey/alumna/SurveyCompletedCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { WifiOff } from "lucide-react";
 
 export default function Survey({ survey, sections = [], currentSectionIndex = 0, draft = null, completed = false }) {
     const { errors } = usePage().props;
     const [stepIndex, setStepIndex] = useState(currentSectionIndex);
     const [answers, setAnswers] = useState(draft?.answers ?? {});
+    const [busy, setBusy] = useState(false);
 
     const currentSection = sections[stepIndex];
     const isLast = stepIndex === sections.length - 1;
@@ -24,22 +26,30 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
     };
 
     const handleNext = () => {
+        setBusy(true);
         router.post(
             route("alumna.surveys.draft", survey.id),
             { section_id: currentSection.id, answers },
-            { onSuccess: () => setStepIndex((i) => i + 1), preserveScroll: true }
+            {
+                onSuccess: () => setStepIndex((i) => i + 1),
+                onFinish: () => setBusy(false),
+                preserveScroll: true,
+            }
         );
     };
 
     const handleSubmit = () => {
-        // Save last section to draft first, then submit
+        setBusy(true);
         router.post(
             route("alumna.surveys.draft", survey.id),
             { section_id: currentSection.id, answers },
             {
                 onSuccess: () => {
-                    router.post(route("alumna.surveys.submit", survey.id), { section_id: currentSection.id, answers });
+                    router.post(route("alumna.surveys.submit", survey.id), { section_id: currentSection.id, answers }, {
+                        onFinish: () => setBusy(false),
+                    });
                 },
+                onError: () => setBusy(false),
                 preserveScroll: true,
             }
         );
@@ -86,16 +96,16 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
                         </Card>
 
                         <div className="flex justify-between">
-                            <Button variant="outline" onClick={handleBack} disabled={stepIndex === 0}>
+                            <Button variant="outline" onClick={handleBack} disabled={stepIndex === 0 || busy}>
                                 Back
                             </Button>
                             {isLast ? (
-                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleSubmit}>
-                                    Submit
+                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleSubmit} disabled={busy}>
+                                    {busy ? 'Submitting...' : 'Submit'}
                                 </Button>
                             ) : (
-                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleNext}>
-                                    Next
+                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleNext} disabled={busy}>
+                                    {busy ? 'Saving...' : 'Next'}
                                 </Button>
                             )}
                         </div>

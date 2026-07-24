@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 import AuthLayout from '@/layouts/auth-layout';
+import TextInput from '@/components/text-input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectGroup,
@@ -400,7 +401,7 @@ const nextStep = () => {
       end_year,
       employment_end_year: formData.is_present ? null : formData.employment_end_year,
     }));
-  
+
     post('/alumna/signup', {
       preserveScroll: true,
       onSuccess: () => { setData(INITIAL_FORM); setStep(1); },
@@ -590,23 +591,23 @@ const nextStep = () => {
           {/* Submit — steps 5 & 6 */}
           {(step === 5 || step === 6) && (
             <Button
-            form="signupForm"
-            type="submit"
-            disabled={processing}
-            className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
-        >
-            {processing ? (
-                <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating Account...
-                </>
-            ) : (
-                <>
-                    Sign Up
-                    <ArrowRight className="h-4 w-4" />
-                </>
-            )}
-        </Button>
+              form="signupForm"
+              type="submit"
+              disabled={processing}
+              className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
+          >
+              {processing ? (
+                  <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Creating Account...
+                  </>
+              ) : (
+                  <>
+                      Sign Up
+                      <ArrowRight className="h-4 w-4" />
+                  </>
+              )}
+          </Button>
           )}
         </div>
 
