@@ -63,7 +63,10 @@ class AlumnaAuthController extends Controller
             'semester' => 'required|string',
             'department' => 'required|string',
             'courses' => 'required|string',
-            
+
+            // Profile picture — required at signup
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+
             // Address and Contact Number to validation
             'address' => 'nullable|string|max:500',
             'contact_number' => 'nullable|regex:/^09\d{9}$/',
@@ -82,6 +85,7 @@ class AlumnaAuthController extends Controller
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one number, and one symbol (!@#$%^&*(),.?":{}|<>_)',
+            'profile_picture.required' => 'A profile picture is required to complete your registration.',
         ]);
 
 
@@ -99,6 +103,20 @@ class AlumnaAuthController extends Controller
             }
         }
 
+        // Handle profile picture upload
+        $profilePicturePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $filename = uniqid() . '_' . time() . '.' .
+                $request->file('profile_picture')->getClientOriginalExtension();
+
+            $request->file('profile_picture')->move(
+                public_path('uploads/profile-pictures'),
+                $filename
+            );
+
+            $profilePicturePath = '/uploads/profile-pictures/' . $filename;
+        }
+
         //Create User
         $user = User::create([
             'last_name' => $validation['last_name'],
@@ -112,9 +130,9 @@ class AlumnaAuthController extends Controller
             'department' => $validation['department'] ?? null,
             'courses' => $validation['courses'] ?? null,
             'user_role' => 'alumna',
-            // FIX: Ensure these are saved to the users table
             'address' => $validation['address'] ?? null,
             'contact_number' => $validation['contact_number'] ?? null,
+            'profile_picture' => $profilePicturePath,
         ]);
 
         // Create Employment Record
