@@ -1,6 +1,6 @@
 import AlumnaLayout from "@/layouts/alumna-layout";
 import cectBuilding from "@/assets/cect_building.jpg";
-import graduationBg from "@/assets/graduation-bg.jpg";
+import graduationBg from "@/assets/grad_pic.jpg";
 import {Heart, Handshake, Trophy, Scale, Sparkles } from 'lucide-react';
 
 /* ── icon helpers ─────────────────────────────────────────── */
@@ -12,12 +12,6 @@ const IconPeople = () => (
 const IconChart = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 17l4-8 4 4 4-6 4 10"/>
-  </svg>
-);
-const IconBook = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
   </svg>
 );
 const IconHandshake = () => (
@@ -47,7 +41,6 @@ const IconGrad = () => (
 const purposes = [
   { Icon: IconPeople,   title: "Connect Alumni",         desc: "Maintain a lifelong connection between the college and its alumni community." },
   { Icon: IconChart,    title: "Track Career Growth",    desc: "Gather relevant data on graduates' employment and industry experience." },
-  { Icon: IconBook,     title: "Curriculum Development", desc: "Support curriculum enhancement by aligning academic outcomes with real-world demands." },
   { Icon: IconHandshake,title: "Alumni Engagement",      desc: "Provide a platform for alumni involvement, events, and opportunities to collaborate with the institution." },
 ];
 
@@ -82,14 +75,10 @@ export default function AlumnaAbout() {
         <div className="relative z-10 w-full justify-center items-center flex flex-col px-6 sm:px-10 py-16">
           <div className="max-w-xl">
             <h1 className="text-center text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg">
-              CECT Alumni Tracer
+              ALUMNI CONNECT
             </h1>
-            <h2 className="text-center text-blue-200 text-2xl sm:text-3xl md:text-4xl font-semibold mt-1 drop-shadow">
-              Study and Updates Portal
-            </h2>
-
             {/* left-border accent paragraph */}
-            <p className=" text-center mt-6 text-white/90 lg:text-lg sm:text-base leading-relaxed">
+            <p className=" text-center mt-3 text-white/90 lg:text-lg sm:text-base leading-relaxed">
               Strengthening connections between the College of Engineering and Computer Technology graduates and the institution.
             </p>
           </div>
@@ -112,13 +101,11 @@ export default function AlumnaAbout() {
           </h2>
 
           <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-4">
-            The Alumni Connect is a system that serves as a hub for alumni connections, information updates, and data
-            collection. It helps the college to evaluate how well its academic training programs prepare students for
-            employment and identify areas for improvement.
+            Alumni Connect is a web-based alumni tracer study and update portal for the College of Engineering and Computer Technology (CECT).
+            It serves as a centralized platform for alumni information management, communication, and tracer study participation.
           </p>
           <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-            Through this portal, alumni can update their employment data, share achievements, and take part in the
-            Graduate Tracer Study, which tracks the employability and career growth of CECT graduates.
+           Through this portal, alumni can update their personal and employment information, participate in tracer study surveys, receive announcements, and stay connected with the college.
           </p>
         </div>
       </section>
@@ -137,15 +124,15 @@ export default function AlumnaAbout() {
             Our Purpose
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12 max-w-4xl mx-auto">
             {purposes.map(({ Icon, title, desc }) => (
-              <div key={title} className="flex flex-col items-center text-center gap-3">
+              <div key={title} className="flex flex-col items-center text-center gap-3 w-full sm:w-[250px] shrink-0">
                 {/* circle icon */}
                 <div className="w-14 h-14 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-white shrink-0">
                   <Icon />
                 </div>
                 <h3 className="text-white font-bold text-sm sm:text-base">{title}</h3>
-                <p className="text-blue-200 text-xs sm:text-sm leading-relaxed">{desc}</p>
+                <p className="text-blue-100 text-xs sm:text-sm leading-relaxed max-w-[250px]">{desc}</p>
               </div>
             ))}
           </div>
@@ -166,13 +153,10 @@ export default function AlumnaAbout() {
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Why It Matters</h2>
             <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-3">
-              The information gathered through the tracer study plays a vital role in shaping the future of CECT
-              programs. It allows the college to assess how well its academic training prepares students for
-              professional success and identify areas for improvement in teaching, curriculum design,
-              and career development services.
+              The information collected through the tracer study helps the college understand where graduates work and how they are doing after graduation. This information helps the college improve its services and better support current and future students.
             </p>
             <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-              By staying connected, alumni contribute directly to the growth and excellence of future CECT graduates.
+             By staying connected and joining the tracer study, alumni help make CECT stronger and support the success of future graduates.
             </p>
           </div>
         </div>

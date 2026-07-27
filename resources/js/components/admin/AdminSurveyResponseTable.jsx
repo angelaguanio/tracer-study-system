@@ -71,9 +71,9 @@ export default function AdminSurveyResponseTable({
         {/* HEADER */}
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
           <div className="w-[32%] text-center">Alumni</div>
-          <div className="w-[17%] text-center">Status</div>
           <div className="w-[17%] text-center">Course</div>
           <div className="w-[17%] text-center">Year</div>
+          <div className="w-[17%] text-center">Remarks</div>
           <div className="w-[17%] text-center">Action</div>
         </div>
 
@@ -112,7 +112,17 @@ export default function AdminSurveyResponseTable({
                     </div>
                   </div>
 
-                  {/* STATUS */}
+                  {/* COURSE */}
+                  <div className="w-[17%] text-gray-600 flex items-center justify-center truncate px-2">
+                    {res.course ?? "-"}
+                  </div>
+
+                  {/* YEAR */}
+                  <div className="w-[17%] text-gray-600 flex items-center justify-center">
+                    {res.year ?? "-"}
+                  </div>
+
+                  {/* REMARKS (Formerly STATUS) */}
                   <div className="w-[17%] flex items-center justify-center">
                     <span
                       className={`px-3 py-1 text-[11px] font-semibold rounded-full ${
@@ -125,16 +135,6 @@ export default function AdminSurveyResponseTable({
                         ? "Completed"
                         : "Not Completed"}
                     </span>
-                  </div>
-
-                  {/* COURSE */}
-                  <div className="w-[17%] text-gray-600 flex items-center justify-center truncate px-2">
-                    {res.course ?? "-"}
-                  </div>
-
-                  {/* YEAR */}
-                  <div className="w-[17%] text-gray-600 flex items-center justify-center">
-                    {res.year ?? "-"}
                   </div>
 
                   {/* ACTION */}

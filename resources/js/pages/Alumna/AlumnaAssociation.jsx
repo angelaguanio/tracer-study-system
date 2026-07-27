@@ -1,7 +1,7 @@
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { departments } from "../../lib/AlumnaAssociation_Datalist";
 import { DepartmentSection } from "@/components/alumna/AlumnaAssociation_Components";
-import graduationBg from "@/assets/graduation-bg.jpg";
+import graduationBg from "@/assets/grad_pic.jpg";
 
 /* ── icon ─────────────────────────────────────────────────── */
 const IconTeam = () => (

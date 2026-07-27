@@ -157,7 +157,7 @@ export default function QuestionFormModal({ open, onClose, sectionId, question =
                             <Label>Likert Scale</Label>
                             {likertScale && likertScale.length > 0 ? (
                                 <div className="flex flex-wrap gap-1">
-                                    {likertScale.map((item, i) => (
+                                    {[...likertScale].reverse().map((item, i) => (
                                         <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded px-2 py-1">{item}</span>
                                     ))}
                                 </div>

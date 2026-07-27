@@ -86,9 +86,9 @@ export default function AdminAlumniTable({
             <colgroup>
               <col className="w-12" />
               <col className="w-[30%]" />
+              <col className="w-[14%]" />
+              <col className="w-[14%]" />
               <col className="w-[15%]" />
-              <col className="w-[14%]" />
-              <col className="w-[14%]" />
               <col className="w-[23%]" />
             </colgroup>
             <TableHeader>
@@ -103,14 +103,14 @@ export default function AdminAlumniTable({
                 <TableHead className="w-[30%] text-left text-gray-800 font-semibold pl-4">
                   Alumni
                 </TableHead>
-                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
-                  Employment
-                </TableHead>
                 <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
                   Course
                 </TableHead>
                 <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
                   Year
+                </TableHead>
+                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                  Employment Status
                 </TableHead>
                 <TableHead className="w-[23%] text-center text-gray-800 font-semibold">
                   Actions
@@ -125,9 +125,9 @@ export default function AdminAlumniTable({
             <colgroup>
               <col className="w-12" />
               <col className="w-[30%]" />
+              <col className="w-[14%]" />
+              <col className="w-[14%]" />
               <col className="w-[15%]" />
-              <col className="w-[14%]" />
-              <col className="w-[14%]" />
               <col className="w-[23%]" />
             </colgroup>
             <TableBody>
@@ -165,16 +165,6 @@ export default function AdminAlumniTable({
                     </div>
                   </TableCell>
 
-                  <TableCell className="w-[15%] text-center">
-                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full ${
-                      item.employment_status === 'Employed'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {item.employment_status ?? 'N/A'}
-                    </span>
-                  </TableCell>
-
                   <TableCell className="w-[14%] text-center">
                     <span className={`px-3 py-1 text-[11px] font-bold rounded-full ${badgeColor(item.course)}`}>
                       {item.course ?? "N/A"}
@@ -183,6 +173,16 @@ export default function AdminAlumniTable({
 
                   <TableCell className="w-[14%] text-center text-gray-600 font-medium">
                     {item.year ?? "N/A"}
+                  </TableCell>
+
+                  <TableCell className="w-[15%] text-center">
+                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-full ${
+                      item.employment_status === 'Employed'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {item.employment_status ?? 'N/A'}
+                    </span>
                   </TableCell>
 
                   <TableCell className="w-[23%] text-center">

@@ -63,9 +63,6 @@ export default function AlumnaOffice() {
             <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg uppercase">
               Alumni Affairs
             </h1>
-            <h2 className="text-yellow-300 text-base sm:text-lg md:text-xl font-bold tracking-widest uppercase mt-2 drop-shadow">
-              List of Officers
-            </h2>
 
             {/* yellow accent bar */}
             <div className="w-12 h-1 bg-yellow-400 rounded my-4" />
@@ -87,7 +84,7 @@ export default function AlumnaOffice() {
             <IconTeam />
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-[#001D4A] uppercase tracking-wider mb-2">
-            Alumni Office Team
+            Alumni Office Personnel
           </h2>
           {/* blue underline accent */}
           <div className="w-10 h-0.5 bg-blue-500 mx-auto mb-4" />
@@ -101,35 +98,96 @@ export default function AlumnaOffice() {
           3. STAFF CARDS
       ═══════════════════════════════════════════════════════ */}
       <section className="bg-[#EEF4FB] pb-16 px-6 sm:px-10">
-        <div className="max-w-2xl mx-auto flex flex-col gap-5">
-          {staff.map((person, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex items-center gap-5 px-6 py-5"
-            >
-              {/* avatar */}
-              <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden">
-                {person.gender === "female" ? <AvatarFemale /> : <AvatarMale />}
-              </div>
-
-              {/* text */}
-              <div className="min-w-0">
-                <h3 className="text-[#001D4A] font-extrabold text-sm sm:text-base uppercase leading-snug">
-                  {person.role}
-                </h3>
-                {/* yellow underline */}
-                <div className="w-8 h-0.5 bg-yellow-400 rounded my-2" />
-                <p className="text-gray-700 text-sm">{person.name}</p>
-                <a
-                  href={`mailto:${person.email}`}
-                  className="flex items-center gap-1.5 text-gray-500 text-xs mt-1 hover:text-blue-600 transition-colors"
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-y-12 pt-6">
+          {/* Director Row */}
+          <div className="flex justify-center w-full">
+            {staff
+              .filter((p) => p.role.includes("Director"))
+              .map((person, i) => (
+                <div
+                  key={`dir-${i}`}
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center px-6 py-8 w-full max-w-[340px]"
                 >
-                  <IconMail />
-                  {person.email}
-                </a>
-              </div>
-            </div>
-          ))}
+                  {/* TOP BADGE */}
+                  <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#1258D6] text-white">
+                    DIRECTOR
+                  </div>
+
+                  {/* AVATAR */}
+                  <div className="relative w-24 h-24 mb-4">
+                    <div className="w-full h-full rounded-full overflow-hidden">
+                      {person.gender === "female" ? <AvatarFemale /> : <AvatarMale />}
+                    </div>
+                    {/* Star badge for Director */}
+                    <div className="absolute bottom-0 right-0 bg-[#1258D6] text-white p-1.5 rounded-full border-2 border-white">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* TEXT */}
+                  <h3 className="text-[#001D4A] font-bold text-base sm:text-lg">
+                    {person.name}
+                  </h3>
+                  <p className="text-gray-500 text-xs sm:text-sm mt-1">{person.role}</p>
+
+                  {/* YELLOW ACCENT */}
+                  <div className="w-10 h-[2px] bg-yellow-400 rounded-full my-4" />
+
+                  {/* EMAIL */}
+                  <a
+                    href={`mailto:${person.email}`}
+                    className="flex items-center gap-1.5 text-[#1258D6] font-medium text-xs sm:text-sm hover:underline"
+                  >
+                    <IconMail />
+                    {person.email}
+                  </a>
+                </div>
+              ))}
+          </div>
+
+          {/* Staff Row */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 w-full">
+            {staff
+              .filter((p) => !p.role.includes("Director"))
+              .map((person, i) => (
+                <div
+                  key={`staff-${i}`}
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center px-6 py-8 w-full max-w-[340px]"
+                >
+                  {/* TOP BADGE */}
+                  <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#FFC107] text-[#001D4A]">
+                    STAFF
+                  </div>
+
+                  {/* AVATAR */}
+                  <div className="relative w-24 h-24 mb-4">
+                    <div className="w-full h-full rounded-full overflow-hidden">
+                      {person.gender === "female" ? <AvatarFemale /> : <AvatarMale />}
+                    </div>
+                  </div>
+
+                  {/* TEXT */}
+                  <h3 className="text-[#001D4A] font-bold text-base sm:text-lg">
+                    {person.name}
+                  </h3>
+                  <p className="text-gray-500 text-xs sm:text-sm mt-1">{person.role}</p>
+
+                  {/* YELLOW ACCENT */}
+                  <div className="w-10 h-[2px] bg-yellow-400 rounded-full my-4" />
+
+                  {/* EMAIL */}
+                  <a
+                    href={`mailto:${person.email}`}
+                    className="flex items-center gap-1.5 text-[#1258D6] font-medium text-xs sm:text-sm hover:underline"
+                  >
+                    <IconMail />
+                    {person.email}
+                  </a>
+                </div>
+              ))}
+          </div>
         </div>
       </section>
 

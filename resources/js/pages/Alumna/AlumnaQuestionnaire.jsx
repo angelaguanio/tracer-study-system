@@ -13,13 +13,14 @@ export default function AlumnaQuestionnaire({
   cectSurveys, 
   hasTracerStudy 
 }) {
-  const { props } = usePage();
+  const { props, url } = usePage();
   const justCompleted = props.flash?.justCompleted;
   const completedSurveyType = props.flash?.completedSurveyType;
-  const [selectedTab, setSelectedTab] = useState(
-    // Stay on tracer-study tab when tracer was completed; switch to cect-surveys when a CECT survey was just completed
-    justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study'
-  );
+  
+  const tabMatch = url.match(/[?&]tab=([^&]+)/);
+  const tabParam = tabMatch ? tabMatch[1] : null;
+
+  const activeTab = tabParam || (justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study');
 
   // Fire a toast when arriving back after survey submission
   useEffect(() => {
@@ -35,35 +36,59 @@ export default function AlumnaQuestionnaire({
 
   const renderTracerStudyTab = () => {
     // Tracer study already completed
-    if (tracerStudyCompleted) {
       return (
-        <div className='flex items-center justify-center w-full py-10'>
-          <Card className="w-full max-w-xl mx-2 overflow-hidden shadow-xl rounded-3xl p-0 gap-1">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-teal-400 p-8 text-white space-y-4">
-              <div className='space-y-4'>
-                <div className='flex flex-row gap-2'>
-                  <PartyPopper />
-                  <span className='text-sm'>TRACER STUDY COMPLETED</span>
-                </div>
-                <div>
-                  <h1 className='text-2xl sm:text-3xl'>Already Submitted</h1>
-                  <p>You have completed the tracer study survey.</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
-              <CircleCheck size={64} color='green' />
-              <div className='space-y-2'>
-                <p className='text-lg font-medium'>You've already submitted the tracer study survey.</p>
-                <p className='text-sm text-gray-500'>
-                  Thank you for sharing your post-graduation experience. Your feedback helps us improve our programs for future students.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex items-center justify-center w-full py-10 px-4">
+          <div className="relative bg-white w-full max-w-[520px] overflow-hidden shadow-md rounded-3xl border border-gray-100 flex flex-col items-center text-center pt-12 pb-12 px-6 sm:px-10">
+            
+            {/* Green Check Icon Circle */}
+            <div className="w-[90px] h-[90px] rounded-full bg-[#F0FDF4] flex items-center justify-center mb-6">
+               <div className="w-[60px] h-[60px] rounded-full bg-white border-[3px] border-[#16A34A] flex items-center justify-center">
+                  <svg className="w-8 h-8 text-[#16A34A]" fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 13l4 4L19 7"></path>
+                  </svg>
+               </div>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#111827] mb-3 tracking-tight">Thank you!</h1>
+            
+            <p className="text-gray-500 text-[15px] sm:text-base">
+               {justCompleted && completedSurveyType !== 'cect' 
+                 ? "Your tracer study survey has been successfully submitted." 
+                 : "Your tracer study survey has already been submitted."}
+            </p>
+
+            {/* Green dash accent */}
+            <div className="w-10 h-[3px] bg-[#16A34A] rounded-full my-7" />
+
+            {/* Light Green Alert Box */}
+            <div className="bg-[#F6FDF7] border border-[#DCFCE7] rounded-xl p-4 flex items-center gap-4 text-left w-full max-w-md z-10 mb-6">
+               <div className="w-[44px] h-[44px] rounded-full bg-[#E0FBE8] flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-[#16A34A]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                  </svg>
+               </div>
+               <div>
+                 <p className="text-[#374151] text-[14px] sm:text-[14px] leading-relaxed font-medium">
+                   We appreciate your time and feedback.
+                 </p>
+                 <p className="text-gray-500 text-[13px] sm:text-[13px]">
+                   It helps us create better programs for future students.
+                 </p>
+               </div>
+            </div>
+
+            {/* Bottom green wave background */}
+            <div className="absolute bottom-0 left-0 w-full h-16 overflow-hidden pointer-events-none">
+               <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full h-full object-cover object-bottom" preserveAspectRatio="none">
+                 <path fill="#22C55E" fillOpacity="0.4" d="M0,256L48,256C96,256,192,256,288,240C384,224,480,192,576,186.7C672,181,768,203,864,197.3C960,192,1056,160,1152,149.3C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+               </svg>
+               <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full h-full object-cover object-bottom" preserveAspectRatio="none">
+                 <path fill="#16A34A" fillOpacity="1" d="M0,128L48,138.7C96,149,192,171,288,181.3C384,192,480,192,576,176C672,160,768,128,864,133.3C960,139,1056,181,1152,181.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+               </svg>
+            </div>
+          </div>
         </div>
       );
-    }
 
     // No tracer study available
     if (!hasTracerStudy) {
@@ -198,9 +223,21 @@ export default function AlumnaQuestionnaire({
 
     //=======CARDS CECT SURVEYSSSSSSS==============
     return (
-      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 w-full max-w-7xl mx-auto py-6 px-4'>
-        {cectSurveys.map((survey) => (
-          <Card key={survey.id} className="flex flex-col h-full w-full overflow-hidden shadow-xl rounded-3xl p-0 gap-2 ">
+      <div className="w-full max-w-7xl mx-auto py-8 px-4 flex flex-col items-center">
+        {/* Header Section */}
+        <div className="text-center mb-10 max-w-2xl px-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#001D4A] mb-3">
+            Alumni Forms
+          </h2>
+          <div className="w-12 h-1 bg-yellow-400 mx-auto rounded-full mb-4" />
+          <p className="text-gray-500 text-[15px] sm:text-base leading-relaxed">
+            Complete available forms and questionnaires related to alumni activities, events, and other university initiatives.
+          </p>
+        </div>
+
+        <div className='flex flex-wrap justify-center gap-6 w-full'>
+          {cectSurveys.map((survey) => (
+            <Card key={survey.id} className="flex flex-col w-full sm:w-[380px] overflow-hidden shadow-xl rounded-3xl p-0 gap-2 shrink-0">
             <CardHeader className='bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
                 <div className="flex-col w-full items-center space-y-2">
@@ -261,50 +298,22 @@ export default function AlumnaQuestionnaire({
                     onClick={() => router.get(`/alumna/surveys/${survey.id}`)}
                   >
                     <FileText size={16} className="mr-2" />
-                    Take Survey
+                    Answer Questionnaire
                   </Button>
                 )}
               </div>
             </CardContent>
           </Card>
         ))}
+        </div>
       </div>
     );
   };
 
-  //CECT TABSSSSS (UNG DALAWA SA TAAS)
   return (
-    <div className="w-full">
-      {/* Tab Navigation */}
-      <div className="flex justify-center mb-6 py-6 px-4">
-        <div className="bg-white rounded-lg shadow-md p-1 flex flex-col sm:flex-row w-full sm:w-auto">
-          <button
-            onClick={() => setSelectedTab('tracer-study')}
-            className={`flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-              selectedTab === 'tracer-study'
-                ? 'bg-[#269be9] text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <SparkleIcon size={16} />
-            Tracer Study Survey
-          </button>
-          <button
-            onClick={() => setSelectedTab('cect-surveys')}
-            className={`flex-1 px-4 py-3 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-              selectedTab === 'cect-surveys'
-                ? 'bg-[#31c7b3d7] text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <GraduationCap size={16} />
-            CECT Surveys
-          </button>
-        </div>
-      </div>
-
+    <div className="w-full flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-100px)] py-8">
       {/* Tab Content */}
-      {selectedTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
+      {activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
     </div>
   );
 }

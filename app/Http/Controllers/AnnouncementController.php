@@ -380,7 +380,7 @@ class AnnouncementController extends Controller
     {
         $announcements = Announcement::where('status', 'approved')
             ->latest()
-            ->paginate(4)
+            ->paginate(9)
             ->withQueryString();
 
         return Inertia::render('Alumna/AlumnaAnnouncements', [

@@ -1,4 +1,4 @@
-import alumniOffice from "../assets/alumni_office.jpg";
+import alumniOffice from "../assets/alumni_office_clean.jpg";
 
 export const officeData = {
   title: "ALUMNI OFFICE",

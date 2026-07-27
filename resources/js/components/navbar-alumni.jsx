@@ -16,8 +16,12 @@ import {
 import NotificationBell from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications';
 
+const questionnaireBtns = [
+  { id: "tracer", name: "Tracer Study Survey", href: "/alumna/questionnaire?tab=tracer-study", icon: ClipboardList },
+  { id: "cect", name: "Alumni Forms", href: "/alumna/questionnaire?tab=cect-surveys", icon: ClipboardList },
+]
+
 const navBtns = [
-  { id: "questionnaire", name: "Questionnaire", href: "/alumna/questionnaire", icon: ClipboardList },
   { id: "announcements", name: "Announcements", href: "/alumna/announcements", icon: Megaphone },
   { id: "home", name: "Home", href: "/alumna/home", icon: Home },
   { id: "about", name: "About", href: "/alumna/about", icon: Info },
@@ -59,6 +63,19 @@ export default function NavbarAlumni({ children }) {
         {/* Desktop nav */}
         <nav className="hidden md:block">
           <ul className="flex items-center gap-5">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="nav">Questionnaires</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {questionnaireBtns.map((item) => (
+                  <DropdownMenuItem key={item.id} asChild>
+                    <Link href={item.href}>{item.name}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {navBtns.map((navigation) => {
               const isActive = currentPath === navigation.href
               return (
@@ -189,7 +206,7 @@ export default function NavbarAlumni({ children }) {
             <p className="text-xs font-semibold tracking-wide text-gray-400">MAIN</p>
           </div>
           <div className="px-2">
-            {[...navBtns, ...affairsBtns].map((item) => {
+            {[...questionnaireBtns, ...navBtns, ...affairsBtns].map((item) => {
               const Icon = item.icon
               const isActive = currentPath === item.href
               return (

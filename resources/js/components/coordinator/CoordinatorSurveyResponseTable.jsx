@@ -62,9 +62,9 @@ export default function CoordinatorSurveyResponseTable({
       <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
           <div className="w-[32%] text-center">Alumni</div>
-          <div className="w-[17%] text-center">Status</div>
           <div className="w-[17%] text-center">Course</div>
           <div className="w-[17%] text-center">Year</div>
+          <div className="w-[17%] text-center">Remarks</div>
           <div className="w-[17%] text-center">Action</div>
         </div>
 
@@ -87,13 +87,13 @@ export default function CoordinatorSurveyResponseTable({
                       </div>
                     </div>
                   </div>
+                  <div className="w-[17%] text-gray-600 truncate px-2 text-sm">{res.course ?? "-"}</div>
+                  <div className="w-[17%] text-gray-600 text-sm">{res.year ?? "-"}</div>
                   <div className="w-[17%] flex items-center justify-center">
                     <span className={`px-3 py-1 text-[11px] font-semibold rounded-full ${res.status === "completed" ? "bg-green-100 text-green-600 border border-green-200" : "bg-red-100 text-red-600 border border-red-200"}`}>
                       {res.status === "completed" ? "Completed" : "Not Completed"}
                     </span>
                   </div>
-                  <div className="w-[17%] text-gray-600 truncate px-2 text-sm">{res.course ?? "-"}</div>
-                  <div className="w-[17%] text-gray-600 text-sm">{res.year ?? "-"}</div>
                   <div className="w-[17%] flex items-center justify-center">
                     <button onClick={() => handleView(res)} className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium cursor-pointer">
                       <Eye size={14} /> View
