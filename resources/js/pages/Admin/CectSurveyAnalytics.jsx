@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, router } from "@inertiajs/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Loader2 } from "lucide-react";
 import AdminLayout from "@/layouts/admin-layout";
 import AnalyticsChart from "@/components/survey/coordinator/AnalyticsChart";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download } from "lucide-react";
 
 const latestYear = new Date().getFullYear() - 1;
 const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
@@ -49,6 +48,68 @@ export default function CectSurveyAnalytics({
         year_graduated: filters.yearGraduated || "",
         semester:       filters.semester || "",
     });
+    const [downloading, setDownloading] = useState(false);
+    const reportRef = useRef(null);
+
+    const handleDownload = async () => {
+        if (!reportRef.current || downloading) return;
+        setDownloading(true);
+        try {
+            const [{ toPng }, { default: jsPDF }] = await Promise.all([
+                import('html-to-image'),
+                import('jspdf'),
+            ]);
+
+            const dataUrl = await toPng(reportRef.current, {
+                quality: 1,
+                pixelRatio: 2,
+                backgroundColor: '#f0faff',
+                cacheBust: true,
+            });
+
+            const img = new Image();
+            img.src = dataUrl;
+            await new Promise((res) => { img.onload = res; });
+
+            // Landscape A4: 277mm usable width (vs 190mm portrait) — larger, more readable
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const pageW  = pdf.internal.pageSize.getWidth();
+            const pageH  = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            const usableW = pageW - margin * 2;
+            const usableH = pageH - margin * 2;
+
+            const mmPerPx   = usableW / img.width;
+            const pxPerPage = Math.floor(usableH / mmPerPx);
+
+            let srcY    = 0;
+            let pageNum = 0;
+
+            while (srcY < img.height) {
+                if (pageNum > 0) pdf.addPage();
+
+                const sliceH = Math.min(pxPerPage, img.height - srcY);
+                const slice  = document.createElement('canvas');
+                slice.width  = img.width;
+                slice.height = sliceH;
+                const ctx = slice.getContext('2d');
+                ctx.fillStyle = '#f0faff';
+                ctx.fillRect(0, 0, slice.width, slice.height);
+                ctx.drawImage(img, 0, srcY, img.width, sliceH, 0, 0, img.width, sliceH);
+
+                pdf.addImage(slice.toDataURL('image/png'), 'PNG', margin, margin, usableW, sliceH * mmPerPx);
+                srcY    += pxPerPage;
+                pageNum += 1;
+            }
+
+            const filterTag = localFilters.year_graduated ? `_${localFilters.year_graduated}` : '';
+            pdf.save(`survey_report_${survey.id}${filterTag}_${new Date().toISOString().slice(0, 10)}.pdf`);
+        } catch (err) {
+            console.error('PDF generation failed:', err);
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     const applyFilters = (updated) => {
         const next = { ...localFilters, ...updated };
@@ -83,10 +144,10 @@ export default function CectSurveyAnalytics({
     });
 
     return (
-        <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+        <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6" ref={reportRef}>
 
-         {/* Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+         {/* Header + inline filters */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 
                 <div className="flex items-start gap-3 min-w-0">
                     <Link href={route("admin.analytics")}>
@@ -109,40 +170,41 @@ export default function CectSurveyAnalytics({
                     </div>
                 </div>
 
-                <a
-                    href={downloadUrl}
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shrink-0"
-                >
-                    <Download size={16} />
-                    Download Report
-                </a>
-            </div>
-
-            {/* Filters */}
-            <div className="bg-white border rounded-lg p-4 shadow-sm flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 ">
-                    <Label className="text-xs">Year Graduated</Label>
-                    <Select
-                        value={localFilters.year_graduated || "All Years"}
-                        onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
+                {/* Filters + Download grouped on the right */}
+                <div className="flex flex-wrap items-end gap-2 sm:shrink-0">
+                    <div className="flex flex-col gap-1">
+                        <Label className="text-xs text-gray-500">Year Graduated</Label>
+                        <Select
+                            value={localFilters.year_graduated || "All Years"}
+                            onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
+                        >
+                            <SelectTrigger className="h-8 text-sm w-36 bg-white"><SelectValue /></SelectTrigger>
+                            <SelectContent className="max-h-48 overflow-y-auto">
+                                {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <Label className="text-xs text-gray-500">Semester</Label>
+                        <Select
+                            value={localFilters.semester || "All Semesters"}
+                            onValueChange={(v) => applyFilters({ semester: v === "All Semesters" ? "" : v })}
+                        >
+                            <SelectTrigger className="h-8 text-sm w-36 bg-white"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                {SEMESTER_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <button
+                        onClick={handleDownload}
+                        disabled={downloading}
+                        className="h-8 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-                        <SelectContent className="max-h-48 overflow-y-auto">
-                            {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <Label className="text-xs">Semester</Label>
-                    <Select
-                        value={localFilters.semester || "All Semesters"}
-                        onValueChange={(v) => applyFilters({ semester: v === "All Semesters" ? "" : v })}
-                    >
-                        <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            {SEMESTER_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                        {downloading
+                            ? <><Loader2 size={16} className="animate-spin" /> Generating PDF...</>
+                            : <><Download size={16} /> Download Report</>}
+                    </button>
                 </div>
             </div>
 

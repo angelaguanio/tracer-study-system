@@ -16,15 +16,15 @@ function pickChartType(data, questionType) {
 function PieChartView({ data }) {
     const total = data.reduce((s, d) => s + d.value, 0);
     return (
-        <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
+        <ResponsiveContainer width="100%" height={250}>
+            <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                 <Pie
                     data={data}
                     dataKey="value"
                     nameKey="label"
                     cx="50%"
-                    cy="50%"
-                    outerRadius={65}
+                    cy="46%"
+                    outerRadius={72}
                     label={({ value }) => `${Math.round((value / total) * 100)}%`}
                     labelLine={true}
                 >
