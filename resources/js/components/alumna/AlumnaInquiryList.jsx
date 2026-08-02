@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Search, ChevronLeft, ChevronRight, ListFilter } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ListFilter, Plus } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import {
     DropdownMenu,
@@ -26,6 +26,7 @@ export default function AlumnaInquiryList({
     search, setSearch,
     sort, setSort,
     recipient, setRecipient,
+    onNewInquiry,
 }) {
     const handlePageChange = (url) => {
         if (url) {
@@ -40,8 +41,19 @@ export default function AlumnaInquiryList({
             {/* Header */}
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center px-6 pt-5'>
-                    <h2 className='text-xl font-semibold'>My Inquiries</h2>
-                    <Badge className='bg-slate-700 text-sm px-3'>{inquiries.total}</Badge>
+                    <div className='flex items-center gap-2'>
+                        <h2 className='text-xl font-semibold'>My Inquiries</h2>
+                        <Badge className='bg-slate-700 text-sm px-3'>{inquiries.total}</Badge>
+                    </div>
+                    <Button
+                        size='sm'
+                        variant='default'
+                        className='gap-1 text-xs shrink-0 bg-blue-btn hover:bg-bluehover-btn text-white'
+                        onClick={onNewInquiry}
+                    >
+                        <Plus className='h-3.5 w-3.5' />
+                        New Inquiry
+                    </Button>
                 </div>
 
                 {/* Search + filter button */}

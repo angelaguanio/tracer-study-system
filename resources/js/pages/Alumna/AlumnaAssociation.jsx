@@ -18,7 +18,7 @@ export default function AlumnaAssociation() {
       {/* ═══════════════════════════════════════════════════════
           1. HERO
       ═══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[480px] sm:h-[520px] flex items-center overflow-hidden">
+      <section className="relative w-full h-[600px] flex items-center overflow-hidden">
 
         <img
           src={graduationBg}

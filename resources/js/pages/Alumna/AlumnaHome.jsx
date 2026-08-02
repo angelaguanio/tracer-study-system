@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import alumniHomeImg from '../../assets/cect_home.png';
+import alumniHomeImg from '../../assets/cect_home_new.png';
 import { Link } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import echo from '@/echo';

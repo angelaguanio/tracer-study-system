@@ -18,19 +18,7 @@ class InquiriesController extends Controller
     //-------------alumni--------------------
 
     public function alumniIndex() {
-        $coordinators = User::where('user_role', 'coordinator')
-            ->select('id', 'first_name', 'last_name', 'department')
-            ->get();
-
-        // Get unique departments from coordinators
-        $departments = $coordinators->pluck('department')->unique()->filter()->values();
-
-        return Inertia::render('Alumna/ContactUs', [
-            'userEmail' => Auth::user()->email,
-            'userName' => Auth::user()->first_name. ' ' .Auth::user()->last_name,
-            'coordinators' => $coordinators,
-            'departments' => $departments
-        ]);
+        return Inertia::render('Alumna/ContactUs');
     }
 
     public function store(Request $request) {
@@ -106,14 +94,24 @@ class InquiriesController extends Controller
         $sort = $request->input('sort', 'newest');
         $query->orderBy('created_at', $sort === 'oldest' ? 'asc' : 'desc');
 
+        // Coordinator list for the new-inquiry modal
+        $coordinators = User::where('user_role', 'coordinator')
+            ->select('id', 'first_name', 'last_name', 'department')
+            ->get();
+        $departments = $coordinators->pluck('department')->unique()->filter()->values();
+
         return Inertia::render('Alumna/AlumnaInquiries', [
-            'inquiries' => $query->paginate(10)->withQueryString(),
-            'filters'   => [
+            'inquiries'    => $query->paginate(10)->withQueryString(),
+            'filters'      => [
                 'search'    => $request->search,
                 'sort'      => $sort,
                 'recipient' => $request->recipient,
             ],
-            'openId'    => $request->integer('open') ?: null,
+            'openId'       => $request->integer('open') ?: null,
+            'userEmail'    => Auth::user()->email,
+            'userName'     => Auth::user()->first_name . ' ' . Auth::user()->last_name,
+            'coordinators' => $coordinators,
+            'departments'  => $departments,
         ]);
     }
 

@@ -36,7 +36,7 @@ export default function AlumnaAnnouncements({ announcements }) {
       {/* CENTER CONTAINER */}
       <div className="w-full max-w-[1400px] mx-auto px-6 py-10">
 
-        <h2 className="text-[#7B7B7B] text-xl font-semibold mb-6 text-center">
+        <h2 className="text-[#7B7B7B] text-2xl font-semibold py-3 mb-5 text-center">
          Announcements
         </h2>
 

@@ -47,7 +47,7 @@ export default function AlumnaOffice() {
       {/* ═══════════════════════════════════════════════════════
           1. HERO
       ═══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[480px] sm:h-[560px] md:h-[620px] flex items-center overflow-hidden">
+      <section className="relative w-full h-[600px] flex items-center overflow-hidden">
 
         <img
           src={officeData.bg}

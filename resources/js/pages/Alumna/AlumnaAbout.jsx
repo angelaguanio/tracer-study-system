@@ -60,7 +60,7 @@ export default function AlumnaAbout() {
       {/* ═══════════════════════════════════════════════════════
           1. HERO — building bg + text overlay
       ═══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[480px] sm:h-[560px] md:h-[620px] flex items-center overflow-hidden">
+      <section className="relative w-full h-[600px] flex items-center overflow-hidden">
 
         {/* bg image */}
         <img

@@ -23,7 +23,7 @@ import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 
 
-export default function ContactForm({auth, userEmail, userName, coordinators, departments}) {
+export default function ContactForm({auth, userEmail, userName, coordinators, departments, onSuccess}) {
 
   const {data, setData, post, processing, errors, reset} = useForm({
     title: '',
@@ -61,6 +61,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
               description: 'We will get back to you as soon as possible.'
             });
             reset();
+            if (onSuccess) onSuccess();
         },
         onError: (errors) => {
             toast.error('Failed to send message', {
@@ -91,48 +92,39 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
   ]
 
   return (
-    <Card className='w-full max-w-3xl px-4 sm:px-6 shadow-2xl border rounded-3xl'>
-        <CardHeader className='pb-6'>
-            <div className='flex flex-col items-center justify-center py-6 space-y-3'>
-                <h1 className='text-2xl sm:text-3xl font-bold text-center text-gray-800'>Send us a Message</h1>
-                <p className='text-gray-600 text-center max-w-xl'>Fill out the form below and we will get back to you as soon as possible.</p>
-            </div>
-        </CardHeader>
-
+    <Card className='w-full max-w-3xl px-4 sm:px-6 border-0 shadow-none'>
+      
       <form onSubmit={handleSubmit}>
         <CardContent>
 
           <div className='flex flex-col w-full py-3 px-4 bg-blue-200/20 rounded-2xl border border-blue-300'>
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full">
-              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
-                <Select onValueChange={(value) => setData('title', value)} value={data.title}>
-                    <SelectTrigger className=" text-black border-gray-400 text-sm bg-white">
-                      <SelectValue placeholder="Select Title" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-48" >
-                      <SelectGroup >
-                        {titleItems.map((title) => (
-                          <SelectItem key={title.value} value={title.value} >
-                            {title.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+            <div className="flex flex-row gap-4 items-center min-w-0 w-full">
+              <Select onValueChange={(value) => setData('title', value)} value={data.title}>
+                  <SelectTrigger className="w-[110px] shrink-0 text-black border-gray-400 text-sm bg-white">
+                    <SelectValue placeholder="Select Title" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-48" >
+                    <SelectGroup >
+                      {titleItems.map((title) => (
+                        <SelectItem key={title.value} value={title.value} >
+                          {title.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
 
-                {/* user details */}
-                <div className="flex flex-col min-w-0">
-                  <h1 className="text-base font-medium break-words">
-                    {userName}
-                  </h1>
+              {/* user details */}
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-base font-medium break-words leading-tight">
+                  {userName}
+                </h1>
 
-                  <p className="text-sm text-gray-500 break-all">
-                    {userEmail}
-                  </p>
-                </div>
+                <p className="text-sm text-gray-500 break-all leading-tight">
+                  {userEmail}
+                </p>
+              </div>
             </div>
-            <h1 className='text-sm text-blue-500 self-start sm:self-end'>Logged in</h1>
-          </div>
           </div>
 
           
