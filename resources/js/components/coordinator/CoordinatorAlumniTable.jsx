@@ -53,6 +53,8 @@ export default function CoordinatorAlumniTable({
         return "bg-yellow-100 text-yellow-600";
       case "BSEcE":
         return "bg-purple-100 text-purple-600";
+      case "BSCS":
+        return "bg-teal-100 text-teal-600";
       default:
         return "bg-gray-100 text-gray-600";
     }

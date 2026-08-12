@@ -199,6 +199,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                 <SelectContent>
                   <SelectItem value="BSIT">BSIT</SelectItem>
                   <SelectItem value="BSCpE & BSEcE">BSCpE & BSEcE</SelectItem>
+                  <SelectItem value="BSCS">BSCS</SelectItem>
                 </SelectContent>
               </Select>
               {errors.courses && (

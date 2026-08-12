@@ -30,10 +30,11 @@ const STEP_META = [
 ];
 
 // ─── Options ──────────────────────────────────────────────────────────────────
-const CECT_COURSES = [
+const BASE_COURSES = [
   { value: 'BSCpE', label: 'Bachelor of Science in Computer Engineering' },
   { value: 'BSEcE', label: 'Bachelor of Science in Electronics Engineering' },
   { value: 'BSIT',  label: 'Bachelor of Science in Information Technology' },
+  { value: 'BSCS',  label: 'Bachelor of Science in Computer Science' },
 ];
 
 const SEMESTER_OPTIONS = [
@@ -175,15 +176,43 @@ export default function AlumnaSignup() {
 
   const yearOptions = useMemo(() => {
     const currentYear = new Date().getFullYear() - 1; // last completed academic year
-    return Array.from({ length: currentYear - 1990 + 1 }, (_, i) => {
+    const allYears = Array.from({ length: currentYear - 1985 + 1 }, (_, i) => {
       const s = currentYear - i; return { value: `${s}-${s + 1}`, label: `${s}-${s + 1}` };
     });
-  }, []);
+
+    if (data.courses === 'BSCS') {
+      return allYears.filter((y) => {
+        const startYear = parseInt(y.value.split('-')[0], 10);
+        return startYear >= 1998 && startYear <= 2010;
+      });
+    }
+    if (data.courses === 'BSIT') {
+      return allYears.filter((y) => {
+        const startYear = parseInt(y.value.split('-')[0], 10);
+        return startYear >= 2010;
+      });
+    }
+    if (data.courses === 'BSEcE') {
+      return allYears.filter((y) => {
+        const startYear = parseInt(y.value.split('-')[0], 10);
+        return startYear >= 1985;
+      });
+    }
+    if (data.courses === 'BSCpE') {
+      return allYears.filter((y) => {
+        const startYear = parseInt(y.value.split('-')[0], 10);
+        return startYear >= 1998;
+      });
+    }
+    return allYears;
+  }, [data.courses]);
 
   const employmentYearOptions = useMemo(() =>
     Array.from({ length: EMPLOYMENT_CURRENT_YEAR - 2018 + 1 }, (_, i) => {
       const y = EMPLOYMENT_CURRENT_YEAR - i; return { value: String(y), label: String(y) };
     }), [EMPLOYMENT_CURRENT_YEAR]);
+
+
 
   const handleChange = ({ target: { name, value } }) => {
     setData((prev) => ({ ...prev, [name]: value }));
@@ -205,6 +234,38 @@ export default function AlumnaSignup() {
       setData((prev) => value === 'current'
         ? { ...prev, is_present: true,  employment_end_year: 'current' }
         : { ...prev, is_present: false, employment_end_year: value });
+      return;
+    }
+    if (name === 'courses') {
+      if (value === 'BSCS' && data.school_year) {
+        const startYear = parseInt(data.school_year.split('-')[0], 10);
+        if (startYear < 1998 || startYear > 2010) {
+          setData((prev) => ({ ...prev, [name]: value, school_year: '' }));
+          return;
+        }
+      }
+      if (value === 'BSIT' && data.school_year) {
+        const startYear = parseInt(data.school_year.split('-')[0], 10);
+        if (startYear < 2010) {
+          setData((prev) => ({ ...prev, [name]: value, school_year: '' }));
+          return;
+        }
+      }
+      if (value === 'BSEcE' && data.school_year) {
+        const startYear = parseInt(data.school_year.split('-')[0], 10);
+        if (startYear < 1985) {
+          setData((prev) => ({ ...prev, [name]: value, school_year: '' }));
+          return;
+        }
+      }
+      if (value === 'BSCpE' && data.school_year) {
+        const startYear = parseInt(data.school_year.split('-')[0], 10);
+        if (startYear < 1998) {
+          setData((prev) => ({ ...prev, [name]: value, school_year: '' }));
+          return;
+        }
+      }
+      setData((prev) => ({ ...prev, [name]: value }));
       return;
     }
     setData((prev) => ({ ...prev, [name]: value }));
@@ -527,7 +588,7 @@ export default function AlumnaSignup() {
 
               <IconSelect icon={BookOpen} placeholder="Program / Course" value={data.courses} onValueChange={(v) => handleSelectChange('courses', v)} error={stepErrors.courses}>
                 <SelectGroup>
-                  {CECT_COURSES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                  {BASE_COURSES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                 </SelectGroup>
               </IconSelect>
 

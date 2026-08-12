@@ -67,6 +67,7 @@ export default function AdminAlumniCoordinatorFilter({
               <SelectItem value="BSIT" className='cursor-pointer'>BSIT</SelectItem>
               <SelectItem value="BSCpE" className='cursor-pointer'>BSCpE</SelectItem>
               <SelectItem value="BSEcE" className='cursor-pointer'>BSEcE</SelectItem>
+              <SelectItem value="BSCS" className='cursor-pointer'>BSCS</SelectItem>
             </SelectContent>
           </Select>
 

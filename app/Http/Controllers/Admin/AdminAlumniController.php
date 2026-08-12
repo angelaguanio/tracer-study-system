@@ -111,9 +111,7 @@ class AdminAlumniController extends Controller
                 'semester_graduated' => $user->semester,
                 'semester'           => $user->semester,
 
-                'profile_picture' => $user->profile_picture
-                    ? asset('storage/' . $user->profile_picture)
-                    : null,
+                'profile_picture' => $user->profile_picture ?: null,
 
                 'initials' => $user->initials ?? '??',
 
