@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -14,13 +14,6 @@ import {
 export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
   const [isResetChecked, setIsResetChecked] = useState(false);
 
-  // DYNAMIC YEAR OPTIONS (2017 to 2026)
-  const currentYear = new Date().getFullYear();
-  const years = Array.from(
-    { length: currentYear - 2017 + 1 },
-    (_, i) => (2017 + i).toString()
-  );
-
   const { data, setData, post, put, reset, errors, processing } = useForm({
     first_name: "",
     last_name: "",
@@ -33,6 +26,29 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     status: "active",
     reset_password: false,
   });
+
+  // DYNAMIC YEAR OPTIONS — filtered by assigned program, matching alumni signup logic
+  const currentYear = new Date().getFullYear();
+  const allYears = useMemo(() =>
+    Array.from({ length: currentYear - 1985 + 1 }, (_, i) => (1985 + i).toString()),
+    [currentYear]
+  );
+
+  const years = useMemo(() => {
+    const courses = data.courses;
+    if (courses === "BSIT") {
+      return allYears.filter((y) => parseInt(y) >= 2010);
+    }
+    if (courses === "BSCS") {
+      return allYears.filter((y) => parseInt(y) >= 1998 && parseInt(y) <= 2010);
+    }
+    if (courses === "BSCpE & BSEcE") {
+      return allYears.filter((y) => parseInt(y) >= 1985);
+    }
+    // fallback: show all years
+    return allYears;
+  }, [data.courses, allYears]);
+
 
   // LOAD DATA WHEN EDITING
   useEffect(() => {
@@ -220,7 +236,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                 <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Select start year" />
                 </SelectTrigger>
-                <SelectContent position="popper" side="bottom" align="start">
+                <SelectContent position="popper" side="bottom" align="start" className="max-h-[160px] overflow-y-auto">
                   {years.map((year) => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -243,7 +259,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
                 <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Select end year" />
                 </SelectTrigger>
-                <SelectContent position="popper" side="bottom" align="start">
+                <SelectContent position="popper" side="bottom" align="start" className="max-h-[160px] overflow-y-auto">
                   {years.map((year) => (
                     <SelectItem key={year} value={year}>
                       {year}

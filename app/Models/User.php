@@ -86,6 +86,36 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Relationship: Address details record.
+     */
+    public function addressDetails(): HasOne
+    {
+        return $this->hasOne(Address::class, 'user_id');
+    }
+
+    /**
+     * Relationship: Address (alias for addressDetails)
+     */
+    public function address(): HasOne
+    {
+        return $this->hasOne(Address::class, 'user_id');
+    }
+
+    /**
+     * Get user's formatted full address string.
+     */
+    public function getFormattedAddressAttribute(): string
+    {
+        if ($this->relationLoaded('address') && $this->address) {
+            return $this->address->full_address ?? '';
+        }
+        if ($this->relationLoaded('addressDetails') && $this->addressDetails) {
+            return $this->addressDetails->full_address ?? '';
+        }
+        return $this->attributes['address'] ?? '';
+    }
+
+    /**
      * Relationship: One current employment status.
      */
     public function employment(): HasOne {

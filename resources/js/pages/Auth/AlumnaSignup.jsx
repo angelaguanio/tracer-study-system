@@ -8,6 +8,7 @@ import {
   Eye, EyeOff, Loader2, Camera,
 } from 'lucide-react';
 
+import PhAddressSelector from '@/components/address/PhAddressSelector';
 import AuthLayout from '@/layouts/auth-layout';
 import TextInput from '@/components/text-input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -55,7 +56,8 @@ const UNEMPLOYMENT_REASONS = [
 
 const INITIAL_FORM = {
   last_name: '', first_name: '', middle_name: '',
-  address: '', contact_number: '',
+  street_address: '', subdivision: '', region: '', province: '', city: '', barangay: '', address: '',
+  contact_number: '',
   email: '', password: '', password_confirmation: '',
   department: 'CECT', courses: '',
   school_year: '', start_year: '', end_year: '', semester: '',
@@ -70,15 +72,22 @@ const INITIAL_FORM = {
 };
 
 // ─── Reusable field with icon ─────────────────────────────────────────────────
-function IconInput({ icon: Icon, name, type = 'text', placeholder, value, onChange, error }) {
+function IconInput({ icon: Icon, label, required = false, optional = false, name, type = 'text', placeholder, value, onChange, error }) {
   const [show, setShow] = useState(false);
   const isPassword = type === 'password';
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
 
   return (
     <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-xs font-medium text-gray-700">
+          {label}{' '}
+          {required && <span className="text-red-500">*</span>}
+          {optional && <span className="text-gray-400 text-[11px]">(Optional)</span>}
+        </label>
+      )}
       <div
-        className={`flex items-center gap-3 rounded-lg border border-gray-400 bg-white px-4 py-2.5
+        className={`flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors
           ${
             error
               ? "border-red-400"
@@ -92,7 +101,7 @@ function IconInput({ icon: Icon, name, type = 'text', placeholder, value, onChan
           value={value}
           placeholder={placeholder}
           onChange={onChange}
-          className="flex-1 text-sm text-black placeholder:text-gray-500"
+          className="flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent"
         />
         {isPassword && (
           <button
@@ -132,9 +141,16 @@ function StepHeader({ step }) {
 }
 
 // ─── Select with icon wrapper ─────────────────────────────────────────────────
-function IconSelect({ icon: Icon, placeholder, value, onValueChange, children, error, disabled = false }) {
+function IconSelect({ icon: Icon, label, required = false, optional = false, placeholder, value, onValueChange, children, error, disabled = false }) {
   return (
     <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-xs font-medium text-gray-700">
+          {label}{' '}
+          {required && <span className="text-red-500">*</span>}
+          {optional && <span className="text-gray-400 text-[11px]">(Optional)</span>}
+        </label>
+      )}
       <div
         className={`w-full flex items-center gap-3 rounded-lg border px-4 bg-white overflow-hidden transition-colors
           ${error ? "border-red-400" : "border-gray-400 focus-within:border-blue-500"}
@@ -144,7 +160,7 @@ function IconSelect({ icon: Icon, placeholder, value, onValueChange, children, e
           <Icon className="h-4 w-4 text-gray-500 shrink-0" />
 
           <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-              <SelectTrigger className="flex-1 min-w-0 w-full border-0 shadow-none px-0 py-3 text-sm text-black focus:ring-0 [&>span]:truncate">
+              <SelectTrigger className="flex-1 min-w-0 w-full border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
                   <SelectValue placeholder={placeholder} />
               </SelectTrigger>
 
@@ -296,7 +312,16 @@ export default function AlumnaSignup() {
   };
 
   // ── Per-step validation ────────────────────────────────────────────────────
-  const isStep1Done = [data.last_name, data.first_name, data.address, data.contact_number].every(Boolean);
+  const isStep1Done = [
+    data.last_name,
+    data.first_name,
+    data.street_address,
+    data.region,
+    data.province,
+    data.city,
+    data.barangay,
+    data.contact_number,
+  ].every(Boolean);
   const isStep2Done = !!data.profile_picture;
   const isStep3Done = [data.courses, data.school_year, data.semester].every(Boolean);
   const isStep4Done = [data.email, data.password, data.password_confirmation].every(Boolean) && passwordErrors.length === 0;
@@ -305,7 +330,11 @@ export default function AlumnaSignup() {
     const errors = {};
     if (!data.last_name.trim()) errors.last_name = "Last name is required";
     if (!data.first_name.trim()) errors.first_name = "First name is required";
-    if (!data.address.trim()) errors.address = "Address is required";
+    if (!data.street_address?.trim()) errors.street_address = "Street address / House number is required";
+    if (!data.region) errors.region = "Region is required";
+    if (!data.province) errors.province = "Province is required";
+    if (!data.city) errors.city = "City / Municipality is required";
+    if (!data.barangay) errors.barangay = "Barangay is required";
     if (!/^09\d{9}$/.test(data.contact_number)) errors.contact_number = "Contact number must be 11 digits and start with 09";
     return errors;
   };
@@ -403,12 +432,18 @@ export default function AlumnaSignup() {
     const formData = new FormData();
 
     // Personal
-    formData.append('first_name',    data.first_name);
-    formData.append('last_name',     data.last_name);
-    formData.append('middle_name',   data.middle_name ?? '');
-    formData.append('address',       data.address);
-    formData.append('contact_number',data.contact_number);
-    formData.append('department',    data.department);
+    formData.append('first_name',     data.first_name);
+    formData.append('last_name',      data.last_name);
+    formData.append('middle_name',    data.middle_name ?? '');
+    formData.append('street_address', data.street_address ?? '');
+    formData.append('subdivision',    data.subdivision ?? '');
+    formData.append('region',         data.region ?? '');
+    formData.append('province',       data.province ?? '');
+    formData.append('city',           data.city ?? '');
+    formData.append('barangay',       data.barangay ?? '');
+    formData.append('address',        data.address ?? '');
+    formData.append('contact_number', data.contact_number);
+    formData.append('department',     data.department);
 
     // Profile picture
     if (data.profile_picture instanceof File) {
@@ -492,11 +527,27 @@ export default function AlumnaSignup() {
           {/* ── Step 1: Personal ── */}
           {step === 1 && (
             <div className="flex flex-col gap-3">
-              <IconInput icon={User}  name="last_name"      placeholder="Last Name"      value={data.last_name}      onChange={handleChange} error={stepErrors.last_name} />
-              <IconInput icon={User}  name="first_name"     placeholder="First Name"     value={data.first_name}     onChange={handleChange} error={stepErrors.first_name} />
-              <IconInput icon={User}  name="middle_name"    placeholder="Middle Name (optional)" value={data.middle_name} onChange={handleChange} error={stepErrors.middle_name} />
-              <IconInput icon={MapPin} name="address"       placeholder="Address"        value={data.address}        onChange={handleChange} error={stepErrors.address} />
-              <IconInput icon={Phone} name="contact_number" placeholder="Contact Number" value={data.contact_number} onChange={handleChange} error={stepErrors.contact_number} type="number" />
+              <IconInput icon={User}  name="last_name"   label="Last Name" required placeholder="Last Name"      value={data.last_name}      onChange={handleChange} error={stepErrors.last_name} />
+              <IconInput icon={User}  name="first_name"  label="First Name" required placeholder="First Name"     value={data.first_name}     onChange={handleChange} error={stepErrors.first_name} />
+              <IconInput icon={User}  name="middle_name" label="Middle Name" optional placeholder="Middle Name" value={data.middle_name} onChange={handleChange} error={stepErrors.middle_name} />
+              
+              <PhAddressSelector
+                data={data}
+                onChange={(updatedAddress) => {
+                  setData((prev) => ({ ...prev, ...updatedAddress }));
+                  setStepErrors((prev) => ({
+                    ...prev,
+                    street_address: null,
+                    region: null,
+                    province: null,
+                    city: null,
+                    barangay: null,
+                  }));
+                }}
+                errors={stepErrors}
+              />
+
+              <IconInput icon={Phone} name="contact_number" label="Contact Number" required placeholder="Contact Number" value={data.contact_number} onChange={handleChange} error={stepErrors.contact_number} type="number" />
             </div>
           )}
 
@@ -581,24 +632,29 @@ export default function AlumnaSignup() {
           {step === 3 && (
             <div className="flex flex-col gap-3">
               {/* Static dept display */}
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                <GraduationCap className="h-4 w-4 text-gray-400 shrink-0" />
-                <span className="text-sm text-gray-500">College of Engineering and Computer Technology (CECT)</span>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-700">
+                  College / Department <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                  <GraduationCap className="h-4 w-4 text-gray-400 shrink-0" />
+                  <span className="text-sm text-gray-500">College of Engineering and Computer Technology (CECT)</span>
+                </div>
               </div>
 
-              <IconSelect icon={BookOpen} placeholder="Program / Course" value={data.courses} onValueChange={(v) => handleSelectChange('courses', v)} error={stepErrors.courses}>
+              <IconSelect icon={BookOpen} label="Program / Course" required placeholder="Program / Course" value={data.courses} onValueChange={(v) => handleSelectChange('courses', v)} error={stepErrors.courses}>
                 <SelectGroup>
                   {BASE_COURSES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                 </SelectGroup>
               </IconSelect>
 
-              <IconSelect icon={CalendarDays} placeholder="Year Graduated" value={data.school_year} onValueChange={(v) => handleSelectChange('school_year', v)} error={stepErrors.school_year}>
+              <IconSelect icon={CalendarDays} label="Year Graduated" required placeholder="Year Graduated" value={data.school_year} onValueChange={(v) => handleSelectChange('school_year', v)} error={stepErrors.school_year}>
                 <SelectGroup>
                   {yearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
                 </SelectGroup>
               </IconSelect>
 
-              <IconSelect icon={CalendarDays} placeholder="Semester" value={data.semester} onValueChange={(v) => handleSelectChange('semester', v)} error={stepErrors.semester}>
+              <IconSelect icon={CalendarDays} label="Semester" required placeholder="Semester" value={data.semester} onValueChange={(v) => handleSelectChange('semester', v)} error={stepErrors.semester}>
                 <SelectGroup>
                   {SEMESTER_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                 </SelectGroup>
@@ -609,14 +665,14 @@ export default function AlumnaSignup() {
           {/* ── Step 4: Account ── */}
           {step === 4 && (
             <div className="flex flex-col gap-3">
-              <IconInput icon={Mail} name="email"                 type="email"    placeholder="Email Address"      value={data.email}                 onChange={handleChange} error={stepErrors.email} />
-              <IconInput icon={Lock} name="password"              type="password" placeholder="Password"           value={data.password}              onChange={handleChange} error={stepErrors.password} />
+              <IconInput icon={Mail} name="email" label="Email Address" required type="email" placeholder="Email Address" value={data.email} onChange={handleChange} error={stepErrors.email} />
+              <IconInput icon={Lock} name="password" label="Password" required type="password" placeholder="Password" value={data.password} onChange={handleChange} error={stepErrors.password} />
               {passwordErrors.length > 0 && (
                 <ul className="text-xs text-red-500 space-y-1 pl-1">
                   {passwordErrors.map((e, i) => <li key={i}>• {e}</li>)}
                 </ul>
               )}
-              <IconInput icon={Lock} name="password_confirmation" type="password" placeholder="Confirm Password"  value={data.password_confirmation} onChange={handleChange} error={stepErrors.password_confirmation} />
+              <IconInput icon={Lock} name="password_confirmation" label="Confirm Password" required type="password" placeholder="Confirm Password" value={data.password_confirmation} onChange={handleChange} error={stepErrors.password_confirmation} />
             </div>
           )}
 
@@ -668,12 +724,12 @@ export default function AlumnaSignup() {
               <div>
                 <p className="mb-3 font-semibold text-gray-800">When did you start?</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <IconSelect icon={CalendarDays} placeholder="Start Year" value={data.employment_start_year} onValueChange={(v) => handleSelectChange('employment_start_year', v)} error={stepErrors.employment_start_year}>
+                  <IconSelect icon={CalendarDays} label="Start Year" required placeholder="Start Year" value={data.employment_start_year} onValueChange={(v) => handleSelectChange('employment_start_year', v)} error={stepErrors.employment_start_year}>
                     <SelectGroup>
                       {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
                     </SelectGroup>
                   </IconSelect>
-                  <IconSelect icon={CalendarDays} placeholder="End Year" value={data.is_present ? 'current' : data.employment_end_year} onValueChange={(v) => handleSelectChange('employment_end_year', v)}>
+                  <IconSelect icon={CalendarDays} label="End Year" placeholder="End Year" value={data.is_present ? 'current' : data.employment_end_year} onValueChange={(v) => handleSelectChange('employment_end_year', v)}>
                     <SelectGroup>
                       <SelectItem value="current">Present/Current</SelectItem>
                       {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
@@ -684,10 +740,10 @@ export default function AlumnaSignup() {
 
               {/* Company fields */}
               <div className="flex flex-col gap-3">
-                <IconInput icon={Building2}        name="company_name"   placeholder="Name of Company"          value={data.company_name}   onChange={handleChange} error={stepErrors.company_name} />
-                <IconInput icon={Briefcase}         name="position"       placeholder="Position in the Company"  value={data.position}       onChange={handleChange} error={stepErrors.position} />
-                <IconInput icon={MapPin}            name="location"       placeholder="Location of Company"      value={data.location}       onChange={handleChange} error={stepErrors.location} />
-                <IconInput icon={BadgeDollarSign}   name="monthly_salary" placeholder="Monthly Salary (Optional)" value={data.monthly_salary} onChange={handleChange} error={stepErrors.monthly_salary} type="number" />
+                <IconInput icon={Building2}        name="company_name"   label="Name of Company" required placeholder="Name of Company"          value={data.company_name}   onChange={handleChange} error={stepErrors.company_name} />
+                <IconInput icon={Briefcase}         name="position"       label="Position in the Company" required placeholder="Position in the Company"  value={data.position}       onChange={handleChange} error={stepErrors.position} />
+                <IconInput icon={MapPin}            name="location"       label="Location of Company" required placeholder="Location of Company"      value={data.location}       onChange={handleChange} error={stepErrors.location} />
+                <IconInput icon={BadgeDollarSign}   name="monthly_salary" label="Monthly Salary" optional placeholder="Monthly Salary" value={data.monthly_salary} onChange={handleChange} error={stepErrors.monthly_salary} type="number" />
               </div>
             </div>
           )}
@@ -698,7 +754,7 @@ export default function AlumnaSignup() {
               <p className="text-center font-semibold text-gray-800">
                 What is your reason for not working at the moment?
               </p>
-              <IconSelect icon={Briefcase} placeholder="Select your reason" value={data.unemployment_reason} onValueChange={(v) => handleSelectChange('unemployment_reason', v)} error={stepErrors.unemployment_reason}>
+              <IconSelect icon={Briefcase} label="Reason for Not Working" required placeholder="Select your reason" value={data.unemployment_reason} onValueChange={(v) => handleSelectChange('unemployment_reason', v)} error={stepErrors.unemployment_reason}>
                 <SelectGroup>
                   {UNEMPLOYMENT_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectGroup>

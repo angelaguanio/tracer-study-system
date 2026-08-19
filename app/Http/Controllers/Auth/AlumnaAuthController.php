@@ -67,7 +67,13 @@ class AlumnaAuthController extends Controller
             // Profile picture — required at signup
             'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
 
-            // Address and Contact Number to validation
+            // Address and Contact Number validation
+            'street_address' => 'nullable|string|max:255',
+            'subdivision' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'barangay' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:500',
             'contact_number' => 'nullable|regex:/^09\d{9}$/',
 
@@ -117,6 +123,12 @@ class AlumnaAuthController extends Controller
             $profilePicturePath = '/uploads/profile-pictures/' . $filename;
         }
 
+        // Compute full address string
+        $fullAddress = \App\Models\Address::formatFullAddress($validation);
+        if (empty($fullAddress)) {
+            $fullAddress = $validation['address'] ?? null;
+        }
+
         //Create User
         $user = User::create([
             'last_name' => $validation['last_name'],
@@ -130,9 +142,21 @@ class AlumnaAuthController extends Controller
             'department' => $validation['department'] ?? null,
             'courses' => $validation['courses'] ?? null,
             'user_role' => 'alumna',
-            'address' => $validation['address'] ?? null,
+            'address' => $fullAddress,
             'contact_number' => $validation['contact_number'] ?? null,
             'profile_picture' => $profilePicturePath,
+        ]);
+
+        // Create Address Record
+        \App\Models\Address::create([
+            'user_id' => $user->id,
+            'street_address' => $validation['street_address'] ?? null,
+            'subdivision' => $validation['subdivision'] ?? null,
+            'region' => $validation['region'] ?? null,
+            'province' => $validation['province'] ?? null,
+            'city' => $validation['city'] ?? null,
+            'barangay' => $validation['barangay'] ?? null,
+            'full_address' => $fullAddress,
         ]);
 
         // Create Employment Record

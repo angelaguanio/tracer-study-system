@@ -466,13 +466,13 @@ class SurveyAnalyticsController extends Controller
     {
         $this->authorize('viewAnalytics', Survey::class);
 
-        // Get all employed alumni with location data
+        // Get all employed alumni with location and address data
         $employedUsers = User::where('user_role', 'alumna')
             ->whereHas('employment', function($q) {
                 $q->whereNotNull('location')
                   ->where('location', '!=', '');
             })
-            ->with('employment')
+            ->with(['employment', 'address'])
             ->get();
 
         $cityDistribution = [];
@@ -480,10 +480,19 @@ class SurveyAnalyticsController extends Controller
 
         foreach ($employedUsers as $user) {
             $companyLocation = strtolower(trim($user->employment->location));
-            $homeAddress = $user->address ? strtolower(trim($user->address)) : '';
+            $homeAddress = $user->address?->full_address ?? ($user->address ? strtolower(trim($user->address)) : '');
 
             $companyCity = $this->extractCity($companyLocation);
-            $homeCity    = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
+
+            // Prioritize structured city from addresses table if available
+            if (!empty($user->address?->city)) {
+                $homeCity = $user->address->city;
+            } else {
+                $homeCity = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
+                if ($homeCity === 'Unknown' && $homeAddress) {
+                    $homeCity = ucwords($homeAddress);
+                }
+            }
 
             if (!isset($cityDistribution[$companyCity])) {
                 $cityDistribution[$companyCity] = ['city' => $companyCity, 'count' => 0];
@@ -558,7 +567,12 @@ class SurveyAnalyticsController extends Controller
 
         // Comprehensive list of cities and municipalities
         $cities = [
+            // Nueva Ecija cities
             'cabanatuan city', 'cabanatuan',
+            'gapan city', 'gapan',
+            'san jose city', 'san jose',
+            'nueva ecija',
+            // Metro Manila
             'quezon city', 'manila', 'makati city', 'makati', 'taguig city', 'taguig',
             'pasig city', 'pasig', 'mandaluyong city', 'mandaluyong',
             'san juan city', 'san juan', 'caloocan city', 'caloocan',
@@ -566,10 +580,16 @@ class SurveyAnalyticsController extends Controller
             'valenzuela city', 'valenzuela', 'marikina city', 'marikina',
             'pasay city', 'pasay', 'paranaque city', 'paranaque',
             'las pinas city', 'las pinas', 'muntinlupa city', 'muntinlupa',
-            'pateros', 'cebu city', 'cebu', 'davao city', 'davao',
+            'pateros',
+            // Pampanga
+            'angeles city', 'angeles', 'clark', 'san fernando city', 'san fernando',
+            'pampanga',
+            // Other major cities
+            'cebu city', 'cebu', 'davao city', 'davao',
             'baguio city', 'baguio', 'iloilo city', 'iloilo', 'bacolod city', 'bacolod',
-            'nueva ecija', 'bulacan', 'pampanga', 'tarlac', 'pangasinan',
-            'bataan', 'zambales', 'laguna', 'cavite', 'rizal', 'batangas',
+            // Provinces
+            'bulacan', 'tarlac', 'pangasinan', 'bataan', 'zambales',
+            'laguna', 'cavite', 'rizal', 'batangas',
         ];
 
         // Check for city matches (prioritize longer matches first)

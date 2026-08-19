@@ -14,7 +14,7 @@ class StudentProfileController extends Controller
     public function show($id = null) 
     {
         $userId = $id ?? auth()->id();
-       $user = User::with(['employment', 'employmentHistory' => function($query) {
+        $user = User::with(['address', 'employment', 'employmentHistory' => function($query) {
             $query->orderBy('created_at', 'desc');
         }])->findOrFail($userId);
         
@@ -25,7 +25,7 @@ class StudentProfileController extends Controller
 
     public function showHistory($id)
     {
-        $history = EmploymentHistory::with('user')->findOrFail($id);
+        $history = EmploymentHistory::with(['user.address'])->findOrFail($id);
         return Inertia::render('Alumna/HistoryDetail', [
             'history' => $history,
             'profile' => $history->user
@@ -34,7 +34,7 @@ class StudentProfileController extends Controller
 
     public function edit() 
     {
-        $user = Auth::user()->load('employment');
+        $user = Auth::user()->load(['address', 'employment']);
         return Inertia::render('Alumna/StudentProfileEdit', [
             'profile' => $user
         ]);
@@ -48,7 +48,13 @@ class StudentProfileController extends Controller
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
             'middle_name'    => 'nullable|string|max:255',
-            'address'        => 'required|string|max:255',
+            'street_address' => 'nullable|string|max:255',
+            'subdivision'    => 'nullable|string|max:255',
+            'region'         => 'nullable|string|max:255',
+            'province'       => 'nullable|string|max:255',
+            'city'           => 'nullable|string|max:255',
+            'barangay'       => 'nullable|string|max:255',
+            'address'        => 'nullable|string|max:500',
             'contact_number' => 'required|string|max:20',
             'email'          => 'required|email|max:255|unique:users,email,' . $user->id,
             'profile_picture'=> 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -72,8 +78,13 @@ class StudentProfileController extends Controller
         $unemploymentReason = ($isEmployed === 'No') ? $request->reason_unemployed : null;
         $isPresent = $request->boolean('is_present');
 
+        $fullAddress = \App\Models\Address::formatFullAddress($request->all());
+        if (empty($fullAddress)) {
+            $fullAddress = $request->address;
+        }
+
         try {
-            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason, $isPresent) {
+            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason, $isPresent, $fullAddress) {
                 
                 // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
@@ -104,10 +115,24 @@ class StudentProfileController extends Controller
                     'middle_name'    => $request->middle_name ?? null,
                     'last_name'      => $request->last_name,
                     'contact_number' => $request->contact_number,
-                    'address'        => $request->address,
+                    'address'        => $fullAddress,
                     'email'          => $request->email,
                     'profile_picture' => $user->profile_picture,
                 ]);
+
+                // Update or Create Address Record
+                \App\Models\Address::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'street_address' => $request->street_address ?? null,
+                        'subdivision'    => $request->subdivision ?? null,
+                        'region'         => $request->region ?? null,
+                        'province'       => $request->province ?? null,
+                        'city'           => $request->city ?? null,
+                        'barangay'       => $request->barangay ?? null,
+                        'full_address'   => $fullAddress,
+                    ]
+                );
 
                 $oldEmp = $user->employment;
 

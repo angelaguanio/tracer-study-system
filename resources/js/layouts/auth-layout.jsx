@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
-import authBg from '../assets/auth_bg.jfif'
+import authBg from '../assets/cover2.png'
 import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 
 export default function AuthLayout({ children }) {
@@ -17,7 +17,7 @@ export default function AuthLayout({ children }) {
             style={{ backgroundImage: `url(${authBg})` }}
         >
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/60 via-teal-500 to-blue-600/60 opacity-85"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-800/80 via-teal-400/50 to-cyan-400/60 opacity-85"></div>
             
             {/* Content Container */}
             <div className="relative min-h-screen w-full">

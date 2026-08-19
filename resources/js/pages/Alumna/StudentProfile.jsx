@@ -94,7 +94,7 @@ export default function StudentProfile() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-2 border-t border-gray-50">
                     <InfoItem icon={<IconMail />} label="Email" value={profile?.email} />
                     <InfoItem icon={<IconPhone />} label="Contact Number" value={profile?.contact_number} />
-                    <InfoItem icon={<IconPin />} label="Address" value={profile?.address} />
+                    <InfoItem icon={<IconPin />} label="Address" value={profile?.address_details?.full_address || (typeof profile?.address === 'object' ? profile?.address?.full_address : profile?.address)} />
                     <InfoItem icon={<IconGrad />} label="Course" value={profile?.courses || '—'} />
                     <InfoItem icon={<IconGrad />} label="Year Graduated" value={displayedYear} />
                     {/* If API sends semester/graduated semester separately */}

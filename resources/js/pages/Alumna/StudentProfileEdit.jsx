@@ -5,6 +5,7 @@ import { User, Briefcase, Save, ArrowLeft, Image as ImageIcon, WifiOff } from 'l
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import PhAddressSelector from '@/components/address/PhAddressSelector';
 import {
     Select,
     SelectTrigger,
@@ -27,12 +28,11 @@ const UNEMPLOYMENT_REASON_OPTIONS = [
     { value: 'Career Break', label: 'Career Break' },
 ];
 
-// Personal info fields, rendered in order via PERSONAL_FIELDS.map(...)
+// Personal info fields
 const PERSONAL_FIELDS = [
     { name: 'last_name', label: 'Last Name', type: 'text', required: true },
     { name: 'first_name', label: 'First Name', type: 'text', required: true },
     { name: 'middle_name', label: 'Middle Name', type: 'text', required: false },
-    { name: 'address', label: 'Address', type: 'text', required: true },
     { name: 'contact_number', label: 'Contact Number', type: 'text', required: true },
     { name: 'email', label: 'Email Address', type: 'email', required: true },
 ];
@@ -65,8 +65,6 @@ export default function StudentProfileEdit() {
         [employmentYearOptions]
     );
 
-    // Employment fields shown when is_employed === 'yes'. Declared after the
-    // year options so they can reference them.
     const EMPLOYMENT_FIELDS = useMemo(() => ([
         { name: 'company', label: 'Company Name', type: 'text', required: true, colSpan: 'sm:col-span-2' },
         { name: 'employment_type', label: 'Employment Type', type: 'select', required: true, options: EMPLOYMENT_TYPE_OPTIONS, placeholder: 'Select Type' },
@@ -81,11 +79,19 @@ export default function StudentProfileEdit() {
         ? String(profile.employment.employment_end_year)
         : (profile?.employment?.currently_employed === 'Yes' ? 'current' : '');
 
+    const addressObj = profile?.addressDetails || (typeof profile?.address === 'object' ? profile.address : null);
+
     const { data, setData, processing, errors } = useForm({
         last_name: profile?.last_name || '',
         first_name: profile?.first_name || '',
         middle_name: profile?.middle_name || '',
-        address: profile?.address || '',
+        street_address: addressObj?.street_address || '',
+        subdivision: addressObj?.subdivision || '',
+        region: addressObj?.region || '',
+        province: addressObj?.province || '',
+        city: addressObj?.city || '',
+        barangay: addressObj?.barangay || '',
+        address: addressObj?.full_address || (typeof profile?.address === 'string' ? profile.address : ''),
         contact_number: profile?.contact_number || '',
         email: profile?.email || '',
         is_employed: profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
@@ -100,10 +106,7 @@ export default function StudentProfileEdit() {
         profile_picture: null,
     });
 
-    // Generic change handler for plain text/email/number inputs.
     const handleInputChange = (name) => (e) => setData(name, e.target.value);
-
-    // Generic change handler for shadcn Select, which hands back the value directly.
     const handleSelectChange = (name) => (value) => setData(name, value);
 
     const handleFileChange = (e) => {
@@ -132,7 +135,13 @@ export default function StudentProfileEdit() {
         formData.append('first_name',      data.first_name);
         formData.append('last_name',       data.last_name);
         formData.append('middle_name',     data.middle_name ?? '');
-        formData.append('address',         data.address);
+        formData.append('street_address', data.street_address ?? '');
+        formData.append('subdivision',    data.subdivision ?? '');
+        formData.append('region',         data.region ?? '');
+        formData.append('province',       data.province ?? '');
+        formData.append('city',           data.city ?? '');
+        formData.append('barangay',       data.barangay ?? '');
+        formData.append('address',        data.address ?? '');
         formData.append('contact_number',  data.contact_number);
         formData.append('email',           data.email);
 
@@ -296,6 +305,16 @@ export default function StudentProfileEdit() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {PERSONAL_FIELDS.map(renderField)}
+                    </div>
+
+                    <div className="pt-2 border-t border-gray-100">
+                        <PhAddressSelector
+                            data={data}
+                            onChange={(updatedAddress) => {
+                                setData((prev) => ({ ...prev, ...updatedAddress }));
+                            }}
+                            errors={errors}
+                        />
                     </div>
                 </section>
 
