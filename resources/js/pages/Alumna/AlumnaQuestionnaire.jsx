@@ -36,6 +36,7 @@ export default function AlumnaQuestionnaire({
 
   const renderTracerStudyTab = () => {
     // Tracer study already completed
+    if (tracerStudyCompleted) {
       return (
         <div className="flex items-center justify-center w-full py-10 px-4">
           <div className="relative bg-white w-full max-w-[520px] overflow-hidden shadow-md rounded-3xl border border-gray-100 flex flex-col items-center text-center pt-12 pb-12 px-6 sm:px-10">
@@ -89,6 +90,7 @@ export default function AlumnaQuestionnaire({
           </div>
         </div>
       );
+    }
 
     // No tracer study available
     if (!hasTracerStudy) {

@@ -1,13 +1,14 @@
 import cectBg from "@/assets/cect-bg.jpg";
+import cectBuilding from "@/assets/engr_dept.jpg";
 
 /* helper */
 const o = (role, name) => ({ role, name });
 
 export const departments = [
   {
-    title: "COLLEGE OF ENGINEERING AND TECHNOLOGY",
-    subtitle: "Located on the 2nd floor.",
-    bg: cectBg,
+    title: "ELECTRONICS AND COMPUTER ENGINEERING DEPARTMENT",
+    subtitle: "Located at the right wing near the main gate.",
+    bg: cectBuilding,
     groups: [
       {
         name: "ELECTRONICS AND COMPUTER ENGINEERING",
@@ -20,6 +21,13 @@ export const departments = [
           o("PRO", "Engr. Ezekiel Arceo"),
         ],
       },
+    ],
+  },
+  {
+    title: "INFORMATION TECHNOLOGY DEPARTMENT",
+    subtitle: "Located on the 2nd floor.",
+    bg: cectBg,
+    groups: [
       {
         name: "INFORMATION TECHNOLOGY",
         officers: [

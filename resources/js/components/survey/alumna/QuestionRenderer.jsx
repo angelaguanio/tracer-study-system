@@ -67,7 +67,7 @@ export default function QuestionRenderer({ question, value, onChange, error }) {
             {question.type === "likert" && (
                 <div className="flex flex-col gap-2">
                     <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
-                        {(question.options ?? []).map((opt) => (
+                        {[...(question.options ?? [])].reverse().map((opt) => (
                             <button
                                 key={opt}
                                 type="button"

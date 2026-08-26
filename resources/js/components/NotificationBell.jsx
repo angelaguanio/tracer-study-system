@@ -1,5 +1,5 @@
 // resources/js/Components/NotificationBell.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePage, router } from '@inertiajs/react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Bell } from 'lucide-react';
@@ -22,11 +22,25 @@ export default function NotificationBell({ className = "", notifications: shared
         notifications,
         unreadCount,
         loading,
+        loadingMore,
+        hasMore,
         fetchNotifications,
+        loadMore,
         markRead,
         markAllRead,
         markSeen,
     } = sharedNotifications ?? localNotifications;
+
+    const listRef = useRef(null);
+
+    // Trigger loadMore when user scrolls near the bottom of the list
+    const handleScroll = () => {
+        const el = listRef.current;
+        if (!el) return;
+        if (el.scrollHeight - el.scrollTop - el.clientHeight < 80) {
+            if (hasMore && !loadingMore) loadMore();
+        }
+    };
 
     const handleOpen = () => {
         setOpen(true);
@@ -215,7 +229,7 @@ export default function NotificationBell({ className = "", notifications: shared
                   </div>
 
                   {/* List */}
-                  <div className="overflow-y-auto divide-y flex-1">
+                  <div ref={listRef} onScroll={handleScroll} className="overflow-y-auto divide-y flex-1">
                       {loading && (
                           <p className="text-center text-sm text-gray-400 py-6">Loading...</p>
                       )}
@@ -247,6 +261,14 @@ export default function NotificationBell({ className = "", notifications: shared
                               </div>
                           </div>
                       ))}
+
+                      {/* Load more indicator */}
+                      {loadingMore && (
+                          <p className="text-center text-xs text-gray-400 py-3">Loading more...</p>
+                      )}
+                      {!loading && !loadingMore && !hasMore && notifications.length > 0 && (
+                          <p className="text-center text-xs text-gray-400 py-3">You're all caught up</p>
+                      )}
                   </div>
               </div>
           </>

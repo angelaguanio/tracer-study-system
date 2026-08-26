@@ -143,11 +143,20 @@ export default function CoordinatorViewProfile({ user }) {
 }
 
 function InfoItem({ icon, label, value }) {
-  return (<div className="flex flex-col"><span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</span><span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span></div>);
+  let displayVal = value;
+  if (displayVal && typeof displayVal === 'object') {
+    displayVal = displayVal.full_address || displayVal.name || '—';
+  }
+  return (<div className="flex flex-col"><span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</span><span className="text-[13px] font-bold text-[#343a40]">{displayVal || '—'}</span></div>);
 }
 
 function DetailItem({ label, value, isStatus = false }) {
-  return (<div className="flex flex-col gap-1.5"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span><span className={`text-[14px] font-bold ${isStatus ? 'text-green-600' : 'text-gray-800'}`}>{ (value === null || value === undefined || value === "null") ? " — " : value }</span></div>);
+  let displayVal = value;
+  if (displayVal && typeof displayVal === 'object') {
+    displayVal = displayVal.full_address || displayVal.name || '—';
+  }
+  const finalValue = (displayVal === null || displayVal === undefined || displayVal === "null" || displayVal === "") ? " — " : displayVal;
+  return (<div className="flex flex-col gap-1.5"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span><span className={`text-[14px] font-bold ${isStatus ? 'text-green-600' : 'text-gray-800'}`}>{finalValue}</span></div>);
 }
 
 CoordinatorViewProfile.layout = (page) => <CoordinatorLayout children={page} />;

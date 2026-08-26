@@ -317,18 +317,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('analytics.employment-location');
         });
 
-        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-        Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-        Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
-        Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
-        Route::patch('/surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
-        Route::patch('/surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
-        Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
-        Route::get('/surveys/{survey}/analytics/data', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics.data');
+        Route::get('/forms-and-surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::post('/forms-and-surveys', [SurveyController::class, 'store'])->name('surveys.store');
+        Route::put('/forms-and-surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+        Route::delete('/forms-and-surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+        Route::patch('/forms-and-surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
+        Route::patch('/forms-and-surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
+        Route::get('/forms-and-surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
+        Route::get('/forms-and-surveys/{survey}/analytics/data', [SurveyAnalyticsController::class, 'show'])->name('surveys.analytics.data');
 
         // Sections
-        Route::post('/surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
-        Route::put('/surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
+        Route::post('/forms-and-surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
+        Route::put('/forms-and-surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
         Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
         Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 
@@ -447,18 +447,18 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
         // Survey Builder for Coordinators
-        Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-        Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-        Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
-        Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
-        Route::patch('/surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
-        Route::patch('/surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
-        Route::get('/surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
+        Route::get('/forms-and-surveys', [SurveyController::class, 'index'])->name('surveys.index');
+        Route::post('/forms-and-surveys', [SurveyController::class, 'store'])->name('surveys.store');
+        Route::put('/forms-and-surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+        Route::delete('/forms-and-surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+        Route::patch('/forms-and-surveys/{survey}/archive', [SurveyController::class, 'archive'])->name('surveys.archive');
+        Route::patch('/forms-and-surveys/{survey}/unarchive', [SurveyController::class, 'unarchive'])->name('surveys.unarchive');
+        Route::get('/forms-and-surveys/{survey}/builder', [SurveyController::class, 'builder'])->name('surveys.builder');
         
 
         // Sections
-        Route::post('/surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
-        Route::put('/surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
+        Route::post('/forms-and-surveys/{survey}/sections', [SectionController::class, 'store'])->name('sections.store');
+        Route::put('/forms-and-surveys/{survey}/sections/reorder', [SectionController::class, 'reorder'])->name('sections.reorder');
         Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
         Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 

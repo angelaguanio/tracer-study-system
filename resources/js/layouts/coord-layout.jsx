@@ -32,8 +32,8 @@ export default function CoordinatorLayout({ children }) {
     },
     {
       id: "surveys",
-      name: "Surveys",
-      href: "/coordinator/surveys",
+      name: "Forms and Surveys",
+      href: "/coordinator/forms-and-surveys",
       icon: FileText
     },    
     {

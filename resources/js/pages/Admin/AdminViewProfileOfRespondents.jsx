@@ -234,16 +234,24 @@ export default function AdminViewProfileOfRespondents(props) {
 }
 
 function InfoItem({ label, value }) {
+  let displayVal = value;
+  if (displayVal && typeof displayVal === 'object') {
+    displayVal = displayVal.full_address || displayVal.name || '—';
+  }
   return (
     <div className="flex flex-col">
       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</span>
-      <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
+      <span className="text-[13px] font-bold text-[#343a40]">{displayVal || '—'}</span>
     </div>
   );
 }
 
 function DetailItem({ label, value, isStatus = false }) {
-  const finalValue = (value === null || value === undefined || value === "null") ? " — " : value;
+  let displayVal = value;
+  if (displayVal && typeof displayVal === 'object') {
+    displayVal = displayVal.full_address || displayVal.name || '—';
+  }
+  const finalValue = (displayVal === null || displayVal === undefined || displayVal === "null" || displayVal === "") ? " — " : displayVal;
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>

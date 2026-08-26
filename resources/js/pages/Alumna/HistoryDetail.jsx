@@ -7,7 +7,11 @@ const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IconBriefcase = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>;
 
 function DetailItem({ label, value, isStatus = false }) {
-    const finalValue = (!value || value === "null" || value === "null (null)" || value === "") ? "—" : value;
+    let displayVal = value;
+    if (displayVal && typeof displayVal === 'object') {
+        displayVal = displayVal.full_address || displayVal.name || '—';
+    }
+    const finalValue = (!displayVal || displayVal === "null" || displayVal === "null (null)" || displayVal === "") ? "—" : displayVal;
     return (
         <div className="flex flex-col gap-1.5">
             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
@@ -23,6 +27,14 @@ export default function HistoryDetail({ history, profile }) {
     
     const dateSaved = new Date(history.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const employmentRange = `${history.employment_start_year ?? "—"} - ${history.is_present ? "Present" : (history.employment_end_year || "—")}`;
+
+    const userAddress = (typeof profile.address === 'object' && profile.address !== null)
+        ? profile.address.full_address
+        : (profile.address_details?.full_address || profile.address);
+
+    const jobLocation = (typeof history.location === 'object' && history.location !== null)
+        ? history.location.full_address
+        : history.location;
 
     return (
         <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
@@ -55,7 +67,7 @@ export default function HistoryDetail({ history, profile }) {
                             <DetailItem label="Full Name" value={`${profile.first_name} ${profile.last_name}`} />
                             <DetailItem label="Email Address" value={profile.email} />
                             <DetailItem label="Contact Number" value={profile.contact_number} />
-                            <DetailItem label="Address" value={profile.address} />
+                            <DetailItem label="Address" value={userAddress} />
                             <DetailItem label="Course" value={profile.courses ?? profile.course} />
                             <DetailItem label="Year Graduated" value={(profile.start_year && profile.end_year) ? `${profile.start_year} - ${profile.end_year}` : (profile.year_graduated ?? '—')}/>
                         </div>
@@ -77,7 +89,7 @@ export default function HistoryDetail({ history, profile }) {
                                         <DetailItem label="Company Name" value={history.company_name} />
                                         <DetailItem label="Position" value={history.position} />
                                         <DetailItem label="Employment Type" value={history.employment_type} />
-                                        <DetailItem label="Location" value={history.location} />
+                                        <DetailItem label="Location" value={jobLocation} />
                                         <DetailItem label="Employment Range" value={employmentRange} />
                                         <DetailItem label="Monthly Salary" value={history.monthly_salary && parseFloat(history.monthly_salary) > 0 ? `₱${parseFloat(history.monthly_salary).toLocaleString()}` : '—'} />
                                     </>

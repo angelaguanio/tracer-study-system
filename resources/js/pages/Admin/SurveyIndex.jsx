@@ -57,9 +57,9 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
 
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold text-gray-800">List of Surveys</h1>
+                <h1 className="text-xl font-bold text-gray-800">Manage Forms and Surveys</h1>
                 <Button className="bg-[#008236] hover:bg-green-700 text-white" onClick={() => setOpen(true)}>
-                    <Plus size={16} /> New Survey
+                    <Plus size={16} /> New Form
                 </Button>
             </div>
 
@@ -101,7 +101,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
             {/* Survey list */}
             {currentList.length === 0 ? (
                 <div className="bg-white border rounded-lg p-10 text-center text-gray-400 shadow-sm">
-                    {isArchivedTab ? "No archived surveys." : "No surveys yet. Create one to get started."}
+                    {isArchivedTab ? "No archived surveys." : "No forms or surveys yet. Create one to get started."}
                 </div>
             ) : (
                 <div className="flex flex-col gap-3">
@@ -246,7 +246,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="lg:max-w-lg max-w-sm">
                     <DialogHeader>
-                        <DialogTitle>New Survey</DialogTitle>
+                        <DialogTitle>New Form</DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1">

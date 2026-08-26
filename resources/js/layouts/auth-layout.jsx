@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
-import authBg from '../assets/cover2.png'
+import authBg from '../assets/cover3.png';
+import wupCectLogo from '../assets/wup_cect.png';
 import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 
 export default function AuthLayout({ children }) {
@@ -17,11 +18,19 @@ export default function AuthLayout({ children }) {
             style={{ backgroundImage: `url(${authBg})` }}
         >
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-800/80 via-teal-400/50 to-cyan-400/60 opacity-85"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/50 via-teal-500/50 to-blue-600/50 opacity-85"></div>
             
             {/* Content Container */}
             <div className="relative min-h-screen w-full">
-                <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
+                {/* WUP CECT Logo in upper left corner */}
+                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 lg:top-8 lg:left-8 z-10">
+                    <img 
+                        src={wupCectLogo} 
+                        alt="WUP CECT Logo" 
+                        className="h-20 w-auto sm:h-18 md:h-22 drop-shadow-lg object-contain"
+                    />
+                </div>
+                <div className="mx-auto gap-20 flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
                     
                     {/* Hero text */}
                     <div className="flex w-full max-w-md flex-col items-center text-center lg:w-1/2 lg:max-w-none lg:items-start lg:text-left">

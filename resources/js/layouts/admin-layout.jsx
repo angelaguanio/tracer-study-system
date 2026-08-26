@@ -41,8 +41,8 @@ export default function AdminLayout({ children }) {
     },
     {
       id: "surveys",
-      name: "Surveys",
-      href:"/admin/surveys",
+      name: "Forms and Surveys",
+      href:"/admin/forms-and-surveys",
       icon: NotebookPen
     },
     {

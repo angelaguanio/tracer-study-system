@@ -14,12 +14,16 @@ const IconEdit = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
 
 function InfoItem({ icon, label, value }) {
+    let displayVal = value;
+    if (displayVal && typeof displayVal === 'object') {
+        displayVal = displayVal.full_address || displayVal.name || '—';
+    }
     return (
         <div className="flex items-start gap-3">
             {icon && <div className="text-gray-400 mt-1">{icon}</div>}
             <div className="flex flex-col text-left">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
-                <span className="text-[13px] font-bold text-[#343a40]">{value || '—'}</span>
+                <span className="text-[13px] font-bold text-[#343a40]">{displayVal || '—'}</span>
             </div>
         </div>
     );

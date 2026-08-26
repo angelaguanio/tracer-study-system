@@ -7,7 +7,7 @@ export const officeData = {
     {
       initial: "DIR.",
       role: "Director, Office for Alumni Affairs",
-      name: "Mr. Joephet G. Portana, Ph.D., LPT",
+      name: "Mr. Joepet G. Portana, Ph.D., LPT",
       email: "jgportana@wesleyan.edu.ph",
       gender: "male",
     },
