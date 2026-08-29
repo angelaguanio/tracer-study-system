@@ -47,7 +47,19 @@ class AlumnaAuthController extends Controller
         $validation = $request->validate([
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
+            'middle_name' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $val = trim($value);
+                    if ($val === '*') return;
+                    if (strlen($val) === 1 || preg_match('/^[A-Z]{2}$/', $val) || str_ends_with($val, '.')) {
+                        $fail('Please enter your full middle name, not just an initial. Enter * if you do not have a middle name.');
+                    }
+                }
+            ],
+            'suffix' => 'nullable|string|max:10',
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
@@ -75,7 +87,7 @@ class AlumnaAuthController extends Controller
             'city' => 'nullable|string|max:255',
             'barangay' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:500',
-            'contact_number' => 'nullable|regex:/^09\d{9}$/',
+            'contact_number' => 'nullable|string|regex:/^\+\d{8,15}$/',
 
             'currently_employed' => 'required|in:Yes,No',
 
@@ -85,8 +97,7 @@ class AlumnaAuthController extends Controller
             'position' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'location' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'monthly_salary' => ['nullable'], // Removed 'numeric' to handle commas manually
-            'employment_start_year' => 'required_if:currently_employed,Yes|nullable|integer',
-            'employment_end_year' => 'required_if:is_present,false|nullable|integer',
+            'employment_duration' => 'required_if:currently_employed,Yes|nullable|string|max:255',
             'is_present' => 'required_if:currently_employed,Yes|boolean',
             'unemployment_reason' => 'required_if:currently_employed,No|nullable|string|max:255',
         ], [
@@ -133,7 +144,8 @@ class AlumnaAuthController extends Controller
         $user = User::create([
             'last_name' => $validation['last_name'],
             'first_name' => $validation['first_name'],
-            'middle_name' => $validation['middle_name'] ?? null,
+            'middle_name' => $validation['middle_name'],
+            'suffix' => $validation['suffix'] ?? null,
             'email' => $validation['email'],
             'password' => Hash::make($validation['password']),
             'start_year' => $validation['start_year'] ?? null,
@@ -168,7 +180,7 @@ class AlumnaAuthController extends Controller
             'position' => $validation['currently_employed'] === 'Yes' ? $validation['position'] : null,
             'location' => $validation['currently_employed'] === 'Yes' ? $validation['location'] : null,
             'monthly_salary' => $validation['currently_employed'] === 'Yes' ? $salary : null,
-            'employment_start_year' => $validation['currently_employed'] === 'Yes' ? $validation['employment_start_year'] : null,
+            'employment_duration' => $validation['currently_employed'] === 'Yes' ? $validation['employment_duration'] : null,
             'unemployment_reason' => $validation['currently_employed'] === 'No' ? $validation['unemployment_reason'] : null,
         ];
 
@@ -182,16 +194,9 @@ class AlumnaAuthController extends Controller
 
         $employmentData['is_present'] = $isPresent;
 
-        $employmentData['employment_end_year'] = $isPresent
-            ? null
-            : (isset($validation['employment_end_year'])
-                ? (int) $validation['employment_end_year']
-                : null);
-
     } else {
 
         $employmentData['is_present'] = false;
-        $employmentData['employment_end_year'] = null;
 
     }
 

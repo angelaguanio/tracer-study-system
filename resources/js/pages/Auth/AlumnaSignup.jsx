@@ -9,8 +9,11 @@ import {
 } from 'lucide-react';
 
 import PhAddressSelector from '@/components/address/PhAddressSelector';
+import InternationalAddressSelector from '@/components/address/InternationalAddressSelector';
 import AuthLayout from '@/layouts/auth-layout';
 import TextInput from '@/components/text-input';
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectGroup,
@@ -41,8 +44,7 @@ const BASE_COURSES = [
 const SEMESTER_OPTIONS = [
   { value: '1st Semester', label: '1st Semester' },
   { value: '2nd Semester', label: '2nd Semester' },
-  { value: '3rd Semester', label: '3rd Semester' },
-  { value: 'Summer',       label: 'Summer' },
+  { value: 'Summer/Midyear', label: 'Summer/Midyear' },
 ];
 
 const EMPLOYMENT_TYPE_OPTIONS = [
@@ -51,12 +53,19 @@ const EMPLOYMENT_TYPE_OPTIONS = [
 ];
 
 const UNEMPLOYMENT_REASONS = [
-  'Studying', 'Job Hunting', 'Career Break',
+  'Studying',
+  'Job Hunting',
+  'Career Break',
+  'Family / Personal Responsibilities',
+  'Health Reasons',
+  'Preparing for Licensure/Certification Exam',
+  'Starting a Business',
+  'Other',
 ];
 
 const INITIAL_FORM = {
-  last_name: '', first_name: '', middle_name: '',
-  street_address: '', subdivision: '', region: '', province: '', city: '', barangay: '', address: '',
+  last_name: '', first_name: '', middle_name: '', suffix: '',
+  country: 'Philippines', street_address: '', subdivision: '', region: '', province: '', city: '', barangay: '', address: '',
   contact_number: '',
   email: '', password: '', password_confirmation: '',
   department: 'CECT', courses: '',
@@ -65,7 +74,7 @@ const INITIAL_FORM = {
   currently_employed: '',
   employment_type: '', company_name: '', position: '',
   location: '', monthly_salary: '',
-  employment_start_year: '', employment_end_year: '',
+  employment_duration: '',
   is_present: true,
   unemployment_reason: '',
   profile_picture: null,
@@ -184,6 +193,7 @@ export default function AlumnaSignup() {
   const fileInputRef = useRef(null);
 
   const [data, setData] = useState(INITIAL_FORM);
+  const [residency, setResidency] = useState('Philippines');
 
   // Jump back to the step that has an error after server validation
   // (server errors come back via Inertia page props on failed redirect)
@@ -312,14 +322,26 @@ export default function AlumnaSignup() {
   };
 
   // ── Per-step validation ────────────────────────────────────────────────────
-  const isStep1Done = [
+  const isStep1Done = residency === 'Philippines' ? [
     data.last_name,
     data.first_name,
+    data.middle_name,
+    data.suffix,
     data.street_address,
     data.region,
     data.province,
     data.city,
     data.barangay,
+    data.contact_number,
+  ].every(Boolean) : [
+    data.last_name,
+    data.first_name,
+    data.middle_name,
+    data.suffix,
+    data.street_address,
+    data.country,
+    data.province,
+    data.city,
     data.contact_number,
   ].every(Boolean);
   const isStep2Done = !!data.profile_picture;
@@ -330,12 +352,27 @@ export default function AlumnaSignup() {
     const errors = {};
     if (!data.last_name.trim()) errors.last_name = "Last name is required";
     if (!data.first_name.trim()) errors.first_name = "First name is required";
+    if (!data.middle_name?.trim()) {
+      errors.middle_name = "Middle name is required. Enter * if you do not have one.";
+    } else {
+      const mn = data.middle_name.trim();
+      if (mn !== '*' && (mn.length === 1 || /^[A-Z]{2}$/.test(mn) || mn.endsWith('.'))) {
+        errors.middle_name = "Please enter your full middle name, not just an initial. Enter * if you do not have a middle name.";
+      }
+    }
+    if (!data.suffix) errors.suffix = "Suffix is required. Select 'None' if you do not have one.";
     if (!data.street_address?.trim()) errors.street_address = "Street address / House number is required";
-    if (!data.region) errors.region = "Region is required";
-    if (!data.province) errors.province = "Province is required";
-    if (!data.city) errors.city = "City / Municipality is required";
-    if (!data.barangay) errors.barangay = "Barangay is required";
-    if (!/^09\d{9}$/.test(data.contact_number)) errors.contact_number = "Contact number must be 11 digits and start with 09";
+    if (residency === 'Philippines') {
+      if (!data.region) errors.region = "Region is required";
+      if (!data.province) errors.province = "Province is required";
+      if (!data.city) errors.city = "City / Municipality is required";
+      if (!data.barangay) errors.barangay = "Barangay is required";
+    } else {
+      if (!data.country) errors.country = "Country is required";
+      if (!data.province) errors.province = "State / Province is required";
+      if (!data.city) errors.city = "City is required";
+    }
+    if (!/^\+\d{8,15}$/.test(data.contact_number || '')) errors.contact_number = "Enter a valid contact number (e.g., +63 912 345 6789)";
     return errors;
   };
 
@@ -373,7 +410,7 @@ export default function AlumnaSignup() {
     if (!data.company_name) errors.company_name = "Company name is required";
     if (!data.position) errors.position = "Position is required";
     if (!data.location) errors.location = "Location is required";
-    if (!data.employment_start_year) errors.employment_start_year = "Start year is required";
+    if (!data.employment_duration) errors.employment_duration = "Duration is required";
     return errors;
   };
 
@@ -435,6 +472,8 @@ export default function AlumnaSignup() {
     formData.append('first_name',     data.first_name);
     formData.append('last_name',      data.last_name);
     formData.append('middle_name',    data.middle_name ?? '');
+    formData.append('suffix',         data.suffix === 'None' ? '' : (data.suffix ?? ''));
+    formData.append('country',        data.country ?? 'Philippines');
     formData.append('street_address', data.street_address ?? '');
     formData.append('subdivision',    data.subdivision ?? '');
     formData.append('region',         data.region ?? '');
@@ -442,7 +481,7 @@ export default function AlumnaSignup() {
     formData.append('city',           data.city ?? '');
     formData.append('barangay',       data.barangay ?? '');
     formData.append('address',        data.address ?? '');
-    formData.append('contact_number', data.contact_number);
+    formData.append('contact_number', data.contact_number || '');
     formData.append('department',     data.department);
 
     // Profile picture
@@ -466,15 +505,22 @@ export default function AlumnaSignup() {
     formData.append('currently_employed', data.currently_employed);
 
     if (data.currently_employed === 'Yes') {
+      let duration = data.employment_duration || '';
+      const parts = duration.split('-').map(s => s?.trim());
+      
+      // Auto format to include 'Present' if they just typed a start year
+      if (parts.length === 1 || !parts[1] || parts[1].toLowerCase() === 'current') {
+          duration = `${parts[0]} - Present`;
+      }
+      
+      const isPresent = true; // since they answered Yes to 'Currently employed'
+
       formData.append('employment_type',       data.employment_type);
       formData.append('company_name',          data.company_name);
       formData.append('position',              data.position);
       formData.append('location',              data.location);
-      formData.append('employment_start_year', data.employment_start_year);
-      formData.append('is_present',            data.is_present ? '1' : '0');
-      if (!data.is_present && data.employment_end_year && data.employment_end_year !== 'current') {
-        formData.append('employment_end_year', data.employment_end_year);
-      }
+      formData.append('employment_duration',   duration);
+      formData.append('is_present',            isPresent ? '1' : '0');
       if (data.monthly_salary) formData.append('monthly_salary', data.monthly_salary);
     } else {
       formData.append('unemployment_reason', data.unemployment_reason);
@@ -529,25 +575,98 @@ export default function AlumnaSignup() {
             <div className="flex flex-col gap-3">
               <IconInput icon={User}  name="last_name"   label="Last Name" required placeholder="Last Name"      value={data.last_name}      onChange={handleChange} error={stepErrors.last_name} />
               <IconInput icon={User}  name="first_name"  label="First Name" required placeholder="First Name"     value={data.first_name}     onChange={handleChange} error={stepErrors.first_name} />
-              <IconInput icon={User}  name="middle_name" label="Middle Name" optional placeholder="Middle Name" value={data.middle_name} onChange={handleChange} error={stepErrors.middle_name} />
+              <IconInput icon={User}  name="middle_name" label="Middle Name" required placeholder="Enter * if you don't have a middle name" value={data.middle_name} onChange={handleChange} error={stepErrors.middle_name} />
+              <IconSelect icon={User} label="Suffix" required placeholder="e.g. Jr., Sr., III" value={data.suffix} onValueChange={(v) => handleSelectChange('suffix', v)} error={stepErrors.suffix}>
+                <SelectGroup>
+                  <SelectItem value="None">None</SelectItem>
+                  <SelectItem value="Jr.">Jr.</SelectItem>
+                  <SelectItem value="Sr.">Sr.</SelectItem>
+                  <SelectItem value="II">II</SelectItem>
+                  <SelectItem value="III">III</SelectItem>
+                  <SelectItem value="IV">IV</SelectItem>
+                  <SelectItem value="V">V</SelectItem>
+                </SelectGroup>
+              </IconSelect>
               
-              <PhAddressSelector
-                data={data}
-                onChange={(updatedAddress) => {
-                  setData((prev) => ({ ...prev, ...updatedAddress }));
-                  setStepErrors((prev) => ({
-                    ...prev,
-                    street_address: null,
-                    region: null,
-                    province: null,
-                    city: null,
-                    barangay: null,
-                  }));
-                }}
-                errors={stepErrors}
-              />
+              <div className="flex flex-col gap-2 my-2">
+                <label className="text-xs font-medium text-gray-700">Where do you currently reside?</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-800">
+                    <input type="radio" name="residency" checked={residency === 'Philippines'} onChange={() => { setResidency('Philippines'); setData(p => ({...p, country: 'Philippines', street_address: '', region: '', province: '', city: '', barangay: ''})) }} className="accent-emerald-500" />
+                    Philippines
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-800">
+                    <input type="radio" name="residency" checked={residency === 'International'} onChange={() => { setResidency('International'); setData(p => ({...p, country: '', street_address: '', region: '', province: '', city: '', barangay: ''})) }} className="accent-emerald-500" />
+                    Outside the Philippines
+                  </label>
+                </div>
+              </div>
 
-              <IconInput icon={Phone} name="contact_number" label="Contact Number" required placeholder="Contact Number" value={data.contact_number} onChange={handleChange} error={stepErrors.contact_number} type="number" />
+              {residency === 'Philippines' ? (
+                <PhAddressSelector
+                  data={data}
+                  onChange={(updatedAddress) => {
+                    setData((prev) => ({ ...prev, ...updatedAddress }));
+                    setStepErrors((prev) => ({
+                      ...prev,
+                      street_address: null,
+                      region: null,
+                      province: null,
+                      city: null,
+                      barangay: null,
+                    }));
+                  }}
+                  errors={stepErrors}
+                />
+              ) : (
+                <InternationalAddressSelector
+                  data={data}
+                  onChange={(updatedAddress) => {
+                    setData((prev) => ({ ...prev, ...updatedAddress }));
+                    setStepErrors((prev) => ({
+                      ...prev,
+                      street_address: null,
+                      country: null,
+                      province: null,
+                      city: null,
+                    }));
+                  }}
+                  errors={stepErrors}
+                />
+              )}
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-700">
+                  Contact Number <span className="text-red-500">*</span>
+                </label>
+                <div className={`flex items-center gap-2 rounded-lg border bg-white px-3 py-2.5 transition-colors ${stepErrors.contact_number ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`}>
+                  <PhoneInput
+                    international
+                    defaultCountry="PH"
+                    value={data.contact_number || ''}
+                    onChange={(value) => setData(p => ({ ...p, contact_number: value }))}
+                    className="flex-1 PhoneInput--custom text-sm"
+                    style={{ '--PhoneInput-color--focus': '#10b981' }}
+                  />
+                </div>
+                {stepErrors.contact_number && <p className="text-xs text-red-500 pl-1">{stepErrors.contact_number}</p>}
+                
+                {/* Embedded CSS for PhoneInput to match Tailwind design */}
+                <style dangerouslySetInnerHTML={{__html: `
+                  .PhoneInput--custom .PhoneInputInput {
+                    border: none;
+                    outline: none;
+                    background: transparent;
+                    font-size: 0.875rem;
+                    line-height: 1.25rem;
+                    color: #000;
+                    width: 100%;
+                  }
+                  .PhoneInput--custom .PhoneInputCountry {
+                    margin-right: 0.75rem;
+                  }
+                `}} />
+              </div>
             </div>
           )}
 
@@ -648,15 +767,15 @@ export default function AlumnaSignup() {
                 </SelectGroup>
               </IconSelect>
 
-              <IconSelect icon={CalendarDays} label="Year Graduated" required placeholder="Year Graduated" value={data.school_year} onValueChange={(v) => handleSelectChange('school_year', v)} error={stepErrors.school_year}>
-                <SelectGroup>
-                  {yearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
-                </SelectGroup>
-              </IconSelect>
-
               <IconSelect icon={CalendarDays} label="Semester" required placeholder="Semester" value={data.semester} onValueChange={(v) => handleSelectChange('semester', v)} error={stepErrors.semester}>
                 <SelectGroup>
                   {SEMESTER_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                </SelectGroup>
+              </IconSelect>
+
+              <IconSelect icon={CalendarDays} label="Year Graduated" required placeholder="Year Graduated" value={data.school_year} onValueChange={(v) => handleSelectChange('school_year', v)} error={stepErrors.school_year}>
+                <SelectGroup>
+                  {yearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
                 </SelectGroup>
               </IconSelect>
             </div>
@@ -722,27 +841,23 @@ export default function AlumnaSignup() {
 
               {/* Year range */}
               <div>
-                <p className="mb-3 font-semibold text-gray-800">When did you start?</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <IconSelect icon={CalendarDays} label="Start Year" required placeholder="Start Year" value={data.employment_start_year} onValueChange={(v) => handleSelectChange('employment_start_year', v)} error={stepErrors.employment_start_year}>
-                    <SelectGroup>
-                      {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
-                    </SelectGroup>
-                  </IconSelect>
-                  <IconSelect icon={CalendarDays} label="End Year" placeholder="End Year" value={data.is_present ? 'current' : data.employment_end_year} onValueChange={(v) => handleSelectChange('employment_end_year', v)}>
-                    <SelectGroup>
-                      <SelectItem value="current">Present/Current</SelectItem>
-                      {employmentYearOptions.map((y) => <SelectItem key={y.value} value={y.value}>{y.label}</SelectItem>)}
-                    </SelectGroup>
-                  </IconSelect>
-                </div>
+                <p className="mb-3 font-semibold text-gray-800">Employment Duration</p>
+                <IconInput 
+                  icon={CalendarDays} 
+                  name="employment_duration" 
+                  placeholder="e.g. 2023 (We'll automatically append 'Present')" 
+                  value={data.employment_duration} 
+                  onChange={handleChange} 
+                  error={stepErrors.employment_duration} 
+                  type="text" 
+                />
               </div>
 
               {/* Company fields */}
               <div className="flex flex-col gap-3">
                 <IconInput icon={Building2}        name="company_name"   label="Name of Company" required placeholder="Name of Company"          value={data.company_name}   onChange={handleChange} error={stepErrors.company_name} />
                 <IconInput icon={Briefcase}         name="position"       label="Position in the Company" required placeholder="Position in the Company"  value={data.position}       onChange={handleChange} error={stepErrors.position} />
-                <IconInput icon={MapPin}            name="location"       label="Location of Company" required placeholder="Location of Company"      value={data.location}       onChange={handleChange} error={stepErrors.location} />
+                <IconInput icon={MapPin}            name="location"       label="Address of Company" required placeholder="Address of Company"      value={data.location}       onChange={handleChange} error={stepErrors.location} />
                 <IconInput icon={BadgeDollarSign}   name="monthly_salary" label="Monthly Salary" optional placeholder="Monthly Salary" value={data.monthly_salary} onChange={handleChange} error={stepErrors.monthly_salary} type="number" />
               </div>
             </div>

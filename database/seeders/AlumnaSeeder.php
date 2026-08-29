@@ -22,7 +22,7 @@ class AlumnaSeeder extends Seeder
             'password_changed' => true,
             'user_role' => 'alumna',
             'status' => 'active',
-            'address' => 'Blk 4 Lot 12, Greenfields Subdivision, Brgy. Mangino, Gapan City, Nueva Ecija, Region III - Central Luzon',
+            'address' => 'Blk 4 Lot 12, Greenfields Subdivision, Brgy. Mangino, Gapan City, Nueva Ecija, Region III - Central Luzon, Philippines',
             'contact_number' => '09123456789',
             'department' => 'CECT',
             'courses' => 'BSIT',
@@ -40,7 +40,8 @@ class AlumnaSeeder extends Seeder
             'province' => 'Nueva Ecija',
             'city' => 'Gapan City',
             'barangay' => 'Mangino',
-            'full_address' => 'Blk 4 Lot 12, Greenfields Subdivision, Brgy. Mangino, Gapan City, Nueva Ecija, Region III - Central Luzon',
+            'country' => 'Philippines',
+            'full_address' => 'Blk 4 Lot 12, Greenfields Subdivision, Brgy. Mangino, Gapan City, Nueva Ecija, Region III - Central Luzon, Philippines',
         ]);
 
         Employment::create([
@@ -49,10 +50,9 @@ class AlumnaSeeder extends Seeder
             'employment_type' => 'Permanent/Regular',
             'company_name' => 'Google Philippines',
             'position' => 'Software Developer',
-            'location' => 'Taguig City',
+            'location' => '123 Corporate Ave, Bonifacio Global City, Taguig, Metro Manila',
             'monthly_salary' => 45000,
-            'employment_start_year' => 2023,
-            'employment_end_year' => null,
+            'employment_duration' => '2023 - Present',
             'is_present' => true,
             'unemployment_reason' => null,
         ]);
@@ -106,17 +106,17 @@ class AlumnaSeeder extends Seeder
             'UI/UX Designer'
         ];
 
-        $cities = [
-            'Cabanatuan City',
-            'San Jose City',
-            'Gapan City',
-            'Quezon City',
-            'Manila',
-            'Pasig',
-            'Taguig',
-            'Makati',
-            'Clark',
-            'Angeles City'
+        $companyAddresses = [
+            '123 Corporate Ave, Bonifacio Global City, Taguig, Metro Manila',
+            '45F PBCom Tower, Ayala Avenue, Makati City, Metro Manila',
+            '12th Floor, Cyberpark Tower 1, Araneta City, Quezon City',
+            'Building 1, UP-Ayala Land Technohub, Commonwealth Ave, Quezon City',
+            'Ground Floor, SM Megamall Mega Tower, EDSA, Mandaluyong City',
+            '9th Floor, Filinvest Axis Tower 1, Northgate Cyberzone, Alabang, Muntinlupa City',
+            'Unit 14B, Cebu IT Park, Lahug, Cebu City, Cebu',
+            '3rd Floor, SM City Cabanatuan, Maharlika Highway, Cabanatuan City, Nueva Ecija',
+            'Building B, Clark Global City, Mabalacat, Pampanga',
+            '5th Floor, One San Miguel Avenue Building, San Miguel Ave, Pasig City'
         ];
 
         $employmentTypes = [
@@ -127,7 +127,8 @@ class AlumnaSeeder extends Seeder
         $courses = [
             'BSIT',
             'BSEcE',
-            'BSCpE'
+            'BSCpE',
+            'BSCS'
         ];
 
         $salary = [
@@ -182,6 +183,7 @@ class AlumnaSeeder extends Seeder
                 'city' => $addr['city'],
                 'province' => $addr['province'],
                 'region' => $addr['region'],
+                'country' => 'Philippines',
             ]);
 
             $user = User::create([
@@ -211,6 +213,7 @@ class AlumnaSeeder extends Seeder
                 'province' => $addr['province'],
                 'city' => $addr['city'],
                 'barangay' => $addr['barangay'],
+                'country' => 'Philippines',
                 'full_address' => $fullAddr,
             ]);
 
@@ -222,10 +225,9 @@ class AlumnaSeeder extends Seeder
                     'employment_type' => $employmentTypes[array_rand($employmentTypes)],
                     'company_name' => $companies[array_rand($companies)],
                     'position' => $positions[array_rand($positions)],
-                    'location' => $cities[array_rand($cities)],
+                    'location' => $companyAddresses[array_rand($companyAddresses)],
                     'monthly_salary' => $salary[array_rand($salary)],
-                    'employment_start_year' => rand(2022, 2026),
-                    'employment_end_year' => null,
+                    'employment_duration' => rand(2022, 2026) . ' - Present',
                     'is_present' => true,
                     'unemployment_reason' => null,
                 ]);
@@ -240,8 +242,7 @@ class AlumnaSeeder extends Seeder
                     'position' => null,
                     'location' => null,
                     'monthly_salary' => null,
-                    'employment_start_year' => null,
-                    'employment_end_year' => null,
+                    'employment_duration' => null,
                     'is_present' => false,
                     'unemployment_reason' => 'Looking for a Job',
                 ]);

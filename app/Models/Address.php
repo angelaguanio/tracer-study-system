@@ -12,6 +12,7 @@ class Address extends Model
 
     protected $fillable = [
         'user_id',
+        'country',
         'street_address',
         'subdivision',
         'region',
@@ -33,6 +34,7 @@ class Address extends Model
             $data['city'] ?? null,
             $data['province'] ?? null,
             $data['region'] ?? null,
+            $data['country'] ?? null,
         ]);
 
         return implode(', ', $parts);

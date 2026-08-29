@@ -28,11 +28,19 @@ const UNEMPLOYMENT_REASON_OPTIONS = [
     { value: 'Career Break', label: 'Career Break' },
 ];
 
-// Personal info fields
 const PERSONAL_FIELDS = [
     { name: 'last_name', label: 'Last Name', type: 'text', required: true },
     { name: 'first_name', label: 'First Name', type: 'text', required: true },
-    { name: 'middle_name', label: 'Middle Name', type: 'text', required: false },
+    { name: 'middle_name', label: 'Middle Name', type: 'text', required: true, placeholder: "Enter * if you don't have a middle name" },
+    { name: 'suffix', label: 'Suffix', type: 'select', required: true, placeholder: "e.g. Jr., Sr., III", options: [
+        {value: 'None', label: 'None'},
+        {value: 'Jr.', label: 'Jr.'},
+        {value: 'Sr.', label: 'Sr.'},
+        {value: 'II', label: 'II'},
+        {value: 'III', label: 'III'},
+        {value: 'IV', label: 'IV'},
+        {value: 'V', label: 'V'},
+    ] },
     { name: 'contact_number', label: 'Contact Number', type: 'text', required: true },
     { name: 'email', label: 'Email Address', type: 'email', required: true },
 ];
@@ -45,39 +53,14 @@ export default function StudentProfileEdit() {
         profile?.profile_picture || null
     );
 
-    const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();
-    const EMPLOYMENT_START_YEAR = 2018;
-
-    const employmentYearOptions = useMemo(
-        () =>
-            Array.from(
-                { length: EMPLOYMENT_CURRENT_YEAR - EMPLOYMENT_START_YEAR + 1 },
-                (_, index) => {
-                    const year = EMPLOYMENT_CURRENT_YEAR - index;
-                    return { value: String(year), label: String(year) };
-                }
-            ),
-        [EMPLOYMENT_CURRENT_YEAR]
-    );
-
-    const employmentEndYearOptions = useMemo(
-        () => [{ value: 'current', label: 'Present' }, ...employmentYearOptions],
-        [employmentYearOptions]
-    );
-
     const EMPLOYMENT_FIELDS = useMemo(() => ([
         { name: 'company', label: 'Company Name', type: 'text', required: true, colSpan: 'sm:col-span-2' },
         { name: 'employment_type', label: 'Employment Type', type: 'select', required: true, options: EMPLOYMENT_TYPE_OPTIONS, placeholder: 'Select Type' },
         { name: 'position', label: 'Position', type: 'text', required: true },
-        { name: 'employment_start_year', label: 'Start Year', type: 'select', required: true, options: employmentYearOptions, placeholder: 'Select' },
-        { name: 'employment_end_year', label: 'End Year', type: 'select', required: true, options: employmentEndYearOptions, placeholder: 'Select' },
+        { name: 'employment_duration', label: 'Employment Duration', type: 'text', required: true, placeholder: "e.g. 2023 (We'll automatically append 'Present')" },
         { name: 'location', label: 'Location', type: 'text', required: true },
         { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', required: false },
-    ]), [employmentYearOptions, employmentEndYearOptions]);
-
-    const initialEndYear = profile?.employment?.employment_end_year
-        ? String(profile.employment.employment_end_year)
-        : (profile?.employment?.currently_employed === 'Yes' ? 'current' : '');
+    ]), []);
 
     const addressObj = profile?.addressDetails || (typeof profile?.address === 'object' ? profile.address : null);
 
@@ -85,6 +68,8 @@ export default function StudentProfileEdit() {
         last_name: profile?.last_name || '',
         first_name: profile?.first_name || '',
         middle_name: profile?.middle_name || '',
+        suffix: profile?.suffix || '',
+        country: addressObj?.country || 'Philippines',
         street_address: addressObj?.street_address || '',
         subdivision: addressObj?.subdivision || '',
         region: addressObj?.region || '',
@@ -97,8 +82,7 @@ export default function StudentProfileEdit() {
         is_employed: profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
         employment_type: profile?.employment?.employment_type || '',
         company: profile?.employment?.company_name || '',
-        employment_start_year: profile?.employment?.employment_start_year || '',
-        employment_end_year: initialEndYear,
+        employment_duration: profile?.employment?.employment_duration || '',
         position: profile?.employment?.position || '',
         location: profile?.employment?.location || '',
         monthly_salary: profile?.employment?.monthly_salary || '',
@@ -125,17 +109,14 @@ export default function StudentProfileEdit() {
         e.preventDefault();
         setSubmitting(true);
 
-        const endYear = data.is_employed === 'yes' && data.employment_end_year === 'current'
-            ? null
-            : data.employment_end_year || null;
-
         const formData = new FormData();
 
         // Personal fields
         formData.append('first_name',      data.first_name);
         formData.append('last_name',       data.last_name);
         formData.append('middle_name',     data.middle_name ?? '');
-        formData.append('street_address', data.street_address ?? '');
+        formData.append('suffix',          data.suffix === 'None' ? '' : (data.suffix ?? ''));
+        formData.append('country',         data.country ?? 'Philippines');
         formData.append('subdivision',    data.subdivision ?? '');
         formData.append('region',         data.region ?? '');
         formData.append('province',       data.province ?? '');
@@ -153,10 +134,19 @@ export default function StudentProfileEdit() {
             formData.append('employment_type',        data.employment_type);
             formData.append('position',               data.position);
             formData.append('location',               data.location);
-            formData.append('employment_start_year',  data.employment_start_year);
-            if (endYear) formData.append('employment_end_year', endYear);
+            let duration = data.employment_duration || '';
+            const parts = duration.split('-').map(s => s?.trim());
+            
+            // Auto format to include 'Present' if they just typed a start year
+            if (parts.length === 1 || !parts[1] || parts[1].toLowerCase() === 'current') {
+                duration = `${parts[0]} - Present`;
+            }
+
+            formData.append('employment_duration',    duration);
+            
+            const isPresent = true;
+            formData.append('is_present', 1);
             if (data.monthly_salary) formData.append('monthly_salary', data.monthly_salary);
-            formData.append('is_present', endYear ? 0 : 1);
         } else {
             formData.append('reason_unemployed',   data.reason_unemployed);
             formData.append('unemployment_reason', data.reason_unemployed);
@@ -179,8 +169,7 @@ export default function StudentProfileEdit() {
             ...data,
             is_employed: newStatus,
             company: '',
-            employment_start_year: '',
-            employment_end_year: newStatus === 'yes' ? 'current' : '',
+            employment_duration: '',
             position: '',
             location: '',
             employment_type: '',

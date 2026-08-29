@@ -25,8 +25,8 @@ export default function AdminViewProfileOfRespondents(props) {
   if (!user) return <div className="p-6 text-red-500 font-bold text-center">No user data found.</div>;
 
   const emp = user.employment;
-  const fullName = (user.first_name || user.last_name) ? `${user.first_name ?? ''} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name ?? ''}`.trim() : (user.name ?? 'Unknown Alumna');
-  const validEmploymentHistory = Array.isArray(user.employment_history) ? user.employment_history.sort((a, b) => Number(b?.employment_start_year || 0) - Number(a?.employment_start_year || 0)) : [];
+  const fullName = (user.first_name || user.last_name) ? `${user.first_name ?? ''} ${user.middle_name && user.middle_name !== '*' ? user.middle_name + ' ' : ''}${user.last_name ?? ''}${user.suffix ? ' ' + user.suffix : ''}`.trim() : (user.name ?? 'Unknown Alumna');
+  const validEmploymentHistory = Array.isArray(user.employment_history) ? user.employment_history.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) : [];
   const imageSrc = user.profile_picture || null;
 
   const handleViewDetails = (history) => {
@@ -84,7 +84,7 @@ export default function AdminViewProfileOfRespondents(props) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                 <InfoItem label="Position" value={emp.position} />
                 <InfoItem label="Location" value={emp.location} />
-                <InfoItem label="Period" value={emp.employment_start_year ? `${emp.employment_start_year} - Present` : '—'} />
+                <InfoItem label="Period" value={emp.employment_duration || '—'} />
                 <InfoItem label="Monthly Salary" value={`₱${emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString() : '0'}`} />
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function AdminViewProfileOfRespondents(props) {
                     {validEmploymentHistory.map((history) => (
                       <tr key={history.id} className="hover:bg-gray-50/50 transition">
                         <td className="py-4 text-center text-gray-600 text-sm">
-                          {history.employment_start_year ? `${history.employment_start_year} - ${history.is_present ? 'Present' : (history.employment_end_year || '—')}` : '—'}
+                          {history.employment_duration || '—'}
                         </td>
                         <td className="py-4 text-center font-bold text-gray-800 text-sm">{history.company_name}</td>
                         <td className="py-4 text-center text-gray-600 text-sm">{history.position || '—'}</td>
@@ -148,7 +148,7 @@ export default function AdminViewProfileOfRespondents(props) {
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Range</p>
-                        <p className="text-sm text-gray-600">{history.employment_start_year ? `${history.employment_start_year} - ${history.is_present ? 'Present' : (history.employment_end_year || '—')}` : '—'}</p>
+                        <p className="text-sm text-gray-600">{history.employment_duration || '—'}</p>
                       </div>
                     </div>
                     <button type="button" onClick={() => handleViewDetails(history)} className="w-full text-[11px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 py-2 rounded transition-colors">View Details</button>
@@ -214,7 +214,7 @@ export default function AdminViewProfileOfRespondents(props) {
                       <DetailItem label="Location" value={selectedHistory.location} />
                       <DetailItem
                         label="Employment Range"
-                        value={`${selectedHistory.employment_start_year || '—'} - ${selectedHistory.is_present ? 'Present' : (selectedHistory.employment_end_year || '—')}`}
+                        value={selectedHistory.employment_duration || '—'}
                         />
                       <DetailItem
                         label="Monthly Salary"

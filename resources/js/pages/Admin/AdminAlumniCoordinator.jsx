@@ -24,7 +24,7 @@ export default function AdminAlumniCoordinator({ coordinators }) {
 
             const searchValue = search.toLowerCase().trim();
 
-            const fullName = `${c.first_name || ""} ${c.middle_name || ""} ${c.last_name || ""}`
+            const fullName = `${c.first_name || ""} ${c.middle_name && c.middle_name !== '*' ? c.middle_name : ""} ${c.last_name || ""} ${c.suffix || ""}`
                 .toLowerCase()
                 .replace(/\s+/g, " ")
                 .trim();

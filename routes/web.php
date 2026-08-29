@@ -76,11 +76,14 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/login', [AlumnaAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AlumnaAuthController::class, 'loginAlumna']);
 
-        // Show "Verify Your Email" page
-        Route::get('/verify-email', function (Request $request) {
-        return Inertia::render('Auth/VerifyEmail', [
-            'from'  => $request->query('from'),
-            'email' => $request->query('email'),
+        // Show "Verify Your Email or Phone" page
+        Route::get('/verify-notice', function (Request $request) {
+            $user = \App\Models\User::where('email', $request->query('email'))->first();
+            return Inertia::render('Auth/VerifyEmail', [
+                'type'  => $request->query('type'),
+                'email' => $request->query('email'),
+                'sent'  => $request->query('sent'),
+                'contactNumber' => $user ? $user->contact_number : null,
             ]);
         })->name('verification.notice');
 

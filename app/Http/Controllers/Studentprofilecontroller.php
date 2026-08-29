@@ -47,7 +47,20 @@ class StudentProfileController extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
-            'middle_name'    => 'nullable|string|max:255',
+            'middle_name' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $val = trim($value);
+                    if ($val === '*') return;
+                    if (strlen($val) === 1 || preg_match('/^[A-Z]{2}$/', $val) || str_ends_with($val, '.')) {
+                        $fail('Please enter your full middle name, not just an initial. Enter * if you do not have a middle name.');
+                    }
+                }
+            ],
+            'suffix'         => 'nullable|string|max:10',
+            'country'        => 'nullable|string|max:255',
             'street_address' => 'nullable|string|max:255',
             'subdivision'    => 'nullable|string|max:255',
             'region'         => 'nullable|string|max:255',
@@ -64,8 +77,7 @@ class StudentProfileController extends Controller
             'company'                => 'required_if:is_employed,yes|string|max:255',
             'employment_type'        => 'required_if:is_employed,yes|string|max:255',
             'position'                => 'required_if:is_employed,yes|string|max:255',
-            'employment_start_year'   => 'required_if:is_employed,yes|numeric',
-            'employment_end_year'     => 'nullable',
+            'employment_duration'     => 'required_if:is_employed,yes|string|max:255',
             'location'                => 'required_if:is_employed,yes|string|max:255',
             'monthly_salary'          => 'nullable|numeric|min:0',
 
@@ -112,7 +124,8 @@ class StudentProfileController extends Controller
                 // Update User Basic Info
                 $user->update([
                     'first_name'     => $request->first_name,
-                    'middle_name'    => $request->middle_name ?? null,
+                    'middle_name'    => $request->middle_name,
+                    'suffix'         => $request->suffix ?? null,
                     'last_name'      => $request->last_name,
                     'contact_number' => $request->contact_number,
                     'address'        => $fullAddress,
@@ -124,6 +137,7 @@ class StudentProfileController extends Controller
                 \App\Models\Address::updateOrCreate(
                     ['user_id' => $user->id],
                     [
+                        'country'        => $request->country ?? 'Philippines',
                         'street_address' => $request->street_address ?? null,
                         'subdivision'    => $request->subdivision ?? null,
                         'region'         => $request->region ?? null,
@@ -140,8 +154,7 @@ class StudentProfileController extends Controller
                 if ($isEmployed === 'Yes' && $oldEmp) {
                     $hasChanged = (
                        $oldEmp->company_name !== $request->company ||
-                       $oldEmp->employment_start_year != $request->employment_start_year ||
-                      ($isPresent ? $oldEmp->employment_end_year !== null : $oldEmp->employment_end_year != $request->employment_end_year)
+                       $oldEmp->employment_duration !== $request->employment_duration
                     );
 
                     if ($hasChanged) {
@@ -154,8 +167,7 @@ class StudentProfileController extends Controller
                             'location'           => $request->location,
                             'monthly_salary'     => $salaryValue,
                             'unemployment_reason'=> null,
-                            'employment_start_year' => ($isEmployed === 'Yes') ? $request->employment_start_year : null,
-                            'employment_end_year' => $isPresent ? null : $request->employment_end_year,
+                            'employment_duration' => ($isEmployed === 'Yes') ? $request->employment_duration : null,
                             'is_present'           => $isPresent ? 1 : 0,
                         ]);
                     }
@@ -172,8 +184,7 @@ class StudentProfileController extends Controller
                         'location'            => $isEmployed === 'Yes' ? $request->location : null,
                         'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
                         'unemployment_reason' => $unemploymentReason,
-                        'employment_start_year'=> $isEmployed === 'Yes' ? $request->employment_start_year : null,
-                        'employment_end_year'  => $isEmployed === 'Yes' ? ($isPresent ? null : $request->employment_end_year) : null,
+                        'employment_duration'  => $isEmployed === 'Yes' ? $request->employment_duration : null,
                         'is_present'           => ($isEmployed === 'Yes' && $isPresent) ? 1 : 0,
                     ]
                 );

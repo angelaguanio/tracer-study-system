@@ -26,7 +26,7 @@ export default function HistoryDetail({ history, profile }) {
     if (!history || !profile) return null;
     
     const dateSaved = new Date(history.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    const employmentRange = `${history.employment_start_year ?? "—"} - ${history.is_present ? "Present" : (history.employment_end_year || "—")}`;
+    const employmentRange = history.employment_duration || "—";
 
     const userAddress = (typeof profile.address === 'object' && profile.address !== null)
         ? profile.address.full_address
@@ -64,7 +64,7 @@ export default function HistoryDetail({ history, profile }) {
                             <IconUser /> Personal Details
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                            <DetailItem label="Full Name" value={`${profile.first_name} ${profile.last_name}`} />
+                            <DetailItem label="Full Name" value={`${profile.first_name} ${profile.middle_name && profile.middle_name !== '*' ? profile.middle_name + ' ' : ''}${profile.last_name}${profile.suffix ? ' ' + profile.suffix : ''}`.replace(/\s+/g, ' ').trim()} />
                             <DetailItem label="Email Address" value={profile.email} />
                             <DetailItem label="Contact Number" value={profile.contact_number} />
                             <DetailItem label="Address" value={userAddress} />

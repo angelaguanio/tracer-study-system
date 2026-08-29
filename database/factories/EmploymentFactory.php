@@ -29,8 +29,7 @@ class EmploymentFactory extends Factory
                 'position'                => null,
                 'location'                => null,
                 'monthly_salary'          => null,
-                'employment_start_year'   => null,
-                'employment_end_year'     => null,
+                'employment_duration'     => null,
                 'is_present'              => false,
                 'unemployment_reason'     => $this->faker->randomElement([
                     'Studying', 'Job Hunting', 'Career Break',
@@ -63,7 +62,7 @@ class EmploymentFactory extends Factory
                 'UI/UX Designer',
             ]),
 
-            'location'                => $this->faker->city(),
+            'location'                => $this->faker->address(),
 
             'monthly_salary'          => $this->faker->randomElement([
                 18000,
@@ -79,9 +78,7 @@ class EmploymentFactory extends Factory
                 60000,
             ]),
 
-            'employment_start_year'   => $startYear,
-
-            'employment_end_year'     => null,
+            'employment_duration'     => $startYear . ' - Present',
 
             'is_present'              => true,
 

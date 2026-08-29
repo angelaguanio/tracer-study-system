@@ -123,7 +123,7 @@ export default function AdminAlumniCoordinatorView({
                                     <div className="flex items-center gap-2 text-gray-800 font-medium text-xs md:text-base break-words">
                                         <User size={14} className="text-gray-400 shrink-0" />
                                         <span className="truncate">
-                                            {coordinator.first_name} {coordinator.last_name}
+                                            {coordinator.first_name} {coordinator.last_name}{coordinator.suffix ? ' ' + coordinator.suffix : ''}
                                         </span>
                                     </div>
                                 </div>

@@ -17,7 +17,7 @@ const IconHistory = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 
 export default function CoordinatorViewProfile({ user }) {
   const emp = user.employment;
-  const fullName = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
+  const fullName = `${user.first_name} ${user.middle_name && user.middle_name !== '*' ? user.middle_name + ' ' : ''}${user.last_name}${user.suffix ? ' ' + user.suffix : ''}`;
   const displayedYear = (user.start_year && user.end_year) ? `${user.start_year}-${user.end_year}` : (user.year_graduated || '—');
   const validEmploymentHistory = user.employment_history?.filter(h => h.currently_employed === 'Yes' && h.company_name) || [];
 
@@ -77,7 +77,7 @@ export default function CoordinatorViewProfile({ user }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                 <InfoItem label="Position" value={emp.position} />
                 <InfoItem label="Location" value={emp.location} />
-                <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</span><span className="text-[13px] font-bold text-[#343a40]">{emp.employment_start_year || '—'} - {emp.is_present ? 'Present' : (emp.employment_end_year || '—')}</span></div>
+                <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Period</span><span className="text-[13px] font-bold text-[#343a40]">{emp.employment_duration || '—'}</span></div>
                 <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Monthly Salary</span><span className="text-[13px] font-bold text-[#343a40]">₱{emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString('en-PH', { minimumFractionDigits: 0 }) : '0'}</span></div>
               </div>
             </div>
@@ -93,10 +93,10 @@ export default function CoordinatorViewProfile({ user }) {
               <div className="hidden md:block overflow-x-auto border border-gray-100 rounded-lg">
                 <table className="w-full text-left text-sm table-fixed">
                   <thead className="bg-gray-50"><tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider"><th className="py-3 pl-4 w-[20%]">Range</th><th className="py-3 text-center w-[25%]">Company</th><th className="py-3 text-center w-[20%]">Position</th><th className="py-3 text-center w-[15%]">Status</th><th className="py-3 text-center pr-4 w-[20%]">Action</th></tr></thead>
-                  <tbody className="divide-y divide-gray-50">{validEmploymentHistory.map((h) => (<tr key={h.id} className="hover:bg-gray-50/50 transition"><td className="py-4 text-center text-gray-600 text-sm">{h.employment_start_year ? `${h.employment_start_year} - ${h.is_present ? 'Present' : (h.employment_end_year || '—')}` : '—'}</td><td className="py-4 text-center font-bold text-gray-800 text-sm">{h.company_name}</td><td className="py-4 text-center text-gray-600 text-sm">{h.position || '—'}</td><td className="py-4 text-center"><span className="px-2 py-1 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></td><td className="py-4 text-center"><button type="button" onClick={() => handleViewDetails(h)} className="text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors">View Details</button></td></tr>))}</tbody>
+                  <tbody className="divide-y divide-gray-50">{validEmploymentHistory.map((h) => (<tr key={h.id} className="hover:bg-gray-50/50 transition"><td className="py-4 text-center text-gray-600 text-sm">{h.employment_duration || '—'}</td><td className="py-4 text-center font-bold text-gray-800 text-sm">{h.company_name}</td><td className="py-4 text-center text-gray-600 text-sm">{h.position || '—'}</td><td className="py-4 text-center"><span className="px-2 py-1 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></td><td className="py-4 text-center"><button type="button" onClick={() => handleViewDetails(h)} className="text-[10px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded transition-colors">View Details</button></td></tr>))}</tbody>
                 </table>
               </div>
-              <div className="md:hidden flex flex-col gap-3">{validEmploymentHistory.map((h) => (<div key={h.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50/50 flex flex-col gap-2"><div className="flex justify-between items-start"><div><p className="text-[11px] font-bold text-gray-400 uppercase">Company</p><p className="font-bold text-gray-800">{h.company_name}</p></div><span className="px-2 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></div><div className="grid grid-cols-2 gap-2 mt-2"><div><p className="text-[10px] font-bold text-gray-400 uppercase">Position</p><p className="text-sm text-gray-600">{h.position || '—'}</p></div><div><p className="text-[10px] font-bold text-gray-400 uppercase">Range</p><p className="text-sm text-gray-600">{h.employment_start_year ? `${h.employment_start_year} - ${h.is_present ? 'Present' : (h.employment_end_year || '—')}` : '—'}</p></div></div><button type="button" onClick={() => handleViewDetails(h)} className="w-full mt-2 text-[11px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 py-2 rounded transition-colors">View Details</button></div>))}</div>
+              <div className="md:hidden flex flex-col gap-3">{validEmploymentHistory.map((h) => (<div key={h.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50/50 flex flex-col gap-2"><div className="flex justify-between items-start"><div><p className="text-[11px] font-bold text-gray-400 uppercase">Company</p><p className="font-bold text-gray-800">{h.company_name}</p></div><span className="px-2 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span></div><div className="grid grid-cols-2 gap-2 mt-2"><div><p className="text-[10px] font-bold text-gray-400 uppercase">Position</p><p className="text-sm text-gray-600">{h.position || '—'}</p></div><div><p className="text-[10px] font-bold text-gray-400 uppercase">Range</p><p className="text-sm text-gray-600">{h.employment_duration || '—'}</p></div></div><button type="button" onClick={() => handleViewDetails(h)} className="w-full mt-2 text-[11px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 py-2 rounded transition-colors">View Details</button></div>))}</div>
             </>
           ) : (<div className="text-center py-6 text-gray-400 italic text-sm">No employment history records found.</div>)}
         </section>
@@ -128,7 +128,7 @@ export default function CoordinatorViewProfile({ user }) {
                       <DetailItem label="Position" value={selectedHistory.position} />
                       <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
                       <DetailItem label="Location" value={selectedHistory.location} />
-                      <DetailItem label="Employment Range" value={`${selectedHistory.employment_start_year || '—'} - ${selectedHistory.is_present ? 'Present' : (selectedHistory.employment_end_year || '—')}`} />
+                      <DetailItem label="Employment Range" value={selectedHistory.employment_duration || '—'} />
                       <DetailItem label="Monthly Salary" value={selectedHistory.monthly_salary ? `₱${parseFloat(String(selectedHistory.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString()}` : '—'} />
                     </div>
                   </div>

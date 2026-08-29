@@ -24,8 +24,7 @@ class EmploymentHistory extends Model
         'location',
         'monthly_salary',
         'unemployment_reason',
-        'employment_start_year', 
-        'employment_end_year',   
+        'employment_duration',
         'is_present',
     ];
 

@@ -51,7 +51,7 @@ export default function StudentProfile() {
         return false;
     };
 
-    const fullName = `${profile?.first_name} ${profile?.middle_name ? profile.middle_name + ' ' : ''}${profile?.last_name}`;
+    const fullName = `${profile?.first_name} ${profile?.middle_name && profile.middle_name !== '*' ? profile.middle_name + ' ' : ''}${profile?.last_name}${profile?.suffix ? ' ' + profile.suffix : ''}`;
     // Keep backward compatibility: previous UI may show semester/year grads separately.
     // If your API provides `semester_graduated`, show it as well.
     const displayedYear = (profile?.start_year && profile?.end_year)
@@ -63,7 +63,7 @@ export default function StudentProfile() {
 
 
 
-    const employmentHistory = profile?.employment_history ? [...profile.employment_history].sort((a, b) => parseInt(b.employment_start_year || 0) - parseInt(a.employment_start_year || 0)) : [];
+    const employmentHistory = profile?.employment_history ? [...profile.employment_history].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) : [];
 
 
     return (
@@ -125,7 +125,7 @@ export default function StudentProfile() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6">
                             <InfoItem label="Position" value={emp.position} />
                             <InfoItem label="Location" value={emp.location} />
-                            <InfoItem label="Period" value={`${emp.employment_start_year || '—'} - ${normalizeYes(emp?.is_present) ? 'Present' : (emp.employment_end_year || '—')}`} />
+                            <InfoItem label="Period" value={emp.employment_duration || '—'} />
                             <InfoItem label="Monthly Salary" value={`₱${emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString('en-PH') : '0'}`} />
                             
                         </div>
@@ -146,9 +146,7 @@ export default function StudentProfile() {
                                 <tbody className="divide-y divide-gray-50">{employmentHistory.map((h) => (
                                     <tr key={h.id} className="hover:bg-gray-50/50 transition">
                                         <td className="py-4 text-center text-gray-600 text-sm">
-                                            {h.employment_start_year
-                                                ? `${h.employment_start_year} - ${normalizeYes(h?.is_present) ? 'Present' : (h.employment_end_year || '—')}`
-                                                : '—'}
+                                            {h.employment_duration || '—'}
                                         </td>
                                         <td className="py-4 text-center font-bold text-gray-800 text-sm">{h.company_name}</td>
                                         <td className="py-4 text-center text-gray-600 text-sm">{h.position || '—'}</td>
@@ -186,9 +184,7 @@ export default function StudentProfile() {
                                         <div>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase">Range</p>
                                             <p className="text-sm text-gray-600">
-                                                {h.employment_start_year
-                                                    ? `${h.employment_start_year} - ${normalizeYes(h?.is_present) ? 'Present' : (h.employment_end_year || '—')}`
-                                                    : '—'}
+                                                {h.employment_duration || '—'}
                                             </p>
                                         </div>
                                     </div>

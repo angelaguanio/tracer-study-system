@@ -63,7 +63,7 @@ class CoordinatorAlumniController extends Controller
     public function show($id)
     {
         $user = User::with(['employment', 'employmentHistory' => function($query) {
-            $query->orderBy('employment_start_year', 'desc');
+            $query->orderBy('created_at', 'desc');
         }])->findOrFail($id);
 
         return Inertia::render('Coordinator/CoordinatorViewProfile', [

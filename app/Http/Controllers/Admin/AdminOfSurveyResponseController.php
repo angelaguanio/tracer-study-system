@@ -158,7 +158,7 @@ class AdminOfSurveyResponseController extends Controller
             'employmentHistory' => function($query) {
                 // Ensure only the columns needed by the frontend are serialized,
                 // so Coordinator/Admin “Range” fields are present.
-                $query->orderBy('employment_start_year', 'desc')
+                $query->orderBy('created_at', 'desc')
                   ->select([
                     'id',
                     'user_id',
@@ -169,8 +169,7 @@ class AdminOfSurveyResponseController extends Controller
                     'location',
                     'monthly_salary',
                     'unemployment_reason',
-                    'employment_start_year',
-                    'employment_end_year',
+                    'employment_duration',
                     'is_present',
                     'created_at',
                 ]);
@@ -247,7 +246,7 @@ class AdminOfSurveyResponseController extends Controller
             'employmentHistory' => function($query) {
                 // Ensure only the columns needed by the frontend are serialized,
                 // so Coordinator/Admin “Range” fields are present.
-                $query->orderBy('employment_start_year', 'desc')
+                $query->orderBy('created_at', 'desc')
                   ->select([
                     'id',
                     'user_id',
@@ -258,8 +257,7 @@ class AdminOfSurveyResponseController extends Controller
                     'location',
                     'monthly_salary',
                     'unemployment_reason',
-                    'employment_start_year',
-                    'employment_end_year',
+                    'employment_duration',
                     'is_present',
                     'created_at',
                 ]);

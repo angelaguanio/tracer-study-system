@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
-import authBg from '../assets/cover3.png';
+import authBg from '../assets/cover4.png';
 import wupCectLogo from '../assets/wup_cect.png';
 import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 
@@ -22,14 +22,7 @@ export default function AuthLayout({ children }) {
             
             {/* Content Container */}
             <div className="relative min-h-screen w-full">
-                {/* WUP CECT Logo in upper left corner */}
-                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 lg:top-8 lg:left-8 z-10">
-                    <img 
-                        src={wupCectLogo} 
-                        alt="WUP CECT Logo" 
-                        className="h-20 w-auto sm:h-18 md:h-22 drop-shadow-lg object-contain"
-                    />
-                </div>
+                
                 <div className="mx-auto gap-20 flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
                     
                     {/* Hero text */}
