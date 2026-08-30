@@ -118,6 +118,8 @@ router.on('navigate', () => {
 //     }
 // );
 
+import GlobalPreloader from './components/GlobalPreloader';
+
 const appName = import.meta.env.VITE_APP_NAME || 'Alumni Connect';
 
 createInertiaApp({
@@ -126,7 +128,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
     
-        root.render(<App {...props} />);
+        root.render(
+            <GlobalPreloader>
+                <App {...props} />
+            </GlobalPreloader>
+        );
     },
-   
+    progress: false,
 });
