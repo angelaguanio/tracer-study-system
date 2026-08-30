@@ -57,6 +57,12 @@ export default function NavbarAlumni({ children }) {
   const user = auth?.user
   const notifications = useNotifications(user.user_role, user.id);
   const currentPath = url.split('?')[0]
+  const isTracerLocked = auth?.user?.is_tracer_locked || false;
+
+  const filteredMainNav = isTracerLocked ? [] : mainNav;
+  const filteredAccountBtns = isTracerLocked 
+    ? accountBtns.filter(item => item.id === 'logout') 
+    : accountBtns;
   
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openSubMenus, setOpenSubMenus] = useState({
@@ -83,11 +89,13 @@ export default function NavbarAlumni({ children }) {
 
         {/* Right side: Bell and Hamburger (Visible on all screen sizes) */}
         <div className="flex items-center gap-3">
-          <NotificationBell 
-            className={`transition ${isHome ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
-            notifications={notifications} 
-            iconSize={26}
-          />
+          {!isTracerLocked && (
+            <NotificationBell 
+              className={`transition ${isHome ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
+              notifications={notifications} 
+              iconSize={26}
+            />
+          )}
           <button
             onClick={() => setMobileOpen(true)}
             className={`p-2 cursor-pointer transition rounded-full ${isHome ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
@@ -149,12 +157,14 @@ export default function NavbarAlumni({ children }) {
 
         {/* Scrollable Links Area */}
         <div className="flex-1 overflow-y-auto pb-6">
-            {/* MAIN section */}
-            <div className="px-5 pt-5 pb-1">
-            <p className="text-xs font-semibold tracking-wide text-gray-400">MAIN</p>
-            </div>
-            <div className="px-2">
-            {mainNav.map((item) => {
+            {!isTracerLocked && (
+                <>
+                    {/* MAIN section */}
+                    <div className="px-5 pt-5 pb-1">
+                    <p className="text-xs font-semibold tracking-wide text-gray-400">MAIN</p>
+                    </div>
+                    <div className="px-2">
+                    {filteredMainNav.map((item) => {
                 const Icon = item.icon
                 
                 if (item.subItems) {
@@ -214,15 +224,19 @@ export default function NavbarAlumni({ children }) {
                 )
             })}
             </div>
-
+            
             <div className="border-t border-gray-100 my-3 mx-3" />
+            </>
+            )}
 
             {/* ACCOUNT section */}
-            <div className="px-5 pt-2 pb-1">
-            <p className="text-xs font-semibold tracking-wide text-gray-400">ACCOUNT</p>
-            </div>
+            {!isTracerLocked && (
+                <div className="px-5 pt-2 pb-1">
+                <p className="text-xs font-semibold tracking-wide text-gray-400">ACCOUNT</p>
+                </div>
+            )}
             <div className="px-2">
-            {accountBtns.map((item) => {
+            {filteredAccountBtns.map((item) => {
                 const Icon = item.icon
                 return (
                 <Link
@@ -241,6 +255,18 @@ export default function NavbarAlumni({ children }) {
       </div>
 
       <main>
+        {isTracerLocked && (
+            <div className="bg-red-500 text-white text-center py-3 px-4 font-semibold shadow-md flex items-center justify-center gap-2 z-40 relative">
+                <Info className="w-5 h-5" />
+                Action Required: You must complete the active Tracer Study Survey before you can access the rest of the portal.
+            </div>
+        )}
+        {(usePage().props.flash?.justCompleted && usePage().props.flash?.completedSurveyType !== 'cect') && (
+            <div className="bg-green-500 text-white text-center py-3 px-4 font-semibold shadow-md flex items-center justify-center gap-2 z-40 relative">
+                <Info className="w-5 h-5" />
+                Success! You may now access the rest of the portal.
+            </div>
+        )}
         {children}
       </main>
     </>

@@ -136,20 +136,15 @@ export default function AlumnaQuestionnaire({
                 </div>
 
                 <div>
-                  <h1 className='text-3xl sm:text-4xl font-bold'>Your Voice Matters</h1>
-                  <p className="text-sm sm:text-base">Share your post-graduation experience</p>
+                  <h1 className='text-3xl sm:text-4xl font-bold'>WUP Graduate Tracer Study</h1>
                 </div>
               </div>
           </CardHeader>
 
           <CardContent className="flex flex-col px-6 sm:px-10 py-6 gap-6">
             <div className='space-y-4'>
-              <p>Help us improve our programs by sharing your post-graduation experience. 
-                Your feedback is invaluable for future students and curriculum development.
-              </p>
-              <p className='text-[13px] text-gray-500'>We'd love to hear about your journey, challenges overcome, and the impact of 
-                your education on your career success.
-              </p>
+              <p>Share information about your employment, career progression, educational experiences, and skills development after graduation.</p>
+              <p className='text-[13px] text-gray-500'>Your responses provide valuable insights into the experiences of WUP graduates and their transition beyond university.</p>
             </div>
 
             <div className='flex flex-col sm:flex-row gap-4'>

@@ -107,7 +107,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
     });
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'tracer.completed'])->group(function () {
         Route::get('/home', AlumnaHomeController::class)->name('home');
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
         Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');

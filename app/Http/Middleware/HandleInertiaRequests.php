@@ -53,6 +53,7 @@ class HandleInertiaRequests extends Middleware
                     'profile_picture' => $request->user()->profile_picture,
                     'user_role' => $request->user()->user_role,
                     'courses' => $request->user()->courses,
+                    'is_tracer_locked' => $this->isTracerLocked($request->user()),
                 ] : null,
             ],
             'csrf_token' => csrf_token(),
@@ -90,5 +91,17 @@ class HandleInertiaRequests extends Middleware
         $response->headers->set('Pragma', 'no-cache');
 
         return $response;
+    }
+
+    private function isTracerLocked($user)
+    {
+        if ($user->user_role !== 'alumna') return false;
+        
+        $activeTracer = \App\Models\Survey::where('is_tracer_study', true)
+                                          ->where('status', 'active')
+                                          ->first();
+        if (!$activeTracer) return false;
+
+        return !$user->responses()->where('survey_id', $activeTracer->id)->exists();
     }
 }

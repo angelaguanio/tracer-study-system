@@ -48,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'coordinator'       => EnsureCoordinator::class,
             'alumna'            => EnsureAlumna::class,
             'chat.participant'  => ChatParticipantMiddleware::class,
+            'tracer.completed'  => \App\Http\Middleware\EnsureTracerStudyCompleted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
