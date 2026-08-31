@@ -115,10 +115,11 @@ export default function AlumnaAnnouncements({ announcements }) {
           <div className="flex flex-col gap-12 w-full">
             {/* CARDS CONTAINER */}
             <div className="flex flex-wrap justify-center gap-8 w-full mx-auto">
-              {list.map((ann) => (
+              {list.map((ann, index) => (
                 <div
                   key={ann.id}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100/60 overflow-hidden flex flex-col h-[400px] w-full max-w-[350px] md:max-w-[380px] transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group cursor-pointer"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="bg-white rounded-2xl shadow-md border border-gray-100/60 overflow-hidden flex flex-col h-[400px] w-full max-w-[350px] md:max-w-[380px] transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group cursor-pointer animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both"
                 >
                   
                   {/* IMAGE */}
