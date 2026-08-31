@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import logo from '../assets/logotracer.png'
 import { Link, usePage } from '@inertiajs/react'
 import {
@@ -72,6 +72,16 @@ export default function NavbarAlumni({ children }) {
   
   const isHome = currentPath === '/alumna/home'
 
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const toggleSubMenu = (id) => {
       setOpenSubMenus(prev => ({
           ...prev,
@@ -81,7 +91,11 @@ export default function NavbarAlumni({ children }) {
 
   return (
     <>
-      <header className={`flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 ${isHome ? 'absolute top-0 w-full bg-transparent text-white' : 'relative bg-navbar text-navbar-text'}`}>
+      <header className={`flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 transition-all duration-500 ease-in-out ${
+        isHome && !isScrolled
+          ? 'fixed top-0 w-full bg-white/0 backdrop-blur-none shadow-none border-b border-transparent text-white'
+          : `${isHome ? 'fixed' : 'sticky'} top-0 w-full bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-100/50 text-navbar-text`
+      }`}>
         <div className='flex items-center space-x-3'>
           <img src={logo} className='h-12 md:h-14' alt="Alumni Connect logo" />
           <p className="font-bruno lg:text-lg text-base">Alumni Connect</p>
@@ -91,14 +105,14 @@ export default function NavbarAlumni({ children }) {
         <div className="flex items-center gap-3">
           {!isTracerLocked && (
             <NotificationBell 
-              className={`transition ${isHome ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
+              className={`transition-colors duration-500 ${isHome && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
               notifications={notifications} 
               iconSize={26}
             />
           )}
           <button
             onClick={() => setMobileOpen(true)}
-            className={`p-2 cursor-pointer transition rounded-full ${isHome ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
+            className={`p-2 cursor-pointer transition-colors duration-500 rounded-full ${isHome && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
             aria-label="Open menu"
           >
             <Menu size={30} />
