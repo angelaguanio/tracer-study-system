@@ -6,7 +6,8 @@ import { Button } from '../../components/ui/button';
 import { Link, usePage, router } from '@inertiajs/react';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-
+import { DotPattern } from "@/components/magicui/dot-pattern";
+import { cn } from "@/lib/utils";
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
   tracerStudyCompleted, 
@@ -308,9 +309,37 @@ export default function AlumnaQuestionnaire({
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-100px)] py-8">
+    <div className="w-full relative flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-80px)] py-8 bg-[#F8FAFC]">
+      
+      {/* Background Magic UI Dot Pattern */}
+      <DotPattern
+        width={20}
+        height={20}
+        cx={1}
+        cy={1}
+        cr={1.5}
+        className={cn(
+          "[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+          "fill-blue-500/20 absolute inset-0 h-full w-full z-0"
+        )}
+      />
+
+      {/* Large Bottom Waves (SVG) */}
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[30vh] md:h-[40vh] opacity-30">
+          <path fill="#93C5FD" fillOpacity="1" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+      </div>
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[25vh] md:h-[35vh] opacity-50">
+           <path fill="#60A5FA" fillOpacity="1" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,138.7C840,128,960,160,1080,186.7C1200,213,1320,235,1380,245.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        </svg>
+      </div>
+
       {/* Tab Content */}
-      {activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
+      <div className="relative z-10 w-full flex-1 flex flex-col justify-center items-center">
+        {activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
+      </div>
     </div>
   );
 }

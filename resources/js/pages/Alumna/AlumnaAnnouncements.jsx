@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { Link, router } from '@inertiajs/react';
-import { ImageOff, Bell, Send, Sparkles } from "lucide-react";
+import { ImageOff, Bell } from "lucide-react";
 import echo from "@/echo";
 import {
   Pagination,
@@ -50,25 +50,7 @@ export default function AlumnaAnnouncements({ announcements }) {
         )}
       />
 
-      {/* Floating Paper Plane */}
-      <div className="absolute top-24 left-[15%] opacity-30 -rotate-12 pointer-events-none hidden md:block z-0">
-        <Send size={40} className="text-blue-500 fill-blue-500" strokeWidth={1} />
-        {/* Dash trail */}
-        <svg className="absolute -top-10 -left-16 w-24 h-24 text-blue-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4">
-          <path d="M10,90 Q40,40 90,10" />
-        </svg>
-      </div>
 
-      {/* Scattered Sparkles & Circles */}
-      <div className="absolute top-1/4 right-[20%] opacity-20 pointer-events-none z-0">
-        <Sparkles size={24} className="text-blue-600" />
-      </div>
-      <div className="absolute bottom-1/3 left-[10%] opacity-20 pointer-events-none z-0">
-        <div className="w-6 h-6 border-2 border-blue-500 rounded-full"></div>
-      </div>
-      <div className="absolute top-32 right-12 opacity-10 pointer-events-none z-0">
-        <div className="w-12 h-12 border-[3px] border-blue-600 rounded-full"></div>
-      </div>
 
       {/* Large Bottom Waves (SVG) */}
       <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
