@@ -70,7 +70,7 @@ export default function NavbarAlumni({ children }) {
       affairs: false
   })
   
-  const isHome = currentPath === '/alumna/home'
+  const isTransparentHeader = currentPath === '/alumna/home' || currentPath === '/alumna/about'
 
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -92,9 +92,9 @@ export default function NavbarAlumni({ children }) {
   return (
     <>
       <header className={`flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 transition-all duration-500 ease-in-out ${
-        isHome && !isScrolled
+        isTransparentHeader && !isScrolled
           ? 'fixed top-0 w-full bg-white/0 backdrop-blur-none shadow-none border-b border-transparent text-white'
-          : `${isHome ? 'fixed' : 'sticky'} top-0 w-full bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-100/50 text-navbar-text`
+          : `${isTransparentHeader ? 'fixed' : 'sticky'} top-0 w-full bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-100/50 text-navbar-text`
       }`}>
         <div className='flex items-center space-x-3'>
           <img src={logo} className='h-12 md:h-14' alt="Alumni Connect logo" />
@@ -105,14 +105,14 @@ export default function NavbarAlumni({ children }) {
         <div className="flex items-center gap-3">
           {!isTracerLocked && (
             <NotificationBell 
-              className={`transition-colors duration-500 ${isHome && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
+              className={`transition-colors duration-500 ${isTransparentHeader && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
               notifications={notifications} 
               iconSize={26}
             />
           )}
           <button
             onClick={() => setMobileOpen(true)}
-            className={`p-2 cursor-pointer transition-colors duration-500 rounded-full ${isHome && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
+            className={`p-2 cursor-pointer transition-colors duration-500 rounded-full ${isTransparentHeader && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
             aria-label="Open menu"
           >
             <Menu size={30} />
