@@ -23,8 +23,12 @@ export default function AlumnaQuestionnaire({
 
   const activeTab = tabParam || (justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study');
 
+  const [renderKey, setRenderKey] = useState(0);
+
   // Fire a toast when arriving back after survey submission
   useEffect(() => {
+    setRenderKey(prev => prev + 1);
+    
     if (justCompleted) {
       toast.success('Survey Completed!', {
         description: 'Your response has been recorded. Thank you for your feedback!',
@@ -337,7 +341,7 @@ export default function AlumnaQuestionnaire({
       </div>
 
       {/* Tab Content */}
-      <div className="relative z-10 w-full flex-1 flex flex-col justify-center items-center">
+      <div key={renderKey} className="relative z-10 w-full flex-1 flex flex-col justify-center items-center">
         {activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
       </div>
     </div>

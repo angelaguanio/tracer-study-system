@@ -73,25 +73,38 @@ export default function AlumnaAbout() {
   const [coreValuesVisible, setCoreValuesVisible] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.target === heroRef.current && entry.isIntersecting) setHeroVisible(true);
-        if (entry.target === purposeRef.current && entry.isIntersecting) setPurposeVisible(true);
-        if (entry.target === whyMattersRef.current && entry.isIntersecting) setWhyMattersVisible(true);
-        if (entry.target === missionRef.current && entry.isIntersecting) setMissionVisible(true);
-        if (entry.target === visionRef.current && entry.isIntersecting) setVisionVisible(true);
-        if (entry.target === coreValuesRef.current && entry.isIntersecting) setCoreValuesVisible(true);
-      });
-    }, { threshold: 0.15 });
+    setHeroVisible(false);
+    setPurposeVisible(false);
+    setWhyMattersVisible(false);
+    setMissionVisible(false);
+    setVisionVisible(false);
+    setCoreValuesVisible(false);
 
-    if (heroRef.current) observer.observe(heroRef.current);
-    if (purposeRef.current) observer.observe(purposeRef.current);
-    if (whyMattersRef.current) observer.observe(whyMattersRef.current);
-    if (missionRef.current) observer.observe(missionRef.current);
-    if (visionRef.current) observer.observe(visionRef.current);
-    if (coreValuesRef.current) observer.observe(coreValuesRef.current);
+    let observer;
+    const timer = setTimeout(() => {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.target === heroRef.current && entry.isIntersecting) setHeroVisible(true);
+          if (entry.target === purposeRef.current && entry.isIntersecting) setPurposeVisible(true);
+          if (entry.target === whyMattersRef.current && entry.isIntersecting) setWhyMattersVisible(true);
+          if (entry.target === missionRef.current && entry.isIntersecting) setMissionVisible(true);
+          if (entry.target === visionRef.current && entry.isIntersecting) setVisionVisible(true);
+          if (entry.target === coreValuesRef.current && entry.isIntersecting) setCoreValuesVisible(true);
+        });
+      }, { threshold: 0.15 });
 
-    return () => observer.disconnect();
+      if (heroRef.current) observer.observe(heroRef.current);
+      if (purposeRef.current) observer.observe(purposeRef.current);
+      if (whyMattersRef.current) observer.observe(whyMattersRef.current);
+      if (missionRef.current) observer.observe(missionRef.current);
+      if (visionRef.current) observer.observe(visionRef.current);
+      if (coreValuesRef.current) observer.observe(coreValuesRef.current);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   return (

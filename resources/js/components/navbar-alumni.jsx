@@ -70,7 +70,7 @@ export default function NavbarAlumni({ children }) {
       affairs: false
   })
   
-  const isTransparentHeader = currentPath === '/alumna/home' || currentPath === '/alumna/about'
+  const isTransparentHeader = currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office'
 
   const [isScrolled, setIsScrolled] = useState(false)
 

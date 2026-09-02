@@ -11,7 +11,7 @@ export const departments = [
     bg: cectBuilding,
     groups: [
       {
-        name: "ELECTRONICS AND COMPUTER ENGINEERING",
+        name: "ELECTRONICS AND COMPUTER ENGINEERING ALUMNI ASSOCIATION OFFICERS",
         officers: [
           o("President", "Engr. Ralph Lery Guerrero"),
           o("Vice President", "Engr. Jazmine Liberty Tumibay"),
@@ -29,7 +29,7 @@ export const departments = [
     bg: cectBg,
     groups: [
       {
-        name: "INFORMATION TECHNOLOGY",
+        name: "INFORMATION TECHNOLOGY ALUMNI ASSOCIATION OFFICERS",
         officers: [
           o("President", "Prof. Prince Mert O. Nicolas"),
           o("Vice President", "Ms. Kristine J. Ruma"),

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { Link, router } from '@inertiajs/react';
 import { ImageOff, Bell } from "lucide-react";
@@ -18,8 +18,12 @@ import megaphoneImg from '@/assets/megaphone.png';
 
 export default function AlumnaAnnouncements({ announcements }) {
 
+  const [renderKey, setRenderKey] = useState(0);
+
   // Realtime: reload the first page when a new announcement is published
   useEffect(() => {
+    setRenderKey(prev => prev + 1);
+    
     const channel = echo.channel('announcements');
     channel.listen('.announcement.published', () => {
       router.reload({ only: ['announcements'] });
@@ -96,7 +100,7 @@ export default function AlumnaAnnouncements({ announcements }) {
         ) : (
           <div className="flex flex-col gap-12 w-full">
             {/* CARDS CONTAINER */}
-            <div className="flex flex-wrap justify-center gap-8 w-full mx-auto">
+            <div key={renderKey} className="flex flex-wrap justify-center gap-8 w-full mx-auto">
               {list.map((ann, index) => (
                 <div
                   key={ann.id}

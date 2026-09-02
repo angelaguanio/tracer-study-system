@@ -3,28 +3,10 @@ export function DepartmentSection({ title, subtitle, bg, groups, officers }) {
   return (
     <div className="w-full">
 
-      {/* ── full-width image banner ── */}
-      <div className="w-full relative h-[260px] sm:h-[340px]">
-        <img
-          src={bg}
-          alt={title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-          <h2 className="text-white text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-wide drop-shadow-lg">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-white/80 mt-2 text-sm sm:text-base max-w-xl">
-              {subtitle}
-            </p>
-          )}
-        </div>
-      </div>
+
 
       {/* ── officer cards ── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-10 space-y-8">
         {groups ? (
           groups.map((group, idx) => (
             <GroupCard key={idx} group={group} />
@@ -53,11 +35,11 @@ const AvatarGeneric = () => (
 function GroupCard({ group }) {
   return (
     <div className="w-full mb-16">
-      <h3 className="text-blue-600 text-sm sm:text-base font-extrabold tracking-widest uppercase text-center mb-2">
+      <h3 className="text-white text-base sm:text-lg md:text-xl font-extrabold tracking-widest uppercase text-center mb-4 drop-shadow-lg">
         {group.name}
       </h3>
-      {/* blue underline accent */}
-      <div className="w-10 h-0.5 bg-blue-500 mx-auto mb-10" />
+      {/* cyan underline accent */}
+      <div className="w-10 h-0.5 bg-[#00C2FF] mx-auto mb-10" />
       <OfficerHierarchyGrid officers={group.officers} />
     </div>
   );
@@ -105,7 +87,7 @@ export function AssociationOfficerCard({ officer, level }) {
   const badgeColor = "bg-[#1258D6] text-white";
 
   return (
-    <div className="relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]">
+    <div className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]">
       {/* TOP BADGE */}
       <div className={`absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${badgeColor}`}>
         {officer.role}

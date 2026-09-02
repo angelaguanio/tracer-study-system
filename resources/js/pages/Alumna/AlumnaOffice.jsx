@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { officeData } from "@/lib/AlumnaOfficeDatalist";
 
@@ -41,64 +42,59 @@ const AvatarFemale = () => (
 /* ── staff data pulled from lib ───────────────────────────── */
 
 export default function AlumnaOffice() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(false);
+    const timer = setTimeout(() => setIsLoaded(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="flex flex-col w-full">
+    <div className="relative flex flex-col w-full min-h-screen">
+      
+      {/* ═══════════════════════════════════════════════════════
+          FIXED BACKGROUND
+      ═══════════════════════════════════════════════════════ */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${officeData.bg})` }}
+      >
+        {/* Blue Gradient Overlay */}
+        <div className="absolute inset-0 bg-blue-900/60 bg-gradient-to-t from-[#003C87] to-[#003C87]/30" />
+      </div>
 
       {/* ═══════════════════════════════════════════════════════
           1. HERO
       ═══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[600px] flex items-center overflow-hidden">
+      <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-6 z-10">
+        <h1 className={`text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-widest uppercase drop-shadow-2xl mb-4 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+          <span className="text-white">Alumni Affairs</span>
+        </h1>
+        {/* blue underline accent */}
+        <div className={`w-12 h-1 bg-[#00C2FF] mx-auto mb-6 transition-all duration-1000 delay-200 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`} />
+        <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          The Office for Alumni Affairs is committed to building strong relationships with our graduates and fostering a lifelong connection with the university.
+        </p>
+      </section>
 
-        <img
-          src={officeData.bg}
-          alt="Alumni Office"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        {/* dark-left gradient, lighter right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-blue-600/30" />
-
-        {/* left-aligned text */}
-        <div className="relative z-10 w-full max-w-7xl lg:ml-24 ml-6 px-6 sm:px-10 py-16">
-          <div className="max-w-xl">
-            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight drop-shadow-lg uppercase">
-              Alumni Affairs
-            </h1>
-
-            {/* yellow accent bar */}
-            <div className="w-12 h-1 bg-yellow-400 rounded my-4" />
-
-            <p className="text-white/85 lg:text-lg sm:text-base leading-relaxed max-w-sm">
-              The Office for Alumni Affairs is committed to building strong relationships with our graduates and
-              fostering a lifelong connection with the university.
+      {/* ═══════════════════════════════════════════════════════
+          2. STAFF CARDS
+      ═══════════════════════════════════════════════════════ */}
+      <section className="relative z-10 pb-20 px-6 sm:px-10">
+        <div className={`max-w-5xl mx-auto flex flex-col items-center gap-y-12 transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          
+          {/* Section Header */}
+          <div className="text-center w-full mb-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-widest uppercase drop-shadow-lg mb-4">
+              ALUMNI OFFICE PERSONNEL
+            </h2>
+            <div className="w-12 h-1 bg-[#00C2FF] mx-auto mb-4" />
+            <p className="text-white/95 text-base sm:text-lg font-medium max-w-2xl mx-auto drop-shadow-md">
+              Dedicated professionals working to strengthen alumni engagement and support the university community.
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          2. TEAM HEADER
-      ═══════════════════════════════════════════════════════ */}
-      <section className="bg-[#EEF4FB] py-12 px-6 sm:px-10">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 text-blue-600 mb-4">
-            <IconTeam />
-          </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#001D4A] uppercase tracking-wider mb-2">
-            Alumni Office Personnel
-          </h2>
-          {/* blue underline accent */}
-          <div className="w-10 h-0.5 bg-blue-500 mx-auto mb-4" />
-          <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
-            Dedicated professionals working to strengthen alumni engagement and support the university community.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          3. STAFF CARDS
-      ═══════════════════════════════════════════════════════ */}
-      <section className="bg-[#EEF4FB] pb-16 px-6 sm:px-10">
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-y-12 pt-6">
           {/* Director Row */}
           <div className="flex justify-center w-full">
             {staff
@@ -106,7 +102,7 @@ export default function AlumnaOffice() {
               .map((person, i) => (
                 <div
                   key={`dir-${i}`}
-                  className="relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center px-6 py-8 w-full max-w-[340px]"
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
                 >
                   {/* TOP BADGE */}
                   <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#1258D6] text-white">
@@ -154,7 +150,7 @@ export default function AlumnaOffice() {
               .map((person, i) => (
                 <div
                   key={`staff-${i}`}
-                  className="relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center px-6 py-8 w-full max-w-[340px]"
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
                 >
                   {/* TOP BADGE */}
                   <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#FFC107] text-[#001D4A]">

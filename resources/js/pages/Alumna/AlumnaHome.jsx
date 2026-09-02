@@ -13,19 +13,27 @@ function FadeInSection({ children, delay = 0, className = "" }) {
   const domRef = useRef();
 
   useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.unobserve(domRef.current);
-        }
-      });
-    }, { threshold: 0.1 });
-    
-    if (domRef.current) {
-        observer.observe(domRef.current);
-    }
-    return () => observer.disconnect();
+    setVisible(false);
+    let observer;
+    const timer = setTimeout(() => {
+      observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setVisible(true);
+            observer.unobserve(domRef.current);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      if (domRef.current) {
+          observer.observe(domRef.current);
+      }
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   return (

@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { departments } from "../../lib/AlumnaAssociation_Datalist";
 import { DepartmentSection } from "@/components/alumna/AlumnaAssociation_Components";
-import graduationBg from "@/assets/grad_pic.jpg";
+import cectBg from "@/assets/cect_bg_clean.png";
 
 /* ── icon ─────────────────────────────────────────────────── */
 const IconTeam = () => (
@@ -12,80 +13,95 @@ const IconTeam = () => (
 );
 
 export default function AlumnaAssociation() {
+  const [activeProgram, setActiveProgram] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [fadeDept, setFadeDept] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(false);
+    setFadeDept(false);
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+      setFadeDept(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleProgramSwitch = (idx) => {
+    setFadeDept(false);
+    setTimeout(() => {
+      setActiveProgram(idx);
+      setFadeDept(true);
+    }, 200); // Wait for fade out before switching content
+  };
+
   return (
-    <div className="flex flex-col w-full">
-
+    <div className="relative flex flex-col w-full min-h-screen">
+      
       {/* ═══════════════════════════════════════════════════════
-          1. HERO
+          FIXED BACKGROUND
       ═══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[600px] flex items-center overflow-hidden">
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${cectBg})` }}
+      >
+        {/* Blue Gradient Overlay */}
+        <div className="absolute inset-0 bg-blue-900/60 bg-gradient-to-t from-[#003C87] to-[#003C87]/30" />
+      </div>
 
-        <img
-          src={graduationBg}
-          alt="Alumni Association"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        {/* dark-left gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-blue-600/20" />
+      <div className="relative z-10 w-full flex flex-col">
+        {/* ═══════════════════════════════════════════════════════
+            1. HERO
+        ═══════════════════════════════════════════════════════ */}
+        <section className="relative w-full flex flex-col items-center text-center px-6 pt-32 pb-8 mt-10">
+          <h1 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight drop-shadow-2xl mb-6 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+            <span className="text-[#8AD1F7]">Guided by Passion.</span><br/>
+            <span className="text-white">Driven by Purpose.</span>
+          </h1>
+          <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg mb-20 transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            Meet the dedicated officers driving our alumni association forward. Together, we strengthen connections and create lasting impact.
+          </p>
 
-        {/* left-aligned text */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-8 sm:px-12 py-16">
-          <div className="max-w-xl">
-            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight uppercase drop-shadow-lg">
-              Alumni Association
-            </h1>
+          {/* Toggle Switch */}
+          <div className={`flex bg-[#234371] rounded-full shadow-lg max-w-2xl w-full mx-auto relative z-20 transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            
+            {/* Sliding Background */}
+            <div 
+              className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-[#00A3FF] to-[#00E5FF] rounded-full transition-transform duration-300 ease-out shadow-md z-0"
+              style={{ transform: `translateX(${activeProgram * 100}%)` }}
+            />
 
-            {/* yellow accent bar */}
-            <div className="w-12 h-1 bg-yellow-400 rounded my-4" />
-
-            <p className="text-white/85 text-sm sm:text-base leading-relaxed max-w-sm">
-              Meet the dedicated officers driving our alumni association forward.
-              Together, we strengthen connections and create lasting impact.
-            </p>
+            <button
+              onClick={() => handleProgramSwitch(0)}
+              className={`flex-1 py-3 px-2 sm:px-4 text-sm sm:text-base transition-colors duration-300 rounded-full cursor-pointer active:scale-95 focus:outline-none relative z-10 ${
+                activeProgram === 0 ? "text-white font-medium" : "text-white/80 hover:text-white font-normal hover:bg-white/5"
+              }`}
+            >
+              Electronics & Computer<br className="hidden sm:block" /> Engineering Program
+            </button>
+            <button
+              onClick={() => handleProgramSwitch(1)}
+              className={`flex-1 py-3 px-2 sm:px-4 text-sm sm:text-base transition-colors duration-300 rounded-full cursor-pointer active:scale-95 focus:outline-none relative z-10 ${
+                activeProgram === 1 ? "text-white font-medium" : "text-white/80 hover:text-white font-normal hover:bg-white/5"
+              }`}
+            >
+              Information Technology<br className="hidden sm:block" /> Program
+            </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          2. INTRO / LEADERSHIP
-      ═══════════════════════════════════════════════════════ */}
-      <section className="bg-[#EEF4FB] py-14 sm:py-16 px-6 sm:px-10 relative overflow-hidden">
+        {/* ═══════════════════════════════════════════════════════
+            2. DEPARTMENTS
+        ═══════════════════════════════════════════════════════ */}
+        <section className={`pb-16 relative z-10 transition-all duration-500 transform ${fadeDept ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`}>
+          {departments[activeProgram] ? (
+            <DepartmentSection {...departments[activeProgram]} />
+          ) : (
+            <p className="text-center text-gray-500 py-12">No department selected</p>
+          )}
+        </section>
 
-        {/* decorative dot grids */}
-        <DotGrid className="absolute top-4 left-4 opacity-30" />
-        <DotGrid className="absolute bottom-4 right-4 opacity-30" />
-
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <p className="text-blue-600 text-xs font-bold tracking-widest uppercase mb-2">
-            Our Leadership
-          </p>
-          {/* blue underline accent */}
-          <div className="w-10 h-0.5 bg-blue-500 mx-auto mb-4" />
-
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#001D4A] mb-4">
-            Guided by Passion. Driven by Purpose.
-          </h2>
-
-          <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
-            Our alumni association is led by passionate individuals committed to fostering connections
-            and strengthening our academic community.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          3. DEPARTMENTS
-      ═══════════════════════════════════════════════════════ */}
-      <section className="bg-[#EEF4FB] pb-16">
-        {departments.length > 0 ? (
-          departments.map((dept, index) => (
-            <DepartmentSection key={index} {...dept} />
-          ))
-        ) : (
-          <p className="text-center text-gray-500 py-12">No departments available</p>
-        )}
-      </section>
-
+      </div>
     </div>
   );
 }
