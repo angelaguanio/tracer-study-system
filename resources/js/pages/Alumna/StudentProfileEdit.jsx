@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import PhAddressSelector from '@/components/address/PhAddressSelector';
+import InternationalAddressSelector from '@/components/address/InternationalAddressSelector';
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
 import {
     Select,
     SelectTrigger,
@@ -26,6 +29,11 @@ const UNEMPLOYMENT_REASON_OPTIONS = [
     { value: 'Studying', label: 'Studying' },
     { value: 'Job Hunting', label: 'Job Hunting' },
     { value: 'Career Break', label: 'Career Break' },
+    { value: 'Family / Personal Responsibilities', label: 'Family / Personal Responsibilities' },
+    { value: 'Health Reasons', label: 'Health Reasons' },
+    { value: 'Preparing for Licensure/Certification Exam', label: 'Preparing for Licensure/Certification Exam' },
+    { value: 'Starting a Business', label: 'Starting a Business' },
+    { value: 'Other', label: 'Other' },
 ];
 
 const PERSONAL_FIELDS = [
@@ -41,7 +49,6 @@ const PERSONAL_FIELDS = [
         {value: 'IV', label: 'IV'},
         {value: 'V', label: 'V'},
     ] },
-    { name: 'contact_number', label: 'Contact Number', type: 'text', required: true },
     { name: 'email', label: 'Email Address', type: 'email', required: true },
 ];
 
@@ -54,15 +61,16 @@ export default function StudentProfileEdit() {
     );
 
     const EMPLOYMENT_FIELDS = useMemo(() => ([
-        { name: 'company', label: 'Company Name', type: 'text', required: true, colSpan: 'sm:col-span-2' },
+        { name: 'company', label: 'Name of Company', type: 'text', required: true, colSpan: 'sm:col-span-2' },
         { name: 'employment_type', label: 'Employment Type', type: 'select', required: true, options: EMPLOYMENT_TYPE_OPTIONS, placeholder: 'Select Type' },
-        { name: 'position', label: 'Position', type: 'text', required: true },
+        { name: 'position', label: 'Position in the Company', type: 'text', required: true },
         { name: 'employment_duration', label: 'Employment Duration', type: 'text', required: true, placeholder: "e.g. 2023 (We'll automatically append 'Present')" },
-        { name: 'location', label: 'Location', type: 'text', required: true },
+        { name: 'location', label: 'Address of Company', type: 'text', required: true },
         { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', required: false },
     ]), []);
 
     const addressObj = profile?.addressDetails || (typeof profile?.address === 'object' ? profile.address : null);
+    const [residency, setResidency] = useState(addressObj?.country && addressObj.country !== 'Philippines' ? 'International' : 'Philippines');
 
     const { data, setData, processing, errors } = useForm({
         last_name: profile?.last_name || '',
@@ -77,7 +85,11 @@ export default function StudentProfileEdit() {
         city: addressObj?.city || '',
         barangay: addressObj?.barangay || '',
         address: addressObj?.full_address || (typeof profile?.address === 'string' ? profile.address : ''),
-        contact_number: profile?.contact_number || '',
+        contact_number: profile?.contact_number 
+            ? (profile.contact_number.startsWith('09') && profile.contact_number.length === 11 
+                ? '+63' + profile.contact_number.substring(1) 
+                : profile.contact_number)
+            : '',
         email: profile?.email || '',
         is_employed: profile?.employment?.currently_employed ? String(profile.employment.currently_employed).toLowerCase() : '',
         employment_type: profile?.employment?.employment_type || '',
@@ -222,19 +234,7 @@ export default function StudentProfileEdit() {
 
     return (
         <div className="w-full max-w-[800px] mx-auto py-8 px-4 flex flex-col gap-5 pb-12">
-            <div className="flex justify-between items-center">
-                <Link href={route('alumna.profile')} className="flex pl-2 items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium transition">
-                    <ArrowLeft size={14} /> Back to Profile
-                </Link>
-                <Button
-                    form="profile-form"
-                    type="submit"
-                    disabled={submitting}
-                    className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all h-auto"
-                >
-                    <Save size={14} className="mr-2" /> {submitting ? 'Saving...' : 'Save Changes'}
-                </Button>
-            </div>
+
 
             <form id="profile-form" className="flex flex-col gap-6" onSubmit={handleSubmit}>
 
@@ -246,7 +246,28 @@ export default function StudentProfileEdit() {
 
                 {/* PERSONAL INFO */}
                 <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="flex items-center gap-2 mb-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight"><User size={18} /> Personal Information</div>
+                    <div className="flex justify-between items-center mb-2 flex-wrap gap-4">
+                        <div className="flex items-center gap-4">
+                            <Link 
+                                href={route('alumna.profile')} 
+                                className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 h-8 w-8 rounded shadow-sm transition-all"
+                                title="Cancel and go back"
+                            >
+                                <ArrowLeft size={16} />
+                            </Link>
+                            <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase tracking-tight">
+                                <User size={18} /> Personal Information
+                            </div>
+                        </div>
+                        <Button
+                            form="profile-form"
+                            type="submit"
+                            disabled={submitting}
+                            className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase tracking-wide transition-all h-auto shrink-0"
+                        >
+                            <Save size={14} className="mr-2" /> {submitting ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </div>
 
                     <div className="flex justify-center mb-4">
                         <div className="flex flex-col items-center">
@@ -297,13 +318,87 @@ export default function StudentProfileEdit() {
                     </div>
 
                     <div className="pt-2 border-t border-gray-100">
-                        <PhAddressSelector
-                            data={data}
-                            onChange={(updatedAddress) => {
-                                setData((prev) => ({ ...prev, ...updatedAddress }));
-                            }}
-                            errors={errors}
-                        />
+                        <div className="flex flex-col gap-2 mb-4 mt-2">
+                            <Label className={labelClass}>Where do you currently reside?</Label>
+                            <div className="flex gap-4">
+                                <label className="flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
+                                    <input 
+                                        type="radio" 
+                                        name="residency" 
+                                        checked={residency === 'Philippines'} 
+                                        onChange={() => { 
+                                            setResidency('Philippines'); 
+                                            setData(p => ({...p, country: 'Philippines', street_address: '', region: '', province: '', city: '', barangay: ''}));
+                                        }} 
+                                        className="w-4 h-4 accent-[#008542]" 
+                                    />
+                                    Philippines
+                                </label>
+                                <label className="flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
+                                    <input 
+                                        type="radio" 
+                                        name="residency" 
+                                        checked={residency === 'International'} 
+                                        onChange={() => { 
+                                            setResidency('International'); 
+                                            setData(p => ({...p, country: '', street_address: '', region: '', province: '', city: '', barangay: ''}));
+                                        }} 
+                                        className="w-4 h-4 accent-[#008542]" 
+                                    />
+                                    Outside the Philippines
+                                </label>
+                            </div>
+                        </div>
+
+                        {residency === 'Philippines' ? (
+                            <PhAddressSelector
+                                data={data}
+                                onChange={(updatedAddress) => {
+                                    setData((prev) => ({ ...prev, ...updatedAddress }));
+                                }}
+                                errors={errors}
+                                variant="profile"
+                            />
+                        ) : (
+                            <InternationalAddressSelector
+                                data={data}
+                                onChange={(updatedAddress) => {
+                                    setData((prev) => ({ ...prev, ...updatedAddress }));
+                                }}
+                                errors={errors}
+                                variant="profile"
+                            />
+                        )}
+                    </div>
+
+                    <div className="pt-4 mt-2 border-t border-gray-100">
+                        <div className="w-full">
+                            <Label className={labelClass}>Contact Number <span className="text-red-500">*</span></Label>
+                            <div className={`flex items-center w-full border ${errors.contact_number ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-2.5 bg-white transition shadow-sm focus-within:border-[#008542] focus-within:ring-1 focus-within:ring-[#008542]`}>
+                                <PhoneInput
+                                    international
+                                    defaultCountry="PH"
+                                    value={data.contact_number || ''}
+                                    onChange={(value) => setData('contact_number', value)}
+                                    className="flex-1 PhoneInput--custom text-[14px]"
+                                />
+                            </div>
+                            {errors.contact_number && <p className="text-red-500 text-xs mt-1.5">{errors.contact_number}</p>}
+                            
+                            <style dangerouslySetInnerHTML={{__html: `
+                                .PhoneInput--custom .PhoneInputInput {
+                                    border: none;
+                                    outline: none;
+                                    background: transparent;
+                                    font-size: 14px;
+                                    color: #111827;
+                                    width: 100%;
+                                }
+                                .PhoneInput--custom .PhoneInputCountry {
+                                    margin-right: 0.75rem;
+                                }
+                            `}} />
+                        </div>
                     </div>
                 </section>
 

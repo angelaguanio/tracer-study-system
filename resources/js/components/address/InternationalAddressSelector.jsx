@@ -8,7 +8,30 @@ export default function InternationalAddressSelector({
   onChange = () => {},
   errors = {},
   className = '',
+  variant = 'default',
 }) {
+  const labelClass = variant === 'profile' 
+    ? 'block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2' 
+    : 'text-xs font-medium text-gray-700';
+    
+  const getContainerClass = (hasError) => {
+    if (variant === 'profile') {
+      return `flex items-center w-full border ${hasError ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-1.5 text-[14px] text-gray-900 focus-within:ring-1 focus-within:ring-[#008542] focus-within:border-[#008542] transition shadow-sm bg-white`;
+    }
+    return `flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors ${hasError ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`;
+  };
+
+  const getSelectContainerClass = (hasError, isDisabled) => {
+    let base = getContainerClass(hasError);
+    if (variant === 'profile') base = base.replace('py-1.5', ''); 
+    else base = base.replace('py-2.5', '');
+    if (isDisabled) base += ' opacity-60 bg-gray-50';
+    return base;
+  };
+
+  const inputClass = variant === 'profile'
+    ? 'flex-1 text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent w-full py-1.5'
+    : 'flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent w-full py-1.5';
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -100,36 +123,36 @@ export default function InternationalAddressSelector({
       {/* ── 1. Text Fields ── */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-700">
+          <label className={labelClass}>
             Street Address / House Number / ZIP Code <span className="text-red-500">*</span>
           </label>
-          <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors ${errors.street_address ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`}>
-            <Home className="h-4 w-4 text-gray-500 shrink-0" />
+          <div className={getContainerClass(errors.street_address)}>
+            {variant !== 'profile' && <Home className="h-4 w-4 text-gray-500 shrink-0" />}
             <input
               type="text"
               name="street_address"
               placeholder="e.g. 123 Main St, 90210"
               value={data.street_address || ''}
               onChange={(e) => handleTextChange('street_address', e.target.value)}
-              className="flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           </div>
           {errors.street_address && <p className="text-xs text-red-500 pl-1">{errors.street_address}</p>}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-700">
+          <label className={labelClass}>
             Building / Apartment <span className="text-gray-400 text-[11px]">(Optional)</span>
           </label>
-          <div className="flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 border-gray-400 focus-within:border-blue-500 transition-colors">
-            <Building className="h-4 w-4 text-gray-500 shrink-0" />
+          <div className={getContainerClass(errors.subdivision)}>
+            {variant !== 'profile' && <Building className="h-4 w-4 text-gray-500 shrink-0" />}
             <input
               type="text"
               name="subdivision"
               placeholder="e.g. Apt 4B"
               value={data.subdivision || ''}
               onChange={(e) => handleTextChange('subdivision', e.target.value)}
-              className="flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           </div>
           {errors.subdivision && <p className="text-xs text-red-500 pl-1">{errors.subdivision}</p>}
@@ -138,11 +161,11 @@ export default function InternationalAddressSelector({
 
       {/* ── 2. Dropdowns ── */}
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           Country <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.country ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`}>
-          <Globe className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.country, false)}>
+          {variant !== 'profile' && <Globe className="h-4 w-4 text-gray-500 shrink-0" />}
           <Select value={selectedCountryIso} onValueChange={handleCountryChange} disabled={countries.length === 0}>
             <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
               <SelectValue placeholder={countries.length === 0 ? 'Loading Countries...' : 'Select Country'} />
@@ -158,11 +181,11 @@ export default function InternationalAddressSelector({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           State / Province <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.province ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'} ${!selectedCountryIso ? 'opacity-60 bg-gray-50' : ''}`}>
-          <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.province, !selectedCountryIso)}>
+          {variant !== 'profile' && <MapPin className="h-4 w-4 text-gray-500 shrink-0" />}
           {states.length > 0 ? (
             <Select value={selectedStateIso} onValueChange={handleStateChange} disabled={!selectedCountryIso}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
@@ -181,7 +204,7 @@ export default function InternationalAddressSelector({
               value={data.province || ''}
               disabled={!selectedCountryIso}
               onChange={(e) => handleTextChange('province', e.target.value)}
-              className="flex-1 text-sm text-black py-2.5 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           )}
         </div>
@@ -189,11 +212,11 @@ export default function InternationalAddressSelector({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           City <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.city ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'} ${!selectedStateIso && states.length > 0 ? 'opacity-60 bg-gray-50' : ''}`}>
-          <Building className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.city, !selectedStateIso && states.length > 0)}>
+          {variant !== 'profile' && <Building className="h-4 w-4 text-gray-500 shrink-0" />}
           {cities.length > 0 ? (
             <Select value={data.city} onValueChange={handleCityChange} disabled={!selectedStateIso && states.length > 0}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
@@ -212,7 +235,7 @@ export default function InternationalAddressSelector({
               value={data.city || ''}
               disabled={!selectedStateIso && states.length > 0}
               onChange={(e) => handleTextChange('city', e.target.value)}
-              className="flex-1 text-sm text-black py-2.5 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           )}
         </div>

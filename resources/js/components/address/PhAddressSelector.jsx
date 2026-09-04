@@ -9,7 +9,31 @@ export default function PhAddressSelector({
   errors = {},
   className = '',
   isEditMode = false, // If needed for future pre-filling
+  variant = 'default',
 }) {
+  const labelClass = variant === 'profile' 
+    ? 'block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2' 
+    : 'text-xs font-medium text-gray-700';
+    
+  const getContainerClass = (hasError) => {
+    if (variant === 'profile') {
+      return `flex items-center w-full border ${hasError ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-1.5 text-[14px] text-gray-900 focus-within:ring-1 focus-within:ring-[#008542] focus-within:border-[#008542] transition shadow-sm bg-white`;
+    }
+    return `flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors ${hasError ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`;
+  };
+
+  const getSelectContainerClass = (hasError, isDisabled) => {
+    let base = getContainerClass(hasError);
+    // Adjust padding for select container to match select trigger
+    if (variant === 'profile') base = base.replace('py-1.5', ''); 
+    else base = base.replace('py-2.5', '');
+    if (isDisabled) base += ' opacity-60 bg-gray-50';
+    return base;
+  };
+
+  const inputClass = variant === 'profile'
+    ? 'flex-1 text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none bg-transparent w-full py-1.5'
+    : 'flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent w-full py-1.5';
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
@@ -126,36 +150,36 @@ export default function PhAddressSelector({
       {/* ── 1. Text Fields (Manual Typing) ── */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-700">
+          <label className={labelClass}>
             Street Address / House Number <span className="text-red-500">*</span>
           </label>
-          <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors ${errors.street_address ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`}>
-            <Home className="h-4 w-4 text-gray-500 shrink-0" />
+          <div className={getContainerClass(errors.street_address)}>
+            {variant !== 'profile' && <Home className="h-4 w-4 text-gray-500 shrink-0" />}
             <input
               type="text"
               name="street_address"
               placeholder="e.g. Blk 2 Lot 3, Avocado St."
               value={data.street_address || ''}
               onChange={(e) => handleTextChange('street_address', e.target.value)}
-              className="flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           </div>
           {errors.street_address && <p className="text-xs text-red-500 pl-1">{errors.street_address}</p>}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-gray-700">
+          <label className={labelClass}>
             Subdivision / Village / Condo <span className="text-gray-400 text-[11px]">(Optional)</span>
           </label>
-          <div className="flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 border-gray-400 focus-within:border-blue-500 transition-colors">
-            <Building className="h-4 w-4 text-gray-500 shrink-0" />
+          <div className={getContainerClass(errors.subdivision)}>
+            {variant !== 'profile' && <Building className="h-4 w-4 text-gray-500 shrink-0" />}
             <input
               type="text"
               name="subdivision"
               placeholder="e.g. Greenfields Subdivision"
               value={data.subdivision || ''}
               onChange={(e) => handleTextChange('subdivision', e.target.value)}
-              className="flex-1 text-sm text-black placeholder:text-gray-500 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           </div>
           {errors.subdivision && <p className="text-xs text-red-500 pl-1">{errors.subdivision}</p>}
@@ -164,11 +188,11 @@ export default function PhAddressSelector({
 
       {/* ── 2. Drop-Down Menus (Selection Fields) ── */}
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           Region <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.region ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`}>
-          <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.region, false)}>
+          {variant !== 'profile' && <MapPin className="h-4 w-4 text-gray-500 shrink-0" />}
           <Select value={selectedRegionCode} onValueChange={handleRegionChange} disabled={regions.length === 0}>
             <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
               <SelectValue placeholder={regions.length === 0 ? 'Loading Regions...' : 'Select Region'} />
@@ -184,11 +208,11 @@ export default function PhAddressSelector({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           Province <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.province ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'} ${!selectedRegionCode ? 'opacity-60 bg-gray-50' : ''}`}>
-          <Navigation className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.province, !selectedRegionCode)}>
+          {variant !== 'profile' && <Navigation className="h-4 w-4 text-gray-500 shrink-0" />}
           <Select value={selectedProvinceCode} onValueChange={handleProvinceChange} disabled={!selectedRegionCode}>
             <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
               <SelectValue placeholder={!selectedRegionCode ? 'Select Region first' : 'Select Province'} />
@@ -204,11 +228,11 @@ export default function PhAddressSelector({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           City / Municipality <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.city ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'} ${!selectedProvinceCode ? 'opacity-60 bg-gray-50' : ''}`}>
-          <Building className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.city, !selectedProvinceCode)}>
+          {variant !== 'profile' && <Building className="h-4 w-4 text-gray-500 shrink-0" />}
           {cities.length > 0 ? (
             <Select value={selectedCityCode} onValueChange={handleCityChange} disabled={!selectedProvinceCode}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
@@ -227,7 +251,7 @@ export default function PhAddressSelector({
               value={data.city || ''}
               disabled={!selectedProvinceCode}
               onChange={(e) => handleTextChange('city', e.target.value)}
-              className="flex-1 text-sm text-black py-2.5 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           )}
         </div>
@@ -235,11 +259,11 @@ export default function PhAddressSelector({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-700">
+        <label className={labelClass}>
           Barangay <span className="text-red-500">*</span>
         </label>
-        <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 transition-colors ${errors.barangay ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'} ${!selectedCityCode ? 'opacity-60 bg-gray-50' : ''}`}>
-          <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+        <div className={getSelectContainerClass(errors.barangay, !selectedCityCode)}>
+          {variant !== 'profile' && <MapPin className="h-4 w-4 text-gray-500 shrink-0" />}
           {barangays.length > 0 ? (
             <Select value={selectedBarangayCode} onValueChange={handleBarangayChange} disabled={!selectedCityCode}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
@@ -258,7 +282,7 @@ export default function PhAddressSelector({
               value={data.barangay || ''}
               disabled={!selectedCityCode}
               onChange={(e) => handleTextChange('barangay', e.target.value)}
-              className="flex-1 text-sm text-black py-2.5 focus:outline-none bg-transparent"
+              className={inputClass}
             />
           )}
         </div>

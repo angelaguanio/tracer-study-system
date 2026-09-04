@@ -70,15 +70,14 @@ export default function StudentProfile() {
         <div className="w-full max-w-[800px] mx-auto px-4 py-8 flex flex-col gap-5">
             {flash?.success && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">{flash.success}</div>}
 
-            <div className="flex justify-end">
-                <Link href={route('alumna.profile.edit')} className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase transition-colors">
-                    <IconEdit /> Edit Profile
-                </Link>
-            </div>
-
             {/* Personal Information */}
             <section className="bg-white rounded-xl shadow-sm border border-gray-50 p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-6 text-gray-600 font-bold text-[13px] uppercase"><IconUser /> Personal Information</div>
+                <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center gap-2 text-gray-600 font-bold text-[13px] uppercase"><IconUser /> Personal Information</div>
+                    <Link href={route('alumna.profile.edit')} className="flex items-center bg-[#008542] hover:bg-green-800 text-white text-[11px] font-bold px-4 py-2 rounded shadow-sm uppercase transition-colors shrink-0">
+                        <IconEdit /> Edit Profile
+                    </Link>
+                </div>
                 <div className="flex items-center gap-5 mb-8">
                     <div className="h-20 w-20 rounded-full overflow-hidden shadow-lg border-4 border-white bg-white shrink-0 flex items-center justify-center">
                         {profile?.profile_picture ? (
