@@ -53,16 +53,20 @@ export default function AlumnaAssociation() {
         {/* ═══════════════════════════════════════════════════════
             1. HERO
         ═══════════════════════════════════════════════════════ */}
-        <section className="relative w-full flex flex-col items-center text-center px-6 pt-32 pb-8 mt-10">
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-6 z-10">
           <h1 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight drop-shadow-2xl mb-6 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
             <span className="text-[#8AD1F7]">Guided by Passion.</span><br/>
             <span className="text-white">Driven by Purpose.</span>
           </h1>
-          <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg mb-20 transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             Meet the dedicated officers driving our alumni association forward. Together, we strengthen connections and create lasting impact.
           </p>
+        </section>
 
-          {/* Toggle Switch */}
+        {/* ═══════════════════════════════════════════════════════
+            1.5. TOGGLE SWITCH
+        ═══════════════════════════════════════════════════════ */}
+        <div className="w-full relative z-20 px-6 pt-16 pb-8">
           <div className={`flex bg-[#234371] rounded-full shadow-lg max-w-2xl w-full mx-auto relative z-20 transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             
             {/* Sliding Background */}
@@ -88,7 +92,7 @@ export default function AlumnaAssociation() {
               Information Technology<br className="hidden sm:block" /> Program
             </button>
           </div>
-        </section>
+        </div>
 
         {/* ═══════════════════════════════════════════════════════
             2. DEPARTMENTS
