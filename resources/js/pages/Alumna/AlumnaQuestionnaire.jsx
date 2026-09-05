@@ -24,6 +24,7 @@ export default function AlumnaQuestionnaire({
   const activeTab = tabParam || (justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study');
 
   const [renderKey, setRenderKey] = useState(0);
+  const [countdown, setCountdown] = useState(5);
 
   // Fire a toast when arriving back after survey submission
   useEffect(() => {
@@ -34,8 +35,21 @@ export default function AlumnaQuestionnaire({
         description: 'Your response has been recorded. Thank you for your feedback!',
         duration: 5000,
       });
+
+      if (completedSurveyType !== 'cect') {
+        let currentCount = 5;
+        const interval = setInterval(() => {
+          currentCount -= 1;
+          setCountdown(currentCount);
+          if (currentCount <= 0) {
+            clearInterval(interval);
+            router.visit(route('alumna.home'));
+          }
+        }, 1000);
+        return () => clearInterval(interval);
+      }
     }
-  }, [justCompleted]);
+  }, [justCompleted, completedSurveyType]);
 
   // Just finished this session → toast fires above; fall through to normal tab render
 
@@ -82,6 +96,12 @@ export default function AlumnaQuestionnaire({
                  </p>
                </div>
             </div>
+
+            {justCompleted && completedSurveyType !== 'cect' && (
+              <p className="text-sm font-medium text-gray-500 mt-2 mb-4 z-10 animate-pulse">
+                Redirecting to dashboard in {countdown} seconds...
+              </p>
+            )}
 
             {/* Bottom green wave background */}
             <div className="absolute bottom-0 left-0 w-full h-16 overflow-hidden pointer-events-none">

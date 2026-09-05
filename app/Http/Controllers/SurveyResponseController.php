@@ -128,7 +128,7 @@ class SurveyResponseController extends Controller
             }
 
             NotificationService::surveyAnswered($survey->id, $user->id, $user->name);
-
+            NotificationService::surveyCompleted($survey->id, $survey->title, $user->id);
 
             $draft->delete();
         });

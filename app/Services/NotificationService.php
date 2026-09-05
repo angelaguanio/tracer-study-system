@@ -44,6 +44,21 @@ class NotificationService
         );
     }
 
+    // ── Alumni completed a survey (self-notification) ─────────
+    public static function surveyCompleted(int $surveyId, string $surveyTitle, int $alumniId): Notification
+    {
+        $dateStr = now()->format('M d, Y'); // e.g. Sep 04, 2026
+        return self::send(
+            type: 'survey_completed',
+            targetRole: 'alumna_specific',
+            title: 'Survey Completed',
+            message: "You have already answered the survey: \"{$surveyTitle}\" last {$dateStr}.",
+            data: ['survey_id' => $surveyId],
+            triggeredBy: $alumniId,
+            targetUserId: $alumniId,
+        );
+    }
+
     // ── Alumni registered ─────────────────────────────────────
     public static function alumniRegistered(int $alumniId, string $alumniName): Notification
     {

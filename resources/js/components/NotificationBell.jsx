@@ -122,9 +122,15 @@ export default function NotificationBell({ className = "", notifications: shared
                 return route('alumna.inquiries.index'); // or a specific-thread route if you have one
             
             case 'survey_published':
+                if (data.survey_type === 'tracer') {
+                    return route('alumna.questionnaire');
+                }
                 return data.survey_id
                     ? route('alumna.surveys.show', data.survey_id)
                     : route('alumna.surveys.index');
+
+            case 'survey_completed':
+                return route('alumna.questionnaire');
 
             default:
                 // Default to dashboard
@@ -166,6 +172,7 @@ export default function NotificationBell({ className = "", notifications: shared
         announcement_published: '📢',
         inquiry_replied: '💬',
         survey_published: '📋',
+        survey_completed: '✅',
     };
 
     return (
