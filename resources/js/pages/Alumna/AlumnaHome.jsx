@@ -4,6 +4,7 @@ import alumniHomeImg from '../../assets/cect_home_new.webp';
 import editFileIcon from '../../assets/edit-file.webp';
 import { Link, Head } from '@inertiajs/react';
 import echo from '@/echo';
+import UpdateProfileBanner from '@/components/alumna/UpdateProfileBanner';
 
 import { ArrowRight, ImageOff, User, FileText, Bell, Share2 } from 'lucide-react';
 
@@ -116,6 +117,8 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
         <Head>
             <link rel="preload" as="image" href={alumniHomeImg} />
         </Head>
+        
+        <UpdateProfileBanner />
 
         {/* HERO SECTION */}
         <section
