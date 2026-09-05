@@ -1,12 +1,6 @@
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, ListFilter } from "lucide-react";
 
 export default function CoordinatorSurveyResponseFilter({
   search,
@@ -24,11 +18,30 @@ export default function CoordinatorSurveyResponseFilter({
     return `${s}-${s + 1}`;
   });
 
-  return (
-    <div className="flex flex-col gap-2.5 w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 md:flex-row md:items-center md:gap-3 md:w-auto md:bg-transparent md:p-0 md:shadow-none md:border-0">
+  const [isOpen, setIsOpen] = useState(false);
+  const filterRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const activeFiltersCount = [
+    course !== "all" ? 1 : 0,
+    year !== "all" ? 1 : 0,
+    status !== "all" ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
+
+  return (
+    <div className="flex flex-col gap-2.5 w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 md:flex-row md:items-center md:gap-3 md:w-auto md:bg-transparent md:p-0 md:shadow-none md:border-0 relative">
+      
       {/* SEARCH FIELD */}
-      <div className="relative w-full md:w-[220px]">
+      <div className="relative w-full md:w-[260px] flex-shrink-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <Input
           placeholder="Search..."
@@ -38,46 +51,121 @@ export default function CoordinatorSurveyResponseFilter({
         />
       </div>
 
-      {/* SELECTS — 2-col on mobile (status spans full), flex row on md+ */}
-      <div className="grid grid-cols-2 gap-2 w-full md:flex md:flex-row md:items-center md:w-auto">
+      {/* FILTER BUTTON */}
+      <div ref={filterRef} className="relative self-end md:self-auto">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`h-10 w-10 flex items-center justify-center rounded-lg border transition-colors relative ${
+            isOpen || activeFiltersCount > 0
+              ? "bg-blue-50 border-blue-200 text-blue-700"
+              : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+          }`}
+        >
+          <ListFilter size={18} />
+          {activeFiltersCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-white">
+              {activeFiltersCount}
+            </span>
+          )}
+        </button>
 
-        <Select value={course} onValueChange={(val) => setCourse(val)}>
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
-            <SelectValue placeholder="All Courses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courses</SelectItem>
-            <SelectItem value="BSIT">BSIT</SelectItem>
-            <SelectItem value="BSCpE">BSCpE</SelectItem>
-            <SelectItem value="BSEcE">BSEcE</SelectItem>
-            <SelectItem value="BSCS">BSCS</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* FILTER DROPDOWN CONTENT */}
+        {isOpen && (
+          <div className="absolute top-12 right-0 w-[220px] bg-white rounded-xl shadow-lg border border-gray-100 py-3 z-50 flex flex-col">
+            
+            <div className="flex items-center justify-between px-4 pb-2 border-b border-gray-100 mb-2">
+              <h4 className="text-sm font-semibold text-gray-800">Filters</h4>
+              {activeFiltersCount > 0 && (
+                <button
+                  onClick={() => {
+                    setCourse("all");
+                    setYear("all");
+                    setStatus("all");
+                  }}
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
 
-        <Select value={year} onValueChange={(val) => setYear(val)}>
-          <SelectTrigger className="h-10 w-full md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
-            <SelectValue placeholder="All Years" />
-          </SelectTrigger>
-          <SelectContent className="max-h-48">
-            <SelectItem value="all">All Years</SelectItem>
-            {yearOptions.map((y) => (
-              <SelectItem key={y} value={y}>{y}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <div className="flex flex-col px-2 space-y-4">
+              
+              {/* Course */}
+              <div className="flex flex-col">
+                <div className="text-xs font-semibold text-gray-800 px-2 mb-1">Course</div>
+                <div className="flex flex-col">
+                  {['all', 'BSIT', 'BSCpE', 'BSEcE', 'BSCS'].map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setCourse(c)}
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-md text-sm text-gray-700 text-left"
+                    >
+                      <span className="w-4 flex justify-center text-lg leading-none">
+                        {course === c ? '•' : ''}
+                      </span>
+                      {c === 'all' ? 'All Courses' : c}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-        <Select value={status} onValueChange={(val) => setStatus(val)}>
-          <SelectTrigger className="h-10 w-full col-span-2 md:col-span-1 md:w-[160px] bg-white border-gray-200 rounded-lg text-gray-700 text-xs sm:text-sm">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="incomplete">Not Completed</SelectItem>
-          </SelectContent>
-        </Select>
+              {/* Year */}
+              <div className="flex flex-col">
+                <div className="text-xs font-semibold text-gray-800 px-2 mb-1">Year</div>
+                <div className="flex flex-col max-h-40 overflow-y-auto border-y border-gray-50 py-1 bg-gray-50/30 rounded-md">
+                  <button
+                    onClick={() => setYear('all')}
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-md text-sm text-gray-700 text-left shrink-0"
+                  >
+                    <span className="w-4 flex justify-center text-lg leading-none">
+                      {year === 'all' ? '•' : ''}
+                    </span>
+                    All Years
+                  </button>
+                  {yearOptions.map(y => (
+                    <button
+                      key={y}
+                      onClick={() => setYear(y)}
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 rounded-md text-sm text-gray-700 text-left shrink-0"
+                    >
+                      <span className="w-4 flex justify-center text-lg leading-none">
+                        {year === y ? '•' : ''}
+                      </span>
+                      {y}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
+              {/* Remarks */}
+              <div className="flex flex-col">
+                <div className="text-xs font-semibold text-gray-800 px-2 mb-1">Remarks</div>
+                <div className="flex flex-col">
+                  {[
+                    { val: 'all', label: 'All Remarks' },
+                    { val: 'completed', label: 'Completed' },
+                    { val: 'incomplete', label: 'Not Completed' },
+                  ].map(r => (
+                    <button
+                      key={r.val}
+                      onClick={() => setStatus(r.val)}
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-md text-sm text-gray-700 text-left"
+                    >
+                      <span className="w-4 flex justify-center text-lg leading-none">
+                        {status === r.val ? '•' : ''}
+                      </span>
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
       </div>
+
     </div>
   );
 }

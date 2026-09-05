@@ -1,9 +1,9 @@
 import { route } from 'ziggy-js';
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
-import logo from '../../assets/logo final.png';
-import wuplogo from '../../assets/wup.png';
-import cectlogo from '../../assets/wup_cect.png';
+import logo from '../../assets/logo final.webp';
+import wuplogo from '../../assets/wup.webp';
+import cectlogo from '../../assets/wup_cect.webp';
 import SurveyStepIndicator from "@/components/survey/alumna/SurveyStepIndicator";
 import SurveySection from "@/components/survey/alumna/SurveySection";
 import SurveyCompletedCard from "@/components/survey/alumna/SurveyCompletedCard";

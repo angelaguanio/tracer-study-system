@@ -80,11 +80,16 @@ class SurveyController extends Controller
             // No need to deactivate other surveys
         }
 
-        // Handle tracer study designation
-        if ($request->has('is_tracer_study') && $request->input('is_tracer_study')) {
-            // Only one survey can be the tracer study at a time
+        // Handle tracer study active status
+        $isTracer = $request->has('is_tracer_study') ? $request->input('is_tracer_study') : $survey->is_tracer_study;
+        
+        if ($isTracer && $request->input('status') === 'active') {
+            // Only one tracer study can be active at a time.
+            // Deactivate older active tracer studies so they become historical records.
             Survey::where('id', '!=', $survey->id)
-                ->update(['is_tracer_study' => false]);
+                ->where('is_tracer_study', true)
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
         }
 
         $survey->update($request->validated());

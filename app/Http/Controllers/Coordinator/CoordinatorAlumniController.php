@@ -17,8 +17,17 @@ class CoordinatorAlumniController extends Controller
     $query = User::where('user_role', 'alumna')
         ->latest()
         ->when($request->search, function ($q, $search) {
-            $q->where('first_name', 'like', "%{$search}%")
-              ->orWhere('last_name', 'like', "%{$search}%");
+            $terms = array_filter(explode(' ', trim($search)));
+            $q->where(function ($subQ) use ($terms) {
+                foreach ($terms as $term) {
+                    $subQ->where(function ($innerQ) use ($term) {
+                        $innerQ->where('first_name', 'like', "%{$term}%")
+                               ->orWhere('middle_name', 'like', "%{$term}%")
+                               ->orWhere('last_name', 'like', "%{$term}%")
+                               ->orWhere('email', 'like', "%{$term}%");
+                    });
+                }
+            });
         })
         ->when($request->course && $request->course !== 'all', function ($q) use ($request) {
             $q->where('courses', $request->course);

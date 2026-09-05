@@ -117,7 +117,7 @@ export default function AdminAlumniCoordinatorTable({
                   className="h-[70px] border-b hover:bg-gray-50"
                 >
                   {/* NAME - FIXED AVATAR LEFT */}
-                  <TableCell className="text-left">
+                  <TableCell className="text-left pl-8">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
                         {getInitials(c.first_name, c.last_name)}
@@ -290,14 +290,14 @@ export default function AdminAlumniCoordinatorTable({
       </div>
 
       {/* PAGINATION */}
-      <div className="flex justify-start pt-1">
+      <div className="flex justify-start mt-1 pb-2">
         <div className="flex items-center gap-1">
           <button
             disabled={currentPage === 1}
-            onClick={() => goToPage(currentPage - 1)}
-            className="w-9 h-9 flex items-center justify-center rounded border bg-white disabled:opacity-40"
+            onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft size={16} />
           </button>
 
           {paginationItems.map((item, index) =>
@@ -309,10 +309,10 @@ export default function AdminAlumniCoordinatorTable({
               <button
                 key={item}
                 onClick={() => goToPage(item)}
-                className={`w-9 h-9 rounded border text-sm ${
+                className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm border font-medium transition ${
                   currentPage === item
-                    ? "bg-blue-500 text-white"
-                    : "bg-white"
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-white hover:bg-gray-50 text-gray-600"
                 }`}
               >
                 {item}
@@ -322,10 +322,10 @@ export default function AdminAlumniCoordinatorTable({
 
           <button
             disabled={currentPage === lastPage}
-            onClick={() => goToPage(currentPage + 1)}
-            className="w-9 h-9 flex items-center justify-center rounded border bg-white disabled:opacity-40"
+            onClick={() => currentPage < lastPage && goToPage(currentPage + 1)}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40 transition"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>

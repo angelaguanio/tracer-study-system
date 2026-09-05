@@ -14,36 +14,17 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function AnalyticsIndex({ surveys }) {
+export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
     const currentList = surveys.data ?? [];
+
+    const pageTitle = type === 'tracer' ? 'Tracer Study Analytics' : 'General Survey Analytics';
 
     return (
         <div className="w-full max-w-full px-4 py-6 flex flex-col gap-4 self-start">
-            <h1 className="text-xl font-bold text-gray-800">Reports & Analytics</h1>
-
-            <p className="text-md text-gray-500 pt-2 pl-2">Employment Analytics</p>
-            {/* EMPLOYMENT LOCATION ANALYTICS CARD */}
-            <Card className="bg-white border shadow-sm">
-                <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
-                    <div className="flex flex-col gap-1 pl-2">
-                        <h2 className="font-semibold text-gray-800 flex items-center gap-2">
-                            <MapPin size={20} className="text-blue-600" />
-                            Employment Location Report
-                        </h2>
-                    </div>
-                    <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => router.get(route("admin.analytics.employment-location"))}
-                    >
-                        <MapPin size={14} />
-                        View Report
-                    </Button>
-                </CardContent>
-            </Card>
+            <h1 className="text-xl font-bold text-gray-800">{pageTitle}</h1>
 
             <div className="pt-2">
-                <p className="text-md text-gray-500  mt-2 mb-2 pl-2">Survey Response Analytics</p>
+                <p className="text-md text-gray-500 mt-2 mb-2 pl-2">Available Surveys</p>
             </div>
 
             {currentList.length === 0 ? (
@@ -55,9 +36,9 @@ export default function AnalyticsIndex({ surveys }) {
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
                                     <h2 className="font-semibold text-gray-800">{survey.title}</h2>
-                                    {survey.is_tracer_study && (
+                                    {type === 'tracer' && survey.id === latestTracerId && (
                                         <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
-                                            Tracer Study
+                                            Currently Active
                                         </Badge>
                                     )}
                                 </div>
@@ -181,7 +162,7 @@ export default function AnalyticsIndex({ surveys }) {
                                             surveys.last_page
                                         ) {
                                             router.get(
-                                                route("admin.analytics"),
+                                                route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
                                                 {
                                                     page: surveys.current_page + 1,
                                                 },

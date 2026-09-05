@@ -86,9 +86,17 @@ class AdminOfSurveyResponseController extends Controller
 
     // SEARCH
     if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('first_name', 'like', "%{$request->search}%")
-              ->orWhere('last_name', 'like', "%{$request->search}%");
+        $searchTerm = $request->search;
+        $terms = array_filter(explode(' ', $searchTerm)); // Split by spaces and remove empty
+
+        $query->where(function ($q) use ($terms) {
+            foreach ($terms as $term) {
+                $q->where(function ($subQ) use ($term) {
+                    $subQ->where('first_name', 'like', "%{$term}%")
+                         ->orWhere('middle_name', 'like', "%{$term}%")
+                         ->orWhere('last_name', 'like', "%{$term}%");
+                });
+            }
         });
     }
 

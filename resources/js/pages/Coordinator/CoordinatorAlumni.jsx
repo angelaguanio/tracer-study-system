@@ -186,48 +186,45 @@ const sendNextBatch = async (offset) => {
 };
 
   return (
-    <div className="w-full h-full flex flex-col p-4 gap-4 overflow-y-auto">
-      <div className="flex px-4">
-        <h1 className="text-xl font-bold">List of Alumni</h1>
+    <div className="w-full h-full p-4 flex flex-col overflow-hidden">
+      <div className="flex px-2 md:px-4 mb-4 shrink-0">
+        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">List of Alumni</h1>
       </div>
-      <div className="shrink-0">
-        <CoordinatorAlumniFilters 
-          search={search} setSearch={setSearch} 
-          year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
-          course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}}
-          employment={employment} setEmployment={(v) => {setEmployment(v); applyFilters({employment: v})}}
-        />
-      </div>
+      
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 min-h-0 overflow-hidden p-4 md:p-6 relative">
+        {/* TOP BAR: Filters & Bulk Action */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+          <CoordinatorAlumniFilters 
+            search={search} setSearch={setSearch} 
+            year={year} setYear={(v) => {setYear(v); applyFilters({year: v})}} 
+            course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}}
+            employment={employment} setEmployment={(v) => {setEmployment(v); applyFilters({employment: v})}}
+          />
 
-      <>
-        {/* BULK ACTION BAR */}
-        <div className="mt-2 flex items-center justify-between">
-          {selectedIds.length > 0 ? (
-            <span className="text-sm text-gray-500">
-              {selectedIds.length} alumni selected
-            </span>
-          ) : (
-            <span />
-          )}
-
-          <Button
-            disabled={selectedIds.length === 0}
-            onClick={() => setBulkModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-sm disabled:opacity-40"
-          >
-            <Mail className="w-4 h-4" />
-
-            Send Bulk Email
-
+          <div className="flex items-center gap-3 shrink-0">
             {selectedIds.length > 0 && (
-              <span className="ml-1 bg-white text-blue-600 rounded-full px-2 py-0.5 text-xs font-semibold">
-                {selectedIds.length}
+              <span className="text-sm text-gray-500">
+                {selectedIds.length} alumni selected
               </span>
             )}
-          </Button>
+
+            <Button
+              disabled={selectedIds.length === 0}
+              onClick={() => setBulkModalOpen(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-sm disabled:opacity-40"
+            >
+              <Mail className="w-4 h-4" />
+              Send Bulk Email
+              {selectedIds.length > 0 && (
+                <span className="ml-1 bg-white text-blue-600 rounded-full px-2 py-0.5 text-xs font-semibold">
+                  {selectedIds.length}
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
 
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col mt-4">
           <CoordinatorAlumniTable
             alumni={alumni}
             selectedIds={selectedIds}
@@ -237,7 +234,7 @@ const sendNextBatch = async (offset) => {
             onSendEmail={openIndivModal}
           />
         </div>
-      </>
+      </div>
       
       {/* ── INDIVIDUAL EMAIL MODAL ── */}
         <Dialog open={indivModalOpen} onOpenChange={setIndivModalOpen}>

@@ -110,12 +110,11 @@ class StudentProfileController extends Controller
                         }
                     }
                 
-                    $filename = uniqid() . '_' . time() . '.' .
-                        $request->file('profile_picture')->getClientOriginalExtension();
-                
-                    $request->file('profile_picture')->move(
-                        public_path('uploads/profile-pictures'),
-                        $filename
+                    $baseFilename = uniqid() . '_' . time();
+                    $filename = \App\Helpers\ImageHelper::convertAndSaveToWebp(
+                        $request->file('profile_picture'),
+                        'uploads/profile-pictures',
+                        $baseFilename
                     );
                 
                     $user->profile_picture = '/uploads/profile-pictures/' . $filename;

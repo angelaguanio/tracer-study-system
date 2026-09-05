@@ -14,6 +14,23 @@ class SurveyAnalyticsController extends Controller
 {
     use AuthorizesRequests;
 
+    public function latestTracerStudyAnalytics()
+    {
+        $this->authorize('viewAnalytics', Survey::class);
+
+        $latestTracer = Survey::where('is_tracer_study', true)
+            ->whereNull('archived_at')
+            ->has('responses')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$latestTracer) {
+            return back()->with('error', 'No active tracer studies with responses found.');
+        }
+
+        return redirect()->route('admin.analytics.show', $latestTracer->id);
+    }
+
     public function show(Survey $survey, Request $request)
     {
         $this->authorize('viewAnalytics', Survey::class);

@@ -24,11 +24,18 @@ class AdminAlumniController extends Controller
 
     // Search logic
     if ($request->filled('search')) {
-        $search = trim($request->search);
-        $query->where(function ($q) use ($search) {
-            $q->where('first_name', 'LIKE', "%{$search}%")
-              ->orWhere('last_name', 'LIKE', "%{$search}%")
-              ->orWhere('email', 'LIKE', "%{$search}%");
+        $searchTerm = trim($request->search);
+        $terms = array_filter(explode(' ', $searchTerm));
+
+        $query->where(function ($q) use ($terms) {
+            foreach ($terms as $term) {
+                $q->where(function ($subQ) use ($term) {
+                    $subQ->where('first_name', 'LIKE', "%{$term}%")
+                         ->orWhere('middle_name', 'LIKE', "%{$term}%")
+                         ->orWhere('last_name', 'LIKE', "%{$term}%")
+                         ->orWhere('email', 'LIKE', "%{$term}%");
+                });
+            }
         });
     }
 

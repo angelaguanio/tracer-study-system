@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
-import authBg from '../assets/cover4.png';
-import wupCectLogo from '../assets/wup_cect.png';
+import authBg from '../assets/cover4.webp';
+import wupCectLogo from '../assets/wup_cect.webp';
 import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
+
+import { Head } from '@inertiajs/react';
 
 export default function AuthLayout({ children }) {
     // Always force light mode on auth pages
@@ -17,6 +19,9 @@ export default function AuthLayout({ children }) {
             className="min-h-screen w-full bg-cover bg-center bg-no-repeat relative"
             style={{ backgroundImage: `url(${authBg})` }}
         >
+            <Head>
+                <link rel="preload" as="image" href={authBg} />
+            </Head>
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/50 via-teal-500/50 to-blue-600/50 opacity-85"></div>
             

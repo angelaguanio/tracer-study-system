@@ -16,6 +16,25 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    
+    <!-- Preload Logos (Globally) -->
+    <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/logotracer.webp') }}">
+    <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/wup_cect.webp') }}">
+
+    <!-- Conditional Preloading (Injects before React even loads!) -->
+    @if (isset($page['component']))
+        @if (str_starts_with($page['component'], 'Auth/'))
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cover4.webp') }}">
+        @elseif ($page['component'] === 'Alumna/AlumnaHome')
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_home_new.webp') }}">
+        @elseif ($page['component'] === 'Alumna/AlumnaAbout')
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/grad_pic.webp') }}">
+        @elseif ($page['component'] === 'Alumna/AlumnaAssociation')
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_bg_clean.webp') }}">
+        @elseif ($page['component'] === 'Alumna/ContactUs')
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/contact.webp') }}">
+        @endif
+    @endif
 
     @routes
     @viteReactRefresh

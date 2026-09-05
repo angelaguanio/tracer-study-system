@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { Head } from "@inertiajs/react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { departments } from "../../lib/AlumnaAssociation_Datalist";
 import { DepartmentSection } from "@/components/alumna/AlumnaAssociation_Components";
-import cectBg from "@/assets/cect_bg_clean.png";
+import cectBg from "@/assets/cect_bg_clean.webp";
 
 /* ── icon ─────────────────────────────────────────────────── */
 const IconTeam = () => (
@@ -37,6 +38,9 @@ export default function AlumnaAssociation() {
 
   return (
     <div className="relative flex flex-col w-full min-h-screen">
+      <Head>
+        <link rel="preload" as="image" href={cectBg} />
+      </Head>
       
       {/* ═══════════════════════════════════════════════════════
           FIXED BACKGROUND

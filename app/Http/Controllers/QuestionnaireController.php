@@ -17,8 +17,8 @@ class QuestionnaireController extends Controller
         ->pluck('survey_id')
         ->toArray();
         
-        // Get the tracer study survey
-        $tracerStudySurvey = \App\Models\Survey::tracerStudy()->first();
+        // Get the latest tracer study survey
+        $tracerStudySurvey = \App\Models\Survey::tracerStudy()->latest()->first();
         $tracerStudyCompleted = $tracerStudySurvey
             ? in_array($tracerStudySurvey->id, $completedSurveyIds)
             : false;
@@ -48,7 +48,7 @@ class QuestionnaireController extends Controller
 
     public function btnStartSurvey()
     {
-        $survey = Survey::tracerStudy()->first();
+        $survey = Survey::tracerStudy()->latest()->first();
 
         if (!$survey) {
             return back()->withErrors(['survey' => 'No tracer study survey available at this time.']);

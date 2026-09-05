@@ -123,12 +123,11 @@ class AlumnaAuthController extends Controller
         // Handle profile picture upload
         $profilePicturePath = null;
         if ($request->hasFile('profile_picture')) {
-            $filename = uniqid() . '_' . time() . '.' .
-                $request->file('profile_picture')->getClientOriginalExtension();
-
-            $request->file('profile_picture')->move(
-                public_path('uploads/profile-pictures'),
-                $filename
+            $baseFilename = uniqid() . '_' . time();
+            $filename = \App\Helpers\ImageHelper::convertAndSaveToWebp(
+                $request->file('profile_picture'),
+                'uploads/profile-pictures',
+                $baseFilename
             );
 
             $profilePicturePath = '/uploads/profile-pictures/' . $filename;

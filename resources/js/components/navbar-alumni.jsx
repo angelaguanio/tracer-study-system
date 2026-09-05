@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import logo from '../assets/logotracer.png'
+import logo from '../assets/logotracer.webp'
 import { Link, usePage } from '@inertiajs/react'
 import {
   DropdownMenu,

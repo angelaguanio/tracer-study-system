@@ -137,9 +137,10 @@ class AdminDashboardController extends Controller
         // Get total alumni count for completion rate calculation
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
-        // Get only the tracer study survey
+        // Get only the latest tracer study survey
         $tracerStudySurvey = Survey::where('is_tracer_study', true)
             ->where('status', 'active')
+            ->latest()
             ->first();
 
         if (!$tracerStudySurvey || $totalAlumni === 0) {

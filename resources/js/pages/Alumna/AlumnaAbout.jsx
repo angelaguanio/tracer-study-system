@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import cectBuilding from "@/assets/cect_building.jpg";
-import graduationBg from "@/assets/grad_pic.jpg";
+import cectBuilding from "@/assets/cect_building.webp";
+import graduationBg from "@/assets/grad_pic.webp";
 import triangleBg from "@/assets/triangle.svg";
 import triangle2Bg from "@/assets/triangle2.svg";
 import peopleImg from "@/assets/people.svg";
@@ -109,6 +110,9 @@ export default function AlumnaAbout() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
+      <Head>
+        <link rel="preload" as="image" href={graduationBg} />
+      </Head>
 
       {/* ═══════════════════════════════════════════════════════
           1. HERO

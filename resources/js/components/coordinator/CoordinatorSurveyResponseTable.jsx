@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { router } from "@inertiajs/react";
 
 export default function CoordinatorSurveyResponseTable({
@@ -61,11 +61,10 @@ export default function CoordinatorSurveyResponseTable({
       {/* ================= DESKTOP VIEW ================= */}
       <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
         <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
-          <div className="w-[32%] text-center">Alumni</div>
-          <div className="w-[17%] text-center">Course</div>
-          <div className="w-[17%] text-center">Year</div>
-          <div className="w-[17%] text-center">Remarks</div>
-          <div className="w-[17%] text-center">Action</div>
+          <div className="w-[40%] text-center">Alumni</div>
+          <div className="w-[20%] text-center">Course</div>
+          <div className="w-[20%] text-center">Year</div>
+          <div className="w-[20%] text-center">Remarks</div>
         </div>
 
         <div className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
@@ -73,7 +72,7 @@ export default function CoordinatorSurveyResponseTable({
             {responseData.length > 0 ? (
               responseData.map((res) => (
                 <div key={res.id} className="h-[64px] border-b border-gray-100 hover:bg-gray-50 flex items-center w-full text-center">
-                  <div className="w-[32%] flex items-center justify-center">
+                  <div className="w-[40%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
                         {res.avatar || res.profile_picture ? (
@@ -87,16 +86,14 @@ export default function CoordinatorSurveyResponseTable({
                       </div>
                     </div>
                   </div>
-                  <div className="w-[17%] text-gray-600 truncate px-2 text-sm">{res.course ?? "-"}</div>
-                  <div className="w-[17%] text-gray-600 text-sm">{res.year ?? "-"}</div>
-                  <div className="w-[17%] flex items-center justify-center">
-                    <span className={`px-3 py-1 text-[11px] font-semibold rounded-full ${res.status === "completed" ? "bg-green-100 text-green-600 border border-green-200" : "bg-red-100 text-red-600 border border-red-200"}`}>
+                  <div className="w-[20%] text-gray-600 truncate px-2 text-sm">{res.course ?? "-"}</div>
+                  <div className="w-[20%] text-gray-600 text-sm">{res.year ?? "-"}</div>
+                  <div className="w-[20%] flex items-center justify-center">
+                    <button 
+                      onClick={() => handleView(res)} 
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-full cursor-pointer transition-colors ${res.status === "completed" ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200" : "bg-red-100 text-red-700 border border-red-200 hover:bg-red-200"}`}
+                    >
                       {res.status === "completed" ? "Completed" : "Not Completed"}
-                    </span>
-                  </div>
-                  <div className="w-[17%] flex items-center justify-center">
-                    <button onClick={() => handleView(res)} className="inline-flex items-center gap-1 px-3 py-1.5 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 text-sm font-medium cursor-pointer">
-                      <Eye size={14} /> View
                     </button>
                   </div>
                 </div>
@@ -124,9 +121,12 @@ export default function CoordinatorSurveyResponseTable({
                   </div>
                   <span className="font-semibold text-gray-900 truncate">{res.name}</span>
                 </div>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${res.status === "completed" ? "bg-green-100 text-green-600 border border-green-200" : "bg-red-100 text-red-600 border border-red-200"}`}>
+                <button 
+                  onClick={() => handleView(res)} 
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 cursor-pointer transition-colors ${res.status === "completed" ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200" : "bg-red-100 text-red-700 border border-red-200 hover:bg-red-200"}`}
+                >
                   {res.status === "completed" ? "Completed" : "Not Completed"}
-                </span>
+                </button>
               </div>
               <div className="text-xs space-y-1.5 text-gray-600 bg-gray-50/50 p-2.5 rounded-lg">
                 <div className="flex justify-between gap-2">
@@ -137,11 +137,6 @@ export default function CoordinatorSurveyResponseTable({
                   <span className="text-gray-400">Year:</span>
                   <span className="font-medium text-gray-800">{res.year ?? "-"}</span>
                 </div>
-              </div>
-              <div className="flex items-center pt-1">
-                <button onClick={() => handleView(res)} className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 text-xs font-medium cursor-pointer h-9">
-                  <Eye size={14} /> View
-                </button>
               </div>
             </div>
           ))

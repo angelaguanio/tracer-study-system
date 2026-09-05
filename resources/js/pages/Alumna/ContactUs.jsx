@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Mail, Phone, MapPin, Clock, ChevronRight } from 'lucide-react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import contact from '../../assets/contact.jpg';
-import { Link } from '@inertiajs/react';
+import contact from '../../assets/contact.webp';
+import { Link, Head } from '@inertiajs/react';
 
 const contactInfo = [
   {
@@ -78,6 +78,9 @@ export default function ContactUs() {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#F4F9FC] overflow-x-hidden">
+      <Head>
+        <link rel="preload" as="image" href={contact} />
+      </Head>
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section

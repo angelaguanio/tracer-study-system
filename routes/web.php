@@ -281,43 +281,64 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
 
-          // Analytics
-       Route::get('/analytics', function () {
-        // Only admins can access analytics
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Only admins can access survey analytics.');
-        }
-
-        $surveys = \App\Models\Survey::withCount('sections')
-            ->whereNull('archived_at')
-            ->has('responses')
-            ->orderBy('created_at', 'desc')
-            ->paginate(5)
-            ->through(fn ($s) => [
-                'id'              => $s->id,
-                'title'           => $s->title,
-                'status'          => $s->status,
-                'sections_count'  => $s->sections_count,
-                'is_tracer_study' => (bool) $s->is_tracer_study,
-            ])
-            ->withQueryString();
-
-        return Inertia::render('Admin/AnalyticsIndex', [
-            'surveys' => $surveys,
-        ]);
-    })->name('analytics');
-
+        // Employment Location Analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
 
-            
+        // Tracer Study list (reuses AnalyticsIndex)
+        Route::get('/analytics/tracer-study', function (\Illuminate\Http\Request $request) {
+            if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
+            $surveys = \App\Models\Survey::withCount('sections')
+                ->where('is_tracer_study', true)
+                ->whereNull('archived_at')
+                ->has('responses')
+                ->orderBy('created_at', 'desc')
+                ->paginate(5)
+                ->through(fn ($s) => [
+                    'id'              => $s->id,
+                    'title'           => $s->title,
+                    'status'          => $s->status,
+                    'sections_count'  => $s->sections_count,
+                    'is_tracer_study' => (bool) $s->is_tracer_study,
+                ])
+                ->withQueryString();
+
+            $latestActiveTracerId = \App\Models\Survey::where('is_tracer_study', true)
+                ->where('status', 'active')
+                ->latest()
+                ->value('id');
+
+            return Inertia::render('Admin/AnalyticsIndex', [
+                'surveys' => $surveys,
+                'type' => 'tracer',
+                'latestTracerId' => $latestActiveTracerId
+            ]);
+        })->name('analytics.tracer');
+
+        // General Survey list (reuses AnalyticsIndex)
+        Route::get('/analytics/general-survey', function (\Illuminate\Http\Request $request) {
+            if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
+            $surveys = \App\Models\Survey::withCount('sections')
+                ->where('is_tracer_study', false)
+                ->whereNull('archived_at')
+                ->has('responses')
+                ->orderBy('created_at', 'desc')
+                ->paginate(5)
+                ->through(fn ($s) => [
+                    'id'              => $s->id,
+                    'title'           => $s->title,
+                    'status'          => $s->status,
+                    'sections_count'  => $s->sections_count,
+                    'is_tracer_study' => (bool) $s->is_tracer_study,
+                ])
+                ->withQueryString();
+            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys, 'type' => 'general']);
+        })->name('analytics.general');
+
         Route::get('/analytics/{survey}', [SurveyAnalyticsController::class, 'show'])->name('analytics.show');
         Route::get('/analytics/{survey}/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('analytics.download');
         Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])->name('analytics.cect-show');
         Route::get('/analytics/{survey}/cect/download', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'download'])->name('analytics.cect-download');
-        // Employment location analytics
-        Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
-            ->name('analytics.employment-location');
         });
 
         Route::get('/forms-and-surveys', [SurveyController::class, 'index'])->name('surveys.index');

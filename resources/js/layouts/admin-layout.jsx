@@ -54,8 +54,21 @@ export default function AdminLayout({ children }) {
     {
       id: "analytics",
       name: "Analytics",
-      href:"/admin/analytics",
-      icon: ChartNoAxesCombined
+      icon: ChartNoAxesCombined,
+      subItems: [
+        {
+          name: "Employment Location",
+          href: "/admin/analytics/employment-location"
+        },
+        {
+          name: "Tracer Study",
+          href: "/admin/analytics/tracer-study"
+        },
+        {
+          name: "General Survey",
+          href: "/admin/analytics/general-survey"
+        }
+      ]
     },
     {
       id: "alumni",

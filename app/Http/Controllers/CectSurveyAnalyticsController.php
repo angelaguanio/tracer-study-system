@@ -13,6 +13,27 @@ class CectSurveyAnalyticsController extends Controller
 {
     use AuthorizesRequests;
 
+    public function latestGeneralSurveyAnalytics()
+    {
+        $user = auth()->user();
+        
+        if ($user->user_role !== 'admin') {
+            abort(403);
+        }
+
+        $latestSurvey = Survey::where('is_tracer_study', false)
+            ->whereNull('archived_at')
+            ->has('responses')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$latestSurvey) {
+            return back()->with('error', 'No active general surveys with responses found.');
+        }
+
+        return redirect()->route('admin.analytics.cect-show', $latestSurvey->id);
+    }
+
     public function show(Survey $survey, Request $request)
     {
         $user = auth()->user();

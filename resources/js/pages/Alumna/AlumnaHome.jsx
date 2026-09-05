@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import alumniHomeImg from '../../assets/cect_home_new.png';
-import editFileIcon from '../../assets/edit-file.png';
-import { Link } from '@inertiajs/react';
+import alumniHomeImg from '../../assets/cect_home_new.webp';
+import editFileIcon from '../../assets/edit-file.webp';
+import { Link, Head } from '@inertiajs/react';
 import echo from '@/echo';
 
 import { ArrowRight, ImageOff, User, FileText, Bell, Share2 } from 'lucide-react';
@@ -113,6 +113,9 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
 
   return (
       <div className="w-full overflow-x-hidden bg-white min-h-screen pb-20">
+        <Head>
+            <link rel="preload" as="image" href={alumniHomeImg} />
+        </Head>
 
         {/* HERO SECTION */}
         <section

@@ -109,11 +109,11 @@ class AnnouncementController extends Controller
         $imageUrls = [];
 
         foreach ($files as $file) {
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            $file->move(
-                public_path('uploads/announcements'),
-                $filename
+            $baseFilename = time() . '_' . uniqid();
+            $filename = \App\Helpers\ImageHelper::convertAndSaveToWebp(
+                $file,
+                'uploads/announcements',
+                $baseFilename
             );
             
             $imageUrls[] = '/uploads/announcements/' . $filename;
@@ -315,11 +315,11 @@ class AnnouncementController extends Controller
         $imagePaths = $existing;
 
         foreach ($newFiles as $file) {
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            $file->move(
-                public_path('uploads/announcements'),
-                $filename
+            $baseFilename = time() . '_' . uniqid();
+            $filename = \App\Helpers\ImageHelper::convertAndSaveToWebp(
+                $file,
+                'uploads/announcements',
+                $baseFilename
             );
 
             $imagePaths[] = '/uploads/announcements/' . $filename;

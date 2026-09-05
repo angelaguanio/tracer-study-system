@@ -1,4 +1,4 @@
-import alumniOffice from "../assets/alumni_office_clean.jpg";
+import alumniOffice from "../assets/alumni_office_clean.webp";
 
 export const officeData = {
   title: "ALUMNI OFFICE",

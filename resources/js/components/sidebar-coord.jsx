@@ -1,7 +1,7 @@
 import React from 'react'
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
 import { Link, usePage } from '@inertiajs/react'
-import logo from '../assets/logotracer.png'
+import logo from '../assets/logotracer.webp'
 
 export default function SidebarCoord({ navItemsCoord = [] }) {
   const {url} = usePage();
