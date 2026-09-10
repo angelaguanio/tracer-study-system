@@ -10,7 +10,7 @@ export default function AdminSurveyResponseView({ response, survey }) {
 
     return (
         /* BINAGO: Ginawang fluid ang padding (px-4 pataas sa lg:px-10) para maganda ang margin sa mobile */
-        <div className="bg-[#F3FAFF] w-full h-screen overflow-y-auto px-4 sm:px-6 lg:px-10 py-6">
+        <div className="bg-app-bg w-full h-screen overflow-y-auto px-4 sm:px-6 lg:px-10 py-6">
 
             {/* HEADER AREA:
                 - Mobile: flex-col at gap-3 para bumaba nang maayos ang badge kung mahaba ang title.

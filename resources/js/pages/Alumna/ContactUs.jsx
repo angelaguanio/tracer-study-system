@@ -77,7 +77,7 @@ export default function ContactUs() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#F4F9FC] overflow-x-hidden">
+    <div className="flex flex-col w-full min-h-screen bg-app-bg overflow-x-hidden">
       <Head>
         <link rel="preload" as="image" href={contact} />
       </Head>
@@ -161,7 +161,7 @@ export default function ContactUs() {
       </section>
 
       {/* ── CTA BANNER ───────────────────────────────────────── */}
-      <section className="bg-[#F4F9FC] py-24 px-6 sm:px-10">
+      <section className="bg-app-bg py-24 px-6 sm:px-10">
         <div className="max-w-5xl mx-auto" ref={ctaRef}>
           <div className="bg-white rounded-[40px] shadow-2xl border border-blue-50 p-10 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
             

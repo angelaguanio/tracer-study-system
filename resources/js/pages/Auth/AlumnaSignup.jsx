@@ -360,7 +360,7 @@ export default function AlumnaSignup() {
         errors.middle_name = "Please enter your full middle name, not just an initial. Enter * if you do not have a middle name.";
       }
     }
-    if (!data.suffix) errors.suffix = "Suffix is required. Select 'None' if you do not have one.";
+    if (!data.suffix) errors.suffix = "Suffix is required. Select 'N/A' if you do not have one.";
     if (!data.street_address?.trim()) errors.street_address = "Street address / House number is required";
     if (residency === 'Philippines') {
       if (!data.region) errors.region = "Region is required";
@@ -472,7 +472,7 @@ export default function AlumnaSignup() {
     formData.append('first_name',     data.first_name);
     formData.append('last_name',      data.last_name);
     formData.append('middle_name',    data.middle_name ?? '');
-    formData.append('suffix',         data.suffix === 'None' ? '' : (data.suffix ?? ''));
+    formData.append('suffix',         data.suffix ?? '');
     formData.append('country',        data.country ?? 'Philippines');
     formData.append('street_address', data.street_address ?? '');
     formData.append('subdivision',    data.subdivision ?? '');
@@ -513,7 +513,7 @@ export default function AlumnaSignup() {
           duration = `${parts[0]} - Present`;
       }
       
-      const isPresent = true; // since they answered Yes to 'Currently employed'
+      const isPresent = duration.toLowerCase().includes('present');
 
       formData.append('employment_type',       data.employment_type);
       formData.append('company_name',          data.company_name);
@@ -578,7 +578,7 @@ export default function AlumnaSignup() {
               <IconInput icon={User}  name="middle_name" label="Middle Name" required placeholder="Enter * if you don't have a middle name" value={data.middle_name} onChange={handleChange} error={stepErrors.middle_name} />
               <IconSelect icon={User} label="Suffix" required placeholder="e.g. Jr., Sr., III" value={data.suffix} onValueChange={(v) => handleSelectChange('suffix', v)} error={stepErrors.suffix}>
                 <SelectGroup>
-                  <SelectItem value="None">None</SelectItem>
+                  <SelectItem value="N/A">N/A</SelectItem>
                   <SelectItem value="Jr.">Jr.</SelectItem>
                   <SelectItem value="Sr.">Sr.</SelectItem>
                   <SelectItem value="II">II</SelectItem>
@@ -845,7 +845,7 @@ export default function AlumnaSignup() {
                 <IconInput 
                   icon={CalendarDays} 
                   name="employment_duration" 
-                  placeholder="e.g. 2023 (We'll automatically append 'Present')" 
+                  placeholder="e.g. 2023, 2023-Present, or 2023-2024" 
                   value={data.employment_duration} 
                   onChange={handleChange} 
                   error={stepErrors.employment_duration} 

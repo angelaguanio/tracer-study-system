@@ -41,7 +41,7 @@ const PERSONAL_FIELDS = [
     { name: 'first_name', label: 'First Name', type: 'text', required: true },
     { name: 'middle_name', label: 'Middle Name', type: 'text', required: true, placeholder: "Enter * if you don't have a middle name" },
     { name: 'suffix', label: 'Suffix', type: 'select', required: true, placeholder: "e.g. Jr., Sr., III", options: [
-        {value: 'None', label: 'None'},
+        {value: 'N/A', label: 'N/A'},
         {value: 'Jr.', label: 'Jr.'},
         {value: 'Sr.', label: 'Sr.'},
         {value: 'II', label: 'II'},
@@ -61,12 +61,12 @@ export default function StudentProfileEdit() {
     );
 
     const EMPLOYMENT_FIELDS = useMemo(() => ([
-        { name: 'company', label: 'Name of Company', type: 'text', required: true, colSpan: 'sm:col-span-2' },
+        { name: 'company', label: 'Name of Company', type: 'text', required: true, colSpan: 'sm:col-span-2', placeholder: 'Name of Company' },
         { name: 'employment_type', label: 'Employment Type', type: 'select', required: true, options: EMPLOYMENT_TYPE_OPTIONS, placeholder: 'Select Type' },
-        { name: 'position', label: 'Position in the Company', type: 'text', required: true },
-        { name: 'employment_duration', label: 'Employment Duration', type: 'text', required: true, placeholder: "e.g. 2023 (We'll automatically append 'Present')" },
-        { name: 'location', label: 'Address of Company', type: 'text', required: true },
-        { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', required: false },
+        { name: 'position', label: 'Position in the Company', type: 'text', required: true, placeholder: 'Position in the Company' },
+        { name: 'employment_duration', label: 'Employment Duration', type: 'text', required: true, placeholder: "e.g. 2023, 2023-Present, or 2023-2024" },
+        { name: 'location', label: 'Address of Company', type: 'text', required: true, placeholder: 'Address of Company' },
+        { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', required: false, placeholder: 'Monthly Salary' },
     ]), []);
 
     const addressObj = profile?.addressDetails || (typeof profile?.address === 'object' ? profile.address : null);
@@ -127,7 +127,7 @@ export default function StudentProfileEdit() {
         formData.append('first_name',      data.first_name);
         formData.append('last_name',       data.last_name);
         formData.append('middle_name',     data.middle_name ?? '');
-        formData.append('suffix',          data.suffix === 'None' ? '' : (data.suffix ?? ''));
+        formData.append('suffix',          data.suffix ?? '');
         formData.append('country',         data.country ?? 'Philippines');
         formData.append('subdivision',    data.subdivision ?? '');
         formData.append('region',         data.region ?? '');
@@ -156,8 +156,8 @@ export default function StudentProfileEdit() {
 
             formData.append('employment_duration',    duration);
             
-            const isPresent = true;
-            formData.append('is_present', 1);
+            const isPresent = duration.toLowerCase().includes('present');
+            formData.append('is_present', isPresent ? 1 : 0);
             if (data.monthly_salary) formData.append('monthly_salary', data.monthly_salary);
         } else {
             formData.append('reason_unemployed',   data.reason_unemployed);
@@ -225,6 +225,7 @@ export default function StudentProfileEdit() {
                         value={data[name]}
                         onChange={handleInputChange(name)}
                         className={fieldClass}
+                        placeholder={placeholder}
                     />
                 )}
                 {hasError && <p className="text-red-500 text-xs mt-1.5">{errors[name]}</p>}

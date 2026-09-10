@@ -58,7 +58,7 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
 }, [sort]);
 
   return (
-    <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+    <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-6">
 
       {/* HEADER */}
       <div className="flex flex-col gap-1">

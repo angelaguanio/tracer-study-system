@@ -149,25 +149,41 @@ class StudentProfileController extends Controller
 
                 $oldEmp = $user->employment;
 
-                // Create History Entry if status is Yes and details changed
-                if ($isEmployed === 'Yes' && $oldEmp) {
+                // Create History Entry if they previously had a job to archive
+                if ($oldEmp && $oldEmp->currently_employed === 'Yes') {
+                    // Archive if they changed companies/duration, OR if they are now unemployed
                     $hasChanged = (
+                       $isEmployed === 'No' ||
                        $oldEmp->company_name !== $request->company ||
                        $oldEmp->employment_duration !== $request->employment_duration
                     );
 
                     if ($hasChanged) {
+                        $oldDuration = $oldEmp->employment_duration;
+                        if ($oldDuration && stripos($oldDuration, 'Present') !== false) {
+                            $closeYear = date('Y'); // fallback
+                            
+                            // If they are entering a new job, try to use its start year instead
+                            if ($isEmployed === 'Yes' && $request->employment_duration) {
+                                if (preg_match('/\b(19|20)\d{2}\b/', $request->employment_duration, $matches)) {
+                                    $closeYear = $matches[0];
+                                }
+                            }
+                            
+                            $oldDuration = str_ireplace('Present', $closeYear, $oldDuration);
+                        }
+
                         $user->employmentHistory()->create([
                             'user_id'            => $user->id,
-                            'currently_employed' => $isEmployed,
-                            'employment_type'    => $request->employment_type,
-                            'company_name'       => $request->company,
-                            'position'           => $request->position,
-                            'location'           => $request->location,
-                            'monthly_salary'     => $salaryValue,
-                            'unemployment_reason'=> null,
-                            'employment_duration' => ($isEmployed === 'Yes') ? $request->employment_duration : null,
-                            'is_present'           => $isPresent ? 1 : 0,
+                            'currently_employed' => $oldEmp->currently_employed,
+                            'employment_type'    => $oldEmp->employment_type,
+                            'company_name'       => $oldEmp->company_name,
+                            'position'           => $oldEmp->position,
+                            'location'           => $oldEmp->location,
+                            'monthly_salary'     => $oldEmp->monthly_salary,
+                            'unemployment_reason'=> $oldEmp->unemployment_reason,
+                            'employment_duration' => $oldDuration,
+                            'is_present'         => 0,
                         ]);
                     }
                 }

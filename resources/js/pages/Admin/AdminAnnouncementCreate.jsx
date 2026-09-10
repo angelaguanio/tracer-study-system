@@ -45,7 +45,7 @@ export default function AdminAnnouncementCreate() {
             <Head title="Create Announcement" />
 
             {/* WRAPPER */}
-            <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 sm:py-10 px-3 sm:px-4">
+            <div className="bg-app-bg w-full min-h-screen flex justify-center py-6 sm:py-10 px-3 sm:px-4">
 
                 <div className="w-full max-w-6xl">
 

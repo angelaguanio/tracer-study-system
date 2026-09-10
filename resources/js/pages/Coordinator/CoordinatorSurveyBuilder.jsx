@@ -123,7 +123,7 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-4">
+        <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-4">
             {/* Header */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">

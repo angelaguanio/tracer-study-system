@@ -8,7 +8,7 @@ export default function AdminSurveyResponseViewNotComplete({ survey }) {
   };
 
   return (
-    <div className="bg-[#F3FAFF] min-h-screen w-full px-6 lg:px-10 py-6 flex flex-col">
+    <div className="bg-app-bg min-h-screen w-full px-6 lg:px-10 py-6 flex flex-col">
 
       {/* SAME AS COORDINATOR HEADER */}
       <div className="flex items-center gap-3 mb-6 shrink-0 w-full">

@@ -9,7 +9,7 @@ function CoordinatorAnnouncementView({ announcement }) {
   const isRevise = announcement?.status === "revise";
 
   return (
-    <div className="min-h-screen w-full bg-[#f0faff]">
+    <div className="min-h-screen w-full bg-app-bg">
       <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 space-y-4">
 
         {/* ================= HEADER ================= */}

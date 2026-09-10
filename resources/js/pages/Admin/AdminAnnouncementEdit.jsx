@@ -130,7 +130,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
     <>
       <Head title="Edit Announcement" />
 
-      <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-10">
+      <div className="bg-app-bg w-full min-h-screen flex justify-center py-10">
         <div className="w-full max-w-6xl">
           <Card className="w-full flex flex-col min-h-[700px]">
 

@@ -23,7 +23,7 @@ export default function AdminSendEmail({ user }) {
     <>
       <Head title="Send Email" />
 
-      <div className="bg-[#f0faff] w-full min-h-screen flex justify-center items-start py-10">
+      <div className="bg-app-bg w-full min-h-screen flex justify-center items-start py-10">
 
         <div className="w-full max-w-6xl flex flex-col gap-3">
 

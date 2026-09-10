@@ -67,9 +67,9 @@ export default function UpdateProfileBanner() {
                         <AlertCircle size={24} />
                     </div>
                     <div>
-                        <h3 className="font-bold text-[#001D4A] text-lg leading-tight">Time for an update?</h3>
+                        <h3 className="font-bold text-[#001D4A] text-lg leading-tight">Time to update your profile?</h3>
                         <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
-                            It's been a while! Just a friendly reminder to update your profile in case you have a new job, salary, or contact information.
+                            Keep your alumni information up to date so you can stay connected with the University.
                         </p>
                     </div>
                 </div>

@@ -132,7 +132,7 @@
           <Head title="Edit Announcement" />
 
           {/* PAGE WRAPPER */}
-          <div className="bg-[#f0faff] w-full min-h-screen flex justify-center py-6 sm:py-10 px-4 sm:px-6">
+          <div className="bg-app-bg w-full min-h-screen flex justify-center py-6 sm:py-10 px-4 sm:px-6">
 
             {/* RESPONSIVE CONTAINER */}
             <div className="w-full max-w-6xl">

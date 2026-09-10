@@ -51,7 +51,8 @@ export default function StudentProfile() {
         return false;
     };
 
-    const fullName = `${profile?.first_name} ${profile?.middle_name && profile.middle_name !== '*' ? profile.middle_name + ' ' : ''}${profile?.last_name}${profile?.suffix ? ' ' + profile.suffix : ''}`;
+    const validSuffix = (profile?.suffix && profile.suffix !== 'None' && profile.suffix !== 'N/A') ? ' ' + profile.suffix : '';
+    const fullName = `${profile?.first_name} ${profile?.middle_name && profile.middle_name !== '*' ? profile.middle_name + ' ' : ''}${profile?.last_name}${validSuffix}`;
     // Keep backward compatibility: previous UI may show semester/year grads separately.
     // If your API provides `semester_graduated`, show it as well.
     const displayedYear = (profile?.start_year && profile?.end_year)

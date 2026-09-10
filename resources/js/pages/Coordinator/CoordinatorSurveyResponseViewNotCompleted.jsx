@@ -9,7 +9,7 @@ export default function CoordinatorSurveyResponseViewNotCompleted({ survey }) {
   };
 
   return (
-    <div className="bg-[#F3FAFF] min-h-screen w-full px-4 sm:px-6 lg:px-10 py-6 flex flex-col">
+    <div className="bg-app-bg min-h-screen w-full px-4 sm:px-6 lg:px-10 py-6 flex flex-col">
       {/* Header Container */}
       <div className="flex items-center gap-3 mb-6 shrink-0 w-full max-w-6xl mx-auto">
         <button

@@ -32,6 +32,24 @@ export default function NotificationBell({ className = "", notifications: shared
     } = sharedNotifications ?? localNotifications;
 
     const listRef = useRef(null);
+    const containerRef = useRef(null);
+
+    // Close on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        if (open) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [open]);
 
     // Trigger loadMore when user scrolls near the bottom of the list
     const handleScroll = () => {
@@ -176,7 +194,7 @@ export default function NotificationBell({ className = "", notifications: shared
     };
 
     return (
-        <div className="relative">
+        <div className="relative" ref={containerRef}>
             <button
                 onClick={() => {
                 if (open) {

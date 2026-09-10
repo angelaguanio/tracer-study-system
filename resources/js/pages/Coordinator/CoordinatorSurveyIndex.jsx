@@ -56,7 +56,7 @@ export default function CoordinatorSurveyIndex({ surveys = [], archivedSurveys =
             : "archived_page";
 
     return (
-        <div className="min-h-screen w-full bg-[#f0faff] p-4 sm:p-6 flex flex-col gap-6">
+        <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-6">
 
             {/* Header */}
             <div className="flex items-center justify-between">

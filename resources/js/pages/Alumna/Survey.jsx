@@ -58,7 +58,7 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
     const handleBack = () => setStepIndex((i) => i - 1);
 
     return (
-        <div className='flex flex-col min-h-screen w-full items-center p-5 overflow-y-auto bg-survey-bg'>
+        <div className='flex flex-col min-h-screen w-full items-center p-5 overflow-y-auto bg-app-bg'>
             <header className='flex flex-col justify-center items-center pt-6 pb-2'>
                 <div className='flex flex-row justify-center items-center gap-x-1'>
                     <img src={wuplogo} className='aspect-square h-20'/>
