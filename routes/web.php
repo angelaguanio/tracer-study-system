@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\AlumnaHomeController;
 use App\Http\Controllers\Coordinator\CoordinatorDashboardController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\QuestionnaireController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SurveyAnalyticsController;
@@ -187,6 +188,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::match(['get', 'post'], '/logout', [AdminAuthController::class, 'logoutAdmin'])
             ->name('logout');
+
+        // ADMIN PROFILE
+        Route::get('/profile', [AdminProfileController::class, 'show'])->name('profile');
+        Route::get('/profile/edit', [AdminProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/profile/edit', [AdminProfileController::class, 'update'])->name('profile.update');
 
         // ANNOUNCEMENT CRUD
         Route::get('/announcement', [AnnouncementController::class, 'index'])

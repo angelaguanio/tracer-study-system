@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import { DotPattern } from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
+import echo from "@/echo";
+
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
   tracerStudyCompleted, 
@@ -25,6 +27,17 @@ export default function AlumnaQuestionnaire({
 
   const [renderKey, setRenderKey] = useState(0);
   const [countdown, setCountdown] = useState(5);
+
+  // Realtime: reload when a survey is updated
+  useEffect(() => {
+    const channel = echo.channel('surveys');
+    channel.listen('.survey.updated', () => {
+      router.reload({ only: ['tracerStudySurvey', 'cectSurveys', 'hasTracerStudy'] });
+    });
+    return () => {
+      echo.leaveChannel('surveys');
+    };
+  }, []);
 
   // Fire a toast when arriving back after survey submission
   useEffect(() => {
@@ -260,11 +273,11 @@ export default function AlumnaQuestionnaire({
         <div className='flex flex-wrap justify-center gap-6 w-full'>
           {cectSurveys.map((survey) => (
             <Card key={survey.id} className="flex flex-col w-full sm:w-[380px] overflow-hidden shadow-xl rounded-3xl p-0 gap-2 shrink-0">
-            <CardHeader className='bg-gradient-to-l from-[#49EDC8] to-[#2D88FB] px-5 sm:px-8 py-5 text-white'>
+            <CardHeader className='bg-gradient-to-br from-blue-500 to-blue-300 px-5 sm:px-8 py-5 text-white'>
               <div className="flex items-start gap-3 mt-3">
-                <div className="flex-col w-full items-center space-y-2">
+                <div className="flex-col w-full items-center space-y-2 min-w-0">
                 <div className="bg-white/20 rounded-2xl p-4">
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-center gap-3">
 
                       <div className="p-3 rounded-full bg-white/30 shrink-0">
                           <NotebookPen size={20} />
@@ -273,7 +286,7 @@ export default function AlumnaQuestionnaire({
                       <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
-                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words min-h-[3.5rem]">
+                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words">
                                   {survey.title}
                               </h3>
 
@@ -288,7 +301,7 @@ export default function AlumnaQuestionnaire({
 
                   </div>
               </div>
-                  <p className="text-sm font-normal text-white line-clamp-2 min-h-[2.5rem]">
+                  <p className="w-full text-sm font-normal text-white line-clamp-2 break-all">
                     {survey.description || ""}
                   </p>
                 </div>
@@ -320,7 +333,7 @@ export default function AlumnaQuestionnaire({
                     onClick={() => router.get(`/alumna/surveys/${survey.id}`)}
                   >
                     <FileText size={16} className="mr-2" />
-                    Answer Questionnaire
+                    View & Respond
                   </Button>
                 )}
               </div>
@@ -333,7 +346,7 @@ export default function AlumnaQuestionnaire({
   };
 
   return (
-    <div className="w-full relative flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-80px)] py-8 bg-[#F8FAFC]">
+    <div className="w-full relative flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-80px)] py-8 bg-app-bg">
       
       {/* Background Magic UI Dot Pattern */}
       <DotPattern

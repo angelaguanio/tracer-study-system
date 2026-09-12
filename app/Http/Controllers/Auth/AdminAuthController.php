@@ -34,7 +34,7 @@ class AdminAuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials or inactive account.',
+            'email' => 'Invalid credentials.',
         ]);
     }
 

@@ -44,7 +44,7 @@ const mainNav = [
 const accountBtns = [
   { id: "profile", name: "Profile", href: route('alumna.profile'), icon: User },
   { id: "inquiries", name: "Inquiries", href: route('alumna.inquiries.index'), icon: Mail },
-  { id: "logout", name: "Logout", href: route('alumna.logout'), icon: LogOut },
+  { id: "logout", name: "Logout", href: route('alumna.logout'), icon: LogOut, method: 'post', as: 'button' },
 ]
 
 function getInitials(firstName, lastName) {
@@ -225,6 +225,8 @@ export default function NavbarAlumni({ children }) {
                 <Link
                     key={item.id}
                     href={item.href}
+                    method={item.method || 'get'}
+                    as={item.as || 'a'}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[3px] ${
                     isActive
@@ -256,8 +258,10 @@ export default function NavbarAlumni({ children }) {
                 <Link
                     key={item.id}
                     href={item.href}
+                    method={item.method || 'get'}
+                    as={item.as || 'a'}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-3 mx-1 rounded-md text-gray-700 hover:bg-gray-50 transition border-l-[3px] border-transparent"
+                    className="flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md text-gray-700 hover:bg-gray-50 transition border-l-[3px] border-transparent"
                 >
                     <Icon className="h-5 w-5 text-gray-400" />
                     <span className="text-[15px]">{item.name}</span>

@@ -43,14 +43,24 @@ export default function PhAddressSelector({
   const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
   const [selectedCityCode, setSelectedCityCode] = useState('');
   const [selectedBarangayCode, setSelectedBarangayCode] = useState('');
+  const [apiFailed, setApiFailed] = useState(false);
 
   const BASE_URL = 'https://psgc.gitlab.io/api';
 
   useEffect(() => {
     fetch(`${BASE_URL}/regions/`)
-      .then(res => res.json())
-      .then(data => setRegions(data.sort((a,b) => a.name.localeCompare(b.name))))
-      .catch(err => console.error("Error fetching regions:", err));
+      .then(res => {
+        if (!res.ok) throw new Error("API response not ok");
+        return res.json();
+      })
+      .then(data => {
+        setRegions(data.sort((a,b) => a.name.localeCompare(b.name)));
+        setApiFailed(false);
+      })
+      .catch(err => {
+        console.error("Error fetching regions:", err);
+        setApiFailed(true);
+      });
   }, []);
 
   useEffect(() => {
@@ -193,16 +203,26 @@ export default function PhAddressSelector({
         </label>
         <div className={getSelectContainerClass(errors.region, false)}>
           {variant !== 'profile' && <MapPin className="h-4 w-4 text-gray-500 shrink-0" />}
-          <Select value={selectedRegionCode} onValueChange={handleRegionChange} disabled={regions.length === 0}>
-            <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
-              <SelectValue placeholder={regions.length === 0 ? 'Loading Regions...' : 'Select Region'} />
-            </SelectTrigger>
-            <SelectContent className="max-h-56">
-              {regions.map((reg) => (
-                <SelectItem key={reg.code} value={reg.code}>{reg.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {apiFailed ? (
+            <input
+              type="text"
+              placeholder="Type Region"
+              value={data.region || ''}
+              onChange={(e) => handleTextChange('region', e.target.value)}
+              className={inputClass}
+            />
+          ) : (
+            <Select value={selectedRegionCode} onValueChange={handleRegionChange} disabled={regions.length === 0}>
+              <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
+                <SelectValue placeholder={regions.length === 0 ? 'Loading Regions...' : 'Select Region'} />
+              </SelectTrigger>
+              <SelectContent className="max-h-56">
+                {regions.map((reg) => (
+                  <SelectItem key={reg.code} value={reg.code}>{reg.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         {errors.region && <p className="text-xs text-red-500 pl-1">{errors.region}</p>}
       </div>
@@ -211,18 +231,28 @@ export default function PhAddressSelector({
         <label className={labelClass}>
           Province <span className="text-red-500">*</span>
         </label>
-        <div className={getSelectContainerClass(errors.province, !selectedRegionCode)}>
+        <div className={getSelectContainerClass(errors.province, !apiFailed && !selectedRegionCode)}>
           {variant !== 'profile' && <Navigation className="h-4 w-4 text-gray-500 shrink-0" />}
-          <Select value={selectedProvinceCode} onValueChange={handleProvinceChange} disabled={!selectedRegionCode}>
-            <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
-              <SelectValue placeholder={!selectedRegionCode ? 'Select Region first' : 'Select Province'} />
-            </SelectTrigger>
-            <SelectContent className="max-h-56">
-              {provinces.map((prov) => (
-                <SelectItem key={prov.code} value={prov.code}>{prov.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {apiFailed ? (
+            <input
+              type="text"
+              placeholder="Type Province"
+              value={data.province || ''}
+              onChange={(e) => handleTextChange('province', e.target.value)}
+              className={inputClass}
+            />
+          ) : (
+            <Select value={selectedProvinceCode} onValueChange={handleProvinceChange} disabled={!selectedRegionCode}>
+              <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
+                <SelectValue placeholder={!selectedRegionCode ? 'Select Region first' : 'Select Province'} />
+              </SelectTrigger>
+              <SelectContent className="max-h-56">
+                {provinces.map((prov) => (
+                  <SelectItem key={prov.code} value={prov.code}>{prov.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         {errors.province && <p className="text-xs text-red-500 pl-1">{errors.province}</p>}
       </div>
@@ -231,9 +261,18 @@ export default function PhAddressSelector({
         <label className={labelClass}>
           City / Municipality <span className="text-red-500">*</span>
         </label>
-        <div className={getSelectContainerClass(errors.city, !selectedProvinceCode)}>
+        <div className={getSelectContainerClass(errors.city, !apiFailed && !selectedProvinceCode)}>
           {variant !== 'profile' && <Building className="h-4 w-4 text-gray-500 shrink-0" />}
-          {cities.length > 0 ? (
+          {apiFailed || (cities.length === 0 && selectedProvinceCode) ? (
+            <input
+              type="text"
+              placeholder={!apiFailed && !selectedProvinceCode ? 'Select Province first' : 'Type City / Municipality'}
+              value={data.city || ''}
+              disabled={!apiFailed && !selectedProvinceCode}
+              onChange={(e) => handleTextChange('city', e.target.value)}
+              className={inputClass}
+            />
+          ) : (
             <Select value={selectedCityCode} onValueChange={handleCityChange} disabled={!selectedProvinceCode}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
                 <SelectValue placeholder={!selectedProvinceCode ? 'Select Province first' : 'Select City / Municipality'} />
@@ -244,15 +283,6 @@ export default function PhAddressSelector({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <input
-              type="text"
-              placeholder={!selectedProvinceCode ? 'Select Province first' : 'Type City / Municipality'}
-              value={data.city || ''}
-              disabled={!selectedProvinceCode}
-              onChange={(e) => handleTextChange('city', e.target.value)}
-              className={inputClass}
-            />
           )}
         </div>
         {errors.city && <p className="text-xs text-red-500 pl-1">{errors.city}</p>}
@@ -262,9 +292,18 @@ export default function PhAddressSelector({
         <label className={labelClass}>
           Barangay <span className="text-red-500">*</span>
         </label>
-        <div className={getSelectContainerClass(errors.barangay, !selectedCityCode)}>
+        <div className={getSelectContainerClass(errors.barangay, !apiFailed && !selectedCityCode)}>
           {variant !== 'profile' && <MapPin className="h-4 w-4 text-gray-500 shrink-0" />}
-          {barangays.length > 0 ? (
+          {apiFailed || (barangays.length === 0 && selectedCityCode) ? (
+            <input
+              type="text"
+              placeholder={!apiFailed && !selectedCityCode ? 'Select City first' : 'Type Barangay'}
+              value={data.barangay || ''}
+              disabled={!apiFailed && !selectedCityCode}
+              onChange={(e) => handleTextChange('barangay', e.target.value)}
+              className={inputClass}
+            />
+          ) : (
             <Select value={selectedBarangayCode} onValueChange={handleBarangayChange} disabled={!selectedCityCode}>
               <SelectTrigger className="flex-1 border-0 shadow-none px-0 py-2.5 text-sm text-black focus:ring-0 [&>span]:truncate bg-transparent">
                 <SelectValue placeholder={!selectedCityCode ? 'Select City first' : 'Select Barangay'} />
@@ -275,15 +314,6 @@ export default function PhAddressSelector({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <input
-              type="text"
-              placeholder={!selectedCityCode ? 'Select City first' : 'Type Barangay'}
-              value={data.barangay || ''}
-              disabled={!selectedCityCode}
-              onChange={(e) => handleTextChange('barangay', e.target.value)}
-              className={inputClass}
-            />
           )}
         </div>
         {errors.barangay && <p className="text-xs text-red-500 pl-1">{errors.barangay}</p>}

@@ -79,7 +79,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
 
                                         if (surveys.current_page > 1) {
                                             router.get(
-                                                route("admin.analytics"),
+                                                route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
                                                 {
                                                     page: surveys.current_page - 1,
                                                 },
@@ -130,7 +130,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                                                     e.preventDefault();
 
                                                     router.get(
-                                                        route("admin.analytics"),
+                                                        route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
                                                         { page },
                                                         {
                                                             preserveState: true,

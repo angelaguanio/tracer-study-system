@@ -37,7 +37,7 @@ export default function AlumnaInquiryList({
     const hasActiveFilters = sort !== 'newest' || recipient !== '';
 
     return (
-        <aside className='bg-blue-100 w-full md:w-[380px] md:min-w-[380px] rounded-2xl flex flex-col h-full'>
+        <aside className='bg-slate-100 border-r border-slate-200 w-full md:w-[380px] md:min-w-[380px] flex flex-col h-full'>
             {/* Header */}
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center px-6 pt-5'>
@@ -110,7 +110,7 @@ export default function AlumnaInquiryList({
                                 key={data.id}
                                 className={`gap-2 cursor-pointer flex transition-colors ring-2 ring-transparent shadow-sm ${
                                     isActive
-                                        ? 'bg-slate-100 ring-blue-500 shadow-md'
+                                        ? 'bg-white ring-blue-500 shadow-md'
                                         : 'hover:bg-gray-100'
                                 }`}
                                 onClick={() => onSelect(data)}

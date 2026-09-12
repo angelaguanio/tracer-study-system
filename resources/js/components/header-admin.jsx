@@ -10,19 +10,31 @@ import {
 } from "../components/ui/dropdown-menu"
 import ProfileTemp from './profile-temp'
 import NotificationBell from './NotificationBell'
-import {LogOut} from 'lucide-react'
+import {LogOut, User} from 'lucide-react'
 
 export default function HeaderAdmin({ navItems = [] }) {
   const { url, props } = usePage()
   const user = props.auth?.user
-  const activeItem = navItems.find((item) => url.startsWith(item.href))
+  let activeTitle = "Dashboard"
+  navItems.forEach((item) => {
+    if (item.href && url.startsWith(item.href)) {
+      activeTitle = item.name
+    }
+    if (item.subItems) {
+      item.subItems.forEach((sub) => {
+        if (sub.href && url.startsWith(sub.href)) {
+          activeTitle = sub.name
+        }
+      })
+    }
+  })
 
   return (
     <header className='flex w-full justify-between py-3 px-2'>
       <div className='flex flex-row items-center'>
         <SidebarTrigger />
         <h1 className='lg:text-2xl text-lg font-medium'>
-          {activeItem ? activeItem.name : "Dashboard"}
+          {activeTitle}
         </h1>
       </div>
 
@@ -39,7 +51,14 @@ export default function HeaderAdmin({ navItems = [] }) {
 
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
-              <Link href={route('admin.logout')} className="flex items-center gap-2">
+              <Link href={route('admin.profile')} className="flex w-full items-center gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem asChild>
+              <Link href={route('admin.logout')} method="post" as="button" className="flex w-full items-center gap-2">
               <LogOut className="h-4 w-4" />
                 Logout
               </Link>

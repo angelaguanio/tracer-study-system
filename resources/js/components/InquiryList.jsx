@@ -54,7 +54,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
     const hasActiveFilters = statusFilter !== '' || (sort && sort !== 'newest');
 
   return (
-    <aside className='   bg-blue-100 w-full md:w-[340px] lg:w-[380px] shrink-0 flex  flex-col h-full rounded-lg'>
+    <aside className='bg-slate-100 border-r border-slate-200 w-full md:w-[340px] lg:w-[380px] shrink-0 flex flex-col h-full rounded-lg'>
         {/* header */}
         <div className='flex flex-col gap-2 w-full'>
             <div className='flex justify-between items-center px-6 pt-5'>
@@ -114,7 +114,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                      className={`gap-2 cursor-pointer flex transition-colors
                         ring-2 ring-transparent shadow-sm
                         ${isActive 
-                        ? 'bg-slate-100 ring-blue-500 shadow-md'
+                        ? 'bg-white ring-blue-500 shadow-md'
                         : 'hover:bg-gray-100'
                     }`}
                     onClick={() => onSelect(data)} 

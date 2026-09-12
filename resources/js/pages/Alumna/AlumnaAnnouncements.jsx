@@ -39,7 +39,7 @@ export default function AlumnaAnnouncements({ announcements }) {
   const lastPage = announcements?.last_page ?? 1;
 
   return (
-    <div className="min-h-[calc(100vh-80px)] w-full relative flex flex-col items-center bg-[#F8FAFC]">
+    <div className="min-h-[calc(100vh-80px)] w-full relative flex flex-col items-center bg-app-bg">
       
       {/* Background Magic UI Dot Pattern */}
       <DotPattern
@@ -76,7 +76,7 @@ export default function AlumnaAnnouncements({ announcements }) {
           </h1>
           <div className="w-12 h-1 bg-blue-600 rounded-full mx-auto mb-5"></div>
           <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-            Stay updated with the latest news and important updates from the university and your alumni community.
+            Stay updated with the latest announcements and important updates from the CECT alumni community.
           </p>
         </div>
 
@@ -100,12 +100,12 @@ export default function AlumnaAnnouncements({ announcements }) {
         ) : (
           <div className="flex flex-col gap-12 w-full">
             {/* CARDS CONTAINER */}
-            <div key={renderKey} className="flex flex-wrap justify-center gap-8 w-full mx-auto">
+            <div key={renderKey} className="flex flex-wrap justify-center gap-6 lg:gap-8 w-full mx-auto">
               {list.map((ann, index) => (
                 <div
                   key={ann.id}
                   style={{ animationDelay: `${index * 100}ms` }}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100/60 overflow-hidden flex flex-col h-[400px] w-full max-w-[350px] md:max-w-[380px] transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group cursor-pointer animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both"
+                  className="bg-white rounded-2xl shadow-md border border-gray-100/60 overflow-hidden flex flex-col h-[400px] w-full max-w-[350px] transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group cursor-pointer animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both"
                 >
                   
                   {/* IMAGE */}

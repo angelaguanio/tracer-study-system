@@ -5,6 +5,7 @@ import AnalyticsChart from "@/components/survey/coordinator/AnalyticsChart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
@@ -190,10 +191,10 @@ export default function SurveyAnalytics({
             {/* ── Header + inline filters ── */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("admin.analytics")}>
-                        <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer shrink-0">
-                            <ArrowLeft size={18} />
-                        </button>
+                    <Link href={route("admin.analytics.tracer")}>
+                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-800 p-0 hover:bg-transparent">
+                            <ArrowLeft size={16} />
+                        </Button>
                     </Link>
                     <div className="min-w-0">
                         <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 break-words">

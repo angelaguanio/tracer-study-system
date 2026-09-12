@@ -113,7 +113,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
   }, []);
 
   return (
-      <div className="w-full overflow-x-hidden bg-white min-h-screen pb-20">
+      <div className="w-full overflow-x-hidden bg-app-bg min-h-screen pb-20">
         <Head>
             <link rel="preload" as="image" href={alumniHomeImg} />
         </Head>
@@ -147,7 +147,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                         Community
                     </h1>
                     <p className="text-white/90 text-sm sm:text-lg lg:text-2xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium drop-shadow-md">
-                        Keep your alumni information updated, stay informed with university announcements, and remain connected with the Wesleyan University-Philippines community.
+                        Keep your alumni information updated, stay informed with university announcements, and remain connected with the CECT alumni community.
                     </p>
                 </FadeInSection>
 
@@ -170,7 +170,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                         Latest Announcements
                     </h2>
                     <p className="text-blue-100/90 text-lg">
-                        Stay informed about important university news, events, and updates.
+                        Stay informed about important university announcements, events, and updates.
                     </p>
                 </FadeInSection>
 
@@ -201,7 +201,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
         </section>
 
         {/* FEATURES SECTION (White Background) */}
-        <section className="w-full px-6 py-20 lg:py-28 bg-white relative">
+        <section className="w-full px-6 py-20 lg:py-28 bg-app-bg relative">
             {/* Soft decorative gradient blurs in background (optional, adds modern feel) */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-50 rounded-full blur-3xl opacity-50 translate-y-1/2 pointer-events-none" />
@@ -239,7 +239,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
         </section>
 
         {/* CTA BANNER SECTION */}
-        <section className="w-full px-6 py-10 lg:py-16 bg-white">
+        <section className="w-full px-6 py-10 lg:py-16 bg-app-bg">
             <div className="max-w-[1100px] mx-auto">
                 <div 
                     className="rounded-[40px] shadow-2xl overflow-hidden relative flex flex-col md:flex-row items-center justify-between p-10 lg:p-16 gap-10"
@@ -266,7 +266,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                             Keep Your Alumni Profile Updated
                         </h2>
                         <p className="text-blue-100 text-lg max-w-lg">
-                            Keep your information current and stay connected with Wesleyan University-Philippines.
+                            Keep your information current and stay connected with the CECT Alumni Community.
                         </p>
                         
                         <div className="pt-2">

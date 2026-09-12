@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 import CoordinatorLayout from "@/layouts/coord-layout";
 import MetricCard from '@/components/dashboard/MetricCard';
 import ChartWidget from '@/components/dashboard/ChartWidget';
@@ -36,6 +37,7 @@ export default function CoordinatorDashboard({
 
 
 {
+  const { auth } = usePage().props;
 
   return (
     <div className="flex w-full min-h-screen ">
@@ -43,7 +45,7 @@ export default function CoordinatorDashboard({
         {/* Header Section */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-blue-800 font-inter">
-            Coordinator Dashboard
+            Welcome, {auth.user.first_name}!
           </h1>
           <p className="text-muted-foreground text-lg">
             Manage your activities, track alumni, and monitor announcements

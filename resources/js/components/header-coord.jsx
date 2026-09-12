@@ -15,14 +15,26 @@ import { User, LogOut } from 'lucide-react'
 export default function HeaderCoord({ navItemsCoord = [] }) {
   const { url, props } = usePage()
   const user = props.auth?.user 
-  const activeItem = navItemsCoord.find((item) => url.startsWith(item.href))
+  let activeTitle = "Dashboard"
+  navItemsCoord.forEach((item) => {
+    if (item.href && url.startsWith(item.href)) {
+      activeTitle = item.name
+    }
+    if (item.subItems) {
+      item.subItems.forEach((sub) => {
+        if (sub.href && url.startsWith(sub.href)) {
+          activeTitle = sub.name
+        }
+      })
+    }
+  })
 
   return (
     <header className='flex w-full justify-between py-3 px-2'>
       <div className='flex flex-row items-center'>
         <SidebarTrigger />
         <h1 className='lg:text-2xl text-lg font-medium'>
-          {activeItem ? activeItem.name : "Dashboard"}
+          {activeTitle}
         </h1>
       </div>
 
@@ -46,7 +58,7 @@ export default function HeaderCoord({ navItemsCoord = [] }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-                <Link href={route('coordinator.logout')} className="flex items-center gap-2">
+                <Link href={route('coordinator.logout')} method="post" as="button" className="flex w-full items-center gap-2">
                   <LogOut className="h-4 w-4" />
                   Logout
                 </Link>

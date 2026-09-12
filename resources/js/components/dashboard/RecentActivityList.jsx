@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from '@inertiajs/react';
 import { Clock, ArrowRight } from 'lucide-react';
+import emptyBox from '../../assets/empty-box.svg';
 
 /**
  * RecentActivityList Component
@@ -35,8 +36,12 @@ export default function RecentActivityList({ title, items, linkPattern, emptyMes
       </CardHeader>
       <CardContent className="flex-1 px-3 md:px-6 py-3">
         {!hasItems ? (
-          <div className="text-center py-5">
-            <div className="text-4xl mb-2">📭</div>
+          <div className="flex flex-col items-center justify-center py-8 h-full text-center">
+            <img 
+              src={emptyBox} 
+              alt="No activity" 
+              className="w-30 h-30 mb-3 opacity-60" 
+            />
             <p className="text-muted-foreground text-sm">{emptyMessage}</p>
           </div>
         ) : (

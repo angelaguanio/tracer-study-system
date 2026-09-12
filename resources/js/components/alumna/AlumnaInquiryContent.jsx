@@ -5,6 +5,7 @@ import { Send, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import echo from '@/echo';
+import inquireImg from '@/assets/inquire.svg';
 
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
@@ -94,8 +95,9 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
 
     if (!inquiry) {
         return (
-            <div className='flex items-center justify-center h-full w-full text-gray-400'>
-                Select an inquiry to view
+            <div className='flex flex-col items-center justify-center h-full w-full text-gray-500 gap-6'>
+                <img src={inquireImg} alt="Select an inquiry" className="w-64 h-64 object-contain opacity-90" />
+                <p className="text-lg font-medium">Select an inquiry to view</p>
             </div>
         );
     }

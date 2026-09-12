@@ -188,7 +188,7 @@ export default function AlumnaAbout() {
       {/* ═══════════════════════════════════════════════════════
           3. WHY IT MATTERS
       ═══════════════════════════════════════════════════════ */}
-      <section className="bg-[#F4F9FC] py-20 px-6 sm:px-10">
+      <section className="bg-app-bg py-20 px-6 sm:px-10">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
           
           <div 
@@ -214,14 +214,14 @@ export default function AlumnaAbout() {
       {/* ═══════════════════════════════════════════════════════
           5. MISSION & VISION & CORE VALUES WRAPPER
       ═══════════════════════════════════════════════════════ */}
-      <div className="bg-gradient-to-b from-[#F4F9FC] via-[#003C87] to-[#001D4A]">
+      <div className="bg-gradient-to-b from-[#f0f8fd] via-[#003C87] to-[#001D4A]">
       <section className="py-16 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col gap-12">
           
           {/* Mission */}
           <div 
             ref={missionRef}
-            className={`flex flex-col md:flex-row bg-[#F4F9FC] rounded-3xl overflow-hidden shadow-lg border border-blue-100 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
+            className={`flex flex-col md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-lg border border-blue-100 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
           >
             {/* Text Side */}
             <div className="flex-1 p-8 md:p-12">
@@ -267,7 +267,7 @@ export default function AlumnaAbout() {
           {/* Vision */}
           <div 
             ref={visionRef}
-            className={`flex flex-col-reverse md:flex-row bg-[#F4F9FC] rounded-3xl overflow-hidden shadow-xl border border-blue-100 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
+            className={`flex flex-col-reverse md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-xl border border-blue-100 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
           >
             {/* Image Side (Angled Cut) */}
             <div 

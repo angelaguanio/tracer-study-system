@@ -102,6 +102,8 @@ class SurveyController extends Controller
             );
         }
 
+        event(new \App\Events\SurveyUpdated($survey));
+
         return back();
     }
 

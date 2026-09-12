@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
 import axios from "axios";
 import echo from '@/echo';
+import inquireImg from '@/assets/inquire.svg';
 
 export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
@@ -128,8 +129,9 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
 
     if (!inquiry) {
         return (
-            <div className="flex items-center justify-center h-full w-full text-gray-400">
-                No Content
+            <div className='flex flex-col items-center justify-center h-full w-full text-gray-500 gap-6'>
+                <img src={inquireImg} alt="Select an inquiry" className="w-64 h-64 object-contain opacity-90" />
+                <p className="text-lg font-medium">Select an inquiry from the list to view its details</p>
             </div>
         );
     }

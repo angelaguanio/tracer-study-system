@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Mail, Phone, MapPin, Clock, ChevronRight } from 'lucide-react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import contact from '../../assets/contact.webp';
+import inquireImg from '../../assets/inquire.svg';
 import { Link, Head } from '@inertiajs/react';
 
 const contactInfo = [
@@ -186,18 +187,7 @@ export default function ContactUs() {
             <div className={`flex-1 flex justify-center transition-all duration-1000 delay-200 transform ${ctaVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
               {/* Illustration */}
               <div className="shrink-0 flex items-center justify-center w-64 h-64 sm:w-72 sm:h-72 select-none drop-shadow-xl hover:-translate-y-2 transition-transform duration-500">
-                <svg viewBox="0 0 140 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                  <rect x="20" y="72" width="100" height="36" rx="8" fill="#1A56DB" />
-                  <rect x="20" y="82" width="100" height="12" rx="0" fill="#1648C0" />
-                  <rect x="44" y="82" width="52" height="8" rx="4" fill="#2563EB" opacity="0.4" />
-                  <ellipse cx="72" cy="42" rx="28" ry="22" fill="#1A56DB" />
-                  <text x="72" y="50" textAnchor="middle" fontSize="22" fill="white" fontWeight="bold">?</text>
-                  <ellipse cx="104" cy="54" rx="14" ry="11" fill="#93C5FD" opacity="0.85" />
-                  <circle cx="99" cy="55" r="2" fill="#1E40AF" />
-                  <circle cx="104" cy="55" r="2" fill="#1E40AF" />
-                  <circle cx="109" cy="55" r="2" fill="#1E40AF" />
-                  <path d="M30 38 L32 34 L34 38 L38 40 L34 42 L32 46 L30 42 L26 40 Z" fill="#93C5FD" opacity="0.7" />
-                </svg>
+                <img src={inquireImg} alt="Inquire Illustration" className="w-full h-full object-contain" />
               </div>
             </div>
 

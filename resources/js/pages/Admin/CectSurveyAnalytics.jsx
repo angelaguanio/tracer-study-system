@@ -150,7 +150,7 @@ export default function CectSurveyAnalytics({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("admin.analytics")}>
+                    <Link href={route("admin.analytics.general")}>
                         <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer shrink-0">
                             <ArrowLeft size={18} />
                         </button>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { officeData } from "@/lib/AlumnaOfficeDatalist";
+import wupLogo from '@/assets/wup.webp';
 
 const { staff } = officeData;
 
@@ -18,26 +19,7 @@ const IconMail = () => (
   </svg>
 );
 
-/* ── avatar icons ─────────────────────────────────────────── */
-const AvatarMale = () => (
-  <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-    <circle cx="40" cy="40" r="40" fill="#EEF4FB" />
-    <circle cx="40" cy="30" r="14" fill="#C5D8F0" />
-    <path d="M12 72c0-15.464 12.536-28 28-28s28 12.536 28 28" fill="#C5D8F0" />
-    {/* tie */}
-    <path d="M37 52l3 6 3-6-1.5-3h-3L37 52z" fill="#4A7DBF" />
-    <rect x="38.5" y="55" width="3" height="8" rx="1" fill="#4A7DBF" />
-  </svg>
-);
-const AvatarFemale = () => (
-  <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-    <circle cx="40" cy="40" r="40" fill="#EEF4FB" />
-    <circle cx="40" cy="30" r="14" fill="#C5D8F0" />
-    <path d="M12 72c0-15.464 12.536-28 28-28s28 12.536 28 28" fill="#C5D8F0" />
-    {/* collar */}
-    <path d="M34 52 Q40 58 46 52" stroke="#4A7DBF" strokeWidth="2" fill="none" />
-  </svg>
-);
+
 
 /* ── staff data pulled from lib ───────────────────────────── */
 
@@ -111,9 +93,7 @@ export default function AlumnaOffice() {
 
                   {/* AVATAR */}
                   <div className="relative w-24 h-24 mb-4">
-                    <div className="w-full h-full rounded-full overflow-hidden">
-                      {person.gender === "female" ? <AvatarFemale /> : <AvatarMale />}
-                    </div>
+                    <img src={wupLogo} alt="WUP Logo" className="w-full h-full object-contain drop-shadow-sm" />
                     {/* Star badge for Director */}
                     <div className="absolute bottom-0 right-0 bg-[#1258D6] text-white p-1.5 rounded-full border-2 border-white">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -159,9 +139,7 @@ export default function AlumnaOffice() {
 
                   {/* AVATAR */}
                   <div className="relative w-24 h-24 mb-4">
-                    <div className="w-full h-full rounded-full overflow-hidden">
-                      {person.gender === "female" ? <AvatarFemale /> : <AvatarMale />}
-                    </div>
+                    <img src={wupLogo} alt="WUP Logo" className="w-full h-full object-contain drop-shadow-sm" />
                   </div>
 
                   {/* TEXT */}

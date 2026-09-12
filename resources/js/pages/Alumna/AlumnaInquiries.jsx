@@ -142,8 +142,9 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
                     </Button>
                 </div>
             ) : (
-                <div className='flex flex-col md:flex-row h-[calc(100vh-2rem)] w-full overflow-hidden shadow-sm bg-white rounded-xl shadow-lg m-4'>
-                    {/* Mobile */}
+                <div className="flex-1 w-full p-4 sm:p-6 lg:p-8">
+                    <div className='flex flex-col md:flex-row h-[calc(100vh-160px)] w-full max-w-[1600px] mx-auto overflow-hidden bg-white rounded-2xl shadow-xl border border-blue-50'>
+                        {/* Mobile */}
                     <div className="md:hidden h-full">
                         {!selectedInquiry ? (
                             <AlumnaInquiryList
@@ -183,6 +184,7 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
 
                         <AlumnaInquiryContent inquiry={selectedInquiry} />
                     </div>
+                </div>
                 </div>
             )}
         </>

@@ -23,18 +23,10 @@ export default function EmploymentLocationAnalytics({ summary, cityDistribution,
 
             {/* HEADER */}
             <div className="flex items-start gap-3">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => router.visit(route("admin.analytics"))}
-                    className="text-gray-500 hover:text-gray-800 cursor-pointer shrink-0"
-                >
-                    <ArrowLeft size={16} />
-                </Button>
                 <div className="min-w-0">
                     <h1 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
                         <MapPin size={20} className="text-blue-600 shrink-0" />
-                        Alumni Employment Cities
+                        Employment Location Report
                     </h1>
                     <p className="text-md text-gray-500">Track where alumni are currently employed</p>
                 </div>
