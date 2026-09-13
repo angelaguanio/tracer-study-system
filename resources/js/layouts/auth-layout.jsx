@@ -16,7 +16,7 @@ export default function AuthLayout({ children }) {
 
     return (
         <div
-            className="min-h-screen w-full bg-cover bg-center bg-no-repeat relative"
+            className="min-h-screen w-full bg-cover bg-[18%_center] md:bg-center bg-no-repeat relative"
             style={{ backgroundImage: `url(${authBg})` }}
         >
             <Head>
@@ -28,7 +28,7 @@ export default function AuthLayout({ children }) {
             {/* Content Container */}
             <div className="relative min-h-screen w-full">
                 
-                <div className="mx-auto gap-20 flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
+                <div className="mx-auto gap-8 lg:gap-20 flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-4 py-8 lg:flex-row lg:justify-between lg:px-10 lg:py-0">
                     
                     {/* Hero text */}
                     <div className="flex w-full max-w-md flex-col items-center text-center lg:w-1/2 lg:max-w-none lg:items-start lg:text-left">
@@ -47,7 +47,7 @@ export default function AuthLayout({ children }) {
                     </div>
 
                     {/* Card */}
-                    <div className="mt-8 flex w-full justify-center lg:mt-0 lg:w-1/2">
+                    <div className="flex w-full justify-center lg:w-1/2">
                         <div className="w-full max-w-md">
                             {children}
                         </div>

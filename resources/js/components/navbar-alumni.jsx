@@ -93,16 +93,21 @@ export default function NavbarAlumni({ children }) {
     <>
       <header className={`flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 transition-all duration-500 ease-in-out ${
         isTransparentHeader && !isScrolled
-          ? 'fixed top-0 w-full bg-white/0 backdrop-blur-none shadow-none border-b border-transparent text-white'
-          : `${isTransparentHeader ? 'fixed' : 'sticky'} top-0 w-full bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-100/50 text-navbar-text`
+          ? 'fixed top-0 w-full shadow-none border-b border-transparent text-white'
+          : `${isTransparentHeader ? 'fixed' : 'sticky'} top-0 w-full shadow-sm border-b border-gray-100/50 text-navbar-text`
       }`}>
-        <div className='flex items-center space-x-3'>
+        <div className={`absolute inset-0 -z-10 transition-all duration-500 ease-in-out ${
+            isTransparentHeader && !isScrolled
+                ? 'bg-white/0 backdrop-blur-none'
+                : 'bg-white/70 backdrop-blur-md'
+        }`} />
+        <div className='flex items-center space-x-3 relative'>
           <img src={logo} className='h-12 md:h-14' alt="Alumni Connect logo" />
           <p className="font-bruno lg:text-lg text-base">Alumni Connect</p>
         </div>
 
         {/* Right side: Bell and Hamburger (Visible on all screen sizes) */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative z-10">
           {!isTracerLocked && (
             <NotificationBell 
               className={`transition-colors duration-500 ${isTransparentHeader && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
