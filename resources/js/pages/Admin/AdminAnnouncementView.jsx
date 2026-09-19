@@ -17,7 +17,7 @@ export default function AdminAnnouncementView({ announcement }) {
   // APPROVE
   const handleApprove = () => {
     router.put(
-      `/admin/announcement/${announcement.id}/approve`,
+      `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${announcement.id}/approve`,
       {},
       {
         preserveScroll: true,
@@ -35,7 +35,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
     setProcessing(true);
     router.put(
-      `/admin/announcement/${announcement.id}/reject`,
+      `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${announcement.id}/reject`,
       { note },
       {
         preserveScroll: true,
@@ -64,7 +64,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
           {/* BACK */}
           <Link
-            href="/admin/announcement"
+            href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`}
             className="inline-flex items-center gap-2 text-base font-semibold text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft size={20} />
@@ -97,7 +97,7 @@ export default function AdminAnnouncementView({ announcement }) {
             {isApproved && (
               <>
                 <Link
-                  href={`/admin/announcement/${announcement.id}/edit`}
+                  href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${announcement.id}/edit`}
                   className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-blue-600 text-blue-600 bg-blue-50 hover:bg-blue-100"
                 >
                   <Pencil size={16} />
@@ -106,7 +106,7 @@ export default function AdminAnnouncementView({ announcement }) {
 
                 <AdminAnnouncementDeletePromptandConfirmation
                   announcementId={announcement.id}
-                  onSuccess={() => router.visit("/admin/announcement")}
+                  onSuccess={() => router.visit(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`)}
                 >
                   <button className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-red-600 text-red-600 bg-red-50 hover:bg-red-100 cursor-pointer">
                     <Trash2 size={16} />

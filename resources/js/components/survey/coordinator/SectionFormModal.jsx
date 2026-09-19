@@ -105,8 +105,8 @@ export default function SectionFormModal({ open, onClose, surveyId, section = nu
                     <div className="flex flex-col gap-2">
                         <Label>Likert Scale <span className="text-gray-400 text-xs">(optional — for rating questions)</span></Label>
                         <p className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded px-2 py-1.5 leading-relaxed">
-                            <strong>Scoring order matters:</strong> The first item you add = score 1 (lowest), the last = highest score.
-                            Add labels from least to most favorable (e.g. "Strongly Disagree" → "Strongly Agree").
+                            <strong>Scoring:</strong> Add choices from lowest to highest. The first choice you add is 1, the next is 2, and so on. The last choice receives the highest score. <br />
+                            <strong>Example:</strong> Strongly Disagree → Disagree → Neutral → Agree → Strongly Agree
                         </p>
                         {likertScale.map((item, i) => (
                             <div key={i} className="flex items-center gap-2">

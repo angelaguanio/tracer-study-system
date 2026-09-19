@@ -72,7 +72,10 @@ export default function StudentProfileEdit() {
     const addressObj = profile?.addressDetails || (typeof profile?.address === 'object' ? profile.address : null);
     const [residency, setResidency] = useState(addressObj?.country && addressObj.country !== 'Philippines' ? 'International' : 'Philippines');
 
-    const { data, setData, processing, errors } = useForm({
+        const existingReason = profile?.employment?.unemployment_reason || '';
+        const isStandardReason = !existingReason || UNEMPLOYMENT_REASON_OPTIONS.some(opt => opt.value === existingReason);
+
+        const { data, setData, processing, errors } = useForm({
         last_name: profile?.last_name || '',
         first_name: profile?.first_name || '',
         middle_name: profile?.middle_name || '',
@@ -98,7 +101,8 @@ export default function StudentProfileEdit() {
         position: profile?.employment?.position || '',
         location: profile?.employment?.location || '',
         monthly_salary: profile?.employment?.monthly_salary || '',
-        reason_unemployed: profile?.employment?.unemployment_reason || '',
+        reason_unemployed: isStandardReason ? existingReason : 'Other',
+        custom_reason_unemployed: !isStandardReason ? existingReason : '',
         profile_picture: null,
     });
 
@@ -160,8 +164,11 @@ export default function StudentProfileEdit() {
             formData.append('is_present', isPresent ? 1 : 0);
             if (data.monthly_salary) formData.append('monthly_salary', data.monthly_salary);
         } else {
-            formData.append('reason_unemployed',   data.reason_unemployed);
-            formData.append('unemployment_reason', data.reason_unemployed);
+            const finalReason = data.reason_unemployed === 'Other' && data.custom_reason_unemployed
+                ? data.custom_reason_unemployed
+                : data.reason_unemployed;
+            formData.append('reason_unemployed',   finalReason);
+            formData.append('unemployment_reason', finalReason);
         }
 
         // Profile picture
@@ -186,7 +193,8 @@ export default function StudentProfileEdit() {
             location: '',
             employment_type: '',
             monthly_salary: '',
-            reason_unemployed: ''
+            reason_unemployed: '',
+            custom_reason_unemployed: ''
         });
     };
 
@@ -432,25 +440,42 @@ export default function StudentProfileEdit() {
                     )}
 
                     {data.is_employed === 'no' && (
-                        <div>
-                            <Label className={labelClass}>Reason for Unemployment</Label>
-                            <Select
-                                required
-                                value={data.reason_unemployed}
-                                onValueChange={handleSelectChange('reason_unemployed')}
-                            >
-                                <SelectTrigger className={errors.reason_unemployed ? `${inputClass} border-red-400 focus:ring-red-400 focus:border-red-400` : inputClass}>
-                                    <SelectValue placeholder="Please select your reason" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {UNEMPLOYMENT_REASON_OPTIONS.map((opt) => (
-                                        <SelectItem key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.reason_unemployed && <p className="text-red-500 text-xs mt-1.5">{errors.reason_unemployed}</p>}
+                        <div className="flex flex-col gap-3">
+                            <div>
+                                <Label className={labelClass}>Reason for Unemployment</Label>
+                                <Select
+                                    required
+                                    value={data.reason_unemployed}
+                                    onValueChange={handleSelectChange('reason_unemployed')}
+                                >
+                                    <SelectTrigger className={errors.reason_unemployed ? `${inputClass} border-red-400 focus:ring-red-400 focus:border-red-400` : inputClass}>
+                                        <SelectValue placeholder="Please select your reason" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {UNEMPLOYMENT_REASON_OPTIONS.map((opt) => (
+                                            <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.reason_unemployed && <p className="text-red-500 text-xs mt-1.5">{errors.reason_unemployed}</p>}
+                            </div>
+
+                            {data.reason_unemployed === 'Other' && (
+                                <div>
+                                    <Label className={labelClass}>Please specify your reason <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        required
+                                        type="text"
+                                        placeholder="Type your specific reason here"
+                                        value={data.custom_reason_unemployed}
+                                        onChange={handleInputChange('custom_reason_unemployed')}
+                                        className={errors.custom_reason_unemployed ? `${inputClass} border-red-400 focus:ring-red-400 focus:border-red-400` : inputClass}
+                                    />
+                                    {errors.custom_reason_unemployed && <p className="text-red-500 text-xs mt-1.5">{errors.custom_reason_unemployed}</p>}
+                                </div>
+                            )}
                         </div>
                     )}
                 </section>

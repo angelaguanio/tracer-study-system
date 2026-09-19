@@ -4,7 +4,7 @@ import AdminLayout from "@/layouts/admin-layout";
 
 export default function AdminSurveyResponseViewNotComplete({ survey }) {
   const handleBack = () => {
-    router.get(`/admin/survey-response/${survey.id}`);
+    router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${survey.id}`);
   };
 
   return (

@@ -35,7 +35,7 @@ export default function SidebarAdmin({ navItems = [] }) {
                           ? path.includes('/analytics')
                           : path.startsWith(item.href)
                       }
-                      className='[&>svg]:size-5 py-5 my-1 justify-between'
+                      className='[&>svg]:size-5 py-5 my-1 justify-between cursor-pointer'
                     >
                       <div className="flex items-center gap-2">
                         <item.icon />

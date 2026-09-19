@@ -5,9 +5,9 @@ export default function SectionSummaryTable({ sectionSummary = [] }) {
         <div className="rounded-md border bg-white shadow-sm overflow-x-auto">
             <Table>
                 <TableHeader>
-                    <TableRow className="bg-sky-300">
-                        <TableHead className="font-bold text-black">Section</TableHead>
-                        <TableHead className="font-bold text-black text-right">Responses</TableHead>
+                    <TableRow className="bg-[#009AFB]">
+                        <TableHead className="font-bold text-white">Section</TableHead>
+                        <TableHead className="font-bold text-white text-right">Responses</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

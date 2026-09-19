@@ -34,7 +34,7 @@ export default function AdminAnnouncement({ announcements }) {
   useEffect(() => {
     const delay = setTimeout(() => {
       router.get(
-        "/admin/announcement",
+        `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`,
         { search, status: statusFilter, sort: sortOrder },
         { preserveState: true, replace: true }
       );
@@ -60,7 +60,7 @@ export default function AdminAnnouncement({ announcements }) {
         </div>
 
         <Link
-          href="/admin/announcement/create"
+          href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/create`}
           className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
         >
           <Plus size={18} />
@@ -178,7 +178,7 @@ export default function AdminAnnouncement({ announcements }) {
             disabled={announcements.current_page === 1}
             onClick={() =>
               router.get(
-                `/admin/announcement?page=${announcements.current_page - 1}`,
+                `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement?page=${announcements.current_page - 1}`,
                 {},
                 { preserveState: true, preserveScroll: true }
               )
@@ -208,7 +208,7 @@ export default function AdminAnnouncement({ announcements }) {
                   <button
                     onClick={() =>
                       router.get(
-                        `/admin/announcement?page=${page}`,
+                        `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement?page=${page}`,
                         {},
                         { preserveState: true, preserveScroll: true }
                       )
@@ -230,7 +230,7 @@ export default function AdminAnnouncement({ announcements }) {
             disabled={announcements.current_page === announcements.last_page}
             onClick={() =>
               router.get(
-                `/admin/announcement?page=${announcements.current_page + 1}`,
+                `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement?page=${announcements.current_page + 1}`,
                 {},
                 { preserveState: true, preserveScroll: true }
               )

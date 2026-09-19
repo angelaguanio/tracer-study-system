@@ -11,7 +11,7 @@ export default function CoordinatorAnnouncementDeletePromptandConfirmation({ chi
   const confirmDelete = () => {
     if (!announcementId) return;
 
-    router.delete(`/admin/announcement/${announcementId}`, {
+    router.delete(`/coordinator/announcement/${announcementId}`, {
       onSuccess: () => {
         setOpen(false); 
         if (onSuccess) onSuccess(); 

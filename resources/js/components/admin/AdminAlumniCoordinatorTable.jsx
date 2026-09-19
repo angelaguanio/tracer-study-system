@@ -32,7 +32,7 @@ export default function AdminAlumniCoordinatorTable({
   const lastPage = meta?.last_page || 1;
 
   const goToPage = (page) => {
-    router.visit(`/admin/alumni-coordinators?page=${page}`, {
+    router.visit(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators?page=${page}`, {
       preserveScroll: true,
       preserveState: true,
     });
@@ -82,27 +82,27 @@ export default function AdminAlumniCoordinatorTable({
           </colgroup>
 
           {/* HEADER */}
-          <TableHeader className="bg-[#70CAFF]">
-            <TableRow className="h-[56px]">
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+          <TableHeader className="bg-[#009AFB] border-b border-[#009AFB]">
+            <TableRow className="h-[56px] hover:bg-[#009AFB]">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Alumni Coordinator
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Email
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Department
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Program
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Year
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Status
               </TableHead>
-              <TableHead className="text-center font-semibold text-gray-700 whitespace-nowrap">
+              <TableHead className="text-center font-semibold text-white whitespace-nowrap bg-[#009AFB]">
                 Actions
               </TableHead>
             </TableRow>
@@ -173,7 +173,7 @@ export default function AdminAlumniCoordinatorTable({
                         variant="outline"
                         className="border-blue-500 text-blue-600 flex items-center gap-1"
                         onClick={() =>
-                          router.visit(`/admin/alumni-coordinators/${c.id}`)
+                          router.visit(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators/${c.id}`)
                         }
                       >
                         <Eye size={14} />
@@ -262,7 +262,7 @@ export default function AdminAlumniCoordinatorTable({
                   size="sm"
                   variant="outline"
                   className="flex-1 border-blue-500 text-blue-600 flex items-center justify-center gap-1 text-xs h-9"
-                  onClick={() => router.visit(`/admin/alumni-coordinators/${c.id}`)}
+                  onClick={() => router.visit(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators/${c.id}`)}
                 >
                   <Eye size={14} /> View
                 </Button>

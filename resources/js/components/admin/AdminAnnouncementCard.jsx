@@ -66,7 +66,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       header: () => <span className="pl-4">Action</span>,
       cell: ({ row }) => (
         <button
-          onClick={() => router.get(`/admin/announcement/${row.original.id}`)}
+          onClick={() => router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${row.original.id}`)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg border cursor-pointer border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition text-sm"
         >
           <Eye size={15} />
@@ -83,7 +83,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
       className={
         isMobile
           ? "h-full"
-          : "rounded-md border bg-white shadow-sm h-full flex flex-col"
+          : "rounded-md border bg-white shadow-sm h-full flex flex-col overflow-hidden"
       }
     >
       {/* DESKTOP TABLE */}
@@ -98,11 +98,11 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
         <TableHeader>
           {table.getHeaderGroups().map((hg) => (
-            <TableRow key={hg.id} className="bg-sky-300 hover:bg-sky-300 border-b border-sky-400">
+            <TableRow key={hg.id} className="bg-[#009AFB] hover:bg-[#009AFB] border-b border-[#009AFB]">
               {hg.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="py-4 px-4 text-left text-sm font-semibold text-gray-700 bg-sky-300"
+                  className="py-4 px-4 text-left text-sm font-semibold text-white bg-[#009AFB]"
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
@@ -124,7 +124,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="py-10 text-center text-gray-400 text-sm">
+              <TableCell colSpan={columns.length} className="h-64 text-center text-gray-400 text-sm">
                 No announcements found.
               </TableCell>
             </TableRow>
@@ -180,7 +180,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
 
                     <button
                       onClick={() =>
-                        router.get(`/admin/announcement/${item.id}`)
+                        router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${item.id}`)
                       }
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#9ECEFF] text-[#2859C5] hover:bg-[#9ECEFF]/10 transition text-sm"
                     >
@@ -192,7 +192,7 @@ export default function AdminAnnouncementCard({ announcements, onDeleteSuccess }
               );
             })
           ) : (
-            <div className="text-center text-gray-400 text-sm py-10">
+            <div className="h-64 flex items-center justify-center text-center text-gray-400 text-sm">
               No announcements found.
             </div>
           )}

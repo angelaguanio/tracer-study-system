@@ -101,8 +101,8 @@ export default function AdminViewProfileOfRespondents(props) {
               {/* DESKTOP TABLE VIEW */}
               <div className="hidden md:block overflow-y-auto border border-gray-100 rounded-lg" style={{ maxHeight: '300px' }}>
                 <table className="w-full text-left text-sm table-fixed">
-                  <thead className="sticky top-0 bg-white shadow-sm z-10">
-                    <tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider">
+                  <thead className="sticky top-0 bg-[#009AFB] shadow-sm z-10">
+                    <tr className="border-b border-[#009AFB] text-[10px] text-white uppercase tracking-wider">
                       <th className="py-3 pl-4 w-[20%]">Range</th>
                       <th className="py-3 text-center w-[25%]">Company</th>
                       <th className="py-3 text-center w-[20%]">Position</th>

@@ -48,8 +48,8 @@ export default function AdminSurveyResponseTable({
 
     const url =
       res.status === "completed"
-        ? `/admin/survey-response/${surveyId}/${res.id}`
-        : `/admin/survey-response/${surveyId}/${res.id}/not-complete`;
+        ? `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${surveyId}/${res.id}`
+        : `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${surveyId}/${res.id}/not-complete`;
 
     router.get(url);
   };

@@ -112,19 +112,19 @@ export default function AdminDashboard({
             <RecentActivityList 
               title="Recent Inquiries" 
               items={recent_inquiries}
-              linkPattern="/admin/inquiries"
+              linkPattern={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/inquiries`}
               emptyMessage="No recent inquiries"
             />
             <RecentActivityList 
               title="Pending Announcements" 
               items={recent_announcements}
-              linkPattern="/admin/announcement/{id}"
+              linkPattern={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/{id}`}
               emptyMessage="No pending announcements"
             />
             <RecentActivityList 
               title="Recent Survey Responses" 
               items={recent_responses}
-              linkPattern="/admin/survey-response/{survey_id}/{user_id}"
+              linkPattern={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/{survey_id}/{user_id}`}
               emptyMessage="No recent responses"
             />
           </div>
@@ -141,19 +141,19 @@ export default function AdminDashboard({
           <div className="grid gap-4 md:grid-cols-3 bg-white p-6 rounded-xl shadow">
             <QuickActionButton 
               label="Create Survey" 
-              href="/admin/surveys" 
+              href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/surveys`} 
               icon={Plus}
               variant="default"
             />
             <QuickActionButton 
               label="Create Announcement" 
-              href="/admin/announcement/create" 
+              href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/create`} 
               icon={Plus}
               variant="default"
             />
             <QuickActionButton 
               label="View All Inquiries" 
-              href="/admin/inquiries" 
+              href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/inquiries`} 
               icon={Eye}
               variant="outline"
             />

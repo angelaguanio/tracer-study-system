@@ -152,33 +152,35 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
 });
 
  //==================HIDDEN URL ADMIN ROUTES=========================
- Route::middleware('guest')->group(function () {
+ $adminPrefix = env('ADMIN_PORTAL_PREFIX', 'portal/cd2ed12461c1d448677c8fe11e0d812d');
 
-    Route::get('/portal/9fJ4kLm2Q/login', [AdminAuthController::class, 'showLogin'])
+ Route::prefix($adminPrefix)->middleware('guest')->group(function () {
+
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])
         ->name('admin.login');
 
-    Route::post('/portal/9fJ4kLm2Q/login', [AdminAuthController::class, 'loginAdmin'])
+    Route::post('/login', [AdminAuthController::class, 'loginAdmin'])
         ->name('admin.login.submit');
 
-    Route::get('/portal/9fJ4kLm2Q/forgot-password', function () {
+    Route::get('/forgot-password', function () {
         return \Inertia\Inertia::render('Auth/ForgotPassword', [
             'backRoute' => 'admin.login',
             'submitUrl' => route('admin.password.email'),
         ]);
     })->name('admin.forgot-password');
 
-    Route::post('/portal/9fJ4kLm2Q/forgot-password', [ForgotPasswordController::class, 'store'])
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
         ->name('admin.password.email');
 
-    Route::get('/portal/9fJ4kLm2Q/reset-password/{token}', [ResetPasswordController::class, 'create'])
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
         ->name('admin.password.reset');
 
-    Route::post('/portal/9fJ4kLm2Q/reset-password', [ResetPasswordController::class, 'store'])
+    Route::post('/reset-password', [ResetPasswordController::class, 'store'])
         ->name('admin.password.update');
 });
 
 //============== ADMIN ROUTES =========================
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix($adminPrefix)->name('admin.')->group(function () {
 
     //AUTH ADMIN
     Route::middleware('auth')->group(function () {
@@ -281,11 +283,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
         // Alumni Coordinators            
-        Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index']);
-        Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store']);
-        Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show']);
-        Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update']);
-        Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy']);
+        Route::get('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'index'])->name('alumni-coordinators.index');
+        Route::post('/alumni-coordinators', [AdminAlumniCoordinatorController::class, 'store'])->name('alumni-coordinators.store');
+        Route::get('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'show'])->name('alumni-coordinators.show');
+        Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update'])->name('alumni-coordinators.update');
+        Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy'])->name('alumni-coordinators.destroy');
 
         // Employment Location Analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])

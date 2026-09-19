@@ -20,35 +20,35 @@ import GlobalOfflineOverlay from '@/components/GlobalOfflineOverlay';
 export default function AdminLayout({ children }) {
   const { auth } = usePage().props;
 
-   const navItems = [
+    const navItems = [
     {
       id: "dashboard",
       name: "Dashboard",
-      href:"/admin/dashboard",
+      href: route('admin.dashboard'),
       icon: LayoutDashboard
     },
     {
       id: "announcement",
       name: "Announcements",
-      href:"/admin/announcement",
+      href: route('admin.announcement.index'),
       icon: Bell
     },
     {
       id: "inquiries",
       name: "Inquiries",
-      href:"/admin/inquiries",
+      href: route('admin.inquiries.index'),
       icon: Mail
     },
     {
       id: "surveys",
       name: "Forms and Surveys",
-      href:"/admin/forms-and-surveys",
+      href: route('admin.surveys.index'),
       icon: NotebookPen
     },
     {
       id: "survey-response",
       name: "Survey Response",
-      href:"/admin/survey-response",
+      href: route('admin.survey-response.index'),
       icon: FileChartColumn
     },
     {
@@ -58,28 +58,28 @@ export default function AdminLayout({ children }) {
       subItems: [
         {
           name: "Employment Location",
-          href: "/admin/analytics/employment-location"
+          href: route('admin.analytics.employment-location')
         },
         {
           name: "Tracer Study",
-          href: "/admin/analytics/tracer-study"
+          href: route('admin.analytics.tracer')
         },
         {
           name: "General Survey",
-          href: "/admin/analytics/general-survey"
+          href: route('admin.analytics.general')
         }
       ]
     },
     {
       id: "alumni",
       name: "Alumni",
-      href:"/admin/alumni",
+      href: route('admin.alumni.index'),
       icon: CircleUserRound
     },
     {
       id: "alumni-coordinator",
       name: "Alumni Coordinator",
-      href: "/admin/alumni-coordinators",
+      href: route('admin.alumni-coordinators.index'),
       icon: UsersRound
     }
     

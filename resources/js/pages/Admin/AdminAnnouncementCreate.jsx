@@ -28,7 +28,7 @@ export default function AdminAnnouncementCreate() {
     // SUBMIT HANDLER
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/admin/announcement", {
+        post(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`, {
             forceFormData: true,
             onSuccess: () => {
                 toast.success("Announcement created successfully!");
@@ -56,7 +56,7 @@ export default function AdminAnnouncementCreate() {
                         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                             <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <Link href="/admin/announcement">
+                                <Link href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`}>
                                     <Button type="button" variant="ghost" className="p-2">
                                         <ArrowLeft size={18} />
                                     </Button>

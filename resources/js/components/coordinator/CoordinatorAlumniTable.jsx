@@ -94,27 +94,27 @@ export default function CoordinatorAlumniTable({
               <col className="w-[23%]" />
             </colgroup>
             <TableHeader>
-              <TableRow className="bg-[#70CAFF] h-12 hover:bg-[#70CAFF]">
-                <TableHead className="w-12 text-center">
+              <TableRow className="bg-[#009AFB] h-12 hover:bg-[#009AFB] border-b border-[#009AFB]">
+                <TableHead className="w-12 text-center bg-[#009AFB]">
                   <Checkbox
                     checked={allSelected}
                     onCheckedChange={onToggleAll}
                     className="bg-white h-5 w-5 shadow-sm"
                   />
                 </TableHead>
-                <TableHead className="w-[30%] text-left text-gray-800 font-semibold pl-4">
+                <TableHead className="w-[30%] text-left text-white font-semibold pl-4 bg-[#009AFB]">
                   Alumni
                 </TableHead>
-                <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[14%] text-center text-white font-semibold bg-[#009AFB]">
                   Course
                 </TableHead>
-                <TableHead className="w-[14%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[14%] text-center text-white font-semibold bg-[#009AFB]">
                   Year
                 </TableHead>
-                <TableHead className="w-[15%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[15%] text-center text-white font-semibold bg-[#009AFB]">
                   Employment Status
                 </TableHead>
-                <TableHead className="w-[23%] text-center text-gray-800 font-semibold">
+                <TableHead className="w-[23%] text-center text-white font-semibold bg-[#009AFB]">
                   Actions
                 </TableHead>
               </TableRow>

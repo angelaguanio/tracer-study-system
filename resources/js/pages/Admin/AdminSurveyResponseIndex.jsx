@@ -154,7 +154,7 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
                 </p>
               </div>
               <button
-                onClick={() => router.get(`/admin/survey-response/${survey.id}`)}
+                onClick={() => router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${survey.id}`)}
                 className="w-full text-center md:w-auto border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-3 py-2.5 md:py-1.5 rounded-md text-xs font-medium transition-colors"
               >
                 View Survey Response

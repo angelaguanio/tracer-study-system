@@ -62,7 +62,7 @@ export default function AdminAlumni({ alumni, filters }) {
   // ── Filter logic ──────────────────────────────────────────
   const applyFilters = (params = {}) => {
     router.get(
-      "/admin/alumni",
+      `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni`,
       { search, year, course, employment, page: 1, ...params },
       { preserveState: true, replace: true }
     );

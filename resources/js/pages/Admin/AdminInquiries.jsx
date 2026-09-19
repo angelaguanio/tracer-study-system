@@ -18,7 +18,7 @@ export default function AdminInquiries({inquiries, filters}) {
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            router.get('/admin/inquiries', {
+            router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/inquiries`, {
                 search,
                 status: statusFilter || null,
                 sort: sort !== 'newest' ? sort : null,

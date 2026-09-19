@@ -29,7 +29,7 @@ export default function AdminAlumniCoordinatorView({
                     <Button
                         onClick={() =>
                             router.visit(
-                                "/admin/alumni-coordinators"
+                                `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators`
                             )
                         }
                         className="bg-blue-600 text-white hover:bg-blue-700 shadow-md rounded-md"

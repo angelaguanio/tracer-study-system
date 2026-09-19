@@ -129,10 +129,10 @@ export default function EmploymentLocationAnalytics({ summary, cityDistribution,
                             {/* DESKTOP TABLE */}
                             <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-sm">
-                                    <thead className="bg-gray-50 border-b border-gray-100">
+                                    <thead className="bg-[#009AFB] border-b border-[#009AFB]">
                                         <tr>
                                             {["Name", "Program", "Year", "Home City", "Company", "Workplace"].map(h => (
-                                                <th key={h} className="px-4 py-3 text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
+                                                <th key={h} className="px-4 py-3 text-center text-[11px] font-bold text-white uppercase tracking-wider">{h}</th>
                                             ))}
                                         </tr>
                                     </thead>

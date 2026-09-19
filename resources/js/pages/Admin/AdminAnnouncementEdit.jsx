@@ -113,7 +113,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
     // method override
     data.append("_method", "PUT");
 
-    router.post(`/admin/announcement/${announcement.id}`, data, {
+    router.post(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${announcement.id}`, data, {
       forceFormData: true,
 
       onSuccess: () => {
@@ -136,7 +136,7 @@ export default function AdminAnnouncementEdit({ announcement }) {
 
             <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Link href="/admin/announcement">
+                <Link href={`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement`}>
                   <Button type="button" variant="ghost" className="p-2">
                     <ArrowLeft size={18} />
                   </Button>

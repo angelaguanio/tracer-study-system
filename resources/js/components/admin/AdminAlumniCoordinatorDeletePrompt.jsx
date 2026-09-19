@@ -12,7 +12,7 @@ export default function AdminAlumniCoordinatorDeletePrompt({
 
     const handleDelete = () => {
         router.delete(
-            `/admin/alumni-coordinators/${coordinator.id}`,
+            `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators/${coordinator.id}`,
             {
                 onSuccess: () => {
                     setSuccess(true);

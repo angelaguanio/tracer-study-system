@@ -88,7 +88,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     }
 
     if (editing) {
-      put(`/admin/alumni-coordinators/${editing.id}`, {
+      put(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators/${editing.id}`, {
         preserveScroll: true,
         preserveState: false,
         onSuccess: (page) => {
@@ -101,7 +101,7 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
         },
       });
     } else {
-      post("/admin/alumni-coordinators", {
+      post(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/alumni-coordinators`, {
         preserveScroll: true,
         onSuccess: (page) => {
           toast.success(page.props.flash.success);

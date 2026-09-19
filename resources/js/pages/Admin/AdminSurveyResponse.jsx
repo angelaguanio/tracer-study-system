@@ -32,7 +32,7 @@ export default function AdminSurveyResponse({
   useEffect(() => {
     const delay = setTimeout(() => {
       router.get(
-        `/admin/survey-response/${survey.id}`,
+        `/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${survey.id}`,
         { search, year, course, status, page },
         {
           preserveState: true,
@@ -46,7 +46,7 @@ export default function AdminSurveyResponse({
   }, [search, year, course, status, page]);
 
   const handleBack = () => {
-    router.get("/admin/survey-response");
+    router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response`);
   };
 
   return (

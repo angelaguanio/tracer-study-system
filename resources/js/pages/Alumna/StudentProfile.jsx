@@ -142,7 +142,7 @@ export default function StudentProfile() {
                     <>
                         <div className="hidden md:block overflow-x-auto border border-gray-100 rounded-lg">
                             <table className="w-full text-left text-sm table-fixed">
-                                <thead className="bg-gray-50"><tr className="border-b border-gray-100 text-[10px] text-gray-400 uppercase tracking-wider"><th className="py-3 pl-4 w-[20%]">Range</th><th className="py-3 text-center w-[25%]">Company</th><th className="py-3 text-center w-[20%]">Position</th><th className="py-3 text-center w-[15%]">Status</th><th className="py-3 text-center pr-4 w-[20%]">Action</th></tr></thead>
+                                <thead className="bg-[#009AFB]"><tr className="border-b border-[#009AFB] text-[10px] text-white uppercase tracking-wider"><th className="py-3 pl-4 w-[20%]">Range</th><th className="py-3 text-center w-[25%]">Company</th><th className="py-3 text-center w-[20%]">Position</th><th className="py-3 text-center w-[15%]">Status</th><th className="py-3 text-center pr-4 w-[20%]">Action</th></tr></thead>
                                 <tbody className="divide-y divide-gray-50">{employmentHistory.map((h) => (
                                     <tr key={h.id} className="hover:bg-gray-50/50 transition">
                                         <td className="py-4 text-center text-gray-600 text-sm">

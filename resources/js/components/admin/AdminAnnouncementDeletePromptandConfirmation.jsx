@@ -14,7 +14,7 @@ export default function AdminAnnouncementDeletePromptandConfirmation({ children,
   const confirmDelete = () => {
   if (!announcementId) return;
 
-  router.delete(`/admin/announcement/${announcementId}`, {
+  router.delete(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/announcement/${announcementId}`, {
     onSuccess: () => {
       setSuccess(true);
 
