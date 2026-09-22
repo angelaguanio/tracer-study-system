@@ -19,6 +19,7 @@ class Address extends Model
         'province',
         'city',
         'barangay',
+        'zip_code',
         'full_address',
     ];
 
@@ -27,11 +28,17 @@ class Address extends Model
      */
     public static function formatFullAddress(array $data): string
     {
+        $cityWithZip = array_filter([
+            $data['city'] ?? null,
+            $data['zip_code'] ?? null,
+        ]);
+        $cityString = !empty($cityWithZip) ? implode(' ', $cityWithZip) : null;
+
         $parts = array_filter([
             $data['street_address'] ?? null,
             $data['subdivision'] ?? null,
             isset($data['barangay']) && $data['barangay'] ? 'Brgy. ' . $data['barangay'] : null,
-            $data['city'] ?? null,
+            $cityString,
             $data['province'] ?? null,
             $data['region'] ?? null,
             $data['country'] ?? null,

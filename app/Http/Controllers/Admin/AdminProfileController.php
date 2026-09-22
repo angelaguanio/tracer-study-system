@@ -56,6 +56,7 @@ class AdminProfileController extends Controller
             'province'       => 'nullable|string|max:255',
             'city'           => 'nullable|string|max:255',
             'barangay'       => 'nullable|string|max:255',
+            'zip_code'       => 'nullable|string|max:20',
             'address'        => 'nullable|string|max:500',
             'contact_number' => 'required|string|max:20',
             'email'          => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -115,6 +116,7 @@ class AdminProfileController extends Controller
                         'province'       => $request->province ?? null,
                         'city'           => $request->city ?? null,
                         'barangay'       => $request->barangay ?? null,
+                        'zip_code'       => $request->zip_code ?? null,
                         'full_address'   => $fullAddress,
                     ]
                 );

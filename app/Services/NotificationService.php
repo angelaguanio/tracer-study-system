@@ -199,4 +199,58 @@ class NotificationService
             triggeredBy: auth()->check() ? auth()->id() : null,
         );
     }
+
+    // ── Coordinator submitted a featured alumni (admin reviews) ─
+    public static function featuredAlumniPendingReview(int $featuredAlumniId, string $title, int $coordinatorId, string $coordinatorName): Notification
+    {
+        return self::send(
+            type: 'featured_alumni_pending',
+            targetRole: 'admin',
+            title: 'Featured Alumni Needs Review',
+            message: "{$coordinatorName} submitted a featured alumni post: \"{$title}\".",
+            data: ['featured_alumni_id' => $featuredAlumniId, 'coordinator_id' => $coordinatorId],
+            triggeredBy: $coordinatorId,
+        );
+    }
+
+    // ── Admin approved a featured alumni ────────────────────────
+    public static function featuredAlumniApproved(int $featuredAlumniId, string $title, int $coordinatorId): Notification
+    {
+        return self::send(
+            type: 'featured_alumni_approved',
+            targetRole: 'coordinator_specific',
+            title: 'Featured Alumni Approved',
+            message: "Your featured alumni post \"{$title}\" has been approved.",
+            data: ['featured_alumni_id' => $featuredAlumniId],
+            triggeredBy: auth()->check() ? auth()->user()->id : null,
+            targetUserId: $coordinatorId,
+        );
+    }
+
+    // ── Admin sent featured alumni back for revision ─────────────
+    public static function featuredAlumniNeedsRevision(int $featuredAlumniId, string $title, int $coordinatorId, string $note): Notification
+    {
+        return self::send(
+            type: 'featured_alumni_revision',
+            targetRole: 'coordinator_specific',
+            title: 'Featured Alumni Needs Revision',
+            message: "Your featured alumni post \"{$title}\" needs revision. Note: {$note}",
+            data: ['featured_alumni_id' => $featuredAlumniId, 'note' => $note],
+            triggeredBy: auth()->id(),
+            targetUserId: $coordinatorId,
+        );
+    }
+
+    // ── Coordinator resubmitted revised featured alumni ──────────
+    public static function featuredAlumniResubmitted(int $featuredAlumniId, string $title, int $coordinatorId, string $coordinatorName): Notification
+    {
+        return self::send(
+            type: 'featured_alumni_resubmitted',
+            targetRole: 'admin',
+            title: 'Featured Alumni Resubmitted',
+            message: "{$coordinatorName} resubmitted the featured alumni post \"{$title}\" for review.",
+            data: ['featured_alumni_id' => $featuredAlumniId, 'coordinator_id' => $coordinatorId],
+            triggeredBy: $coordinatorId,
+        );
+    }
 }

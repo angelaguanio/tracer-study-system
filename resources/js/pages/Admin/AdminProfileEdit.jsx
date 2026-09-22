@@ -59,6 +59,7 @@ export default function AdminProfileEdit() {
         province: addressObj?.province || '',
         city: addressObj?.city || '',
         barangay: addressObj?.barangay || '',
+        zip_code: addressObj?.zip_code || '',
         address: addressObj?.full_address || (typeof profile?.address === 'string' ? profile.address : ''),
         contact_number: profile?.contact_number 
             ? (profile.contact_number.startsWith('09') && profile.contact_number.length === 11 

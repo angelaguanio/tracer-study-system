@@ -11,6 +11,7 @@ import {
   Mail,
   FileChartColumn,
   ChartNoAxesCombined,
+  Star,
 } from "lucide-react";
 import { Toaster } from "sonner";
 import { usePage } from "@inertiajs/react";
@@ -32,6 +33,12 @@ export default function AdminLayout({ children }) {
       name: "Announcements",
       href: route('admin.announcement.index'),
       icon: Bell
+    },
+    {
+      id: "featured-alumni",
+      name: "Featured Alumni",
+      href: route('admin.featured-alumni.index'),
+      icon: Star
     },
     {
       id: "inquiries",

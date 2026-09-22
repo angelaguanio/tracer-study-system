@@ -1,0 +1,255 @@
+import CoordinatorLayout from "@/layouts/coord-layout";
+import CoordinatorFeaturedAlumniCard from "@/components/coordinator/CoordinatorFeaturedAlumniCard";
+import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import echo from "@/echo";
+
+export default function CoordinatorFeaturedAlumni({ featuredAlumni }) {
+  const [statusFilter, setStatusFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOpen, setSortOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const { props } = usePage();
+
+  useEffect(() => {
+    const flash = props.flash;
+    if (flash?.success === "Deleted") toast.success("Deleted successfully!");
+    else if (flash?.success === "Updated") toast.success("Updated successfully!");
+    else if (flash?.success) toast.success(flash.success);
+  }, [props.flash?.success]);
+
+  // Realtime: refresh list when any featuredAlumni status changes
+  useEffect(() => {
+    const channel = echo.channel('role.coordinator');
+    channel.listen('.featuredAlumni.status.changed', () => {
+      router.reload({ only: ['featuredAlumni'] });
+    });
+    return () => {
+      channel.stopListening('.featuredAlumni.status.changed');
+    };
+  }, []);
+
+  // GLOBAL SEARCH
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      router.get(
+        "/coordinator/featured-alumni",
+        { search, status: statusFilter, sort: sortOrder },
+        { preserveState: true, replace: true }
+      );
+    }, 300);
+    return () => clearTimeout(delay);
+  }, [search, statusFilter, sortOrder]);
+
+  const list = featuredAlumni?.data ?? [];
+  const filteredFeaturedAlumni = list;
+
+  return (
+    <div className="w-full h-full p-2 sm:p-6 flex flex-col gap-4 overflow-y-auto">
+
+      {/* INFO BANNER */}
+      <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-100 p-5 rounded-full">
+            <Megaphone size={25} className="text-blue-700"/>
+          </div>
+          <p className="text-lg text-gray-600">
+            Create and manage featuredAlumni to keep everyone informed.
+          </p>
+        </div>
+
+        <Link
+          href="/coordinator/featured-alumni/create"
+          className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
+        >
+          <Plus size={18} />
+          Create Featured Alumni
+        </Link>
+      </div>
+
+      <div className="flex flex-col justify-evenly gap-5 px-6 py-7 border shadow-lg rounded-2xl bg-white "> 
+      {/* FILTERS */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+        {/* ================= LEFT SIDE (SEARCH) ================= */}
+        <div className="w-full sm:w-auto">
+          <div className="relative w-full sm:w-64 bg-white">
+            <Search
+              size={16}
+              className="absolute left-3 top-2.5 text-gray-400"
+            />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search featuredAlumni..."
+              className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
+            />
+          </div>
+        </div>
+
+        {/* ================= RIGHT SIDE (FILTERS) ================= */}
+        <div className="flex flex-wrap gap-2 items-center justify-between w-full sm:w-auto">
+
+          {/* STATUS FILTER */}
+          <div className="relative">
+            <button
+              onClick={() => setStatusOpen(!statusOpen)}
+              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
+            >
+              Status: {
+                statusFilter === ""
+                  ? "All"
+                  : statusFilter.charAt(0).toUpperCase() +
+                    statusFilter.slice(1)
+              }
+              <ChevronDown size={16} />
+            </button>
+
+            {statusOpen && (
+              <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-28">
+                {["", "approved", "pending", "revise"].map((status) => (
+                  <button
+                    key={status || "all"}
+                    onClick={() => {
+                      setStatusFilter(status);
+                      setStatusOpen(false);
+                    }}
+                    className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center"
+                  >
+                    {status === ""
+                      ? "All"
+                      : status.charAt(0).toUpperCase() + 
+                        status.slice(1)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* SORT */}
+          <div className="relative">
+            <button
+              onClick={() => setSortOpen(!sortOpen)}
+              className="px-3 py-2 border rounded-md text-sm bg-white flex items-center gap-2 hover:cursor-pointer"
+            >
+              Sort: {sortOrder === "newest" ? "Newest" : "Oldest"}
+              <ChevronDown size={16} />
+            </button>
+
+            {sortOpen && (
+              <div className="absolute right-0 mt-2 bg-white border rounded-md shadow z-50 w-32">
+                <button
+                  onClick={() => {
+                    setSortOrder("newest");
+                    setSortOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  Newest
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSortOrder("oldest");
+                    setSortOpen(false);
+                  }}
+                  className="block w-full px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  Oldest
+                </button>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+
+      {/* TABLE */}
+      <div className="flex-1 min-h-0 overflow-y-auto rounded-md">
+        <CoordinatorFeaturedAlumniCard featuredAlumni={filteredFeaturedAlumni} />
+      </div>
+
+      {/* PAGINATION */}
+      <div className="flex justify-start items-center gap-1">
+
+          {/* PREVIOUS */}
+          <button
+            disabled={featuredAlumni.current_page === 1}
+            onClick={() =>
+              router.get(
+                `/coordinator/featured-alumni?page=${featuredAlumni.current_page - 1}`,
+                {},
+                { preserveState: true, preserveScroll: true }
+              )
+            }
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: featuredAlumni.last_page }, (_, i) => i + 1)
+            .filter((page) => {
+              const current = featuredAlumni.current_page;
+              return (
+                page === 1 ||
+                page === featuredAlumni.last_page ||
+                (page >= current - 1 && page <= current + 1)
+              );
+            })
+            .map((page, index, arr) => {
+              const prevPage = arr[index - 1];
+              return (
+                <div key={page} className="flex items-center gap-1">
+                  {prevPage && page - prevPage > 1 && (
+                    <span className="w-9 h-9 flex items-center justify-center text-gray-400">...</span>
+                  )}
+                  <button
+                    onClick={() =>
+                      router.get(
+                        `/coordinator/featured-alumni?page=${page}`,
+                        {},
+                        { preserveState: true, preserveScroll: true }
+                      )
+                    }
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg border text-sm font-medium transitionx ${
+                      featuredAlumni.current_page === page
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white hover:bg-gray-50 text-gray-600"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                </div>
+              );
+            })}
+
+          {/* NEXT */}
+          <button
+            disabled={featuredAlumni.current_page === featuredAlumni.last_page}
+            onClick={() =>
+              router.get(
+                `/coordinator/featured-alumni?page=${featuredAlumni.current_page + 1}`,
+                {},
+                { preserveState: true, preserveScroll: true }
+              )
+            }
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-white shadow-sm hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight size={16} />
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+CoordinatorFeaturedAlumni.layout = (page) => (
+  <CoordinatorLayout>{page}</CoordinatorLayout>
+);

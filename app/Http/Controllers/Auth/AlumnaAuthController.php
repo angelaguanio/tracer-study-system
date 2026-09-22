@@ -86,6 +86,7 @@ class AlumnaAuthController extends Controller
             'province' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'barangay' => 'nullable|string|max:255',
+            'zip_code' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'contact_number' => 'nullable|string|regex:/^\+\d{8,15}$/',
 
@@ -167,6 +168,7 @@ class AlumnaAuthController extends Controller
             'province' => $validation['province'] ?? null,
             'city' => $validation['city'] ?? null,
             'barangay' => $validation['barangay'] ?? null,
+            'zip_code' => $validation['zip_code'] ?? null,
             'full_address' => $fullAddress,
         ]);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Building, Home, Navigation } from 'lucide-react';
+import { MapPin, Building, Home, Navigation, Hash } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
@@ -317,6 +317,24 @@ export default function PhAddressSelector({
           )}
         </div>
         {errors.barangay && <p className="text-xs text-red-500 pl-1">{errors.barangay}</p>}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className={labelClass}>
+          ZIP Code <span className="text-gray-400 text-[11px]">(Optional)</span>
+        </label>
+        <div className={getContainerClass(errors.zip_code)}>
+          {variant !== 'profile' && <Hash className="h-4 w-4 text-gray-500 shrink-0" />}
+          <input
+            type="text"
+            name="zip_code"
+            placeholder="e.g. 1000"
+            value={data.zip_code || ''}
+            onChange={(e) => handleTextChange('zip_code', e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        {errors.zip_code && <p className="text-xs text-red-500 pl-1">{errors.zip_code}</p>}
       </div>
     </div>
   );

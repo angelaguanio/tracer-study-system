@@ -2,7 +2,7 @@ import React from 'react'
 import SidebarCoord from '../components/sidebar-coord'
 import { SidebarProvider, SidebarInset } from "../components/ui/sidebar"
 import HeaderCoord from '../components/header-coord'
-import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail, FileText, BarChart2 } from 'lucide-react';
+import { LayoutDashboard, Bell, CircleUserRound, FileChartColumn, Mail, FileText, BarChart2, Star } from 'lucide-react';
 import { Toaster } from 'sonner';
 import { usePage } from '@inertiajs/react';
 import ChatWidget from '../components/chat/ChatWidget';
@@ -23,6 +23,12 @@ export default function CoordinatorLayout({ children }) {
       name: "Announcements",
       href: "/coordinator/announcement",
       icon: Bell
+    },
+    {
+      id: "featured-alumni",
+      name: "Featured Alumni",
+      href: "/coordinator/featured-alumni",
+      icon: Star
     },
     {
       id: "inquiries",

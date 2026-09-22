@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { departments } from "../../lib/AlumnaAssociation_Datalist";
 import { DepartmentSection } from "@/components/alumna/AlumnaAssociation_Components";
@@ -13,7 +13,7 @@ const IconTeam = () => (
   </svg>
 );
 
-export default function AlumnaAssociation() {
+export default function AlumnaAssociation({ featuredAlumni = [] }) {
   const [activeProgram, setActiveProgram] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [fadeDept, setFadeDept] = useState(false);
@@ -59,8 +59,8 @@ export default function AlumnaAssociation() {
         ═══════════════════════════════════════════════════════ */}
         <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-6 z-10">
           <h1 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight drop-shadow-2xl mb-6 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
-            <span className="text-[#8AD1F7]">Guided by Passion.</span><br/>
-            <span className="text-white">Driven by Purpose.</span>
+            <span className="text-[#8AD1F7]">Alumni </span>
+            <span className="text-white">Association</span>
           </h1>
           <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             Meet the dedicated officers driving our alumni association forward. Together, we strengthen connections and create lasting impact.
@@ -110,6 +110,81 @@ export default function AlumnaAssociation() {
         </section>
 
       </div>
+
+      {/* ═══════════════════════════════════════════════════════
+          3. FEATURED ALUMNI (Solid Background)
+      ═══════════════════════════════════════════════════════ */}
+      {featuredAlumni.length > 0 && (
+        <section className="relative z-20 w-full bg-app-bg py-20 px-6">
+          <div className="max-w-6xl mx-auto flex flex-col items-center">
+            
+            {/* Titles */}
+            <div className="text-center mb-12">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-2">
+                Wesleyan Footprints: Stories that inspire
+              </h2>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Celebrating the Journey, Achievements, and Wesleyan Impact on our Graduates
+              </p>
+            </div>
+
+            {/* Carousel / Grid */}
+            <div className="w-full flex flex-wrap justify-center gap-6 pb-4">
+              {featuredAlumni.slice(0, 3).map((alumnus) => (
+                <div 
+                  key={alumnus.id} 
+                  className="w-full max-w-[350px] bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col border border-gray-100 relative group cursor-pointer"
+                >
+                  <div className="relative w-full h-72 shrink-0">
+                    {alumnus.image && alumnus.image.length > 0 ? (
+                      <img 
+                        src={alumnus.image[0]} 
+                        alt={alumnus.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400">No Image</span>
+                      </div>
+                    )}
+                    {/* Gradient Blend */}
+                    <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-white from-20% via-white/50 via-70% to-transparent pointer-events-none" />
+                  </div>
+                  
+                  <div className="px-5 pb-5 pt-1 flex flex-col bg-white relative z-10 -mt-8">
+                    <h3 className="text-lg font-black text-gray-900 mb-1 line-clamp-1 tracking-tight">
+                      {alumnus.title}
+                    </h3>
+                    
+                    <div 
+                      className="text-gray-600 text-xs prose prose-sm line-clamp-2 mb-3"
+                      dangerouslySetInnerHTML={{ __html: alumnus.details }} 
+                    />
+                    
+                    <div className="w-full mt-1">
+                      <Link href={`/alumna/featured-alumni/${alumnus.id}`} className="w-full block">
+                        <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-semibold text-xs shadow-md cursor-pointer text-center">
+                          Read More
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* See More Link */}
+            {featuredAlumni.length > 3 && (
+              <div className="mt-3">
+                <Link href="/alumna/featured-alumni" className="text-slate-600 hover:text-slate-900 text-sm font-semibold underline underline-offset-4 transition-colors">
+                  See More
+                </Link>
+              </div>
+            )}
+
+          </div>
+        </section>
+      )}
     </div>
   );
 }

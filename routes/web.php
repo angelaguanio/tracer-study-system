@@ -29,6 +29,7 @@ use App\Http\Controllers\Coordinator\CoordinatorProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\FeaturedAlumniController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -118,8 +119,35 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/announcements', [AnnouncementController::class, 'alumna'])->name('announcements');
         Route::get('/announcement/{id}', [AnnouncementController::class, 'showAlumna'])->name('announcement.view');
 
+        // Featured Alumni (Alumna side)
+        Route::get('/featured-alumni', function () {
+            $featuredAlumni = \App\Models\FeaturedAlumni::with('author')
+                ->where('status', 'Approved')
+                ->latest()
+                ->paginate(9);
+            return Inertia::render('Alumna/AlumnaFeaturedAlumni', [
+                'featuredAlumni' => $featuredAlumni
+            ]);
+        })->name('featured-alumni');
+        Route::get('/featured-alumni/{id}', function ($id) {
+            $featuredAlumnus = \App\Models\FeaturedAlumni::with('author')
+                ->where('status', 'Approved')
+                ->findOrFail($id);
+            return Inertia::render('Alumna/AlumnaFeaturedAlumniView', [
+                'featuredAlumnus' => $featuredAlumnus
+            ]);
+        })->name('featured-alumni.view');
+
         // Static pages
-        Route::get('/association', fn() => Inertia::render('Alumna/AlumnaAssociation'))->name('association');
+        Route::get('/association', function () {
+            $featuredAlumni = \App\Models\FeaturedAlumni::with('author')
+                ->where('status', 'Approved')
+                ->latest()
+                ->get();
+            return Inertia::render('Alumna/AlumnaAssociation', [
+                'featuredAlumni' => $featuredAlumni
+            ]);
+        })->name('association');
         Route::get('/office', fn() => Inertia::render('Alumna/AlumnaOffice'))->name('office');
         Route::get('/about', fn() => Inertia::render('Alumna/AlumnaAbout'))->name('about');
 
@@ -224,6 +252,17 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
 
         Route::put('/announcement/{announcement}/reject', [AnnouncementController::class, 'reject'])
             ->name('announcement.reject');
+
+        // FEATURED ALUMNI CRUD
+        Route::get('/featured-alumni', [FeaturedAlumniController::class, 'index'])->name('featured-alumni.index');
+        Route::get('/featured-alumni/create', [FeaturedAlumniController::class, 'create'])->name('featured-alumni.create');
+        Route::post('/featured-alumni', [FeaturedAlumniController::class, 'store'])->name('featured-alumni.store');
+        Route::get('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'show'])->name('featured-alumni.show');
+        Route::get('/featured-alumni/{featuredAlumni}/edit', [FeaturedAlumniController::class, 'edit'])->name('featured-alumni.edit');
+        Route::put('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'update'])->name('featured-alumni.update');
+        Route::delete('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'destroy'])->name('featured-alumni.destroy');
+        Route::put('/featured-alumni/{featuredAlumni}/approve', [FeaturedAlumniController::class, 'approve'])->name('featured-alumni.approve');
+        Route::put('/featured-alumni/{featuredAlumni}/reject', [FeaturedAlumniController::class, 'reject'])->name('featured-alumni.reject');
 
         //AdminAlumni
         Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
@@ -471,6 +510,15 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         // DELETE
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy'])
             ->name('announcement.destroy');
+
+        // FEATURED ALUMNI CRUD
+        Route::get('/featured-alumni', [FeaturedAlumniController::class, 'coordinatorIndex'])->name('featured-alumni.index');
+        Route::get('/featured-alumni/create', [FeaturedAlumniController::class, 'create'])->name('featured-alumni.create');
+        Route::post('/featured-alumni', [FeaturedAlumniController::class, 'store'])->name('featured-alumni.store');
+        Route::get('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'show'])->name('featured-alumni.show');
+        Route::get('/featured-alumni/{featuredAlumni}/edit', [FeaturedAlumniController::class, 'edit'])->name('featured-alumni.edit');
+        Route::put('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'update'])->name('featured-alumni.update');
+        Route::delete('/featured-alumni/{featuredAlumni}', [FeaturedAlumniController::class, 'destroy'])->name('featured-alumni.destroy');
 
         //inquiries
         Route::get('/inquiries', [InquiriesController::class, 'coordIndex'])->name('inquiries.index');

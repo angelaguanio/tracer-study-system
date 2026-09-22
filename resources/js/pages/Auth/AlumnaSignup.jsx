@@ -65,7 +65,7 @@ const UNEMPLOYMENT_REASONS = [
 
 const INITIAL_FORM = {
   last_name: '', first_name: '', middle_name: '', suffix: '',
-  country: 'Philippines', street_address: '', subdivision: '', region: '', province: '', city: '', barangay: '', address: '',
+  country: 'Philippines', street_address: '', subdivision: '', region: '', province: '', city: '', barangay: '', zip_code: '', address: '',
   contact_number: '',
   email: '', password: '', password_confirmation: '',
   department: 'CECT', courses: '',
@@ -480,6 +480,7 @@ export default function AlumnaSignup() {
     formData.append('province',       data.province ?? '');
     formData.append('city',           data.city ?? '');
     formData.append('barangay',       data.barangay ?? '');
+    formData.append('zip_code',       data.zip_code ?? '');
     formData.append('address',        data.address ?? '');
     formData.append('contact_number', data.contact_number || '');
     formData.append('department',     data.department);
