@@ -7,7 +7,10 @@ import { ChevronDown } from 'lucide-react'
 export default function SidebarAdmin({ navItems = [] }) {
   const {url} = usePage();
   const path = url.split('?')[0];
-  const [openItems, setOpenItems] = useState({ analytics: true });
+  const [openItems, setOpenItems] = useState({
+    analytics: path.includes('/analytics'),
+    alumni: path.includes('/alumni') || path.includes('/featured-alumni'),
+  });
 
   const toggleItem = (id) => {
     setOpenItems(prev => ({ ...prev, [id]: !prev[id] }));
@@ -33,7 +36,9 @@ export default function SidebarAdmin({ navItems = [] }) {
                       isActive={
                         item.id === 'analytics'
                           ? path.includes('/analytics')
-                          : path.startsWith(item.href)
+                          : item.id === 'alumni'
+                            ? path.includes('/alumni') || path.includes('/featured-alumni')
+                            : item.href ? path.startsWith(item.href) : false
                       }
                       className='[&>svg]:size-5 py-5 my-1 justify-between cursor-pointer'
                     >
@@ -49,7 +54,7 @@ export default function SidebarAdmin({ navItems = [] }) {
                           <SidebarMenuSubItem key={subItem.name}>
                             <SidebarMenuSubButton
                               asChild
-                              isActive={path === subItem.href}
+                              isActive={path === subItem.href || (subItem.href && subItem.href !== '#' && path.startsWith(subItem.href))}
                             >
                               <Link href={subItem.href}>
                                 <span>{subItem.name}</span>

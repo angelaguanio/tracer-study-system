@@ -13,16 +13,26 @@ import NotificationBell from './NotificationBell'
 import { User, LogOut } from 'lucide-react'
 
 export default function HeaderCoord({ navItemsCoord = [] }) {
-  const { url, props } = usePage()
-  const user = props.auth?.user 
+  const { props } = usePage()
+  const user = props.auth?.user
+
+  // Normalize any href (relative or absolute) to just the pathname
+  const getPath = (href) => {
+    if (!href) return '';
+    try { return new URL(href).pathname; }
+    catch { return href.split('?')[0]; }
+  };
+
+  const currentPath = window.location.pathname;
+
   let activeTitle = "Dashboard"
   navItemsCoord.forEach((item) => {
-    if (item.href && url.startsWith(item.href)) {
+    if (item.href && currentPath.startsWith(getPath(item.href))) {
       activeTitle = item.name
     }
     if (item.subItems) {
       item.subItems.forEach((sub) => {
-        if (sub.href && url.startsWith(sub.href)) {
+        if (sub.href && currentPath.startsWith(getPath(sub.href))) {
           activeTitle = sub.name
         }
       })

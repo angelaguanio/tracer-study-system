@@ -63,7 +63,7 @@ export default function AdminFeaturedAlumniCreate() {
                                 </Link>
 
                                 <CardTitle className="text-lg font-semibold ml-1 sm:ml-3">
-                                    Create new featuredAlumni
+                                    Feature an Alumni
                                 </CardTitle>
                             </div>
 

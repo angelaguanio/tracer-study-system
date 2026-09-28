@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ['middleware' => ['web', 'auth']],
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
         $middleware->encryptCookies(except: ['appearance']);
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
 

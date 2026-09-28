@@ -35,12 +35,6 @@ export default function AdminLayout({ children }) {
       icon: Bell
     },
     {
-      id: "featured-alumni",
-      name: "Featured Alumni",
-      href: route('admin.featured-alumni.index'),
-      icon: Star
-    },
-    {
       id: "inquiries",
       name: "Inquiries",
       href: route('admin.inquiries.index'),
@@ -80,8 +74,17 @@ export default function AdminLayout({ children }) {
     {
       id: "alumni",
       name: "Alumni",
-      href: route('admin.alumni.index'),
-      icon: CircleUserRound
+      icon: CircleUserRound,
+      subItems: [
+        {
+          name: "Alumni Directory",
+          href: route('admin.alumni.index')
+        },
+        {
+          name: "Featured Alumni",
+          href: route('admin.featured-alumni.index')
+        }
+      ]
     },
     {
       id: "alumni-coordinator",

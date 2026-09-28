@@ -203,17 +203,12 @@ class AlumnaAuthController extends Controller
 
     Employment::create($employmentData);
 
-    // Send email verification
-    $user->sendEmailVerificationNotification();
-
     NotificationService::alumniRegistered($user->id, $user->name);
 
-    return Inertia::location(
-        route('alumna.verification.notice', [
-            'from' => 'signup',
-            'email' => $user->email,
-        ])
-    );
+    return redirect()->route('alumna.verification.notice', [
+        'from' => 'signup',
+        'email' => $user->email,
+    ]);
 
     }
 

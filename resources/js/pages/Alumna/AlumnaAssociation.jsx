@@ -162,7 +162,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
                     />
                     
                     <div className="w-full mt-1">
-                      <Link href={`/alumna/featured-alumni/${alumnus.id}`} className="w-full block">
+                      <Link href={`/alumna/featured-alumni/${alumnus.id}?from=association`} className="w-full block">
                         <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-semibold text-xs shadow-md cursor-pointer text-center">
                           Read More
                         </button>

@@ -32,7 +32,7 @@
         @elseif ($page['component'] === 'Alumna/AlumnaAssociation')
             <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_bg_clean.webp') }}">
         @elseif ($page['component'] === 'Alumna/ContactUs')
-            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/contact.webp') }}">
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/contact_us_new.webp') }}">
         @endif
     @endif
 

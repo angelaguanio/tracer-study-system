@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Mail, Phone, MapPin, Clock, ChevronRight } from 'lucide-react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import contact from '../../assets/contact.webp';
+import contact from '../../assets/contact_us_new.webp';
 import inquireImg from '../../assets/inquire.svg';
 import { Link, Head } from '@inertiajs/react';
 

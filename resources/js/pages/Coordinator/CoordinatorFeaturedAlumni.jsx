@@ -58,7 +58,7 @@ export default function CoordinatorFeaturedAlumni({ featuredAlumni }) {
             <Megaphone size={25} className="text-blue-700"/>
           </div>
           <p className="text-lg text-gray-600">
-            Create and manage featuredAlumni to keep everyone informed.
+             Showcase and manage featured alumni and their accomplishments.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function CoordinatorFeaturedAlumni({ featuredAlumni }) {
           className="flex items-center justify-center text-[15px] text-sm gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md transition"
         >
           <Plus size={18} />
-          Create Featured Alumni
+          Feature an Alumni
         </Link>
       </div>
 
@@ -85,7 +85,7 @@ export default function CoordinatorFeaturedAlumni({ featuredAlumni }) {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search featuredAlumni..."
+              placeholder="Search Featured Alumni..."
               className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
             />
           </div>

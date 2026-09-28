@@ -9,14 +9,14 @@ export default function AlumnaFeaturedAlumniView({ featuredAlumnus }) {
 
   const handleBack = (e) => {
     e.preventDefault();
-    if (typeof window !== 'undefined' && document.referrer) {
-      const referrer = document.referrer;
-      if (referrer.includes('/alumna/featured-alumni') && !referrer.includes('/alumna/featured-alumni/')) {
-        router.get('/alumna/featured-alumni');
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('from') === 'association') {
+        router.get('/alumna/association');
         return;
       }
     }
-    router.get('/alumna/association');
+    router.get('/alumna/featured-alumni');
   };
 
   let parsedImage = featuredAlumnus?.image;

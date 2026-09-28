@@ -48,7 +48,7 @@ export default function AdminFeaturedAlumniDeletePromptandConfirmation({ childre
               <h2 className="text-base sm:text-lg font-semibold">Are you sure?</h2>
             </div>
             <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed text-left">
-              This will permanently delete this featuredAlumni.
+              This will permanently delete this featured alumni post.
               <br />
               This action cannot be undone.
             </p>

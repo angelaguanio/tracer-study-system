@@ -26,7 +26,11 @@ class NotificationService
             'target_user_id' => $targetUserId,
         ]);
 
-        broadcast(new NotificationCreated($notification))->toOthers();
+        try {
+            broadcast(new NotificationCreated($notification))->toOthers();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Pusher notification broadcast failed: ' . $e->getMessage());
+        }
 
         return $notification;
     }

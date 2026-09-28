@@ -25,12 +25,6 @@ export default function CoordinatorLayout({ children }) {
       icon: Bell
     },
     {
-      id: "featured-alumni",
-      name: "Featured Alumni",
-      href: "/coordinator/featured-alumni",
-      icon: Star
-    },
-    {
       id: "inquiries",
       name: "Inquiries",
       href:"/coordinator/inquiries",
@@ -57,8 +51,17 @@ export default function CoordinatorLayout({ children }) {
     {
       id: "alumni",
       name: "Alumni",
-      href: "/coordinator/alumni",
-      icon: CircleUserRound
+      icon: CircleUserRound,
+      subItems: [
+        {
+          name: "Alumni Directory",
+          href: "/coordinator/alumni"
+        },
+        {
+          name: "Featured Alumni",
+          href: "/coordinator/featured-alumni"
+        }
+      ]
     },
   ];
 

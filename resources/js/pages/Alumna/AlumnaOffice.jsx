@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import AlumnaLayout from "@/layouts/alumna-layout";
 import { officeData } from "@/lib/AlumnaOfficeDatalist";
-import wupLogo from '@/assets/wup.webp';
+import aaoLogo from '@/assets/aao_logo.webp';
 
 const { staff } = officeData;
 
@@ -93,7 +93,7 @@ export default function AlumnaOffice() {
 
                   {/* AVATAR */}
                   <div className="relative w-24 h-24 mb-4">
-                    <img src={wupLogo} alt="WUP Logo" className="w-full h-full object-contain drop-shadow-sm" />
+                    <img src={aaoLogo} alt="AAO Logo" className="w-full h-full object-contain drop-shadow-sm" />
                     {/* Star badge for Director */}
                     <div className="absolute bottom-0 right-0 bg-[#1258D6] text-white p-1.5 rounded-full border-2 border-white">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -139,7 +139,7 @@ export default function AlumnaOffice() {
 
                   {/* AVATAR */}
                   <div className="relative w-24 h-24 mb-4">
-                    <img src={wupLogo} alt="WUP Logo" className="w-full h-full object-contain drop-shadow-sm" />
+                    <img src={aaoLogo} alt="AAO Logo" className="w-full h-full object-contain drop-shadow-sm" />
                   </div>
 
                   {/* TEXT */}

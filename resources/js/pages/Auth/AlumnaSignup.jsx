@@ -183,6 +183,35 @@ function IconSelect({ icon: Icon, label, required = false, optional = false, pla
   );
 }
 
+const FIELD_LABELS = {
+  first_name: 'First Name',
+  last_name: 'Last Name',
+  middle_name: 'Middle Name',
+  suffix: 'Suffix',
+  contact_number: 'Contact Number',
+  street_address: 'Street Address',
+  region: 'Region',
+  province: 'Province',
+  city: 'City / Municipality',
+  barangay: 'Barangay',
+  country: 'Country',
+  profile_picture: 'Profile Picture',
+  courses: 'Course / Program',
+  school_year: 'Year Graduated',
+  semester: 'Semester',
+  email: 'Email Address',
+  password: 'Password',
+  password_confirmation: 'Password Confirmation',
+  currently_employed: 'Employment Status',
+  employment_type: 'Employment Type',
+  company_name: 'Company Name',
+  position: 'Position',
+  location: 'Company Address',
+  monthly_salary: 'Monthly Salary',
+  employment_duration: 'Employment Duration',
+  unemployment_reason: 'Reason for Not Working',
+};
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function AlumnaSignup() {
   const [step, setStep] = useState(1);
@@ -195,8 +224,49 @@ export default function AlumnaSignup() {
   const [data, setData] = useState(INITIAL_FORM);
   const [residency, setResidency] = useState('Philippines');
 
-  // Jump back to the step that has an error after server validation
-  // (server errors come back via Inertia page props on failed redirect)
+  // ── Auto-restore draft from localStorage on mount ─────────────────────────
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem('alumna_signup_draft');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed.data) {
+          // Keep profile_picture as null (File instances can't be stored in localStorage)
+          setData({ ...INITIAL_FORM, ...parsed.data, profile_picture: null });
+        }
+        if (parsed.residency) setResidency(parsed.residency);
+        // Cap step at step 2 on draft restore so user re-attaches their photo before proceeding
+        if (parsed.step && parsed.step > 1) {
+          setStep(Math.min(parsed.step, 2));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load signup draft:', err);
+    }
+  }, []);
+
+  // ── Auto-save draft to localStorage whenever form data/step/residency changes ──
+  useEffect(() => {
+    try {
+      // Exclude passwords and binary File objects from localStorage for security/privacy
+      const { password, password_confirmation, profile_picture, ...draftableData } = data;
+      localStorage.setItem('alumna_signup_draft', JSON.stringify({
+        data: draftableData,
+        residency,
+        step,
+      }));
+    } catch (err) {
+      console.error('Failed to save signup draft:', err);
+    }
+  }, [data, residency, step]);
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem('alumna_signup_draft');
+    } catch (err) {
+      console.error('Failed to clear signup draft:', err);
+    }
+  };
 
   const EMPLOYMENT_CURRENT_YEAR = new Date().getFullYear();
 
@@ -318,7 +388,11 @@ export default function AlumnaSignup() {
     reader.readAsDataURL(file);
 
     setData((prev) => ({ ...prev, profile_picture: file }));
-    setStepErrors((prev) => ({ ...prev, profile_picture: null }));
+    setStepErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.profile_picture;
+      return copy;
+    });
   };
 
   // ── Per-step validation ────────────────────────────────────────────────────
@@ -344,7 +418,7 @@ export default function AlumnaSignup() {
     data.city,
     data.contact_number,
   ].every(Boolean);
-  const isStep2Done = !!data.profile_picture;
+  const isStep2Done = data.profile_picture instanceof File;
   const isStep3Done = [data.courses, data.school_year, data.semester].every(Boolean);
   const isStep4Done = [data.email, data.password, data.password_confirmation].every(Boolean) && passwordErrors.length === 0;
 
@@ -378,7 +452,9 @@ export default function AlumnaSignup() {
 
   const validateStep2 = () => {
     const errors = {};
-    if (!data.profile_picture) errors.profile_picture = "Please upload a profile picture to continue.";
+    if (!data.profile_picture || !(data.profile_picture instanceof File)) {
+      errors.profile_picture = "Please choose a profile picture file to continue.";
+    }
     return errors;
   };
 
@@ -464,13 +540,37 @@ export default function AlumnaSignup() {
     e.preventDefault();
     if (processing) return;
 
-    const [start_year, end_year] = data.school_year.split('-');
+    // Validate all steps from 1 to current final step before sending request
+    const err1 = validateStep1();
+    if (Object.keys(err1).length > 0) { setStepErrors(err1); setStep(1); return; }
+
+    const err2 = validateStep2();
+    if (Object.keys(err2).length > 0) { setStepErrors(err2); setStep(2); return; }
+
+    const err3 = validateStep3();
+    if (Object.keys(err3).length > 0) { setStepErrors(err3); setStep(3); return; }
+
+    const err4 = validateStep4();
+    if (Object.keys(err4).length > 0) { setStepErrors(err4); setStep(4); return; }
+
+    const err5 = validateStep5();
+    if (Object.keys(err5).length > 0) { setStepErrors(err5); setStep(5); return; }
+
+    if (data.currently_employed === 'Yes') {
+      const err6 = validateStep6();
+      if (Object.keys(err6).length > 0) { setStepErrors(err6); setStep(6); return; }
+    } else {
+      const err7 = validateStep7();
+      if (Object.keys(err7).length > 0) { setStepErrors(err7); setStep(7); return; }
+    }
+
+    const [start_year, end_year] = (data.school_year || '').split('-');
 
     const formData = new FormData();
 
     // Personal
-    formData.append('first_name',     data.first_name);
-    formData.append('last_name',      data.last_name);
+    formData.append('first_name',     data.first_name || '');
+    formData.append('last_name',      data.last_name || '');
     formData.append('middle_name',    data.middle_name ?? '');
     formData.append('suffix',         data.suffix ?? '');
     formData.append('country',        data.country ?? 'Philippines');
@@ -483,7 +583,7 @@ export default function AlumnaSignup() {
     formData.append('zip_code',       data.zip_code ?? '');
     formData.append('address',        data.address ?? '');
     formData.append('contact_number', data.contact_number || '');
-    formData.append('department',     data.department);
+    formData.append('department',     data.department || 'CECT');
 
     // Profile picture
     if (data.profile_picture instanceof File) {
@@ -491,19 +591,19 @@ export default function AlumnaSignup() {
     }
 
     // Academic
-    formData.append('courses',     data.courses);
-    formData.append('school_year', data.school_year);
+    formData.append('courses',     data.courses || '');
+    formData.append('school_year', data.school_year || '');
     formData.append('start_year',  start_year?.trim() ?? '');
     formData.append('end_year',    end_year?.trim() ?? '');
-    formData.append('semester',    data.semester);
+    formData.append('semester',    data.semester || '');
 
     // Account
-    formData.append('email',                 data.email);
-    formData.append('password',              data.password);
-    formData.append('password_confirmation', data.password_confirmation);
+    formData.append('email',                 data.email || '');
+    formData.append('password',              data.password || '');
+    formData.append('password_confirmation', data.password_confirmation || '');
 
     // Employment
-    formData.append('currently_employed', data.currently_employed);
+    formData.append('currently_employed', data.currently_employed || '');
 
     if (data.currently_employed === 'Yes') {
       let duration = data.employment_duration || '';
@@ -516,15 +616,15 @@ export default function AlumnaSignup() {
       
       const isPresent = duration.toLowerCase().includes('present');
 
-      formData.append('employment_type',       data.employment_type);
-      formData.append('company_name',          data.company_name);
-      formData.append('position',              data.position);
-      formData.append('location',              data.location);
+      formData.append('employment_type',       data.employment_type || '');
+      formData.append('company_name',          data.company_name || '');
+      formData.append('position',              data.position || '');
+      formData.append('location',              data.location || '');
       formData.append('employment_duration',   duration);
       formData.append('is_present',            isPresent ? '1' : '0');
       if (data.monthly_salary) formData.append('monthly_salary', data.monthly_salary);
     } else {
-      formData.append('unemployment_reason', data.unemployment_reason);
+      formData.append('unemployment_reason', data.unemployment_reason || '');
     }
 
     setProcessing(true);
@@ -532,26 +632,29 @@ export default function AlumnaSignup() {
       forceFormData: true,
       preserveScroll: true,
       onSuccess: () => {
+        clearDraft();
         setData(INITIAL_FORM);
         setAvatarPreview(null);
         setStep(1);
-        setProcessing(false);
       },
       onError: (errors) => {
-        setProcessing(false);
+        setStepErrors(errors);
         // Jump to the step with the first error
         const stepFields = [
-          ['last_name', 'first_name', 'middle_name', 'address', 'contact_number'],
+          ['last_name', 'first_name', 'middle_name', 'suffix', 'country', 'street_address', 'subdivision', 'region', 'province', 'city', 'barangay', 'zip_code', 'contact_number'],
           ['profile_picture'],
-          ['courses', 'start_year', 'end_year', 'semester'],
+          ['courses', 'school_year', 'start_year', 'end_year', 'semester', 'department'],
           ['email', 'password', 'password_confirmation'],
           ['currently_employed'],
-          ['employment_type', 'company_name', 'position', 'location', 'monthly_salary', 'employment_start_year', 'employment_end_year'],
+          ['employment_type', 'company_name', 'position', 'location', 'monthly_salary', 'employment_duration'],
           ['unemployment_reason'],
         ];
         for (let i = 0; i < stepFields.length; i++) {
           if (stepFields[i].some((f) => errors[f])) { setStep(i + 1); return; }
         }
+      },
+      onFinish: () => {
+        setProcessing(false);
       },
     });
   };
@@ -565,11 +668,36 @@ export default function AlumnaSignup() {
 
   return (
     <Card className="relative w-full max-w-md rounded-2xl bg-white shadow-lg flex flex-col overflow-hidden" style={{ maxHeight: 'min(90vh, 660px)' }}>
+      <form id="signupForm" className="flex flex-col flex-1 min-h-0" onSubmit={handleSubmit}>
+        <CardContent className="custom-scrollbar overflow-y-auto px-6 py-4 flex-1">
+          <div className="flex flex-col gap-5">
+            <StepHeader step={step} />
 
-      <CardContent className="custom-scrollbar overflow-y-auto px-6 py-4 flex-1">
-        <form id="signupForm" className="flex flex-col gap-5" onSubmit={handleSubmit}>
-
-          <StepHeader step={step} />
+            {Object.entries(stepErrors).filter(([_, v]) => v != null && v !== '').length > 0 && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 font-medium">
+                <p className="font-semibold text-red-700">Please fix the following issue(s):</p>
+                <ul className="list-disc pl-4 mt-1 space-y-1">
+                  {Object.entries(stepErrors)
+                    .filter(([_, v]) => v != null && v !== '')
+                    .map(([key, err]) => {
+                      let msg = '';
+                      if (typeof err === 'string') msg = err;
+                      else if (Array.isArray(err)) msg = typeof err[0] === 'string' ? err[0] : '';
+                      else if (typeof err === 'object' && err !== null) {
+                        const vals = Object.values(err);
+                        msg = typeof vals[0] === 'string' ? vals[0] : (Array.isArray(vals[0]) ? vals[0][0] : '');
+                      }
+                      if (!msg) return null;
+                      const label = FIELD_LABELS[key] || key.replace(/_/g, ' ');
+                      return (
+                        <li key={key}>
+                          <span className="font-semibold text-gray-900">{label}:</span> {msg}
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            )}
 
           {/* ── Step 1: Personal ── */}
           {step === 1 && (
@@ -838,6 +966,9 @@ export default function AlumnaSignup() {
                     );
                   })}
                 </div>
+                {stepErrors.employment_type && (
+                  <p className="text-xs text-red-500 mt-1.5 pl-1">{stepErrors.employment_type}</p>
+                )}
               </div>
 
               {/* Year range */}
@@ -877,62 +1008,61 @@ export default function AlumnaSignup() {
               </IconSelect>
             </div>
           )}
+          </div>
+        </CardContent>
 
-        </form>
-      </CardContent>
-
-      {/* ── Footer ── */}
-      <CardFooter className="flex flex-col gap-3 px-6 pb-6 pt-2">
-        <div className="flex w-full gap-3">
-          {/* Back */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={prevStep}
-            disabled={step === 1 || processing}
-            className="flex-1 rounded-xl h-12 font-semibold"
-        >
-            Back
-        </Button>
-
-          {/* Next — steps 1–5 */}
-          {step < 6 && (
+        {/* ── Footer ── */}
+        <CardFooter className="flex flex-col gap-3 px-6 pb-6 pt-2">
+          <div className="flex w-full gap-3">
+            {/* Back */}
             <Button
-              type="button" onClick={nextStep} disabled={!canNext}
-              className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
-            >
-              Continue <ArrowRight className="h-4 w-4" />
-            </Button>
-          )}
-
-          {/* Submit — steps 6 & 7 */}
-          {(step === 6 || step === 7) && (
-            <Button
-              form="signupForm"
-              type="submit"
-              disabled={processing}
-              className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
+              type="button"
+              variant="outline"
+              onClick={prevStep}
+              disabled={step === 1 || processing}
+              className="flex-1 rounded-xl h-12 font-semibold"
           >
-              {processing ? (
-                  <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Creating Account...
-                  </>
-              ) : (
-                  <>
-                      Sign Up
-                      <ArrowRight className="h-4 w-4" />
-                  </>
-              )}
+              Back
           </Button>
-          )}
-        </div>
 
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-          <span>Already have an account?</span>
-          <TextLink routeName="alumna.login" linkName="Login here" className="text-blue-600 font-medium" />
-        </div>
-      </CardFooter>
+            {/* Next — steps 1–5 */}
+            {step < 6 && (
+              <Button
+                type="button" onClick={nextStep} disabled={!canNext}
+                className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
+              >
+                Continue <ArrowRight className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Submit — steps 6 & 7 */}
+            {(step === 6 || step === 7) && (
+              <Button
+                type="submit"
+                disabled={processing}
+                className="flex-1 rounded-xl h-12 font-semibold bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
+                {processing ? (
+                    <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Creating Account...
+                    </>
+                ) : (
+                    <>
+                        Sign Up
+                        <ArrowRight className="h-4 w-4" />
+                    </>
+                )}
+            </Button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <span>Already have an account?</span>
+            <TextLink routeName="alumna.login" linkName="Login here" className="text-blue-600 font-medium" />
+          </div>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

@@ -18,7 +18,7 @@ export default function VerifyEmail() {
 
     const [processing, setProcessing] = useState(false);
     const [cooldown, setCooldown] = useState(0);
-    const [emailSent, setEmailSent] = useState(fromSignup);
+    const [emailSent, setEmailSent] = useState(false);
 
     useEffect(() => {
         const csrfToken = document.head.querySelector('meta[name="csrf-token"]');
@@ -27,14 +27,6 @@ export default function VerifyEmail() {
             axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content;
         }
     }, []);
-
-    useEffect(() => {
-        if (fromSignup) return;
-    
-        localStorage.removeItem("verify-email-expiry");
-        setCooldown(0);
-        setEmailSent(false);
-    }, [fromSignup]);
 
     useEffect(() => {
         const expiry = localStorage.getItem(storageKey);
@@ -63,21 +55,6 @@ export default function VerifyEmail() {
     
         return () => clearTimeout(timer);
     }, [cooldown, storageKey]);
-
-    useEffect(() => {
-        if (!fromSignup) return;
-    
-        const expiry = localStorage.getItem(storageKey);
-    
-        if (!expiry) {
-            const newExpiry = Date.now() + 60000;
-    
-            localStorage.setItem(storageKey, newExpiry);
-    
-            setCooldown(60);
-            setEmailSent(true);
-        }
-    }, [fromSignup, storageKey]);
 
     const resendEmail = async () => {
         try {
@@ -122,8 +99,7 @@ export default function VerifyEmail() {
                         </p>
 
                         <p className="mt-2 text-sm text-gray-500">
-                            We've sent a verification email to <strong>{email}</strong>.
-                            Please verify your email before logging in.
+                            Click the button below to send a verification email to <strong>{email}</strong> before logging in.
                         </p>
                     </>
                 ) : (
@@ -133,12 +109,11 @@ export default function VerifyEmail() {
                         </p>
 
                         <p className="mt-2 text-sm text-gray-500">
-                            Your account is still waiting for email verification.
                             Click the button below to send a verification email to <strong>{email}</strong>.
                         </p>
                     </>
                 )}
-                                </div>
+                </div>
 
                 {emailSent && (
                     <div className="w-full rounded-lg border border-green-300 bg-green-50 p-4 flex gap-3">

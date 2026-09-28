@@ -62,7 +62,7 @@ export default function CoordinatorFeaturedAlumniCreate() {
                                 </Link>
 
                                 <CardTitle className="text-lg font-semibold ml-1 sm:ml-3">
-                                    Create new featuredAlumni
+                                    Feature an Alumni
                                 </CardTitle>
                             </div>
 
@@ -195,7 +195,7 @@ export default function CoordinatorFeaturedAlumniCreate() {
                                     <Input
                                         id="title"
                                         name="title"
-                                        placeholder="Title"
+                                        placeholder="e.g. John Dela Cruz — Software Engineer at Google"
                                         value={data.title} // bind form data
                                         onChange={e => setData("title", e.target.value)}
                                     />
@@ -215,7 +215,7 @@ export default function CoordinatorFeaturedAlumniCreate() {
                                     <Textarea
                                         id="details"
                                         name="details"
-                                        placeholder="Details"
+                                        placeholder="Share the alumni's story, achievements, career highlights, and how they've made an impact..."
                                         value={data.details} // bind form data
                                         onChange={e => setData("details", e.target.value)}
                                         className="min-h-[320px] sm:min-h-[360px] lg:min-h-[450px]"
@@ -234,7 +234,7 @@ export default function CoordinatorFeaturedAlumniCreate() {
                                         disabled={processing}
                                         className="w-full bg-green-600 hover:bg-green-700"
                                     >
-                                        {processing ? "Creating..." : "Create"}
+                                        {processing ? "Submitting..." : "Submit for Review"}
                                     </Button>
                                 </div>
 

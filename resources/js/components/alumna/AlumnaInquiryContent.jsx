@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Avatar } from '../ui/avatar';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, MessageSquare, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import echo from '@/echo';
 import inquireImg from '@/assets/inquire.svg';
+import cectLogo from '@/assets/wup_cect.webp';
 
 export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const [replyText, setReplyText] = useState('');
@@ -75,9 +76,9 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
     };
 
     const AvatarBlock = ({ user, size = 'sm' }) => {
-        const dim = size === 'sm' ? 'h-8 w-8 text-xs' : 'h-12 w-12 text-sm';
+        const dim = size === 'sm' ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm';
         return (
-            <Avatar className={`${dim} shrink-0 overflow-hidden border border-gray-200`}>
+            <Avatar className={`${dim} shrink-0 overflow-hidden border border-slate-200/80 shadow-sm`}>
                 {user?.profile_picture ? (
                     <img
                         src={user.profile_picture}
@@ -85,7 +86,7 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className='h-full w-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white font-bold'>
+                    <div className='h-full w-full bg-gradient-to-br from-[#0B2545] to-[#009AFB] flex items-center justify-center text-white font-bold'>
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
                     </div>
                 )}
@@ -95,9 +96,22 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
 
     if (!inquiry) {
         return (
-            <div className='flex flex-col items-center justify-center h-full w-full text-gray-500 gap-6'>
-                <img src={inquireImg} alt="Select an inquiry" className="w-64 h-64 object-contain opacity-90" />
-                <p className="text-lg font-medium">Select an inquiry to view</p>
+            <div className='relative flex flex-col items-center justify-center h-full w-full p-8 text-center bg-white/40 backdrop-blur-sm rounded-r-3xl overflow-hidden select-none'>
+                {/* Background CECT seal watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05]">
+                    <img src={cectLogo} alt="CECT Logo Watermark" className="w-80 h-80 object-contain filter grayscale" />
+                </div>
+
+                <div className="relative z-10 flex flex-col items-center max-w-md mx-auto">
+                    <div className="w-52 h-52 mb-5 relative flex items-center justify-center">
+                        <img src={inquireImg} alt="Select an inquiry" className="w-full h-full object-contain filter drop-shadow-sm" />
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-[#0B2545] mb-2 tracking-tight">Select an inquiry to view</h3>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                        Choose a conversation from the sidebar or click <span className="font-semibold text-[#009AFB]">"New Inquiry"</span> to reach out to the Alumni Office or your Department Coordinator.
+                    </p>
+                </div>
             </div>
         );
     }
@@ -108,37 +122,47 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
     const isResolved = liveStatus === 'resolved';
 
     return (
-        <main className='flex flex-col w-full h-full p-4 gap-3'>
-            <header className="flex items-center gap-2 px-3 pb-3 border-b">
-                <div className="md:hidden">
-                    <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                </div>
-                <div className="min-w-0">
-                    <h1 className="text-xl font-semibold break-words">{inquiry.subject}</h1>
-                    <p className="text-xs text-gray-400">{inquiry.formatted_date}</p>
-                    {inquiry.department && (
-                        <p className="text-sm text-gray-500">Department: {inquiry.department}</p>
-                    )}
+        <main className='relative flex flex-col w-full h-full p-5 gap-3 bg-white/40 backdrop-blur-sm rounded-r-3xl overflow-hidden'>
+            {/* Background CECT seal watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04]">
+                <img src={cectLogo} alt="CECT Logo Watermark" className="w-[420px] h-[420px] object-contain filter grayscale" />
+            </div>
+
+            <header className="relative z-10 flex items-center justify-between gap-3 px-4 py-3 bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/70 shadow-sm">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="md:hidden">
+                        <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0 rounded-xl">
+                            <ArrowLeft className="h-5 w-5 text-slate-700" />
+                        </Button>
+                    </div>
+                    <div className="min-w-0">
+                        <h1 className="text-lg font-bold text-[#0B2545] truncate">{inquiry.subject}</h1>
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                            <span>{inquiry.formatted_date}</span>
+                            <span>•</span>
+                            <span className="font-medium text-[#009AFB]">
+                                {inquiry.department ? `Department: ${inquiry.department}` : 'Recipient: Alumni Office'}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {/* Thread */}
-            <div className='flex flex-col flex-1 overflow-y-auto gap-4 px-2 pb-2'>
+            <div className='relative z-10 flex flex-col flex-1 overflow-y-auto gap-4 px-2 py-3 inquiry-scrollbar'>
                 {/* Original inquiry */}
                 <div className='flex gap-3 flex-row-reverse'>
                     <AvatarBlock user={inquiry.alumni} />
-                    <div className='flex flex-col gap-1 max-w-[80%] items-end'>
-                        <span className='text-xs text-gray-400'>
+                    <div className='flex flex-col gap-1 max-w-[78%] items-end'>
+                        <span className='text-[11px] text-slate-400 font-medium px-1'>
                             You · {inquiry.formatted_date}
                         </span>
                         <div
-                            className='bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-3'
+                            className='bg-[#009AFB] text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md shadow-[#009AFB]/10 border border-[#009AFB]'
                             style={{ wordBreak: 'break-word' }}
                         >
-                            <p className='text-sm font-semibold mb-1'>{inquiry.subject}</p>
-                            <p className='text-sm'>{inquiry.message}</p>
+                            <p className='text-sm font-bold mb-1 border-b border-white/20 pb-1'>{inquiry.subject}</p>
+                            <p className='text-sm leading-relaxed'>{inquiry.message}</p>
                         </div>
                     </div>
                 </div>
@@ -149,8 +173,8 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                     return (
                         <div key={reply.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                             <AvatarBlock user={reply.sender} />
-                            <div className={`flex flex-col gap-1 max-w-[80%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                <span className='text-xs text-gray-400'>
+                            <div className={`flex flex-col gap-1 max-w-[78%] ${isMe ? 'items-end' : 'items-start'}`}>
+                                <span className='text-[11px] text-slate-400 font-medium px-1'>
                                     {isMe ? 'You' : `${reply.sender?.first_name} ${reply.sender?.last_name}`}
                                     {' · '}
                                     {new Date(reply.created_at).toLocaleDateString('en-US', {
@@ -159,10 +183,10 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                                     })}
                                 </span>
                                 <div
-                                    className={`rounded-2xl px-4 py-3 text-sm ${
+                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                                         isMe
-                                            ? 'bg-blue-600 text-white rounded-tr-none'
-                                            : 'bg-gray-100 text-slate-700 rounded-tl-none'
+                                            ? 'bg-[#009AFB] text-white rounded-tr-none shadow-md shadow-[#009AFB]/10'
+                                            : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-sm'
                                     }`}
                                     style={{ wordBreak: 'break-word' }}
                                 >
@@ -175,14 +199,15 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                 <div ref={bottomRef} />
             </div>
 
+            {/* Input Bar */}
             {isResolved ? (
-                <div className='text-center text-sm text-gray-400 border-t pt-3'>
+                <div className='relative z-10 text-center text-xs font-medium text-slate-400 bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-2xl py-3 px-4 shadow-sm'>
                     This inquiry has been resolved. No further replies needed.
                 </div>
             ) : (
-                <div className='flex gap-2 items-end border-t pt-3'>
+                <div className='relative z-10 flex gap-2.5 items-end bg-white/90 backdrop-blur-md border border-slate-200/70 p-2.5 rounded-2xl shadow-md'>
                     <textarea
-                        className='flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[60px] max-h-[140px]'
+                        className='flex-1 resize-none bg-transparent px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-h-[50px] max-h-[130px] inquiry-scrollbar'
                         placeholder='Write a reply...'
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
@@ -196,9 +221,9 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                     <Button
                         onClick={sendReply}
                         disabled={sending || !replyText.trim()}
-                        className='h-10 w-10 p-0 rounded-xl bg-blue-600 hover:bg-blue-700'
+                        className='h-10 w-10 p-0 shrink-0 rounded-xl bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-md shadow-[#009AFB]/20 transition-all duration-200 hover:scale-[1.03] disabled:opacity-40'
                     >
-                        <Send className='h-4 w-4 text-white' />
+                        <Send className='h-4 w-4' />
                     </Button>
                 </div>
             )}

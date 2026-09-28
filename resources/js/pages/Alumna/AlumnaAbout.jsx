@@ -60,23 +60,17 @@ const coreValues = [
 
 export default function AlumnaAbout() {
   const heroRef = useRef(null);
-  const purposeRef = useRef(null);
-  const whyMattersRef = useRef(null);
   const missionRef = useRef(null);
   const visionRef = useRef(null);
   const coreValuesRef = useRef(null);
 
   const [heroVisible, setHeroVisible] = useState(false);
-  const [purposeVisible, setPurposeVisible] = useState(false);
-  const [whyMattersVisible, setWhyMattersVisible] = useState(false);
   const [missionVisible, setMissionVisible] = useState(false);
   const [visionVisible, setVisionVisible] = useState(false);
   const [coreValuesVisible, setCoreValuesVisible] = useState(false);
 
   useEffect(() => {
     setHeroVisible(false);
-    setPurposeVisible(false);
-    setWhyMattersVisible(false);
     setMissionVisible(false);
     setVisionVisible(false);
     setCoreValuesVisible(false);
@@ -86,8 +80,6 @@ export default function AlumnaAbout() {
       observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.target === heroRef.current && entry.isIntersecting) setHeroVisible(true);
-          if (entry.target === purposeRef.current && entry.isIntersecting) setPurposeVisible(true);
-          if (entry.target === whyMattersRef.current && entry.isIntersecting) setWhyMattersVisible(true);
           if (entry.target === missionRef.current && entry.isIntersecting) setMissionVisible(true);
           if (entry.target === visionRef.current && entry.isIntersecting) setVisionVisible(true);
           if (entry.target === coreValuesRef.current && entry.isIntersecting) setCoreValuesVisible(true);
@@ -95,8 +87,6 @@ export default function AlumnaAbout() {
       }, { threshold: 0.15 });
 
       if (heroRef.current) observer.observe(heroRef.current);
-      if (purposeRef.current) observer.observe(purposeRef.current);
-      if (whyMattersRef.current) observer.observe(whyMattersRef.current);
       if (missionRef.current) observer.observe(missionRef.current);
       if (visionRef.current) observer.observe(visionRef.current);
       if (coreValuesRef.current) observer.observe(coreValuesRef.current);
@@ -126,7 +116,7 @@ export default function AlumnaAbout() {
         <div 
           className="absolute inset-0" 
           style={{
-            background: 'linear-gradient(to bottom, rgba(0, 60, 135, 0) 0%, rgba(0, 60, 135, 0) 50%, rgba(0, 60, 135, 0.5) 80%, #003C87 100%)'
+            background: 'linear-gradient(to bottom, rgba(0, 60, 135, 0) 0%, rgba(0, 60, 135, 0.4) 50%, rgba(0, 60, 135, 0.85) 80%, #003C87 100%)'
           }}
         />
         
@@ -144,77 +134,9 @@ export default function AlumnaAbout() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════
-          2. OUR PURPOSE
+          2. MISSION & VISION & CORE VALUES WRAPPER
       ═══════════════════════════════════════════════════════ */}
-      <section 
-        className="relative py-32 md:py-40 px-6 sm:px-10 overflow-hidden"
-        style={{
-          background: 'linear-gradient(to bottom, #003C87 0%, #00316F 50%, #00224D 100%)'
-        }}
-      >
-        {/* Triangle Pattern Backgrounds */}
-        <div 
-          className="absolute bottom-0 left-0 w-48 sm:w-64 md:w-[500px] lg:w-[700px] h-48 sm:h-64 md:h-[500px] lg:h-[700px] opacity-30 pointer-events-none"
-          style={{ backgroundImage: `url(${triangleBg})`, backgroundPosition: 'bottom left', backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }}
-        />
-        <div 
-          className="absolute bottom-0 right-0 w-48 sm:w-64 md:w-[500px] lg:w-[700px] h-48 sm:h-64 md:h-[500px] lg:h-[700px] opacity-30 pointer-events-none"
-          style={{ backgroundImage: `url(${triangle2Bg})`, backgroundPosition: 'bottom right', backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }}
-        />
-        
-        <div className="relative z-10 max-w-5xl mx-auto" ref={purposeRef}>
-          <h2 className={`text-white text-4xl sm:text-5xl lg:text-6xl font-extrabold text-center mb-16 drop-shadow-md transition-all duration-700 transform ${purposeVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
-            Our Purpose
-          </h2>
-
-          <div className="flex flex-col md:flex-row justify-center gap-8 items-stretch max-w-4xl mx-auto">
-            {purposes.map(({ Icon, title, desc }, index) => (
-              <div 
-                key={title} 
-                className={`flex-1 flex flex-col items-center text-center p-8 md:py-16 md:px-10 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl hover:-translate-y-3 hover:bg-white/20 hover:shadow-2xl hover:border-white/40 cursor-pointer transition-all duration-500 transform ${purposeVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-                style={{ transitionDelay: `${index * 150}ms` }}
-              >
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white mb-6">
-                  <Icon />
-                </div>
-                <h3 className="text-white font-bold text-lg mb-3">{title}</h3>
-                <p className="text-white/90 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          3. WHY IT MATTERS
-      ═══════════════════════════════════════════════════════ */}
-      <section className="bg-app-bg py-20 px-6 sm:px-10">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
-          
-          <div 
-            ref={whyMattersRef}
-            className={`flex-1 max-w-xl transition-all duration-1000 transform ${whyMattersVisible ? 'translate-x-0 opacity-100' : '-translate-x-12 opacity-0'}`}
-          >
-            <h2 className="text-[#305C8C] text-3xl md:text-4xl font-bold mb-6">Why it Matters</h2>
-            <p className="text-[#4A6482] text-sm md:text-base leading-relaxed mb-6 font-medium">
-              The information collected through Alumni Connect helps CECT maintain accurate alumni records and better understand the experiences and employment status of its graduates. This information can support improvements in services and help the college better support current and future students.
-            </p>
-            <p className="text-[#4A6482] text-sm md:text-base leading-relaxed font-medium">
-              By keeping their information updated and participating in available forms, alumni contribute to a stronger and more connected CECT community.
-            </p>
-          </div>
-
-          <div className={`flex-1 flex justify-center transition-all duration-1000 delay-200 transform ${whyMattersVisible ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
-            <img src={peopleImg} alt="Why it Matters Illustration" className="w-full max-w-md object-contain" />
-          </div>
-
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════
-          5. MISSION & VISION & CORE VALUES WRAPPER
-      ═══════════════════════════════════════════════════════ */}
-      <div className="bg-gradient-to-b from-[#f0f8fd] via-[#003C87] to-[#001D4A]">
+      <div className="bg-gradient-to-b from-[#003C87] via-[#002B66] to-[#001D4A]">
       <section className="py-16 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col gap-12">
           

@@ -12,8 +12,8 @@ class VerifyEmailController extends Controller
 {
     public function __invoke(Request $request, $id, $hash)
     {
-        // Check that the signed URL is valid
-        if (! URL::hasValidSignature($request)) {
+        // Validate the relative signed URL (path + query only — immune to http/https proxy differences)
+        if (! URL::hasValidSignature($request, false)) {
             abort(403, 'Invalid or expired verification link.');
         }
 

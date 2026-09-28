@@ -130,7 +130,7 @@ export default function CoordinatorFeaturedAlumniCard({ featuredAlumni, onDelete
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-64 text-center text-gray-400 text-sm">
-                No featuredAlumni found.
+                No featured alumni found.
               </TableCell>
             </TableRow>
           )}
@@ -198,7 +198,7 @@ export default function CoordinatorFeaturedAlumniCard({ featuredAlumni, onDelete
             })
           ) : (
             <div className="h-64 flex items-center justify-center text-center text-gray-400 text-sm">
-              No featuredAlumni found.
+              No featured alumni found.
             </div>
           )}
         </div>

@@ -90,7 +90,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         })->name('verification.notice');
 
         // User clicks the email link
-        Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware('signed')->name('verification.verify');
+        Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware('signed:relative')->name('verification.verify');
 
         // Resend verification email
         Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
@@ -264,13 +264,10 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::put('/featured-alumni/{featuredAlumni}/approve', [FeaturedAlumniController::class, 'approve'])->name('featured-alumni.approve');
         Route::put('/featured-alumni/{featuredAlumni}/reject', [FeaturedAlumniController::class, 'reject'])->name('featured-alumni.reject');
 
-        //AdminAlumni
-        Route::get('/alumni', [AdminAlumniController::class, 'index']) ->name('alumni.index');
-
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show']) ->name('alumni.show');
-
-        Route::get('/admin/alumni', [AdminAlumniController::class, 'index'])
-            ->name('admin.alumni.index');
+        // Admin Alumni & Directory
+        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni-directory', [AdminAlumniController::class, 'index'])->name('alumni-directory.index');
+        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
 
         Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
             ->name('admin.alumni.show');
@@ -436,6 +433,7 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/dashboard', CoordinatorDashboardController::class)->name('dashboard');
         Route::get('/profile', [CoordinatorProfileController::class, 'show'])->name('profile');
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni-directory', [CoordinatorAlumniController::class, 'index'])->name('alumni-directory.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
         Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
