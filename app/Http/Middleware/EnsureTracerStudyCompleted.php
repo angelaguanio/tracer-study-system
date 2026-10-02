@@ -19,7 +19,7 @@ class EnsureTracerStudyCompleted
         if (auth()->check() && auth()->user()->isAlumna()) {
             
             // Check if there is an active tracer study
-            $activeTracer = Survey::where('is_tracer_study', true)
+            $activeTracer = Survey::tracerStudy()
                                   ->where('status', 'active')
                                   ->first();
 

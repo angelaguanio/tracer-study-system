@@ -18,7 +18,7 @@ class SurveyAnalyticsController extends Controller
     {
         $this->authorize('viewAnalytics', Survey::class);
 
-        $latestTracer = Survey::where('is_tracer_study', true)
+        $latestTracer = Survey::tracerStudy()
             ->whereNull('archived_at')
             ->has('responses')
             ->orderBy('created_at', 'desc')

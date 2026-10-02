@@ -33,7 +33,7 @@ class SurveyPolicy
         }
 
         // Alumni can view tracer study surveys or active surveys
-        if ($user->isAlumna() && ($survey->is_tracer_study || $survey->status === 'active')) {
+        if ($user->isAlumna() && ($survey->type === 'Tracer Study' || $survey->status === 'active')) {
             return Response::allow();
         }
 
@@ -112,7 +112,7 @@ class SurveyPolicy
         }
 
         // Alumni can submit tracer study surveys or active surveys
-        if (!$survey->is_tracer_study && $survey->status !== 'active') {
+        if ($survey->type !== 'Tracer Study' && $survey->status !== 'active') {
             return Response::deny('This survey is not available for submission.');
         }
 

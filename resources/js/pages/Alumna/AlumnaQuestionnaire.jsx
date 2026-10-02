@@ -13,7 +13,8 @@ import echo from "@/echo";
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
   tracerStudyCompleted, 
-  cectSurveys, 
+  cectSurveys,
+  eventSurveys, 
   hasTracerStudy 
 }) {
   const { props, url } = usePage();
@@ -23,7 +24,7 @@ export default function AlumnaQuestionnaire({
   const tabMatch = url.match(/[?&]tab=([^&]+)/);
   const tabParam = tabMatch ? tabMatch[1] : null;
 
-  const activeTab = tabParam || (justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study');
+  const activeTab = tabParam || (justCompleted && completedSurveyType === 'events' ? 'events' : justCompleted && completedSurveyType === 'cect' ? 'cect-surveys' : 'tracer-study');
 
   const [renderKey, setRenderKey] = useState(0);
   const [countdown, setCountdown] = useState(5);
@@ -345,6 +346,118 @@ export default function AlumnaQuestionnaire({
     );
   };
 
+  const renderEventSurveysTab = () => {
+    if (!eventSurveys || eventSurveys.length === 0) {
+      return (
+        <div className='flex items-center justify-center w-full py-10'>
+          <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+            <CardHeader className="bg-gradient-to-r from-slate-500 to-slate-400 p-8 text-white space-y-4">
+              <div className='space-y-4'>
+                <div className='flex flex-row gap-2'>
+                  <ClipboardX size={18} />
+                  <span className='text-sm'>EVENTS</span>
+                </div>
+                <div>
+                  <h1 className='text-2xl sm:text-3xl'>No Active Events</h1>
+                  <p>Check back later for event registrations or feedback.</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+              <ClipboardX size={64} className='text-slate-300' />
+              <div className='space-y-2'>
+                <p className='text-lg font-medium text-gray-700'>There are no active events at the moment.</p>
+                <p className='text-sm text-gray-500'>
+                  Events will be available when faculty or coordinators create them.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full max-w-7xl mx-auto py-8 px-4 flex flex-col items-center">
+        {/* Header Section */}
+        <div className="text-center mb-10 max-w-2xl px-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#001D4A] mb-3">
+            Alumni Events
+          </h2>
+          <div className="w-12 h-1 bg-yellow-400 mx-auto rounded-full mb-4" />
+          <p className="text-gray-500 text-[15px] sm:text-base leading-relaxed">
+            Register or provide feedback for upcoming and past alumni events.
+          </p>
+        </div>
+
+        <div className='flex flex-wrap justify-center gap-6 w-full'>
+          {eventSurveys.map((survey) => (
+            <Card key={survey.id} className="flex flex-col w-full sm:w-[380px] overflow-hidden shadow-xl rounded-3xl p-0 gap-2 shrink-0">
+            <CardHeader className='bg-gradient-to-br from-blue-500 to-blue-300 px-5 sm:px-8 py-5 text-white'>
+              <div className="flex items-start gap-3 mt-3">
+                <div className="flex-col w-full items-center space-y-2 min-w-0">
+                <div className="bg-white/20 rounded-2xl p-4">
+                  <div className="flex items-center gap-3">
+                      <div className="p-3 rounded-full bg-white/30 shrink-0">
+                          <NotebookPen size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                              <h3 className="text-lg font-semibold text-white line-clamp-2 break-words">
+                                  {survey.title}
+                              </h3>
+                              {survey.completed && (
+                                  <Badge className="bg-green-100 text-green-700 border-green-300 whitespace-nowrap self-start">
+                                      Completed
+                                  </Badge>
+                              )}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+                  <p className="w-full text-sm font-normal text-white line-clamp-2 break-all">
+                    {survey.description || ""}
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-1 p-6">
+              <div className="mb-4">
+                <div className="flex flex-col items-start gap-3 text-sm text-gray-500">
+                  <div className='flex gap-2 items-center'>
+                    <NotebookText size={15}/>
+                    <span>{survey.questions_count} Question{survey.questions_count !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className='flex gap-2 items-center'>
+                    <CalendarDays size={15}/>
+                    <span>{new Date(survey.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full mt-auto pt-4">
+                {survey.completed ? (
+                  <Button variant="outline" disabled className="w-full">
+                    <CircleCheck size={16} className="mr-2" />
+                    Completed
+                  </Button>
+                ) : (
+                  <Button 
+                    className="bg-blue-btn hover:bg-bluehover-btn text-white w-full"
+                    onClick={() => router.get(`/alumna/surveys/${survey.id}`)}
+                  >
+                    <FileText size={16} className="mr-2" />
+                    View & Respond
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full relative flex-1 flex flex-col justify-center items-center min-h-[calc(100vh-80px)] py-8 bg-app-bg">
       
@@ -375,7 +488,7 @@ export default function AlumnaQuestionnaire({
 
       {/* Tab Content */}
       <div key={renderKey} className="relative z-10 w-full flex-1 flex flex-col justify-center items-center">
-        {activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
+        {activeTab === 'events' ? renderEventSurveysTab() : activeTab === 'tracer-study' ? renderTracerStudyTab() : renderCectSurveysTab()}
       </div>
     </div>
   );

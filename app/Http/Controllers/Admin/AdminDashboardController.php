@@ -138,7 +138,7 @@ class AdminDashboardController extends Controller
         $totalAlumni = User::where('user_role', 'alumna')->count();
 
         // Get only the latest tracer study survey
-        $tracerStudySurvey = Survey::where('is_tracer_study', true)
+        $tracerStudySurvey = Survey::tracerStudy()
             ->where('status', 'active')
             ->latest()
             ->first();

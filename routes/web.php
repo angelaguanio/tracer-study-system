@@ -333,7 +333,7 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::get('/analytics/tracer-study', function (\Illuminate\Http\Request $request) {
             if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
             $surveys = \App\Models\Survey::withCount('sections')
-                ->where('is_tracer_study', true)
+                ->where('type', 'Tracer Study')
                 ->whereNull('archived_at')
                 ->has('responses')
                 ->orderBy('created_at', 'desc')
@@ -343,11 +343,11 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
                     'title'           => $s->title,
                     'status'          => $s->status,
                     'sections_count'  => $s->sections_count,
-                    'is_tracer_study' => (bool) $s->is_tracer_study,
+                    'type'            => $s->type,
                 ])
                 ->withQueryString();
 
-            $latestActiveTracerId = \App\Models\Survey::where('is_tracer_study', true)
+            $latestActiveTracerId = \App\Models\Survey::tracerStudy()
                 ->where('status', 'active')
                 ->latest()
                 ->value('id');
@@ -363,7 +363,7 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::get('/analytics/general-survey', function (\Illuminate\Http\Request $request) {
             if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
             $surveys = \App\Models\Survey::withCount('sections')
-                ->where('is_tracer_study', false)
+                ->where('type', '!=', 'Tracer Study')
                 ->whereNull('archived_at')
                 ->has('responses')
                 ->orderBy('created_at', 'desc')
@@ -373,7 +373,7 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
                     'title'           => $s->title,
                     'status'          => $s->status,
                     'sections_count'  => $s->sections_count,
-                    'is_tracer_study' => (bool) $s->is_tracer_study,
+                    'type'            => $s->type,
                 ])
                 ->withQueryString();
             return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys, 'type' => 'general']);

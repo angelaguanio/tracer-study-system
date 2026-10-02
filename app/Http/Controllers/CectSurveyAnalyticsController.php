@@ -21,7 +21,7 @@ class CectSurveyAnalyticsController extends Controller
             abort(403);
         }
 
-        $latestSurvey = Survey::where('is_tracer_study', false)
+        $latestSurvey = Survey::where('type', '!=', 'Tracer Study')
             ->whereNull('archived_at')
             ->has('responses')
             ->orderBy('created_at', 'desc')
@@ -45,7 +45,7 @@ class CectSurveyAnalyticsController extends Controller
             abort(403);
         }
 
-        abort_if($survey->is_tracer_study, 403, 'Use the tracer study analytics for this survey.');
+        abort_if($survey->type === 'Tracer Study', 403, 'Use the tracer study analytics for this survey.');
 
         $survey->load([
             'sections' => fn($q) => $q->orderBy('display_order')->with([
@@ -210,7 +210,7 @@ class CectSurveyAnalyticsController extends Controller
             abort(403);
         }
 
-        abort_if($survey->is_tracer_study, 403);
+        abort_if($survey->type === 'Tracer Study', 403);
 
         // Reuse the same filter logic
         $yearGraduated = $request->query('year_graduated');

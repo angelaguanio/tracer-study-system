@@ -97,7 +97,7 @@ class HandleInertiaRequests extends Middleware
     {
         if ($user->user_role !== 'alumna') return false;
         
-        $activeTracer = \App\Models\Survey::where('is_tracer_study', true)
+        $activeTracer = \App\Models\Survey::tracerStudy()
                                           ->where('status', 'active')
                                           ->first();
         if (!$activeTracer) return false;

@@ -17,15 +17,35 @@ import NotificationBell from './NotificationBell'
 import { useNotifications } from '@/hooks/useNotifications';
 
 const mainNav = [
-  { id: "home", name: "Home", href: "/alumna/home", icon: Home },
-  { id: "announcements", name: "Announcements", href: "/alumna/announcements", icon: Megaphone },
   { 
-    id: "questionnaire", 
-    name: "Questionnaire", 
+    id: "main", 
+    name: "Main", 
+    icon: Home,
+    subItems: [
+      { id: "dashboard", name: "Dashboard", href: route('alumna.home') },
+      { id: "profile", name: "Alumni Profile", href: route('alumna.profile') },
+    ]
+  },
+  {
+    id: "services",
+    name: "Alumni Services",
     icon: ClipboardList,
     subItems: [
-      { id: "tracer", name: "Tracer Study Survey", href: "/alumna/questionnaire?tab=tracer-study" },
-      { id: "cect", name: "Alumni Forms", href: "/alumna/questionnaire?tab=cect-surveys" },
+      { id: "tracer", name: "Graduate Tracer Study", href: `${route('alumna.questionnaire')}?tab=tracer-study` },
+      { id: "forms", name: "Alumni Forms & Requests", href: `${route('alumna.questionnaire')}?tab=cect-surveys` },
+      { id: "events", name: "Alumni Events", href: `${route('alumna.questionnaire')}?tab=events` },
+      { id: "inquiries", name: "Inquiries", href: route('alumna.inquiries.index') },
+    ]
+  },
+  {
+    id: "information",
+    name: "Information",
+    icon: Info,
+    subItems: [
+      { id: "announcements", name: "Announcements", href: route('alumna.announcements') },
+      { id: "updates", name: "Alumni Updates", href: "/alumna/updates" },
+      { id: "about", name: "About", href: route('alumna.about') },
+      { id: "contact", name: "Contact Us", href: route('alumna.contact') },
     ]
   },
   { 
@@ -37,13 +57,9 @@ const mainNav = [
       { id: "office", name: "Alumni Office", href: route('alumna.office') },
     ]
   },
-  { id: "about", name: "About", href: "/alumna/about", icon: Info },
-  { id: "contact", name: "Contact us", href: "/alumna/contact", icon: Phone },
 ]
 
 const accountBtns = [
-  { id: "profile", name: "Profile", href: route('alumna.profile'), icon: User },
-  { id: "inquiries", name: "Inquiries", href: route('alumna.inquiries.index'), icon: Mail },
   { id: "logout", name: "Logout", href: route('alumna.logout'), icon: LogOut, method: 'post', as: 'button' },
 ]
 
@@ -66,7 +82,9 @@ export default function NavbarAlumni({ children }) {
   
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openSubMenus, setOpenSubMenus] = useState({
-      questionnaire: false,
+      main: false,
+      services: false,
+      information: false,
       affairs: false
   })
   
@@ -178,10 +196,8 @@ export default function NavbarAlumni({ children }) {
         <div className="flex-1 overflow-y-auto pb-6">
             {!isTracerLocked && (
                 <>
-                    {/* MAIN section */}
-                    <div className="px-5 pt-5 pb-1">
-                    <p className="text-xs font-semibold tracking-wide text-gray-400">MAIN</p>
-                    </div>
+                    {/* Menu section */}
+                    <div className="pt-5"></div>
                     <div className="px-2">
                     {filteredMainNav.map((item) => {
                 const Icon = item.icon

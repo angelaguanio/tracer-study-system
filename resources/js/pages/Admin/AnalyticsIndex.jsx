@@ -53,7 +53,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                                 size="sm"
                                 className="bg-purple-600 hover:bg-purple-700 text-white"
                                 onClick={() => router.get(
-                                    survey.is_tracer_study
+                                    survey.type === 'Tracer Study'
                                         ? route("admin.analytics.show", survey.id)
                                         : route("admin.analytics.cect-show", survey.id)
                                 )}

@@ -58,6 +58,7 @@ class SurveyController extends Controller
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => $request->input('status', 'inactive'),
+            'type'        => $request->input('type', 'Forms and Requests'),
             'created_by'  => auth()->id(),
         ]);
 
@@ -81,13 +82,13 @@ class SurveyController extends Controller
         }
 
         // Handle tracer study active status
-        $isTracer = $request->has('is_tracer_study') ? $request->input('is_tracer_study') : $survey->is_tracer_study;
+        $type = $request->has('type') ? $request->input('type') : $survey->type;
         
-        if ($isTracer && $request->input('status') === 'active') {
+        if ($type === 'Tracer Study' && $request->input('status') === 'active') {
             // Only one tracer study can be active at a time.
             // Deactivate older active tracer studies so they become historical records.
             Survey::where('id', '!=', $survey->id)
-                ->where('is_tracer_study', true)
+                ->where('type', 'Tracer Study')
                 ->where('status', 'active')
                 ->update(['status' => 'inactive']);
         }
@@ -98,7 +99,7 @@ class SurveyController extends Controller
             NotificationService::surveyPublished(
                 $survey->id,
                 $survey->title,
-                $survey->is_tracer_study ? 'tracer' : 'normal'
+                $survey->type === 'Tracer Study' ? 'tracer' : 'normal'
             );
         }
 

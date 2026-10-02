@@ -14,9 +14,7 @@ class StudentProfileController extends Controller
     public function show($id = null) 
     {
         $userId = $id ?? auth()->id();
-        $user = User::with(['address', 'employment', 'employmentHistory' => function($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->findOrFail($userId);
+        $user = User::with(['address'])->findOrFail($userId);
         
         return Inertia::render('Alumna/StudentProfile', [
             'profile' => $user
@@ -34,7 +32,7 @@ class StudentProfileController extends Controller
 
     public function edit() 
     {
-        $user = Auth::user()->load(['address', 'employment']);
+        $user = Auth::user()->load(['address']);
         return Inertia::render('Alumna/StudentProfileEdit', [
             'profile' => $user
         ]);
@@ -73,23 +71,7 @@ class StudentProfileController extends Controller
             'email'          => 'required|email|max:255|unique:users,email,' . $user->id,
             'profile_picture'=> 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
 
-            'is_employed'    => 'required|in:yes,no',
-
-            'company'                => 'required_if:is_employed,yes|string|max:255',
-            'employment_type'        => 'required_if:is_employed,yes|string|max:255',
-            'position'                => 'required_if:is_employed,yes|string|max:255',
-            'employment_duration'     => 'required_if:is_employed,yes|string|max:255',
-            'location'                => 'required_if:is_employed,yes|string|max:255',
-            'monthly_salary'          => 'nullable|numeric|min:0',
-
-            'reason_unemployed' => 'required_if:is_employed,no|string|max:255',
         ]);
-
-        // 1. Define variables clearly before usage to prevent crashes
-        $isEmployed = (strtolower($request->is_employed ?? '') === 'yes') ? 'Yes' : 'No';
-        $salaryValue = $request->monthly_salary ?? null;
-        $unemploymentReason = ($isEmployed === 'No') ? $request->reason_unemployed : null;
-        $isPresent = $request->boolean('is_present');
 
         $fullAddress = \App\Models\Address::formatFullAddress($request->all());
         if (empty($fullAddress)) {
@@ -97,7 +79,7 @@ class StudentProfileController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $user, $isEmployed, $salaryValue, $unemploymentReason, $isPresent, $fullAddress) {
+            DB::transaction(function () use ($request, $user, $fullAddress) {
                 
                 // Handle File Upload
                 if ($request->hasFile('profile_picture')) {
@@ -149,62 +131,6 @@ class StudentProfileController extends Controller
                     ]
                 );
 
-                $oldEmp = $user->employment;
-
-                // Create History Entry if they previously had a job to archive
-                if ($oldEmp && $oldEmp->currently_employed === 'Yes') {
-                    // Archive if they changed companies/duration, OR if they are now unemployed
-                    $hasChanged = (
-                       $isEmployed === 'No' ||
-                       $oldEmp->company_name !== $request->company ||
-                       $oldEmp->employment_duration !== $request->employment_duration
-                    );
-
-                    if ($hasChanged) {
-                        $oldDuration = $oldEmp->employment_duration;
-                        if ($oldDuration && stripos($oldDuration, 'Present') !== false) {
-                            $closeYear = date('Y'); // fallback
-                            
-                            // If they are entering a new job, try to use its start year instead
-                            if ($isEmployed === 'Yes' && $request->employment_duration) {
-                                if (preg_match('/\b(19|20)\d{2}\b/', $request->employment_duration, $matches)) {
-                                    $closeYear = $matches[0];
-                                }
-                            }
-                            
-                            $oldDuration = str_ireplace('Present', $closeYear, $oldDuration);
-                        }
-
-                        $user->employmentHistory()->create([
-                            'user_id'            => $user->id,
-                            'currently_employed' => $oldEmp->currently_employed,
-                            'employment_type'    => $oldEmp->employment_type,
-                            'company_name'       => $oldEmp->company_name,
-                            'position'           => $oldEmp->position,
-                            'location'           => $oldEmp->location,
-                            'monthly_salary'     => $oldEmp->monthly_salary,
-                            'unemployment_reason'=> $oldEmp->unemployment_reason,
-                            'employment_duration' => $oldDuration,
-                            'is_present'         => 0,
-                        ]);
-                    }
-                }
-
-                // Update Current Employment
-                $user->employment()->updateOrCreate(
-                    ['user_id' => $user->id],
-                    [
-                        'currently_employed'  => $isEmployed,
-                        'employment_type'     => $isEmployed === 'Yes' ? $request->employment_type : null,
-                        'company_name'        => $isEmployed === 'Yes' ? $request->company : null,
-                        'position'            => $isEmployed === 'Yes' ? $request->position : null,
-                        'location'            => $isEmployed === 'Yes' ? $request->location : null,
-                        'monthly_salary'      => $isEmployed === 'Yes' ? $salaryValue : null,
-                        'unemployment_reason' => $unemploymentReason,
-                        'employment_duration'  => $isEmployed === 'Yes' ? $request->employment_duration : null,
-                        'is_present'           => ($isEmployed === 'Yes' && $isPresent) ? 1 : 0,
-                    ]
-                );
             });
 
             return redirect()->route('alumna.profile')->with('success', 'Profile updated successfully!');

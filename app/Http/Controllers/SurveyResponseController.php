@@ -135,6 +135,6 @@ class SurveyResponseController extends Controller
 
         return redirect()->route('alumna.questionnaire')
             ->with('justCompleted', true)
-            ->with('completedSurveyType', $survey->is_tracer_study ? 'tracer' : 'cect');
+            ->with('completedSurveyType', $survey->type === 'Tracer Study' ? 'tracer' : 'cect');
     }
 }

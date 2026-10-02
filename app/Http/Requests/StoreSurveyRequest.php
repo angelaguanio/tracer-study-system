@@ -17,6 +17,7 @@ class StoreSurveyRequest extends FormRequest
             'title'       => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status'      => ['sometimes', 'in:active,inactive'],
+            'type'        => ['required', 'in:Tracer Study,Forms and Requests,Events'],
         ];
     }
 }

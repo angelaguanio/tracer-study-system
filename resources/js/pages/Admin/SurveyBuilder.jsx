@@ -10,7 +10,7 @@ import QuestionFormModal from "@/components/survey/coordinator/QuestionFormModal
 import SubheadingFormModal from "@/components/survey/coordinator/SubheadingFormModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -75,8 +75,8 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
         router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
     };
 
-    const handleTracerStudyToggle = (checked) => {
-        router.put(route("admin.surveys.update", survey.id), { is_tracer_study: checked });
+    const handleTypeChange = (value) => {
+        router.put(route("admin.surveys.update", survey.id), { type: value });
     };
 
     const handleSaveHeader = () => {
@@ -205,7 +205,20 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
 
                     {/* Right: Status Badge + Toggle */}
                     {!isEditingHeader && (
-                        <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end ">
+                        <div className="flex items-center gap-3 shrink-0 self-center">
+                            <div className="flex items-center gap-2 bg-blue-50 rounded-lg border border-blue-200">
+                                <Select value={survey.type || "Forms and Requests"} onValueChange={handleTypeChange}>
+                                    <SelectTrigger className="h-9 min-w-[170px] bg-transparent border-0 text-blue-700 font-medium focus:ring-0">
+                                        <SelectValue placeholder="Survey Type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Tracer Study">Tracer Study</SelectItem>
+                                        <SelectItem value="Forms and Requests">Forms and Requests</SelectItem>
+                                        <SelectItem value="Events">Events</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
                             <Button
                                 type="button"
                                 size="sm"
@@ -218,23 +231,6 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
                             >
                                 {survey.status === "active" ? "Active" : "Inactive"}
                             </Button>
-                            
-                            <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1.5 border border-blue-200 ">
-                                <Switch
-                                    id="tracer-study-toggle"
-                                    checked={survey.is_tracer_study || false}
-                                    onCheckedChange={handleTracerStudyToggle}
-                                    className="data-[state=checked]:bg-blue-600"
-                                />
-                                <Label 
-                                    htmlFor="tracer-study-toggle" 
-                                    className={`text-sm font-medium cursor-pointer ${
-                                        survey.is_tracer_study ? "text-blue-700" : "text-gray-500"
-                                    }`}
-                                >
-                                    Tracer Study
-                                </Label>
-                            </div>
                         </div>
                     )}
                 </div>

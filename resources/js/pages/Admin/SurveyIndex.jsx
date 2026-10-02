@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import {
     Pagination,
     PaginationContent,
@@ -20,7 +21,7 @@ import {
 export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
     const [open, setOpen] = useState(false);
     const [tab, setTab] = useState("active"); // "active" | "archived"
-    const [form, setForm] = useState({ title: "", description: "" });
+    const [form, setForm] = useState({ title: "", description: "", type: "Forms and Requests" });
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
 
@@ -36,7 +37,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
             },
             onSuccess: () => {
                 setOpen(false);
-                setForm({ title: "", description: "" });
+                setForm({ title: "", description: "", type: "Forms and Requests" });
                 setSubmitting(false);
             },
             onFinish: () => {
@@ -253,6 +254,20 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
                             <Label>Title</Label>
                             <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Survey title" />
                             {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <Label>Type</Label>
+                            <Select value={form.type} onValueChange={(val) => setForm(f => ({ ...f, type: val }))}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Tracer Study">Tracer Study</SelectItem>
+                                    <SelectItem value="Forms and Requests">Forms and Requests</SelectItem>
+                                    <SelectItem value="Events">Events</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.type && <p className="text-xs text-red-500">{errors.type}</p>}
                         </div>
                         <div className="flex flex-col gap-1">
                             <Label>Description <span className="text-gray-400 font-normal">(optional)</span></Label>
