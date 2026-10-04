@@ -7,8 +7,16 @@ import { ChevronDown } from 'lucide-react'
 export default function SidebarCoord({ navItemsCoord = [] }) {
   const {url} = usePage();
   const path = url.split('?')[0];
-  const [openItems, setOpenItems] = useState({
-    alumni: path.includes('/coordinator/alumni') || path.includes('/coordinator/featured-alumni'),
+  const [openItems, setOpenItems] = useState(() => {
+    const initialOpen = {};
+    navItemsCoord.forEach(item => {
+      if (item.subItems) {
+        initialOpen[item.id] = item.subItems.some(subItem => 
+          path === subItem.href || (subItem.href && subItem.href !== '#' && path.startsWith(subItem.href))
+        );
+      }
+    });
+    return initialOpen;
   });
 
   const toggleItem = (id) => {
@@ -34,8 +42,8 @@ export default function SidebarCoord({ navItemsCoord = [] }) {
                     <SidebarMenuButton
                       onClick={() => toggleItem(item.id)}
                       isActive={
-                        item.id === 'alumni'
-                          ? path.includes('/coordinator/alumni') || path.includes('/coordinator/featured-alumni')
+                        item.subItems
+                          ? item.subItems.some(subItem => path === subItem.href || (subItem.href && subItem.href !== '#' && path.startsWith(subItem.href)))
                           : item.href ? path.startsWith(item.href) : false
                       }
                       className='[&>svg]:size-5 py-5 my-1 justify-between cursor-pointer'

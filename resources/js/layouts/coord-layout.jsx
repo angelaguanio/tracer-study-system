@@ -13,44 +13,42 @@ export default function CoordinatorLayout({ children }) {
   
   const navItemsCoord = [
     {
-      id: "dashboard",
-      name: "Dashboard",
-      href: "/coordinator/dashboard",
-      icon: LayoutDashboard
+      id: "general",
+      name: "General",
+      icon: LayoutDashboard,
+      subItems: [
+        {
+          name: "Dashboard",
+          href: "/coordinator/dashboard"
+        },
+        {
+          name: "Announcements",
+          href: "/coordinator/announcement"
+        },
+        {
+          name: "Inquiries",
+          href: "/coordinator/inquiries"
+        }
+      ]
     },
     {
-      id: "announcement",
-      name: "Announcements",
-      href: "/coordinator/announcement",
-      icon: Bell
+      id: "survey-management",
+      name: "Survey Management",
+      icon: FileText,
+      subItems: [
+        {
+          name: "Forms and Surveys",
+          href: "/coordinator/forms-and-surveys"
+        },
+        {
+          name: "Survey Responses",
+          href: "/coordinator/survey-response"
+        }
+      ]
     },
     {
-      id: "inquiries",
-      name: "Inquiries",
-      href:"/coordinator/inquiries",
-      icon: Mail
-    },
-    {
-      id: "surveys",
-      name: "Forms and Surveys",
-      href: "/coordinator/forms-and-surveys",
-      icon: FileText
-    },    
-    {
-      id: "survey-response",
-      name: "Survey Response",
-      href: "/coordinator/survey-response",
-      icon: FileChartColumn
-    },
-    {
-      id: "analytics",
-      name: "Analytics",
-      href: "/coordinator/analytics",
-      icon: BarChart2
-    },
-    {
-      id: "alumni",
-      name: "Alumni",
+      id: "alumni-management",
+      name: "Alumni Management",
       icon: CircleUserRound,
       subItems: [
         {
@@ -63,6 +61,12 @@ export default function CoordinatorLayout({ children }) {
         }
       ]
     },
+    {
+      id: "analytics",
+      name: "Analytics",
+      href: "/coordinator/analytics",
+      icon: BarChart2
+    }
   ];
 
   return (
