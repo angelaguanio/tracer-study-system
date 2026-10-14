@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @import 'tailwindcss';
 @plugin 'tailwindcss-animate';
@@ -77,6 +78,7 @@
     --font-inter: "Inter", sans-serif;
     --font-inria: "Inria Sans", sans-serif;
     --font-bruno: "Bruno Ace SC", sans-serif;
+    --font-playfair: "Playfair Display", serif;
 
 }
 
@@ -375,4 +377,34 @@
 .inquiry-scrollbar {
     scrollbar-width: 8px;
     scrollbar-color: #9ca3af transparent;
+}
+
+/* ===== Admin / Coordinator sidebar scrollbar (glass style on blue gradient) ===== */
+[data-sidebar="content"]::-webkit-scrollbar {
+    width: 6px;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 9999px;
+    margin: 8px 0;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.2));
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: background 0.3s ease;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+}
+
+/* Firefox only (Chrome would otherwise ignore the webkit styles above) */
+@supports not selector(::-webkit-scrollbar) {
+    [data-sidebar="content"] {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+    }
 }

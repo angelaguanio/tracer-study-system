@@ -21,7 +21,7 @@ import {
 export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
     const [open, setOpen] = useState(false);
     const [tab, setTab] = useState("active"); // "active" | "archived"
-    const [form, setForm] = useState({ title: "", description: "", type: "Forms and Requests" });
+    const [form, setForm] = useState({ title: "", description: "", type: "Alumni Forms" });
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
 
@@ -37,7 +37,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
             },
             onSuccess: () => {
                 setOpen(false);
-                setForm({ title: "", description: "", type: "Forms and Requests" });
+                setForm({ title: "", description: "", type: "Alumni Forms" });
                 setSubmitting(false);
             },
             onFinish: () => {
@@ -263,8 +263,7 @@ export default function SurveyIndex({ surveys = [], archivedSurveys = [] }) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Tracer Study">Tracer Study</SelectItem>
-                                    <SelectItem value="Forms and Requests">Forms and Requests</SelectItem>
-                                    <SelectItem value="Events">Events</SelectItem>
+                                    <SelectItem value="Alumni Forms">Alumni Forms</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.type && <p className="text-xs text-red-500">{errors.type}</p>}

@@ -17,7 +17,14 @@ import {
 export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
     const currentList = surveys.data ?? [];
 
-    const pageTitle = type === 'tracer' ? 'Tracer Study Analytics' : 'General Survey Analytics';
+    const pageTitle = type === 'tracer' ? 'Tracer Study Analytics' : 
+                      type === 'alumni-forms' ? 'Alumni Forms Analytics' : 'Analytics';
+
+    const getRouteName = (t) => {
+        if (t === 'tracer') return "admin.analytics.tracer";
+        if (t === 'alumni-forms') return "admin.analytics.alumni-forms";
+        return "admin.analytics.tracer";
+    };
 
     return (
         <div className="w-full max-w-full px-4 py-6 flex flex-col gap-4 self-start">
@@ -79,7 +86,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
 
                                         if (surveys.current_page > 1) {
                                             router.get(
-                                                route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
+                                                route(getRouteName(type)),
                                                 {
                                                     page: surveys.current_page - 1,
                                                 },
@@ -130,7 +137,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                                                     e.preventDefault();
 
                                                     router.get(
-                                                        route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
+                                                        route(getRouteName(type)),
                                                         { page },
                                                         {
                                                             preserveState: true,
@@ -162,7 +169,7 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                                             surveys.last_page
                                         ) {
                                             router.get(
-                                                route(type === 'tracer' ? "admin.analytics.tracer" : "admin.analytics.general"),
+                                                route(getRouteName(type)),
                                                 {
                                                     page: surveys.current_page + 1,
                                                 },

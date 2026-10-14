@@ -37,14 +37,9 @@ class Survey extends Model
         return $query->where('type', 'Tracer Study');
     }
 
-    public function scopeForms($query)
+    public function scopeAlumniForms($query)
     {
-        return $query->where('type', 'Forms and Requests');
-    }
-
-    public function scopeEvents($query)
-    {
-        return $query->where('type', 'Events');
+        return $query->where('type', 'Alumni Forms');
     }
 
     /** Surveys not archived */

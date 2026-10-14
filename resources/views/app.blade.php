@@ -26,7 +26,7 @@
         @if (str_starts_with($page['component'], 'Auth/'))
             <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cover4.webp') }}">
         @elseif ($page['component'] === 'Alumna/AlumnaHome')
-            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_home_new.webp') }}">
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/bg_test_1.webp') }}">
         @elseif ($page['component'] === 'Alumna/AlumnaAbout')
             <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/grad_pic.webp') }}">
         @elseif ($page['component'] === 'Alumna/AlumnaAssociation')

@@ -116,15 +116,21 @@ class SurveyResponseController extends Controller
             // No need to filter since subheadings don't generate form inputs
             $filteredAnswers = $draft->answers;
 
+            // Get all valid question IDs for this survey to prevent foreign key errors
+            // in case an admin deleted a question after the user saved their draft
+            $validQuestionIds = \App\Models\Question::whereIn('section_id', $survey->sections()->pluck('id'))->pluck('id')->toArray();
+
             // Create Response records only for actual input questions
             foreach ($filteredAnswers as $questionId => $answerValue) {
-                Response::create([
-                    'survey_id'    => $survey->id,
-                    'user_id'      => $user->id,
-                    'question_id'  => $questionId,
-                    'answer_value' => is_array($answerValue) ? json_encode($answerValue) : $answerValue,
-                    'submitted_at' => now(),
-                ]);
+                if (in_array($questionId, $validQuestionIds)) {
+                    Response::create([
+                        'survey_id'    => $survey->id,
+                        'user_id'      => $user->id,
+                        'question_id'  => $questionId,
+                        'answer_value' => is_array($answerValue) ? json_encode($answerValue) : $answerValue,
+                        'submitted_at' => now(),
+                    ]);
+                }
             }
 
             NotificationService::surveyAnswered($survey->id, $user->id, $user->name);

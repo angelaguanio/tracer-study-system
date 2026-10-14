@@ -80,6 +80,7 @@ class AlumnaAuthController extends Controller
             'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
 
             // Address and Contact Number validation
+            'country' => 'nullable|string|max:255',
             'street_address' => 'nullable|string|max:255',
             'subdivision' => 'nullable|string|max:255',
             'region' => 'nullable|string|max:255',
@@ -162,6 +163,7 @@ class AlumnaAuthController extends Controller
         // Create Address Record
         \App\Models\Address::create([
             'user_id' => $user->id,
+            'country' => $validation['country'] ?? 'Philippines',
             'street_address' => $validation['street_address'] ?? null,
             'subdivision' => $validation['subdivision'] ?? null,
             'region' => $validation['region'] ?? null,

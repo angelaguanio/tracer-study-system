@@ -29,8 +29,8 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
             {...props}
         >
             {children}
-            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity">
-                <X className="h-4 w-4" />
+            <DialogClose className="absolute right-6 top-6 rounded-sm opacity-70 hover:opacity-100 transition-opacity">
+                <X className="h-6 w-6 text-gray-500" strokeWidth={1.5} />
             </DialogClose>
         </DialogPrimitive.Content>
     </DialogPortal>

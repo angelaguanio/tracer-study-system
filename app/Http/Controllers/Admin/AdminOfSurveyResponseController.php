@@ -17,10 +17,15 @@ class AdminOfSurveyResponseController extends Controller
     public function index(Request $request)
 {
     $sort = $request->get('sort', 'newest');
+    $type = $request->get('type', 'all');
 
     $base = Survey::withCount('sections')
         ->with('creator')
         ->has('responses'); // Only surveys with at least one response
+
+    if ($type !== 'all') {
+        $base->where('type', $type);
+    }
 
     if ($sort === 'oldest') {
         $base->oldest();
@@ -35,6 +40,7 @@ class AdminOfSurveyResponseController extends Controller
             return [
                 'id'             => $survey->id,
                 'title'          => $survey->title,
+                'type'           => $survey->type,
                 'status'         => $survey->status,
                 'sections_count' => $survey->sections_count,
                 'created_at'     => $survey->created_at,
@@ -52,6 +58,7 @@ class AdminOfSurveyResponseController extends Controller
             return [
                 'id'             => $survey->id,
                 'title'          => $survey->title,
+                'type'           => $survey->type,
                 'status'         => $survey->status,
                 'sections_count' => $survey->sections_count,
                 'created_at'     => $survey->created_at,
@@ -67,6 +74,7 @@ class AdminOfSurveyResponseController extends Controller
         'archivedSurveys' => $archivedSurveys,
         'filters' => [
             'sort' => $sort,
+            'type' => $type,
         ],
     ]);
 }

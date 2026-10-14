@@ -17,7 +17,7 @@ class UpdateSurveyRequest extends FormRequest
             'title'           => ['sometimes', 'required', 'string', 'max:255'],
             'description'     => ['nullable', 'string', 'max:1000'],
             'status'          => ['sometimes', 'in:active,inactive'],
-            'type'            => ['sometimes', 'in:Tracer Study,Forms and Requests,Events'],
+            'type'            => ['sometimes', 'in:Tracer Study,Alumni Forms'],
         ];
     }
 }

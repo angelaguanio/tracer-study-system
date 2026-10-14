@@ -37,27 +37,40 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
         )}
       />
 
-      {/* Large Bottom Waves (SVG) */}
-      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[30vh] md:h-[40vh] opacity-30">
-          <path fill="#93C5FD" fillOpacity="1" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+      {/* Bottom Left Corner Wave */}
+      <div className="absolute bottom-0 left-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
+          {/* Light Blue Swoosh */}
+          <path fill="#60A5FA" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
+          {/* Dark Blue Swoosh */}
+          <path fill="#005AAA" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
         </svg>
       </div>
-      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[25vh] md:h-[35vh] opacity-50">
-           <path fill="#60A5FA" fillOpacity="1" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,138.7C840,128,960,160,1080,186.7C1200,213,1320,235,1380,245.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+
+      {/* Bottom Right Corner Wave */}
+      <div className="absolute bottom-0 right-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end justify-end">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="xMaxYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
+          {/* Light Blue Swoosh */}
+          <path fill="#60A5FA" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
+          {/* Dark Blue Swoosh */}
+          <path fill="#005AAA" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
         </svg>
       </div>
 
       <div className="relative z-10 w-full max-w-[1200px] mx-auto px-6 py-12 md:py-20 flex flex-col items-center">
 
-        <div className="text-center mb-12">
-          <h1 className="text-[#0B2545] text-3xl md:text-4xl font-extrabold mb-4 tracking-tight">
-            Wesleyan Footprints: Stories that Inspire
+        <div className="text-center mb-16 max-w-5xl mx-auto font-inter">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="w-16 h-px bg-blue-200"></div>
+            <span className="uppercase text-[#007AD7] font-bold tracking-[0.2em] text-sm">Alumni Stories</span>
+            <div className="w-16 h-px bg-blue-200"></div>
+          </div>
+          <h1 className="text-3xl md:text-4xl lg:text-[45px] font-playfair font-bold text-[#001D4A] mb-6 leading-[1.2]">
+            Wesleyan Footprints: Stories that Inspire,<br className="hidden md:block" /> 
+            <span className="text-[#007AD7]">Achieve, and Create a Brighter Tomorrow</span>
           </h1>
-          <div className="w-12 h-1 bg-blue-600 rounded-full mx-auto mb-5"></div>
-          <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-            Celebrating the Journey, Achievements, and Wesleyan Impact on our Graduates.
+          <p className="text-gray-500 text-lg sm:text-xl max-w-3xl mx-auto">
+            Discover the journeys, achievements, and lasting impact of our graduates who continue to make a difference in their communities and beyond.
           </p>
         </div>
 
@@ -104,7 +117,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                   </div>
 
                   {/* CONTENT */}
-                  <div className="px-5 pb-5 pt-1 flex flex-col bg-white relative z-10 -mt-8">
+                  <div className="px-5 pb-5 pt-1 flex flex-col bg-white relative z-10 -mt-8 font-inter">
                     <h3 className="text-[#0B2545] text-base font-black mb-1 line-clamp-1 tracking-tight">
                       {alumnus.title}
                     </h3>

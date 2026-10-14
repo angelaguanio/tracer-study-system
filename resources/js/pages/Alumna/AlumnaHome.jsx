@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import AlumnaLayout from "@/layouts/alumna-layout";
-import alumniHomeImg from '../../assets/cect_home_new.webp';
-import editFileIcon from '../../assets/edit-file.webp';
+import alumniHomeImg from '../../assets/bg_test_1.webp';
+import editFileIcon from '../../assets/user.webp';
+import accSvg from '../../assets/acc.svg';
+import clipboardSvg from '../../assets/clipboard.svg';
+import notifSvg from '../../assets/notif.svg';
+import shareSvg from '../../assets/share.svg';
 import { Link, Head } from '@inertiajs/react';
 import echo from '@/echo';
 import UpdateProfileBanner from '@/components/alumna/UpdateProfileBanner';
@@ -51,31 +55,42 @@ function FadeInSection({ children, delay = 0, className = "" }) {
 }
 
 
-// Announcement Card Component (Updated for new design)
+// Announcement Card Component (Updated for premium design)
 function AnnouncementCard({ id, date, title, description, image }) {
   const imgSrc = Array.isArray(image) ? image[0] : image;
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-[400px] w-full max-w-[340px]">      
-      {imgSrc ? (
-        <img
-          src={imgSrc}
-          className="w-full h-[160px] object-cover rounded-2xl mb-5"
-          alt={title}
-        />
-      ) : (
-        <div className="w-full h-[160px] rounded-2xl mb-5 bg-blue-50/50 flex items-center justify-center border border-blue-100">
-          <ImageOff size={48} className="text-[#007AD7]" />
-        </div>
-      )}
+    <div className="group bg-white rounded-[2rem] p-5 shadow-lg shadow-blue-900/5 border border-gray-100/60 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-3 flex flex-col h-[430px] w-full max-w-[340px] relative overflow-hidden">      
+      {/* Decorative Blur */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-400/5 rounded-full blur-3xl group-hover:bg-blue-400/10 transition-colors duration-500 pointer-events-none z-0" />
 
-      <p className="text-[#005AAA] text-xs font-semibold uppercase tracking-wider mb-3">{date}</p>
-      <h3 className="text-lg font-bold text-[#001D4A] mb-3 line-clamp-2">{title}</h3>
-      <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">{description}</p>
+      <div className="overflow-hidden rounded-2xl mb-5 relative z-10 border border-gray-50 shadow-sm">
+          {imgSrc ? (
+            <img
+              src={imgSrc}
+              className="w-full h-[180px] object-cover transform group-hover:scale-105 transition-transform duration-700"
+              alt={title}
+            />
+          ) : (
+            <div className="w-full h-[180px] bg-gradient-to-br from-blue-50 to-blue-100/50 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-700">
+              <ImageOff size={48} className="text-[#007AD7]/50 drop-shadow-sm" />
+            </div>
+          )}
+      </div>
 
-      <Link href={`/alumna/announcement/${id}`} className="mt-auto">
-        <button className="w-full bg-[#005AAA] text-white py-3 rounded-xl font-medium hover:bg-[#003C87] transition-colors shadow-md">
+      <div className="flex-1 flex flex-col relative z-10 px-2">
+          <div className="flex items-center gap-2 mb-2.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#007AD7]"></div>
+              <p className="text-[#007AD7] text-[11px] font-bold uppercase tracking-widest">{date}</p>
+          </div>
+          <h3 className="text-xl font-extrabold text-[#001D4A] mb-3 line-clamp-2 leading-tight group-hover:text-[#005AAA] transition-colors">{title}</h3>
+          <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">{description}</p>
+      </div>
+
+      <Link href={`/alumna/announcement/${id}`} className="mt-auto relative z-10 px-2 pb-1">
+        <button className="w-full bg-[#005AAA] text-white py-3.5 rounded-xl font-semibold hover:bg-[#003C87] hover:shadow-lg hover:shadow-blue-900/20 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2">
           Read More
+          <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </Link>
     </div>
@@ -83,14 +98,32 @@ function AnnouncementCard({ id, date, title, description, image }) {
 }
 
 // Feature Card Component
-function FeatureCard({ title, description, icon: Icon }) {
+function FeatureCard({ title, description, icon: Icon, imgSrc }) {
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-lg h-[280px] w-full max-w-[260px] flex flex-col items-center justify-center text-center p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-        <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-5 text-[#005AAA]">
-            {Icon && <Icon size={32} />}
+    <div className="group relative bg-white rounded-3xl border border-blue-200 group-hover:border-[#007AD7] shadow-xl shadow-blue-900/5 overflow-hidden h-full min-h-[320px] w-full flex flex-col items-center justify-start text-center p-8 pt-10 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-3 z-10">
+
+        {/* Decorative Bubble Backgrounds */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-40 h-40 pointer-events-none z-0 flex items-center justify-center">
+            {/* Top left large bubble */}
+            <div className="absolute -top-2 -left-6 w-24 h-24 bg-gradient-to-br from-blue-200/70 to-blue-100/30 rounded-full blur-[3px] opacity-80 group-hover:scale-110 group-hover:-translate-x-1 transition-transform duration-700" />
+            {/* Right medium bubble */}
+            <div className="absolute top-10 -right-6 w-20 h-20 bg-gradient-to-bl from-cyan-200/60 to-blue-100/30 rounded-full blur-[2px] opacity-80 group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-700 delay-75" />
+            {/* Bottom left small bubble */}
+            <div className="absolute bottom-4 left-0 w-12 h-12 bg-gradient-to-tr from-blue-300/50 to-blue-100/30 rounded-full blur-[2px] opacity-90 group-hover:scale-125 transition-transform duration-700 delay-100" />
+            {/* Top right tiny bubble */}
+            <div className="absolute top-0 right-4 w-8 h-8 bg-blue-300/50 rounded-full blur-[1px] opacity-80 group-hover:scale-125 transition-transform duration-700 delay-150" />
         </div>
-        <h3 className="text-lg font-bold text-[#001D4A] mb-3">{title}</h3>
-        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+
+        {/* Icon (No Container) */}
+        <div className="relative shrink-0 z-10 h-40 w-40 flex items-center justify-center mt-4 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+            {Icon && <Icon size={72} strokeWidth={1.75} className="text-[#005AAA] drop-shadow-md" />}
+            {imgSrc && <img src={imgSrc} alt={title} className="w-40 h-40 object-contain drop-shadow-xl" />}
+        </div>
+        
+        <div className="flex flex-col flex-1 justify-start w-full mt-6">
+            <h3 className="relative z-10 text-xl font-extrabold text-[#001D4A] mb-3 group-hover:text-[#005AAA] transition-colors">{title}</h3>
+            <p className="relative z-10 text-gray-500 text-sm leading-relaxed text-center">{description}</p>
+        </div>
     </div>
   );
 }
@@ -128,7 +161,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
             }}
         >
           {/* Overlay to ensure text readability */}
-          <div className="absolute inset-0 bg-black/60 lg:bg-black/20 z-10" />
+          <div className="absolute inset-0 bg-black/30 lg:bg-transparent lg:bg-gradient-to-r lg:from-[#001D4A]/70 lg:via-[#001D4A]/20 lg:to-transparent z-10" />
 
           {/* Curved SVG Divider at the bottom */}
           <div className="absolute bottom-0 w-full z-20 pointer-events-none transform translate-y-px">
@@ -147,7 +180,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                         Community
                     </h1>
                     <p className="text-white/90 text-sm sm:text-lg lg:text-2xl leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium drop-shadow-md">
-                        Keep your alumni information updated, stay informed with university announcements, and remain connected with the CECT alumni community.
+                        Keep your alumni information updated, stay informed with university announcements, and remain connected with the University Alumni Office and the College of Engineering and Computer Technology (CECT).
                     </p>
                 </FadeInSection>
 
@@ -170,7 +203,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                         Latest Announcements
                     </h2>
                     <p className="text-blue-100/90 text-lg">
-                        Stay informed about important university announcements, events, and updates.
+                        Stay informed about important announcements, events, and updates from the Office of Alumni and College of Engineering and Computer Technology (CECT).
                     </p>
                 </FadeInSection>
 
@@ -206,33 +239,33 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-50 rounded-full blur-3xl opacity-50 translate-y-1/2 pointer-events-none" />
 
-            <div className="max-w-[1200px] mx-auto relative z-10">
+            <div className="max-w-[1500px] mx-auto relative z-10">
                 <FadeInSection delay={100} className="text-center mb-16 space-y-4">
                     <h2 className="text-3xl lg:text-4xl font-bold text-[#003C87] tracking-tight">
                         Everything You Need to Stay Connected
                     </h2>
                 </FadeInSection>
 
-                <FadeInSection delay={200} className="flex flex-wrap justify-center gap-6 lg:gap-8">
+                <FadeInSection delay={200} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 w-full mx-auto">
                     <FeatureCard 
                         title="Update Your Profile"
-                        description="Keep your personal, academic, and employment information current."
-                        icon={User}
+                        description="Keep your personal, academic, and employment information accurate and up to date."
+                        imgSrc={accSvg}
                     />
                     <FeatureCard 
                         title="Alumni Forms"
-                        description="Complete available forms and questionnaires."
-                        icon={FileText}
+                        description="Accomplish and submit the required alumni forms and questionnaires."
+                        imgSrc={clipboardSvg}
                     />
                     <FeatureCard 
                         title="Stay Informed"
-                        description="Access important university announcements and updates."
-                        icon={Bell}
+                        description="Stay updated with important announcements, alumni events, and other relevant updates from the Office of Alumni and College of Engineering and Computer Technology (CECT)."
+                        imgSrc={notifSvg}
                     />
                     <FeatureCard 
                         title="Share Your Updates"
-                        description="Help maintain accurate and up-to-date alumni records."
-                        icon={Share2}
+                        description="Keep us informed by sharing your latest personal, academic, and professional updates."
+                        imgSrc={shareSvg}
                     />
                 </FadeInSection>
             </div>

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys = [], filters = {} }) {
   const [tab, setTab] = useState("active");
   const [sort, setSort] = useState(filters?.sort || "newest");
+  const [type, setType] = useState(filters?.type || "all");
 
   const currentData  = tab === "active" ? surveys : archivedSurveys;
   const currentList  = currentData.data ?? [];
@@ -32,6 +33,7 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
         {
             [pageParam]: page,
             sort,
+            type,
         },
         {
             preserveState: true,
@@ -46,6 +48,7 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
         route("admin.survey-response.index"),
         {
             sort,
+            type,
             page: 1,
             archived_page: 1,
         },
@@ -55,7 +58,7 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
             replace: true,
         }
     );
-}, [sort]);
+}, [sort, type]);
 
   return (
     <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-6">
@@ -98,26 +101,38 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
           </button>
         </div>
 
-        {/* Sort — icon only, all breakpoints */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className={`bg-white shadow-sm ${sort !== "newest" ? "ring-2 ring-blue-500" : ""}`}
-            >
-              <ListFilter className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuLabel className="text-xs">Sort by date</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
-              <DropdownMenuRadioItem value="newest">Newest first</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="oldest">Oldest first</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          {/* Combined Filter and Sort */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className={`bg-white shadow-sm ${sort !== "newest" || type !== "all" ? "ring-2 ring-blue-500" : ""}`}
+              >
+                <ListFilter className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="text-xs">Filter by type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup value={type} onValueChange={setType}>
+                <DropdownMenuRadioItem value="all">All Types</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="Tracer Study">Tracer Study</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="Alumni Forms">Alumni Forms</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              
+              <DropdownMenuSeparator />
+
+              <DropdownMenuLabel className="text-xs">Sort by date</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
+                <DropdownMenuRadioItem value="newest">Newest first</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="oldest">Oldest first</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* LIST */}
@@ -135,6 +150,11 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="font-semibold text-gray-800 text-base truncate">{survey.title}</h2>
+                  {survey.type && (
+                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 uppercase tracking-wider shrink-0">
+                      {survey.type}
+                    </span>
+                  )}
                   {isArchivedTab && (
                     <span className="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700 shrink-0">Archived</span>
                   )}

@@ -1,8 +1,9 @@
 import cectBg from "@/assets/cect-bg.jpg";
 import cectBuilding from "@/assets/engr_dept.jpg";
+import presEngr from "@/assets/pres_engr.webp";
 
 /* helper */
-const o = (role, name) => ({ role, name });
+const o = (role, name, img = null) => ({ role, name, img });
 
 export const departments = [
   {
@@ -13,7 +14,7 @@ export const departments = [
       {
         name: "ELECTRONICS AND COMPUTER ENGINEERING ALUMNI ASSOCIATION OFFICERS",
         officers: [
-          o("President", "Engr. Ralph Lery Guerrero"),
+          o("President", "Engr. Ralph Lery Guerrero", presEngr),
           o("Vice President", "Engr. Jazmine Liberty Tumibay"),
           o("Secretary", "Engr. Wenceslao Gabriel"),
           o("Treasurer", "Engr. Jason Santos"),

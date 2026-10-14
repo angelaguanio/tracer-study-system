@@ -99,6 +99,12 @@ class SurveyPolicy
             if (!$survey->sections()->exists()) {
                 return Response::deny('A survey must have at least one section before it can be activated.');
             }
+
+            $hasQuestions = $survey->sections()->whereHas('questions')->exists();
+            if (!$hasQuestions) {
+                return Response::deny('A survey must have at least one question before it can be activated.');
+            }
+
             return Response::allow();
         }
 

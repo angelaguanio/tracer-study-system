@@ -115,16 +115,43 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
           3. FEATURED ALUMNI (Solid Background)
       ═══════════════════════════════════════════════════════ */}
       {featuredAlumni.length > 0 && (
-        <section className="relative z-20 w-full bg-app-bg py-20 px-6">
-          <div className="max-w-6xl mx-auto flex flex-col items-center">
+        <section className="relative z-20 w-full bg-app-bg py-20 px-6 overflow-hidden">
+          
+          {/* Bottom Left Corner Wave */}
+          <div className="absolute bottom-0 left-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end">
+            <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
+              {/* Light Blue Swoosh */}
+              <path fill="#60A5FA" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
+              {/* Dark Blue Swoosh */}
+              <path fill="#005AAA" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
+            </svg>
+          </div>
+
+          {/* Bottom Right Corner Wave */}
+          <div className="absolute bottom-0 right-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end justify-end">
+            <svg viewBox="0 0 500 500" preserveAspectRatio="xMaxYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
+              {/* Light Blue Swoosh */}
+              <path fill="#60A5FA" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
+              {/* Dark Blue Swoosh */}
+              <path fill="#005AAA" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
+            </svg>
+          </div>
+
+          <div className="max-w-6xl mx-auto flex flex-col items-center relative z-10">
             
             {/* Titles */}
-            <div className="text-center mb-12">
-              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-2">
-                Wesleyan Footprints: Stories that inspire
+            <div className="text-center mb-16 max-w-5xl mx-auto font-inter">
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="w-16 h-px bg-blue-200"></div>
+                <span className="uppercase text-[#007AD7] font-bold tracking-[0.2em] text-sm">Alumni Stories</span>
+                <div className="w-16 h-px bg-blue-200"></div>
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-[45px] font-playfair font-bold text-[#001D4A] mb-6 leading-[1.2]">
+                Wesleyan Footprints: Stories that Inspire,<br className="hidden md:block" /> 
+                <span className="text-[#007AD7]">Achieve, and Create a Brighter Tomorrow</span>
               </h2>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Celebrating the Journey, Achievements, and Wesleyan Impact on our Graduates
+              <p className="text-gray-500 text-lg sm:text-xl max-w-3xl mx-auto">
+                Discover the journeys, achievements, and lasting impact of our graduates who continue to make a difference in their communities and beyond.
               </p>
             </div>
 
@@ -151,19 +178,19 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-white from-20% via-white/50 via-70% to-transparent pointer-events-none" />
                   </div>
                   
-                  <div className="px-5 pb-5 pt-1 flex flex-col bg-white relative z-10 -mt-8">
+                  <div className="px-5 pb-5 pt-1 flex flex-col bg-white relative z-10 -mt-8 font-inter">
                     <h3 className="text-lg font-black text-gray-900 mb-1 line-clamp-1 tracking-tight">
                       {alumnus.title}
                     </h3>
                     
                     <div 
-                      className="text-gray-600 text-xs prose prose-sm line-clamp-2 mb-3"
+                      className="text-gray-600 text-xs prose prose-sm line-clamp-2 mb-3 font-inter"
                       dangerouslySetInnerHTML={{ __html: alumnus.details }} 
                     />
                     
                     <div className="w-full mt-1">
                       <Link href={`/alumna/featured-alumni/${alumnus.id}?from=association`} className="w-full block">
-                        <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-semibold text-xs shadow-md cursor-pointer text-center">
+                        <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-inter font-semibold text-xs shadow-md cursor-pointer text-center">
                           Read More
                         </button>
                       </Link>
@@ -176,7 +203,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
             {/* See More Link */}
             {featuredAlumni.length > 3 && (
               <div className="mt-3">
-                <Link href="/alumna/featured-alumni" className="text-slate-600 hover:text-slate-900 text-sm font-semibold underline underline-offset-4 transition-colors">
+                <Link href="/alumna/featured-alumni" className="text-slate-600 hover:text-slate-900 text-sm font-inter font-semibold underline underline-offset-4 transition-colors">
                   See More
                 </Link>
               </div>

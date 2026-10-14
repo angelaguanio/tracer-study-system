@@ -110,7 +110,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     });
 
     Route::middleware(['auth', 'tracer.completed'])->group(function () {
-        Route::get('/home', AlumnaHomeController::class)->name('home');
+        Route::get('/dashboard', AlumnaHomeController::class)->name('home');
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
         Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');
         Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
@@ -160,6 +160,10 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
         Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'post'], '/profile/edit', [StudentProfileController::class, 'update'])->name('profile.update');
+
+        // Alumni Updates
+        Route::get('/updates', [\App\Http\Controllers\AlumnaUpdatesController::class, 'index'])->name('updates');
+        Route::match(['put', 'post'], '/updates', [\App\Http\Controllers\AlumnaUpdatesController::class, 'updateEmployment'])->name('updates.store');
 
         //inquiries
         Route::get('/inquiries', [InquiriesController::class, 'alumniInquiriesList'])->name('inquiries.index');
@@ -359,11 +363,11 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
             ]);
         })->name('analytics.tracer');
 
-        // General Survey list (reuses AnalyticsIndex)
-        Route::get('/analytics/general-survey', function (\Illuminate\Http\Request $request) {
+        // Alumni Forms list (reuses AnalyticsIndex)
+        Route::get('/analytics/alumni-forms', function (\Illuminate\Http\Request $request) {
             if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
             $surveys = \App\Models\Survey::withCount('sections')
-                ->where('type', '!=', 'Tracer Study')
+                ->where('type', 'Alumni Forms')
                 ->whereNull('archived_at')
                 ->has('responses')
                 ->orderBy('created_at', 'desc')
@@ -376,8 +380,8 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
                     'type'            => $s->type,
                 ])
                 ->withQueryString();
-            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys, 'type' => 'general']);
-        })->name('analytics.general');
+            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys, 'type' => 'alumni-forms']);
+        })->name('analytics.alumni-forms');
 
         Route::get('/analytics/{survey}', [SurveyAnalyticsController::class, 'show'])->name('analytics.show');
         Route::get('/analytics/{survey}/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('analytics.download');

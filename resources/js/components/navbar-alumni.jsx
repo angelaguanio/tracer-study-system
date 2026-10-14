@@ -32,8 +32,7 @@ const mainNav = [
     icon: ClipboardList,
     subItems: [
       { id: "tracer", name: "Graduate Tracer Study", href: `${route('alumna.questionnaire')}?tab=tracer-study` },
-      { id: "forms", name: "Alumni Forms & Requests", href: `${route('alumna.questionnaire')}?tab=cect-surveys` },
-      { id: "events", name: "Alumni Events", href: `${route('alumna.questionnaire')}?tab=events` },
+      { id: "forms", name: "Alumni Forms", href: `${route('alumna.questionnaire')}?tab=alumni-forms` },
       { id: "inquiries", name: "Inquiries", href: route('alumna.inquiries.index') },
     ]
   },
@@ -43,7 +42,7 @@ const mainNav = [
     icon: Info,
     subItems: [
       { id: "announcements", name: "Announcements", href: route('alumna.announcements') },
-      { id: "updates", name: "Alumni Updates", href: "/alumna/updates" },
+      { id: "updates", name: "Alumni Updates", href: route('alumna.updates') },
       { id: "about", name: "About", href: route('alumna.about') },
       { id: "contact", name: "Contact Us", href: route('alumna.contact') },
     ]
@@ -88,7 +87,7 @@ export default function NavbarAlumni({ children }) {
       affairs: false
   })
   
-  const isTransparentHeader = currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact'
+  const isTransparentHeader = currentPath === '/alumna/dashboard' || currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact'
 
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -151,8 +150,8 @@ export default function NavbarAlumni({ children }) {
 
       {/* Slide-out drawer menu */}
       <div 
-        className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
-          mobileOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Profile card with Close Button */}
@@ -208,27 +207,36 @@ export default function NavbarAlumni({ children }) {
                         <div key={item.id}>
                             <button
                                 onClick={() => toggleSubMenu(item.id)}
-                                className="w-full flex items-center justify-between px-3 py-3 mx-1 rounded-md transition text-gray-700 hover:bg-gray-50 cursor-pointer"
+                                className={`w-full flex items-center justify-between px-3 py-3 mx-1 rounded-md transition font-medium cursor-pointer ${
+                                    isOpen ? 'bg-blue-50/80 text-blue-800' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <Icon className="h-5 w-5 text-gray-400" />
-                                    <span className="text-[15px]">{item.name}</span>
+                                    <Icon className={`h-[22px] w-[22px] ${isOpen ? 'text-blue-600' : 'text-gray-500'}`} />
+                                    <span className="text-base">{item.name}</span>
                                 </div>
-                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180 text-blue-600' : 'text-gray-400'}`} />
                             </button>
                             {isOpen && (
-                                <div className="ml-11 mr-2 mt-1 mb-2 space-y-1">
+                                <div className="ml-10 mr-2 mt-1 mb-2 space-y-1">
                                     {item.subItems.map((subItem) => {
-                                        const isSubActive = url === subItem.href || (subItem.href.includes('?') && url.includes(subItem.href.split('?')[1]))
+                                        let subItemPath = subItem.href;
+                                        try {
+                                            const u = new URL(subItem.href, window.location.origin);
+                                            subItemPath = u.pathname + u.search;
+                                        } catch (e) {}
+                                        
+                                        const isSubActive = subItemPath === url || (subItemPath.includes('?') && url.includes(subItemPath.split('?')[1])) || (url === subItemPath.split('?')[0] && !subItemPath.includes('?'));
+                                        
                                         return (
                                             <Link
                                                 key={subItem.id}
                                                 href={subItem.href}
                                                 onClick={() => setMobileOpen(false)}
-                                                className={`block px-3 py-2 text-sm rounded-md transition ${
+                                                className={`block px-4 py-2.5 text-[15px] rounded-md transition border-l-[3px] ml-1 ${
                                                     isSubActive
-                                                        ? 'bg-blue-50 text-blue-600 font-medium'
-                                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                                                        : 'border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                                 }`}
                                             >
                                                 {subItem.name}
@@ -249,14 +257,14 @@ export default function NavbarAlumni({ children }) {
                     method={item.method || 'get'}
                     as={item.as || 'a'}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[3px] ${
+                    className={`flex items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[4px] font-medium ${
                     isActive
-                        ? 'border-blue-500 bg-blue-50 text-blue-600 font-medium'
-                        : 'border-transparent text-gray-700 hover:bg-gray-50'
+                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                        : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                     }`}
                 >
-                    <Icon className={`h-5 w-5 ${isActive ? 'text-blue-500' : 'text-gray-400'}`} />
-                    <span className="text-[15px]">{item.name}</span>
+                    <Icon className={`h-[22px] w-[22px] ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <span className="text-base">{item.name}</span>
                 </Link>
                 )
             })}
@@ -282,10 +290,10 @@ export default function NavbarAlumni({ children }) {
                     method={item.method || 'get'}
                     as={item.as || 'a'}
                     onClick={() => setMobileOpen(false)}
-                    className="flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md text-gray-700 hover:bg-gray-50 transition border-l-[3px] border-transparent"
+                    className="flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition border-l-[4px] border-transparent font-medium"
                 >
-                    <Icon className="h-5 w-5 text-gray-400" />
-                    <span className="text-[15px]">{item.name}</span>
+                    <Icon className="h-[22px] w-[22px] text-gray-500" />
+                    <span className="text-base">{item.name}</span>
                 </Link>
                 )
             })}

@@ -76,7 +76,7 @@ export default function AlumnaAnnouncements({ announcements }) {
           </h1>
           <div className="w-12 h-1 bg-blue-600 rounded-full mx-auto mb-5"></div>
           <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-            Stay updated with the latest announcements and important updates from the CECT alumni community.
+            Stay informed about important announcements, events, and updates from the Office of Alumni and College of Engineering and Computer Technology (CECT).
           </p>
         </div>
 

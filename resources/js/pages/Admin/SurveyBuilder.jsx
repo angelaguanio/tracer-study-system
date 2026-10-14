@@ -71,8 +71,8 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
         });
     };
 
-    const handleStatusToggle = (checked) => {
-        router.put(route("admin.surveys.update", survey.id), { status: checked ? "active" : "inactive" });
+    const handleStatusToggle = () => {
+        router.put(route("admin.surveys.update", survey.id), { status: survey.status === "active" ? "inactive" : "active" });
     };
 
     const handleTypeChange = (value) => {
@@ -207,14 +207,13 @@ export default function SurveyBuilder({ survey, has_responses = false }) {
                     {!isEditingHeader && (
                         <div className="flex items-center gap-3 shrink-0 self-center">
                             <div className="flex items-center gap-2 bg-blue-50 rounded-lg border border-blue-200">
-                                <Select value={survey.type || "Forms and Requests"} onValueChange={handleTypeChange}>
+                                <Select value={survey.type || "Alumni Forms"} onValueChange={handleTypeChange}>
                                     <SelectTrigger className="h-9 min-w-[170px] bg-transparent border-0 text-blue-700 font-medium focus:ring-0">
                                         <SelectValue placeholder="Survey Type" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="Tracer Study">Tracer Study</SelectItem>
-                                        <SelectItem value="Forms and Requests">Forms and Requests</SelectItem>
-                                        <SelectItem value="Events">Events</SelectItem>
+                                        <SelectItem value="Alumni Forms">Alumni Forms</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

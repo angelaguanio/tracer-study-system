@@ -17,8 +17,8 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
     const [answers, setAnswers] = useState(draft?.answers ?? {});
     const [busy, setBusy] = useState(false);
 
-    const currentSection = sections[stepIndex];
-    const isLast = stepIndex === sections.length - 1;
+    const currentSection = sections.length > 0 ? sections[stepIndex] : null;
+    const isLast = sections.length > 0 ? stepIndex === sections.length - 1 : true;
     const total = sections.length;
 
     const handleChange = (questionId, value) => {
@@ -84,31 +84,41 @@ export default function Survey({ survey, sections = [], currentSectionIndex = 0,
                             <SurveyStepIndicator current={stepIndex + 1} total={total} />
                         </div>
 
-                        <Card className="bg-white border shadow-lg py-2 px-2">
-                            <CardContent className="p-6">
-                                <SurveySection
-                                    section={currentSection}
-                                    answers={answers}
-                                    onChange={handleChange}
-                                    errors={errors}
-                                />
-                            </CardContent>
-                        </Card>
+                        {!currentSection ? (
+                            <Card className="bg-white border shadow-lg py-2 px-2">
+                                <CardContent className="p-6 text-center text-gray-500">
+                                    This survey has no questions yet.
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <>
+                                <Card className="bg-white border shadow-lg py-2 px-2">
+                                    <CardContent className="p-6">
+                                        <SurveySection
+                                            section={currentSection}
+                                            answers={answers}
+                                            onChange={handleChange}
+                                            errors={errors}
+                                        />
+                                    </CardContent>
+                                </Card>
 
-                        <div className="flex justify-between">
-                            <Button variant="outline" onClick={handleBack} disabled={stepIndex === 0 || busy}>
-                                Back
-                            </Button>
-                            {isLast ? (
-                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleSubmit} disabled={busy}>
-                                    {busy ? 'Submitting...' : 'Submit'}
-                                </Button>
-                            ) : (
-                                <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleNext} disabled={busy}>
-                                    {busy ? 'Saving...' : 'Next'}
-                                </Button>
-                            )}
-                        </div>
+                                <div className="flex justify-between">
+                                    <Button variant="outline" onClick={handleBack} disabled={stepIndex === 0 || busy}>
+                                        Back
+                                    </Button>
+                                    {isLast ? (
+                                        <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleSubmit} disabled={busy}>
+                                            {busy ? 'Submitting...' : 'Submit'}
+                                        </Button>
+                                    ) : (
+                                        <Button className="bg-blue-btn hover:bg-bluehover-btn text-white" onClick={handleNext} disabled={busy}>
+                                            {busy ? 'Saving...' : 'Next'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
             </main>

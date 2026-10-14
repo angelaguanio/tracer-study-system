@@ -58,7 +58,7 @@ class SurveyController extends Controller
             'title'       => $request->title,
             'description' => $request->description,
             'status'      => $request->input('status', 'inactive'),
-            'type'        => $request->input('type', 'Forms and Requests'),
+            'type'        => $request->input('type', 'Alumni Forms'),
             'created_by'  => auth()->id(),
         ]);
 

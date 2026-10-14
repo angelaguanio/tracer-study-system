@@ -76,13 +76,9 @@ export default function StudentProfile() {
                                     </div>
                                 )}
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col justify-center">
                                 <span className="text-[13px] font-medium text-gray-400 mb-0.5">Welcome back</span>
-                                <h2 className="text-2xl sm:text-[28px] font-bold text-[#1e293b] mb-3">{fullName}</h2>
-                                <div className="flex items-center gap-2 bg-[#eaf7f0] text-[#008542] text-[12px] font-bold px-3.5 py-1.5 rounded-full w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#008542]" />
-                                    Profile verified
-                                </div>
+                                <h2 className="text-2xl sm:text-[28px] font-bold text-[#1e293b]">{fullName}</h2>
                             </div>
                         </div>
                     </div>

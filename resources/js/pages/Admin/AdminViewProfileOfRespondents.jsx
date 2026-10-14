@@ -25,7 +25,7 @@ export default function AdminViewProfileOfRespondents(props) {
   if (!user) return <div className="p-6 text-red-500 font-bold text-center">No user data found.</div>;
 
   const emp = user.employment;
-  const fullName = (user.first_name || user.last_name) ? `${user.first_name ?? ''} ${user.middle_name && user.middle_name !== '*' ? user.middle_name + ' ' : ''}${user.last_name ?? ''}${user.suffix ? ' ' + user.suffix : ''}`.trim() : (user.name ?? 'Unknown Alumna');
+  const fullName = (user.first_name || user.last_name) ? `${user.first_name ?? ''} ${user.middle_name && user.middle_name !== '*' ? user.middle_name + ' ' : ''}${user.last_name ?? ''}${user.suffix && user.suffix.toUpperCase() !== 'N/A' ? ' ' + user.suffix : ''}`.trim() : (user.name ?? 'Unknown Alumna');
   const validEmploymentHistory = Array.isArray(user.employment_history) ? user.employment_history.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) : [];
   const imageSrc = user.profile_picture || null;
 
@@ -84,7 +84,7 @@ export default function AdminViewProfileOfRespondents(props) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                 <InfoItem label="Position" value={emp.position} />
                 <InfoItem label="Location" value={emp.location} />
-                <InfoItem label="Period" value={emp.employment_duration || '—'} />
+                <InfoItem label="Period" value={validEmploymentHistory.length > 0 ? `${new Date(validEmploymentHistory[0].created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} — Present` : '—'} />
                 <InfoItem label="Monthly Salary" value={`₱${emp.monthly_salary ? parseFloat(String(emp.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString() : '0'}`} />
               </div>
             </div>
@@ -111,13 +111,13 @@ export default function AdminViewProfileOfRespondents(props) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {validEmploymentHistory.map((history) => (
+                    {validEmploymentHistory.map((history, index) => (
                       <tr key={history.id} className="hover:bg-gray-50/50 transition">
-                        <td className="py-4 text-center text-gray-600 text-sm">
-                          {history.employment_duration || '—'}
+                        <td className="py-4 text-center text-gray-600 text-[12px]">
+                          {`${new Date(history.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} — ${index === 0 && emp?.currently_employed === 'Yes' && history.is_present ? 'Present' : new Date(history.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`}
                         </td>
-                        <td className="py-4 text-center font-bold text-gray-800 text-sm">{history.company_name}</td>
-                        <td className="py-4 text-center text-gray-600 text-sm">{history.position || '—'}</td>
+                        <td className="py-4 text-center font-bold text-gray-800 text-[12px]">{history.company_name}</td>
+                        <td className="py-4 text-center text-gray-600 text-[12px]">{history.position || '—'}</td>
                         <td className="py-4 text-center">
                           <span className="px-2 py-1 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase">EMPLOYED</span>
                         </td>
@@ -132,7 +132,7 @@ export default function AdminViewProfileOfRespondents(props) {
 
               {/* MOBILE STACKED CARDS VIEW */}
               <div className="md:hidden flex flex-col gap-4">
-                {validEmploymentHistory.map((history) => (
+                {validEmploymentHistory.map((history, index) => (
                   <div key={history.id} className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-3">
                     <div className="flex justify-between items-start">
                       <div>
@@ -148,7 +148,7 @@ export default function AdminViewProfileOfRespondents(props) {
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Range</p>
-                        <p className="text-sm text-gray-600">{history.employment_duration || '—'}</p>
+                        <p className="text-sm text-gray-600">{`${new Date(history.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} — ${index === 0 && emp?.currently_employed === 'Yes' && history.is_present ? 'Present' : new Date(history.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`}</p>
                       </div>
                     </div>
                     <button type="button" onClick={() => handleViewDetails(history)} className="w-full text-[11px] font-bold text-blue-500 border border-blue-400 hover:bg-blue-50 py-2 rounded transition-colors">View Details</button>
@@ -164,12 +164,14 @@ export default function AdminViewProfileOfRespondents(props) {
         {/* DETAILS POPUP MODAL */}
         <Dialog open={detailsModalOpen} onOpenChange={setDetailsModalOpen}>
           <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-white">
-            <div className="bg-gray-50 px-8 py-6 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="text-[#008542]"><IconHistory /></div>
+            <div className="bg-white px-8 pt-8 pb-6 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#F0Fdf4] text-[#00a651]">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
                 <div>
-                  <h2 className="text-lg font-bold text-gray-800 leading-tight">Archived Profile Record</h2>
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                  <h2 className="text-xl font-semibold text-gray-900 leading-tight mb-1">Employment history</h2>
+                  <p className="text-[10px] text-[#8C9EB5] font-bold uppercase tracking-widest">
                     Saved on {selectedHistory ? new Date(selectedHistory.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
                   </p>
                 </div>
@@ -177,49 +179,35 @@ export default function AdminViewProfileOfRespondents(props) {
             </div>
 
             {selectedHistory && (
-              <div className="px-8 py-4 space-y-10 max-h-[60vh] overflow-y-auto inquiry-scrollbar">
+              <div className="px-8 py-8 max-h-[60vh] overflow-y-auto inquiry-scrollbar bg-white">
                 <div>
-                  <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
-                    <IconUser /> Personal Details
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#F4F6F8] text-[#8C9EB5]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                    </div>
+                    <span className="text-[#8C9EB5] font-bold text-[11px] uppercase tracking-widest">
+                      Employment Status
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-8">
-                    <DetailItem label="Full Name" value={fullName} />
-                    <DetailItem label="Email Address" value={user.email} />
-                    <DetailItem label="Contact Number" value={user.contact_number} />
-                    <DetailItem label="Address" value={user.address} />
-                    <DetailItem 
-                      label="Course " 
-                      value={user.courses ?? user.course ?? '—'}
-                    />
-                    <DetailItem
-                    label="Year Graduated"
-                    value={(user.start_year && user.end_year) ? `${user.start_year} - ${user.end_year}` : (user.year_graduated ? `${parseInt(user.year_graduated) - 1} - ${user.year_graduated}` : '—')}
-                    />
-                     <DetailItem label="Semester Graduated" value={user.semester || user.semester_graduated || '—'} />
-                  </div>
-                </div>
 
-                <hr className="border-gray-50" />
+                  <div>
+                    <div className="flex items-center justify-between w-full p-5 bg-[#F2FCF5] border border-[#BFF0D4] rounded-xl mb-8">
+                       <div className="flex flex-col gap-1.5">
+                         <span className="text-[10px] font-bold text-[#8C9EB5] uppercase tracking-widest">Status</span>
+                         <span className="text-[15px] font-bold text-[#008542]">Employed</span>
+                       </div>
+                       <div className="flex items-center justify-center w-7 h-7 bg-[#00A651] rounded-full text-white shadow-sm">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="14" height="14"><path d="M5 13l4 4L19 7"/></svg>
+                       </div>
+                    </div>
 
-                <div>
-                  <div className="flex items-center gap-2 mb-6 text-gray-400 font-bold text-[11px] uppercase tracking-widest">
-                    <IconBriefcase /> Employment Status
-                  </div>
-                  <div className="space-y-8">
-                    <DetailItem label="Status" value="Employed" isStatus={true} />
-                    <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-50">
+                    <div className="grid grid-cols-2 gap-y-8 gap-x-8 pt-8 border-t border-gray-100">
                       <DetailItem label="Company Name" value={selectedHistory.company_name} />
                       <DetailItem label="Position" value={selectedHistory.position} />
                       <DetailItem label="Employment Type" value={selectedHistory.employment_type} />
-                      <DetailItem label="Location" value={selectedHistory.location} />
-                      <DetailItem
-                        label="Employment Range"
-                        value={selectedHistory.employment_duration || '—'}
-                        />
-                      <DetailItem
-                        label="Monthly Salary"
-                        value={selectedHistory.monthly_salary ? `₱${parseFloat(String(selectedHistory.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString()}` : '—'}
-                      />
+                      <DetailItem label="Location" value={selectedHistory.location} icon={<svg viewBox="0 0 24 24" fill="none" stroke="#8C9EB5" strokeWidth="2" width="14" height="14" className="shrink-0"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>} />
+                      <DetailItem label="Employment Range" value={`${new Date(selectedHistory.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} — ${validEmploymentHistory.findIndex(h => h.id === selectedHistory.id) === 0 && emp?.currently_employed === 'Yes' && selectedHistory.is_present ? 'Present' : new Date(selectedHistory.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`} />
+                      <DetailItem label="Monthly Salary" value={selectedHistory.monthly_salary ? `₱${parseFloat(String(selectedHistory.monthly_salary).replace(/[^\d.]/g, '')).toLocaleString()}` : '—'} />
                     </div>
                   </div>
                 </div>
@@ -246,7 +234,7 @@ function InfoItem({ label, value }) {
   );
 }
 
-function DetailItem({ label, value, isStatus = false }) {
+function DetailItem({ label, value, isStatus = false, icon = null }) {
   let displayVal = value;
   if (displayVal && typeof displayVal === 'object') {
     displayVal = displayVal.full_address || displayVal.name || '—';
@@ -254,8 +242,9 @@ function DetailItem({ label, value, isStatus = false }) {
   const finalValue = (displayVal === null || displayVal === undefined || displayVal === "null" || displayVal === "") ? " — " : displayVal;
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
-      <span className={`text-[14px] font-bold ${isStatus ? 'text-green-600' : 'text-gray-800'}`}>
+      <span className="text-[10px] font-bold text-[#8C9EB5] uppercase tracking-wider">{label}</span>
+      <span className="text-[14.5px] font-medium text-[#2C3E50] flex items-center gap-1.5">
+        {icon}
         {finalValue}
       </span>
     </div>

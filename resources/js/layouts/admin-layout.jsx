@@ -23,34 +23,38 @@ export default function AdminLayout({ children }) {
 
     const navItems = [
     {
-      id: "dashboard",
-      name: "Dashboard",
-      href: route('admin.dashboard'),
-      icon: LayoutDashboard
+      id: "general",
+      name: "General",
+      icon: LayoutDashboard,
+      subItems: [
+        {
+          name: "Dashboard",
+          href: route('admin.dashboard')
+        },
+        {
+          name: "Announcements",
+          href: route('admin.announcement.index')
+        },
+        {
+          name: "Inquiries",
+          href: route('admin.inquiries.index')
+        }
+      ]
     },
     {
-      id: "announcement",
-      name: "Announcements",
-      href: route('admin.announcement.index'),
-      icon: Bell
-    },
-    {
-      id: "inquiries",
-      name: "Inquiries",
-      href: route('admin.inquiries.index'),
-      icon: Mail
-    },
-    {
-      id: "surveys",
-      name: "Forms and Surveys",
-      href: route('admin.surveys.index'),
-      icon: NotebookPen
-    },
-    {
-      id: "survey-response",
-      name: "Survey Response",
-      href: route('admin.survey-response.index'),
-      icon: FileChartColumn
+      id: "survey-management",
+      name: "Survey Management",
+      icon: NotebookPen,
+      subItems: [
+        {
+          name: "Forms and Surveys",
+          href: route('admin.surveys.index')
+        },
+        {
+          name: "Survey Responses",
+          href: route('admin.survey-response.index')
+        }
+      ]
     },
     {
       id: "analytics",
@@ -58,16 +62,16 @@ export default function AdminLayout({ children }) {
       icon: ChartNoAxesCombined,
       subItems: [
         {
-          name: "Employment Location",
-          href: route('admin.analytics.employment-location')
-        },
-        {
           name: "Tracer Study",
           href: route('admin.analytics.tracer')
         },
         {
-          name: "General Survey",
-          href: route('admin.analytics.general')
+          name: "Alumni Forms",
+          href: route('admin.analytics.alumni-forms')
+        },
+        {
+          name: "Employment Location",
+          href: route('admin.analytics.employment-location')
         }
       ]
     },

@@ -23,24 +23,9 @@ class QuestionnaireController extends Controller
             ? in_array($tracerStudySurvey->id, $completedSurveyIds)
             : false;
                 
-        // Get CECT surveys (Forms and Requests)
+        // Get Alumni Forms surveys
         $cectSurveys = \App\Models\Survey::where('status', 'active')
-            ->where('type', 'Forms and Requests')
-            ->whereNull('archived_at')
-            ->withCount(['questions'])
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($survey) use ($completedSurveyIds) {
-                $survey->completed = in_array(
-                    $survey->id,
-                    $completedSurveyIds
-                );
-                return $survey;
-            });
-
-        // Get Event surveys
-        $eventSurveys = \App\Models\Survey::where('status', 'active')
-            ->where('type', 'Events')
+            ->where('type', 'Alumni Forms')
             ->whereNull('archived_at')
             ->withCount(['questions'])
             ->orderBy('created_at', 'desc')
@@ -57,7 +42,6 @@ class QuestionnaireController extends Controller
             'tracerStudySurvey' => $tracerStudySurvey,
             'tracerStudyCompleted' => $tracerStudyCompleted,
             'cectSurveys' => $cectSurveys,
-            'eventSurveys' => $eventSurveys,
             'hasTracerStudy' => $tracerStudySurvey !== null,
         ]);
     }
