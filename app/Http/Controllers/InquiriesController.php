@@ -26,7 +26,7 @@ class InquiriesController extends Controller
             'title' => 'required|string',
             'department' => 'required|string',
             'alumni_coord' => 'required_unless:department,admin|nullable|integer',
-            'subject' => 'required|string|max:50',
+            'subject' => 'required|string|max:100',
             'message' => 'required|string',
         ]);
 
@@ -65,6 +65,80 @@ class InquiriesController extends Controller
         broadcast(new \App\Events\InquiryCreated($inquiry));
 
         return redirect()->back()->with('success', 'Message sent successfully!');
+    }
+
+    public function quickStore(Request $request)
+    {
+        $validated = $request->validate([
+            'title'        => 'required|string',
+            'department'   => 'required|string',
+            'alumni_coord' => 'required_unless:department,admin|nullable|integer',
+            'subject'      => 'required|string|max:100',
+            'message'      => 'required|string',
+            'auto_reply'   => 'required|string',
+        ]);
+
+        $inquiry = Inquiries::create([
+            'user_id'        => Auth::id(),
+            'recipient_type' => $request->department === 'admin' ? 'admin' : 'coordinator',
+            'recipient_id'   => $request->department === 'admin' ? null : $request->alumni_coord,
+            'department'     => $request->department === 'admin' ? null : $request->department,
+            'title'          => $validated['title'],
+            'message'        => $validated['message'],
+            'subject'        => $validated['subject'],
+            'status'         => 'replied',
+        ]);
+
+        // Determine sender for the automated reply:
+        // Admin or the selected Coordinator
+        $senderId = null;
+        if ($inquiry->recipient_type === 'admin') {
+            $senderId = User::where('user_role', 'admin')->value('id');
+        } else {
+            $senderId = $inquiry->recipient_id;
+        }
+
+        // Format auto-reply template with alumni first name
+        $alumniName = Auth::user()->first_name ?? 'there';
+        $formattedReply = str_replace('{alumni_name}', $alumniName, $validated['auto_reply']);
+
+        $reply = InquiryReply::create([
+            'inquiry_id'  => $inquiry->id,
+            'sender_id'   => $senderId ?: Auth::id(),
+            'sender_role' => $inquiry->recipient_type,
+            'message'     => $formattedReply,
+        ]);
+
+        if ($inquiry->recipient_type === 'admin') {
+            NotificationService::inquiryReceived(
+                $inquiry->id,
+                Auth::user()->name,
+                Auth::id(),
+                'admin'
+            );
+        } else {
+            NotificationService::inquiryReceived(
+                $inquiry->id,
+                Auth::user()->name,
+                Auth::id(),
+                'coordinator_specific',
+                $inquiry->recipient_id
+            );
+        }
+
+        NotificationService::inquiryReplied(
+            $inquiry->id,
+            $inquiry->user_id,
+            $inquiry->subject
+        );
+
+        $reply = $reply->fresh()->load(['sender:id,first_name,last_name,profile_picture']);
+
+        broadcast(new \App\Events\InquiryCreated($inquiry));
+        broadcast(new \App\Events\InquiryReplied($reply, $inquiry));
+
+        return redirect()->route('alumna.inquiries.index', ['open' => $inquiry->id])
+            ->with('success', 'Inquiry sent! We have answered with an instant response.');
     }
 
     public function alumniInquiriesList(Request $request)

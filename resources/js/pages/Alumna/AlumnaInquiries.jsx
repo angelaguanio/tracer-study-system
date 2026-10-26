@@ -75,6 +75,16 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
         setInitialized(true);
     }, []);
 
+    // Sync selected inquiry whenever openId prop updates (e.g. after quick inquiry creation)
+    useEffect(() => {
+        if (openId && inquiries?.data) {
+            const match = inquiries.data.find(i => i.id === openId);
+            if (match) {
+                setSelectedInquiry(match);
+            }
+        }
+    }, [openId, inquiries?.data]);
+
     useEffect(() => {
         const channels = inquiries.data.map((inq) => {
             const channel = echo.channel(`inquiry.${inq.id}`);
@@ -104,9 +114,9 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
 
             {/* New Inquiry Modal */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className='max-w-md sm:max-w-lg lg:max-w-xl w-[92vw] sm:w-full overflow-y-auto p-0 rounded-2xl z-50'>
+                <DialogContent className='max-w-xl sm:max-w-2xl lg:max-w-3xl w-[94vw] sm:w-full max-h-[90vh] overflow-y-auto p-0 rounded-3xl z-50 inquiry-scrollbar'>
                     <DialogHeader className='px-6 pt-6 pb-0'>
-                        <DialogTitle className='text-xl font-semibold pl-4 text-gray-900'>New Inquiry</DialogTitle>
+                        <DialogTitle className='text-xl font-bold pl-2 text-[#0B2545]'>New Inquiry</DialogTitle>
                     </DialogHeader>
                     <ContactForm
                         userEmail={userEmail}

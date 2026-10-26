@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { Button } from './ui/button';
-import { CheckCircle, RotateCcw, Send, ArrowLeft } from 'lucide-react';
+import { CheckCircle, RotateCcw, Send, ArrowLeft, Sparkles, X, MessageSquareQuote } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Avatar } from './ui/avatar';
@@ -8,16 +8,34 @@ import axios from "axios";
 import echo from '@/echo';
 import inquireImg from '@/assets/inquire.svg';
 import cectLogo from '@/assets/wup_cect.webp';
+import QuickRepliesModal from './QuickRepliesModal';
+import { getBestMatchingSuggestion, formatSuggestion } from '@/data/inquirySuggestions';
 
 export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [dismissedSuggestionId, setDismissedSuggestionId] = useState(null);
+    const [isQuickRepliesOpen, setIsQuickRepliesOpen] = useState(false);
     const bottomRef = useRef(null);
+    const textareaRef = useRef(null);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [inquiry?.replies]);
+
+    // Auto-resize textarea height to accommodate long responses up to a clean max-height
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 260)}px`;
+        }
+    }, [replyText]);
+
+    // Reset dismissed suggestion when switching inquiries
+    useEffect(() => {
+        setDismissedSuggestionId(null);
+    }, [inquiry?.id]);
 
     // Fetch fresh replies immediately when switching to a different inquiry
     useEffect(() => {
@@ -61,6 +79,20 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
             echo.leaveChannel(`inquiry.${inquiry.id}`);
         };
     }, [inquiry?.id]);
+
+    // Detect if this inquiry matches any predetermined response
+    const suggestedResponse = useMemo(() => {
+        if (!inquiry) return null;
+        return getBestMatchingSuggestion(inquiry.subject, inquiry.message);
+    }, [inquiry?.id, inquiry?.subject, inquiry?.message]);
+
+    const handleApplySuggestion = (text) => {
+        setReplyText(text);
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+        toast.info('Suggested response inserted. You can customize it before sending.');
+    };
 
     const toggleResolved = async () => {
         const newStatus = inquiry.status === 'resolved' ? 'replied' : 'resolved';
@@ -238,7 +270,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                                     {reply.sender.first_name} · {new Date(reply.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                 </span>
                                 <div
-                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
                                         isStaff
                                             ? 'bg-[#009AFB] text-white rounded-tr-none shadow-md shadow-[#009AFB]/10 border border-[#009AFB]'
                                             : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-sm'
@@ -254,28 +286,100 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                 <div ref={bottomRef} />
             </div>
 
+            {/* Smart Contextual Suggestion Banner */}
+            {suggestedResponse && dismissedSuggestionId !== suggestedResponse.id && (
+                <div className="relative z-10 p-3 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50/95 via-white/95 to-sky-50/90 shadow-sm backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5 min-w-0">
+                            <div className="h-7 w-7 rounded-lg bg-[#009AFB]/15 text-[#009AFB] flex items-center justify-center shrink-0 mt-0.5">
+                                <Sparkles className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[10px] font-bold tracking-wider uppercase text-[#009AFB] bg-sky-100 px-2 py-0.5 rounded-full">
+                                        Suggested Response
+                                    </span>
+                                    <h4 className="text-xs font-bold text-[#0B2545] truncate">
+                                        {suggestedResponse.title}
+                                    </h4>
+                                </div>
+                                <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                                    {formatSuggestion(suggestedResponse.template, { alumniName: inquiry.alumni?.first_name })}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => handleApplySuggestion(formatSuggestion(suggestedResponse.template, { alumniName: inquiry.alumni?.first_name }))}
+                                className="h-7 px-2.5 rounded-lg text-xs bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-xs font-medium gap-1"
+                            >
+                                <Sparkles className="h-3 w-3" />
+                                Insert
+                            </Button>
+                            <button
+                                type="button"
+                                onClick={() => setDismissedSuggestionId(suggestedResponse.id)}
+                                className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition"
+                                title="Dismiss suggestion"
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Reply box */}
-            <div className='relative z-10 flex gap-2.5 items-end bg-white/90 backdrop-blur-md border border-slate-200/70 p-2.5 rounded-2xl shadow-md'>
-                <textarea
-                    className='flex-1 resize-none bg-transparent px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-h-[50px] max-h-[130px] inquiry-scrollbar'
-                    placeholder='Write a reply...'
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendReply();
-                        }
-                    }}
-                />
-                <Button
-                    onClick={sendReply}
-                    disabled={sending || !replyText.trim()}
-                    className='h-10 w-10 p-0 shrink-0 rounded-xl bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-md shadow-[#009AFB]/20 transition-all duration-200 hover:scale-[1.03] disabled:opacity-40'
-                >
-                    <Send className='h-4 w-4' />
-                </Button>
+            <div className='relative z-10 flex flex-col gap-2 bg-white/90 backdrop-blur-md border border-slate-200/70 p-2.5 rounded-2xl shadow-md'>
+                <div className='flex items-center justify-between px-1'>
+                    <button
+                        type="button"
+                        onClick={() => setIsQuickRepliesOpen(true)}
+                        className="flex items-center gap-1.5 text-xs font-semibold text-[#009AFB] hover:text-[#0082D6] px-2 py-1 rounded-lg hover:bg-sky-50 transition"
+                    >
+                        <MessageSquareQuote className="h-3.5 w-3.5" />
+                        <span>Quick Replies / FAQs</span>
+                    </button>
+
+                    <span className="text-[11px] text-slate-400 hidden sm:inline">
+                        Press Enter to send · Shift+Enter for new line
+                    </span>
+                </div>
+
+                <div className='flex gap-2.5 items-end'>
+                    <textarea
+                        ref={textareaRef}
+                        className='flex-1 resize-none bg-transparent px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none min-h-[50px] max-h-[260px] inquiry-scrollbar'
+                        placeholder='Write a reply...'
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendReply();
+                            }
+                        }}
+                    />
+                    <Button
+                        onClick={sendReply}
+                        disabled={sending || !replyText.trim()}
+                        className='h-10 w-10 p-0 shrink-0 rounded-xl bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-md shadow-[#009AFB]/20 transition-all duration-200 hover:scale-[1.03] disabled:opacity-40'
+                    >
+                        <Send className='h-4 w-4' />
+                    </Button>
+                </div>
             </div>
+
+            {/* Quick Replies Dialog Modal */}
+            <QuickRepliesModal
+                open={isQuickRepliesOpen}
+                onOpenChange={setIsQuickRepliesOpen}
+                alumniName={inquiry.alumni?.first_name}
+                onSelectSuggestion={handleApplySuggestion}
+            />
         </main>
     );
 }

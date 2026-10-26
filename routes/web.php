@@ -169,6 +169,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/inquiries', [InquiriesController::class, 'alumniInquiriesList'])->name('inquiries.index');
         Route::get('/inquiries/{id}/replies', [InquiriesController::class, 'replies'])->name('inquiries.replies');
         Route::get('/inquiries/{id}', [InquiriesController::class, 'alumniShow'])->name('inquiries.show');
+        Route::post('/inquiries/quick', [InquiriesController::class, 'quickStore'])->name('inquiries.quickStore');
         Route::post('/inquiries/{id}/reply', [InquiriesController::class, 'reply'])->name('inquiries.reply');
 
         Route::match(['get', 'post'], '/logout', [AlumnaAuthController::class, 'logoutAlumna'])->name('logout');

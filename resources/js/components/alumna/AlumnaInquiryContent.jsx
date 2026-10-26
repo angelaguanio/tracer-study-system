@@ -183,7 +183,7 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                                     })}
                                 </span>
                                 <div
-                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
                                         isMe
                                             ? 'bg-[#009AFB] text-white rounded-tr-none shadow-md shadow-[#009AFB]/10'
                                             : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-sm'
