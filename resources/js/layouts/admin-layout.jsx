@@ -12,6 +12,7 @@ import {
   FileChartColumn,
   ChartNoAxesCombined,
   Star,
+  GraduationCap,
 } from "lucide-react";
 import { Toaster } from "sonner";
 import { usePage } from "@inertiajs/react";
@@ -95,11 +96,13 @@ export default function AdminLayout({ children }) {
       name: "Alumni Coordinator",
       href: route('admin.alumni-coordinators.index'),
       icon: UsersRound
+    },
+    {
+      id: "settings",
+      name: "Program Management",
+      href: route('admin.settings.index'),
+      icon: GraduationCap
     }
-    
-    
-    
-    
   ]
 
   return (

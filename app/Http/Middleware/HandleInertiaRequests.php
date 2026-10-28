@@ -78,7 +78,19 @@ class HandleInertiaRequests extends Middleware
                   )
                   ->count()
                 : 0,
-        ],
+            ],
+            'academic' => [
+                'departments' => fn () => \Illuminate\Support\Facades\Schema::hasTable('departments')
+                    ? \Illuminate\Support\Facades\Cache::remember('academic_departments_programs', 86400, function () {
+                        return \App\Models\Department::with(['programs' => function ($q) {
+                            $q->where('status', 'active')->orderBy('name');
+                        }])
+                        ->where('status', 'active')
+                        ->orderBy('name')
+                        ->get();
+                    })
+                    : [],
+            ],
         ];
     }
 

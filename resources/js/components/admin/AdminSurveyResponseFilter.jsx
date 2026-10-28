@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { usePage } from "@inertiajs/react";
 import { Input } from "@/components/ui/input";
 import { Search, ListFilter } from "lucide-react";
 
@@ -12,6 +13,17 @@ export default function AdminSurveyResponseFilter({
   status,
   setStatus,
 }) {
+  const { academic } = usePage().props;
+  const courseOptions = useMemo(() => {
+    const progs = ['all'];
+    academic?.departments?.forEach((d) => {
+      d.programs?.forEach((p) => {
+        if (!progs.includes(p.code)) progs.push(p.code);
+      });
+    });
+    return progs.length > 1 ? progs : ['all', 'BSIT', 'BSCpE', 'BSEcE', 'BSCS'];
+  }, [academic?.departments]);
+
   const latestYear = new Date().getFullYear() - 1;
   const yearOptions = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
     const s = latestYear - i;
@@ -95,7 +107,7 @@ export default function AdminSurveyResponseFilter({
               <div className="flex flex-col">
                 <div className="text-xs font-semibold text-gray-800 px-2 mb-1">Course</div>
                 <div className="flex flex-col">
-                  {['all', 'BSIT', 'BSCpE', 'BSEcE', 'BSCS'].map(c => (
+                  {courseOptions.map(c => (
                     <button
                       key={c}
                       onClick={() => setCourse(c)}

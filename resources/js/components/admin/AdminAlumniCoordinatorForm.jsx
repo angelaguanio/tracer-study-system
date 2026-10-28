@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,34 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
     status: "active",
     reset_password: false,
   });
+
+  const { academic } = usePage().props;
+
+  const availableDepartments = useMemo(() => {
+    if (academic?.departments && academic.departments.length > 0) {
+      return academic.departments;
+    }
+    return [
+      {
+        id: 1,
+        code: "CECT",
+        name: "College of Engineering and Computer Technology",
+        programs: [
+          { code: "BSIT", name: "Bachelor of Science in Information Technology" },
+          { code: "BSCS", name: "Bachelor of Science in Computer Science" },
+          { code: "BSCpE & BSEcE", name: "BSCpE & BSEcE (Joint Program)" },
+          { code: "BSCpE", name: "Bachelor of Science in Computer Engineering" },
+          { code: "BSEcE", name: "Bachelor of Science in Electronics Engineering" },
+        ],
+      },
+    ];
+  }, [academic?.departments]);
+
+  const departmentPrograms = useMemo(() => {
+    if (!data.department) return [];
+    const dept = availableDepartments.find((d) => d.code === data.department);
+    return dept?.programs || [];
+  }, [data.department, availableDepartments]);
 
   // DYNAMIC YEAR OPTIONS — filtered by assigned program, matching alumni signup logic
   const currentYear = new Date().getFullYear();
@@ -187,19 +215,29 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
             </div>
           </div>
 
-          {/* DEPARTMENT + PROGRAM */}
+          {/* DEPARTMENT + PROGRAM (Cascading) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-1">
               <label className="text-xs sm:text-sm font-medium text-gray-700">Department</label>
               <Select
                 value={data.department}
-                onValueChange={(val) => setData("department", val)}
+                onValueChange={(val) => {
+                  setData((prev) => ({
+                    ...prev,
+                    department: val,
+                    courses: "",
+                  }));
+                }}
               >
                 <SelectTrigger className="w-full bg-white">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CECT">CECT</SelectItem>
+                  {availableDepartments.map((d) => (
+                    <SelectItem key={d.id || d.code} value={d.code}>
+                      {d.code} - {d.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -208,14 +246,27 @@ export default function AdminAlumniCoordinatorForm({ editing, closeForm }) {
               <Select
                 value={data.courses || undefined}
                 onValueChange={(val) => setData("courses", val)}
+                disabled={!data.department}
               >
                 <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Select a program" />
+                  <SelectValue placeholder={data.department ? "Select a program" : "Select department first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BSIT">BSIT</SelectItem>
-                  <SelectItem value="BSCpE & BSEcE">BSCpE & BSEcE</SelectItem>
-                  <SelectItem value="BSCS">BSCS</SelectItem>
+                  {departmentPrograms.length > 0 ? (
+                    departmentPrograms.map((p) => (
+                      <SelectItem key={p.id || p.code} value={p.code}>
+                        {p.code} - {p.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled>
+                      No programs in this department
+                    </SelectItem>
+                  )}
+                  {/* Keep compatibility with existing joint assignment */}
+                  {data.department === "CECT" && !departmentPrograms.some(p => p.code === "BSCpE & BSEcE") && (
+                    <SelectItem value="BSCpE & BSEcE">BSCpE & BSEcE</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
               {errors.courses && (

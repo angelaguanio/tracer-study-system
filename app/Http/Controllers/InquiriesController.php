@@ -172,7 +172,11 @@ class InquiriesController extends Controller
         $coordinators = User::where('user_role', 'coordinator')
             ->select('id', 'first_name', 'last_name', 'department')
             ->get();
-        $departments = $coordinators->pluck('department')->unique()->filter()->values();
+        $deptList = $coordinators->pluck('department')->filter();
+        if (\Illuminate\Support\Facades\Schema::hasTable('departments')) {
+            $deptList = $deptList->merge(\App\Models\Department::active()->pluck('code'));
+        }
+        $departments = $deptList->unique()->values();
 
         return Inertia::render('Alumna/AlumnaInquiries', [
             'inquiries'    => $query->paginate(10)->withQueryString(),

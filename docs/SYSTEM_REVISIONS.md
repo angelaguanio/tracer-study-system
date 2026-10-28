@@ -150,6 +150,21 @@ Key transformations:
 
 ---
 
+### Revision 11: Dynamic Academic Structure & Admin Settings
+- **Decoupled Hardcoded Academic Hierarchy:**
+  - Introduced `departments` and `programs` relational tables.
+  - Created Admin Settings page (`AdminSettings.jsx` & `AdminSettingsController.php`) with department-first hierarchical view.
+  - When viewing or managing programs, clicking a department displays **strictly** the programs affiliated with that department.
+  - Added full CRUD with real-time alumni/coordinator association counters and delete safeguards preventing orphaned records.
+- **Cascading Dropdowns Across the System:**
+  - **Alumni Registration (`AlumnaSignup.jsx`):** Graduate selects Department first; Program dropdown dynamically populates strictly with that department's active programs.
+  - **Coordinator Form (`AdminAlumniCoordinatorForm.jsx`):** Selecting department restricts the assigned program dropdown strictly to that department.
+  - **Filters (`AdminAlumniFilters`, `CoordinatorAlumniFilters`, `AdminSurveyResponseFilter`, `CoordinatorSurveyResponseFilter`):** Populated dynamically from database programs.
+- **Performance Optimization:**
+  - Cached active departments and programs in `HandleInertiaRequests.php` (`academic_departments_programs`) with automatic cache busting upon model updates.
+
+---
+
 ## 3. Database Migration History Summary
 
 | Migration Date / File | Purpose & Effect |
@@ -162,6 +177,7 @@ Key transformations:
 | `2026_09_22_add_zip_code_to_addresses_table` | Added postal / ZIP code field to address schema. |
 | `2026_10_02_add_type_to_surveys_table` | Replaced boolean `is_tracer_study` with a dynamic `type` column. |
 | `2026_10_13_merge_survey_types_into_alumni_forms` | Merged legacy `Forms and Requests` and `Events` into unified `Alumni Forms`. |
+| `2026_10_29_create_departments_and_programs_tables` | Created `departments` and `programs` relational tables with initial CECT baseline seeded. |
 
 ---
 
@@ -207,6 +223,7 @@ Key transformations:
 - `/analytics/employment-location` (Geographic alumni distribution heatmap)
 - `/analytics/{survey}/download`, `/analytics/{survey}/cect/download`
 - `/inquiries` (Review, status change, and replies)
+- `/settings` (Manage academic departments and degree programs)
 
 ---
 
@@ -220,3 +237,4 @@ Key transformations:
 - [x] **Image Conversion:** Image uploads generate `.webp` files in the destination directory.
 - [x] **Email Verification:** Unverified alumni accounts are directed to the verify notice page until verification is confirmed.
 - [x] **Approval Workflows:** Coordinator announcements and featured alumni entries remain `Pending` until approved by an administrator.
+- [x] **Academic Structure & Cascading:** Adding a department/program in Admin Settings immediately reflects across Alumni Signup, Coordinator assignments, and directory filters with department-scoped cascading.

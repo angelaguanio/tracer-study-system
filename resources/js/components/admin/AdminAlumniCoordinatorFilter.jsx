@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { usePage } from "@inertiajs/react";
 import {
   Select,
   SelectContent,
@@ -18,6 +20,26 @@ export default function AdminAlumniCoordinatorFilter({
   setEditing,
   setShowForm,
 }) {
+  const { academic } = usePage().props;
+  const departments = academic?.departments || [];
+
+  // Filter programs: if department selected, show that dept's programs; else all programs
+  const availablePrograms = useMemo(() => {
+    if (departmentFilter && departmentFilter !== "all") {
+      const dept = departments.find((d) => d.code === departmentFilter);
+      return dept?.programs || [];
+    }
+    const all = [];
+    departments.forEach((d) => {
+      d.programs?.forEach((p) => {
+        if (!all.some((x) => x.code === p.code)) all.push(p);
+      });
+    });
+    return all.length > 0
+      ? all
+      : [{ code: "BSIT" }, { code: "BSCpE" }, { code: "BSEcE" }, { code: "BSCS" }];
+  }, [departments, departmentFilter]);
+
   return (
     <div className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       
@@ -40,7 +62,10 @@ export default function AdminAlumniCoordinatorFilter({
           
           {/* DEPARTMENT SELECT */}
           <Select 
-            onValueChange={setDepartmentFilter} 
+            onValueChange={(val) => {
+              setDepartmentFilter(val);
+              setCourseFilter("all");
+            }} 
             value={departmentFilter}
           >
             {/* Ginawang w-1/2 para sa mobile at md:w-[160px] para sa desktop */}
@@ -49,7 +74,15 @@ export default function AdminAlumniCoordinatorFilter({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all" className='cursor-pointer'>All Department</SelectItem>
-              <SelectItem value="CECT" className='cursor-pointer'>CECT</SelectItem>
+              {departments.length > 0 ? (
+                departments.map((d) => (
+                  <SelectItem key={d.id || d.code} value={d.code} className="cursor-pointer">
+                    {d.code}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="CECT" className="cursor-pointer">CECT</SelectItem>
+              )}
             </SelectContent>
           </Select>
 
@@ -62,12 +95,13 @@ export default function AdminAlumniCoordinatorFilter({
             <SelectTrigger className="h-10 w-1/2 md:w-[160px] bg-white text-sm cursor-pointer">
               <SelectValue placeholder="All Courses" />
             </SelectTrigger>
-            <SelectContent >
+            <SelectContent>
               <SelectItem value="all" className='cursor-pointer'>All Courses</SelectItem>
-              <SelectItem value="BSIT" className='cursor-pointer'>BSIT</SelectItem>
-              <SelectItem value="BSCpE" className='cursor-pointer'>BSCpE</SelectItem>
-              <SelectItem value="BSEcE" className='cursor-pointer'>BSEcE</SelectItem>
-              <SelectItem value="BSCS" className='cursor-pointer'>BSCS</SelectItem>
+              {availablePrograms.map((p) => (
+                <SelectItem key={p.id || p.code} value={p.code} className="cursor-pointer">
+                  {p.code}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

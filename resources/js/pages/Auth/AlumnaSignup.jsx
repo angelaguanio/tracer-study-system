@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
   ArrowLeft, ArrowRight,
   User, MapPin, Phone, Mail, Lock,
@@ -224,6 +224,36 @@ export default function AlumnaSignup() {
   const [data, setData] = useState(INITIAL_FORM);
   const [residency, setResidency] = useState('Philippines');
 
+  const { academic } = usePage().props;
+
+  const availableDepartments = useMemo(() => {
+    if (academic?.departments && academic.departments.length > 0) {
+      return academic.departments;
+    }
+    return [
+      {
+        id: 1,
+        code: 'CECT',
+        name: 'College of Engineering and Computer Technology',
+        programs: BASE_COURSES.map(c => ({ id: c.value, code: c.value, name: c.label })),
+      },
+    ];
+  }, [academic?.departments]);
+
+  // Set default department if none selected
+  useEffect(() => {
+    if (!data.department && availableDepartments.length > 0) {
+      setData(prev => ({ ...prev, department: availableDepartments[0].code }));
+    }
+  }, [availableDepartments, data.department]);
+
+  // Filter programs strictly to the selected department
+  const departmentPrograms = useMemo(() => {
+    if (!data.department) return [];
+    const dept = availableDepartments.find(d => d.code === data.department);
+    return dept?.programs || [];
+  }, [data.department, availableDepartments]);
+
   // ── Auto-restore draft from localStorage on mount ─────────────────────────
   useEffect(() => {
     try {
@@ -419,7 +449,7 @@ export default function AlumnaSignup() {
     data.contact_number,
   ].every(Boolean);
   const isStep2Done = data.profile_picture instanceof File;
-  const isStep3Done = [data.courses, data.school_year, data.semester].every(Boolean);
+  const isStep3Done = [data.department, data.courses, data.school_year, data.semester].every(Boolean);
   const isStep4Done = [data.email, data.password, data.password_confirmation].every(Boolean) && passwordErrors.length === 0;
 
   const validateStep1 = () => {
@@ -879,20 +909,51 @@ export default function AlumnaSignup() {
           {/* ── Step 3: Academic ── */}
           {step === 3 && (
             <div className="flex flex-col gap-3">
-              {/* Static dept display */}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-700">
-                  College / Department <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                  <GraduationCap className="h-4 w-4 text-gray-400 shrink-0" />
-                  <span className="text-sm text-gray-500">College of Engineering and Computer Technology (CECT)</span>
-                </div>
-              </div>
-
-              <IconSelect icon={BookOpen} label="Program / Course" required placeholder="Program / Course" value={data.courses} onValueChange={(v) => handleSelectChange('courses', v)} error={stepErrors.courses}>
+              {/* Department selector */}
+              <IconSelect
+                icon={Building2}
+                label="College / Department"
+                required
+                placeholder="Select College / Department"
+                value={data.department}
+                onValueChange={(v) => {
+                  setData((prev) => ({ ...prev, department: v, courses: '', school_year: '' }));
+                  setStepErrors((prev) => ({ ...prev, department: null, courses: null }));
+                }}
+                error={stepErrors.department}
+              >
                 <SelectGroup>
-                  {BASE_COURSES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                  {availableDepartments.map((d) => (
+                    <SelectItem key={d.id || d.code} value={d.code}>
+                      {d.code} - {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </IconSelect>
+
+              {/* Program selector (strictly shows programs under selected department only) */}
+              <IconSelect
+                icon={BookOpen}
+                label="Program / Course"
+                required
+                placeholder={data.department ? "Select Program / Course" : "Please select department first"}
+                value={data.courses}
+                disabled={!data.department}
+                onValueChange={(v) => handleSelectChange('courses', v)}
+                error={stepErrors.courses}
+              >
+                <SelectGroup>
+                  {departmentPrograms.length > 0 ? (
+                    departmentPrograms.map((p) => (
+                      <SelectItem key={p.id || p.code} value={p.code}>
+                        {p.code} - {p.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled>
+                      No programs available in this department
+                    </SelectItem>
+                  )}
                 </SelectGroup>
               </IconSelect>
 

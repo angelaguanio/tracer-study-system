@@ -53,6 +53,9 @@ export default function SidebarAdmin({ navItems = [] }) {
     if (item.id === 'alumni') {
       return path.includes('/alumni') || path.includes('/featured-alumni');
     }
+    if (item.id === 'settings') {
+      return path.includes('/settings');
+    }
     if (item.subItems) {
       return item.subItems.some(sub => isSubItemActive(sub.href));
     }
