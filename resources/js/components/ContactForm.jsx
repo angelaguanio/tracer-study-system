@@ -154,7 +154,13 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
         <CardContent className="space-y-4 pt-2">
 
           {/* User details & Title */}
-          <div className='flex flex-col w-full py-3 px-4 bg-blue-200/20 rounded-2xl border border-blue-300'>
+          <div 
+            className='flex flex-col w-full py-3 px-4 rounded-2xl border'
+            style={{ 
+              background: 'color-mix(in srgb, var(--theme-primary) 10%, white)', 
+              borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0)' 
+            }}
+          >
             <div className="flex flex-row gap-4 items-center min-w-0 w-full">
               <Select onValueChange={(value) => setData('title', value)} value={data.title}>
                   <SelectTrigger className={`w-[110px] shrink-0 text-black text-sm bg-white ${!data.title ? 'border-amber-400' : 'border-gray-400'}`}>
@@ -308,7 +314,7 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
                     }`}
                   >
                     <div className="flex-1 min-w-0 pr-3">
-                      <span className="text-[10px] uppercase font-bold text-[#009AFB] tracking-wider block mb-0.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider block mb-0.5" style={{ color: 'var(--theme-primary)' }}>
                         {item.category}
                       </span>
                       <p className="text-xs font-semibold text-[#0B2545] group-hover:text-[#009AFB] transition leading-snug">
@@ -371,9 +377,9 @@ export default function ContactForm({auth, userEmail, userName, coordinators, de
           <Button 
             type='submit' 
             size='login2' 
-            variant='blue' 
             disabled={isBusy}
-            className="w-full h-12 rounded-full text-sm font-semibold shadow-md shadow-[#009AFB]/20 hover:shadow-lg transition-all hover:scale-[1.01]"
+            className="w-full h-12 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:scale-[1.01] hover:opacity-95"
+            style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
           >
             {processing ? 'Submitting...' : 'Submit Custom Inquiry'}
           </Button>

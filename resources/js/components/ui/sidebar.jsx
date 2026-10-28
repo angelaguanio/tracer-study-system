@@ -149,9 +149,14 @@ function Sidebar({
         //   className
         // )}
         className={cn(
-          "bg-[linear-gradient(to_bottom,#003C87,#005AAA,#007AD7,#009AFB)] text-white flex h-full w-(--sidebar-width) flex-col",
+          "theme-sidebar-bg flex h-full w-(--sidebar-width) flex-col",
           className
         )}
+        style={{
+          background: 'var(--theme-gradient, linear-gradient(135deg, #15803d, #166534))',
+          color: 'var(--theme-text-on-primary, #ffffff)',
+          ...(props.style || {})
+        }}
         {...props}>
         {children}
       </div>
@@ -167,10 +172,12 @@ function Sidebar({
           data-mobile="true"
           // OLD CODE:
           // className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
-          className="bg-[linear-gradient(to_bottom,#003C87,#005AAA,#007AD7,#009AFB)] text-white w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="theme-sidebar-bg w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE
+              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              background: 'var(--theme-gradient, linear-gradient(135deg, #15803d, #166534))',
+              color: 'var(--theme-text-on-primary, #ffffff)',
             }
           }
           side={side}>
@@ -222,7 +229,11 @@ function Sidebar({
           data-slot="sidebar-inner"
           // OLD CODE:
           // className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm">
-          className="bg-[linear-gradient(to_bottom,#003C87,#005AAA,#007AD7,#009AFB)] text-white group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm">
+          className="theme-sidebar-bg group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          style={{
+            background: 'var(--theme-gradient, linear-gradient(135deg, #15803d, #166534))',
+            color: 'var(--theme-text-on-primary, #ffffff)',
+          }}>
           {children}
         </div>
       </div>
@@ -484,7 +495,7 @@ function SidebarMenuItem({
 // )
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-all duration-300 focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 text-white hover:bg-white/10 hover:backdrop-blur-md hover:border-white/20 hover:shadow-lg data-[active=true]:bg-white/20 data-[active=true]:backdrop-blur-md data-[active=true]:border-white/30 data-[active=true]:shadow-lg data-[active=true]:font-medium data-[state=open]:hover:bg-white/10",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-all duration-300 focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 text-[var(--theme-text-on-primary,#ffffff)] hover:bg-white/10 hover:backdrop-blur-md hover:border-white/20 hover:shadow-lg data-[active=true]:bg-white/20 data-[active=true]:backdrop-blur-md data-[active=true]:border-white/30 data-[active=true]:shadow-lg data-[active=true]:font-medium data-[state=open]:hover:bg-white/10",
   {
     variants: {
       variant: {

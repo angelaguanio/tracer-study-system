@@ -13,6 +13,7 @@ import {
   ChartNoAxesCombined,
   Star,
   GraduationCap,
+  Settings,
 } from "lucide-react";
 import { Toaster } from "sonner";
 import { usePage } from "@inertiajs/react";
@@ -98,10 +99,16 @@ export default function AdminLayout({ children }) {
       icon: UsersRound
     },
     {
-      id: "settings",
+      id: "programs",
       name: "Program Management",
-      href: route('admin.settings.index'),
+      href: route('admin.programs.index'),
       icon: GraduationCap
+    },
+    {
+      id: "settings",
+      name: "Settings",
+      href: route('admin.theme-settings.index'),
+      icon: Settings
     }
   ]
 

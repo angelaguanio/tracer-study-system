@@ -67,9 +67,11 @@ function getInitials(firstName, lastName) {
 }
 
 export default function NavbarAlumni({ children }) {
-  const { auth } = usePage().props
+  const { auth, system_settings } = usePage().props
   const { url } = usePage()
   const user = auth?.user
+  const appLogo = system_settings?.app_logo || logo
+  const appName = system_settings?.app_name || 'Alumni Connect'
   const notifications = useNotifications(user.user_role, user.id);
   const currentPath = url.split('?')[0]
   const isTracerLocked = auth?.user?.is_tracer_locked || false;
@@ -124,8 +126,8 @@ export default function NavbarAlumni({ children }) {
           href={isTracerLocked ? '#' : route('alumna.home')} 
           className={`flex items-center space-x-3 relative ${isTracerLocked ? 'cursor-default' : 'cursor-pointer hover:opacity-90 transition-opacity'}`}
         >
-          <img src={logo} className='h-12 md:h-14' alt="Alumni Connect logo" />
-          <p className="font-bruno lg:text-lg text-base">Alumni Connect</p>
+          <img src={appLogo} className='h-12 md:h-14 object-contain' alt={`${appName} logo`} />
+          <p className="font-bruno lg:text-lg text-base">{appName}</p>
         </Link>
 
         {/* Right side: Bell and Hamburger (Visible on all screen sizes) */}
@@ -163,7 +165,10 @@ export default function NavbarAlumni({ children }) {
         <div
             className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 shrink-0"
         >
-            <div className="h-11 w-11 rounded-full overflow-hidden bg-blue-500 shrink-0 flex items-center justify-center">
+            <div 
+                className="h-11 w-11 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white"
+                style={{ background: 'var(--theme-gradient)' }}
+            >
             {user?.profile_picture ? (
                 <img
                 src={user.profile_picture}
@@ -212,15 +217,14 @@ export default function NavbarAlumni({ children }) {
                         <div key={item.id}>
                             <button
                                 onClick={() => toggleSubMenu(item.id)}
-                                className={`w-full flex items-center justify-between px-3 py-3 mx-1 rounded-md transition font-medium cursor-pointer ${
-                                    isOpen ? 'bg-blue-50/80 text-blue-800' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                }`}
+                                className="w-full flex items-center justify-between px-3 py-3 mx-1 rounded-md transition font-medium cursor-pointer"
+                                style={isOpen ? { background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', color: 'var(--theme-primary)' } : {}}
                             >
                                 <div className="flex items-center gap-3">
-                                    <Icon className={`h-[22px] w-[22px] ${isOpen ? 'text-blue-600' : 'text-gray-500'}`} />
+                                    <Icon className="h-[22px] w-[22px]" style={isOpen ? { color: 'var(--theme-primary)' } : { color: '#6b7280' }} />
                                     <span className="text-base">{item.name}</span>
                                 </div>
-                                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180 text-blue-600' : 'text-gray-400'}`} />
+                                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : 'text-gray-400'}`} style={isOpen ? { color: 'var(--theme-primary)' } : {}} />
                             </button>
                             {isOpen && (
                                 <div className="ml-10 mr-2 mt-1 mb-2 space-y-1">
@@ -240,9 +244,14 @@ export default function NavbarAlumni({ children }) {
                                                 onClick={() => setMobileOpen(false)}
                                                 className={`block px-4 py-2.5 text-[15px] rounded-md transition border-l-[3px] ml-1 ${
                                                     isSubActive
-                                                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                                                        ? 'font-semibold'
                                                         : 'border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                                 }`}
+                                                style={isSubActive ? { 
+                                                    borderColor: 'var(--theme-primary)', 
+                                                    background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                                    color: 'var(--theme-primary)' 
+                                                } : {}}
                                             >
                                                 {subItem.name}
                                             </Link>
@@ -269,11 +278,16 @@ export default function NavbarAlumni({ children }) {
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[4px] font-medium ${
                     isActive
-                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                        ? 'font-semibold'
                         : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                     }`}
+                    style={isActive ? { 
+                        borderColor: 'var(--theme-primary)', 
+                        background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                        color: 'var(--theme-primary)' 
+                    } : {}}
                 >
-                    <Icon className={`h-[22px] w-[22px] ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <Icon className="h-[22px] w-[22px]" style={isActive ? { color: 'var(--theme-primary)' } : { color: '#6b7280' }} />
                     <span className="text-base">{item.name}</span>
                 </Link>
                 )
@@ -308,11 +322,16 @@ export default function NavbarAlumni({ children }) {
                     onClick={() => setMobileOpen(false)}
                     className={`flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[4px] font-medium ${
                     isActive
-                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                        ? 'font-semibold'
                         : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                     }`}
+                    style={isActive ? { 
+                        borderColor: 'var(--theme-primary)', 
+                        background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                        color: 'var(--theme-primary)' 
+                    } : {}}
                 >
-                    <Icon className={`h-[22px] w-[22px] ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <Icon className="h-[22px] w-[22px]" style={isActive ? { color: 'var(--theme-primary)' } : { color: '#6b7280' }} />
                     <span className="text-base">{item.name}</span>
                 </Link>
                 )

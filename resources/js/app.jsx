@@ -25,6 +25,13 @@ const getCsrfToken = () => {
     return csrfToken ? csrfToken.content : null;
 };
 
+import { applySystemTheme } from './lib/theme';
+
+// Apply initial system theme from server-injected state
+if (typeof window !== 'undefined' && window.__SYSTEM_SETTINGS__) {
+    applySystemTheme(window.__SYSTEM_SETTINGS__);
+}
+
 // Function to update CSRF token
 const updateCsrfToken = () => {
     const token = getCsrfToken();
@@ -36,14 +43,23 @@ const updateCsrfToken = () => {
 // Set initial CSRF token
 updateCsrfToken();
 
-// Update CSRF token after each Inertia navigation
-router.on('navigate', () => {
+// Update CSRF token and theme after each Inertia navigation
+router.on('navigate', (event) => {
+    updateCsrfToken();
+    if (event.detail?.page?.props?.system_settings) {
+        applySystemTheme(event.detail.page.props.system_settings);
+    }
+});
+
+// Update CSRF token and theme after full page loads/success
+router.on('finish', () => {
     updateCsrfToken();
 });
 
-// Update CSRF token after full page loads
-router.on('finish', () => {
-    updateCsrfToken();
+router.on('success', (event) => {
+    if (event.detail?.page?.props?.system_settings) {
+        applySystemTheme(event.detail.page.props.system_settings);
+    }
 });
 
 router.on('invalid', (event) => {

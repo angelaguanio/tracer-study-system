@@ -41,7 +41,8 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => \App\Models\SystemSetting::get('app_name', config('app.name')),
+            'system_settings' => fn () => \App\Models\SystemSetting::getAll(),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user() ? [

@@ -55,7 +55,7 @@ export default function AlumnaUpdates({ employment, history }) {
                     {/* Header */}
                     <div className="space-y-4">
                         <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight">
-                            Alumni <span className="text-blue-600">Updates</span>
+                            Alumni <span style={{ color: 'var(--theme-primary)' }}>Updates</span>
                         </h1>
                         
                         <p className="text-lg text-gray-500 max-w-full">
@@ -68,7 +68,14 @@ export default function AlumnaUpdates({ employment, history }) {
                         <form onSubmit={submit}>
                             <div className="flex items-start justify-between mb-8">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm border border-blue-100/50">
+                                    <div 
+                                        className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border"
+                                        style={{ 
+                                            background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                            color: 'var(--theme-primary)', 
+                                            borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0)' 
+                                        }}
+                                    >
                                         <Briefcase className="w-7 h-7" strokeWidth={1.75} />
                                     </div>
                                     <div>
@@ -77,7 +84,14 @@ export default function AlumnaUpdates({ employment, history }) {
                                     </div>
                                 </div>
                                 {employment?.updated_at && (
-                                    <div className="text-[13px] font-semibold text-blue-700 bg-blue-50/80 px-4 py-1.5 rounded-full border border-blue-100/50">
+                                    <div 
+                                        className="text-[13px] font-semibold px-4 py-1.5 rounded-full border"
+                                        style={{ 
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, white)', 
+                                            color: 'var(--theme-primary)', 
+                                            borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0)' 
+                                        }}
+                                    >
                                         Last updated {new Date(employment.updated_at).toLocaleDateString()}
                                     </div>
                                 )}
@@ -249,7 +263,8 @@ export default function AlumnaUpdates({ employment, history }) {
                                         <Button 
                                             type="submit" 
                                             disabled={processing}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-6 text-sm font-semibold shadow-sm w-full sm:w-auto"
+                                            className="text-white rounded-full px-8 py-6 text-sm font-semibold shadow-sm w-full sm:w-auto hover:opacity-90"
+                                            style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                                         >
                                             Save updates
                                         </Button>
@@ -288,7 +303,7 @@ export default function AlumnaUpdates({ employment, history }) {
                                         <div className="flex justify-between items-start mb-5 flex-grow gap-4">
                                             <div>
                                                 <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.company_name || (item.currently_employed === 'No' ? 'Unemployed' : 'Employed')}</h3>
-                                                {item.position && <p className="text-[15px] font-medium text-blue-600 mt-1">{item.position}</p>}
+                                                {item.position && <p className="text-[15px] font-medium mt-1" style={{ color: 'var(--theme-primary)' }}>{item.position}</p>}
                                             </div>
                                             {isCurrent ? (
                                                 <div className="flex items-center gap-1.5 bg-[#E6F9F0] text-[#00A35C] px-3 py-1.5 rounded-full text-xs font-bold shrink-0">

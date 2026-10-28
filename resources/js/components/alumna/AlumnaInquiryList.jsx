@@ -50,7 +50,8 @@ export default function AlumnaInquiryList({
                     <Button
                         size='sm'
                         variant='default'
-                        className='gap-1.5 text-xs font-medium shrink-0 bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-md shadow-[#009AFB]/20 rounded-xl transition-all duration-200 hover:scale-[1.02]'
+                        className='gap-1.5 text-xs font-medium shrink-0 shadow-md rounded-xl transition-all duration-200 hover:scale-[1.02]'
+                        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                         onClick={onNewInquiry}
                     >
                         <Plus className='h-3.5 w-3.5' />
@@ -64,7 +65,7 @@ export default function AlumnaInquiryList({
                         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400' />
                         <Input
                             placeholder='Search inquiries...'
-                            className='bg-white/80 border-slate-200 text-slate-800 placeholder:text-slate-400 pl-9.5 w-full rounded-xl focus-visible:ring-[#009AFB] focus-visible:border-[#009AFB] shadow-inner text-sm'
+                            className='bg-white/80 border-slate-200 text-slate-800 placeholder:text-slate-400 pl-9.5 w-full rounded-xl shadow-inner text-sm focus-visible:ring-1'
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -76,8 +77,9 @@ export default function AlumnaInquiryList({
                                 variant='outline'
                                 size='icon'
                                 className={`shrink-0 bg-white/80 border-slate-200 rounded-xl shadow-sm hover:bg-white text-slate-700 ${
-                                    hasActiveFilters ? 'ring-2 ring-[#009AFB] border-transparent text-[#009AFB]' : ''
+                                    hasActiveFilters ? 'ring-2 border-transparent' : ''
                                 }`}
+                                style={hasActiveFilters ? { borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)' } : {}}
                             >
                                 <ListFilter className='h-4 w-4' />
                             </Button>
@@ -117,15 +119,17 @@ export default function AlumnaInquiryList({
                                 key={data.id}
                                 className={`group cursor-pointer flex flex-col p-3.5 rounded-2xl transition-all duration-200 border ${
                                     isActive
-                                        ? 'bg-white border-[#9ECEFF] shadow-md ring-1 ring-[#009AFB]/30 translate-x-1'
+                                        ? 'bg-white shadow-md ring-1 translate-x-1'
                                         : 'bg-white/60 hover:bg-white/90 border-slate-200/70 shadow-sm hover:shadow'
                                 }`}
+                                style={isActive ? { borderColor: 'var(--theme-primary)', boxShadow: '0 4px 12px -2px color-mix(in srgb, var(--theme-primary) 20%, transparent)' } : {}}
                                 onClick={() => onSelect(data)}
                             >
                                 <div className='flex justify-between items-start gap-2 mb-1.5'>
-                                    <h3 className={`text-xs font-bold truncate transition-colors ${
-                                        isActive ? 'text-[#009AFB]' : 'text-[#0B2545] group-hover:text-[#009AFB]'
-                                    }`}>
+                                    <h3 
+                                        className='text-xs font-bold truncate transition-colors'
+                                        style={isActive ? { color: 'var(--theme-primary)' } : { color: '#0B2545' }}
+                                    >
                                         {data.subject}
                                     </h3>
                                     <span className='text-[10px] text-slate-500 shrink-0 font-medium'>

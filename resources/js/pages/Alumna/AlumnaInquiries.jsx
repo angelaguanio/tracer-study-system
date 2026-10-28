@@ -108,8 +108,8 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
                 className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
                 style={{ backgroundImage: `url(${cectBg})` }}
             >
-                {/* Blue Gradient Overlay */}
-                <div className="absolute inset-0 bg-blue-900/60 bg-gradient-to-t from-[#003C87] to-[#003C87]/30" />
+                {/* Theme Hero Overlay */}
+                <div className="absolute inset-0 theme-hero-overlay" />
             </div>
 
             {/* New Inquiry Modal */}
@@ -135,8 +135,14 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
             <div className="relative z-10 w-full p-3 sm:p-5 lg:p-6 my-auto">
                 {hasNoInquiries ? (
                     <div className='flex flex-col items-center justify-center max-w-xl mx-auto gap-6 px-6 py-16 bg-white/85 backdrop-blur-md rounded-3xl shadow-2xl border border-white/50 text-center'>
-                        <div className='bg-[#009AFB]/10 p-5 rounded-full border border-[#9ECEFF]/30'>
-                            <MessageSquarePlus className='w-10 h-10 text-[#009AFB]' />
+                        <div 
+                            className='p-5 rounded-full border'
+                            style={{ 
+                                background: 'color-mix(in srgb, var(--theme-primary) 12%, white)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 30%, #e2e8f0)' 
+                            }}
+                        >
+                            <MessageSquarePlus className='w-10 h-10' style={{ color: 'var(--theme-primary)' }} />
                         </div>
                         <div>
                             <h2 className='text-2xl font-bold text-[#0B2545] mb-2'>No Inquiries Yet</h2>
@@ -146,7 +152,8 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
                         </div>
                         <Button
                             size='lg'
-                            className='flex items-center gap-2 px-8 bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-lg rounded-xl font-medium cursor-pointer transition-all'
+                            className='flex items-center gap-2 px-8 shadow-lg rounded-xl font-medium cursor-pointer transition-all hover:opacity-90'
+                            style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                             onClick={() => setIsModalOpen(true)}
                         >
                             <Plus className='h-4 w-4' />

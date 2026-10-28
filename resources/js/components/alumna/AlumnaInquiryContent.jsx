@@ -86,7 +86,10 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className='h-full w-full bg-gradient-to-br from-[#0B2545] to-[#009AFB] flex items-center justify-center text-white font-bold'>
+                    <div 
+                        className='h-full w-full flex items-center justify-center font-bold'
+                        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+                    >
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
                     </div>
                 )}
@@ -109,7 +112,7 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
 
                     <h3 className="text-2xl font-bold text-[#0B2545] mb-2 tracking-tight">Select an inquiry to view</h3>
                     <p className="text-sm text-slate-500 leading-relaxed">
-                        Choose a conversation from the sidebar or click <span className="font-semibold text-[#009AFB]">"New Inquiry"</span> to reach out to the Alumni Office or your Department Coordinator.
+                        Choose a conversation from the sidebar or click <span className="font-semibold" style={{ color: 'var(--theme-primary)' }}>"New Inquiry"</span> to reach out to the Alumni Office or your Department Coordinator.
                     </p>
                 </div>
             </div>
@@ -150,7 +153,7 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                             <span>{formatDateTime(inquiry.created_at) || inquiry.formatted_date}</span>
                             <span>•</span>
-                            <span className="font-medium text-[#009AFB]">
+                            <span className="font-medium" style={{ color: 'var(--theme-primary)' }}>
                                 {inquiry.department ? `Department: ${inquiry.department}` : 'Recipient: Alumni Office'}
                             </span>
                         </div>
@@ -168,8 +171,12 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                             You · {formatDateTime(inquiry.created_at) || inquiry.formatted_date}
                         </span>
                         <div
-                            className='bg-[#009AFB] text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md shadow-[#009AFB]/10 border border-[#009AFB]'
-                            style={{ wordBreak: 'break-word' }}
+                            className='text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md'
+                            style={{ 
+                                background: 'var(--theme-gradient)', 
+                                color: 'var(--theme-text-on-primary)',
+                                wordBreak: 'break-word' 
+                            }}
                         >
                             <p className='text-sm font-bold mb-1 border-b border-white/20 pb-1'>{inquiry.subject}</p>
                             <p className='text-sm leading-relaxed'>{inquiry.message}</p>
@@ -192,10 +199,14 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                                 <div
                                     className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
                                         isMe
-                                            ? 'bg-[#009AFB] text-white rounded-tr-none shadow-md shadow-[#009AFB]/10'
+                                            ? 'text-white rounded-tr-none shadow-md'
                                             : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-sm'
                                     }`}
-                                    style={{ wordBreak: 'break-word' }}
+                                    style={isMe ? { 
+                                        background: 'var(--theme-gradient)', 
+                                        color: 'var(--theme-text-on-primary)',
+                                        wordBreak: 'break-word' 
+                                    } : { wordBreak: 'break-word' }}
                                 >
                                     {reply.message}
                                 </div>
@@ -228,7 +239,8 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                     <Button
                         onClick={sendReply}
                         disabled={sending || !replyText.trim()}
-                        className='h-10 w-10 p-0 shrink-0 rounded-xl bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-md shadow-[#009AFB]/20 transition-all duration-200 hover:scale-[1.03] disabled:opacity-40'
+                        className='h-10 w-10 p-0 shrink-0 rounded-xl shadow-md transition-all duration-200 hover:scale-[1.03] disabled:opacity-40'
+                        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                     >
                         <Send className='h-4 w-4' />
                     </Button>

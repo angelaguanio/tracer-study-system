@@ -40,20 +40,20 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
       {/* Bottom Left Corner Wave */}
       <div className="absolute bottom-0 left-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
-          {/* Light Blue Swoosh */}
-          <path fill="#60A5FA" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
-          {/* Dark Blue Swoosh */}
-          <path fill="#005AAA" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
+          {/* Secondary Swoosh */}
+          <path fill="var(--theme-secondary, #60A5FA)" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
+          {/* Primary Swoosh */}
+          <path fill="var(--theme-primary, #005AAA)" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
         </svg>
       </div>
 
       {/* Bottom Right Corner Wave */}
       <div className="absolute bottom-0 right-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end justify-end">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMaxYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
-          {/* Light Blue Swoosh */}
-          <path fill="#60A5FA" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
-          {/* Dark Blue Swoosh */}
-          <path fill="#005AAA" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
+          {/* Secondary Swoosh */}
+          <path fill="var(--theme-secondary, #60A5FA)" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
+          {/* Primary Swoosh */}
+          <path fill="var(--theme-primary, #005AAA)" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
         </svg>
       </div>
 
@@ -61,13 +61,13 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
 
         <div className="text-center mb-16 max-w-5xl mx-auto font-inter">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="w-16 h-px bg-blue-200"></div>
-            <span className="uppercase text-[#007AD7] font-bold tracking-[0.2em] text-sm">Alumni Stories</span>
-            <div className="w-16 h-px bg-blue-200"></div>
+            <div className="w-16 h-px opacity-40" style={{ background: 'var(--theme-primary)' }}></div>
+            <span className="uppercase font-bold tracking-[0.2em] text-sm" style={{ color: 'var(--theme-primary)' }}>Alumni Stories</span>
+            <div className="w-16 h-px opacity-40" style={{ background: 'var(--theme-primary)' }}></div>
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-[45px] font-playfair font-bold text-[#001D4A] mb-6 leading-[1.2]">
             Wesleyan Footprints: Stories that Inspire,<br className="hidden md:block" /> 
-            <span className="text-[#007AD7]">Achieve, and Create a Brighter Tomorrow</span>
+            <span style={{ color: 'var(--theme-primary)' }}>Achieve, and Create a Brighter Tomorrow</span>
           </h1>
           <p className="text-gray-500 text-lg sm:text-xl max-w-3xl mx-auto">
             Discover the journeys, achievements, and lasting impact of our graduates who continue to make a difference in their communities and beyond.
@@ -77,8 +77,8 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
         {list.length === 0 ? (
 
           <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-gray-100 p-10 md:p-16 w-full max-w-[700px] flex flex-col items-center text-center">
-            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-              <Star size={40} className="text-blue-300" />
+            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: 'color-mix(in srgb, var(--theme-primary) 12%, white)' }}>
+              <Star size={40} style={{ color: 'var(--theme-primary)' }} />
             </div>
             <h2 className="text-[#0B2545] text-2xl font-bold mb-3">
               No featured alumni yet
@@ -131,7 +131,10 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                         onClick={(e) => e.stopPropagation()}
                         className="w-full block"
                       >
-                        <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-semibold text-xs shadow-md cursor-pointer text-center">
+                        <button 
+                          className="w-full py-2.5 rounded-full font-semibold text-xs shadow-md cursor-pointer text-center hover:opacity-90 transition-opacity"
+                          style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+                        >
                           Read More
                         </button>
                       </Link>

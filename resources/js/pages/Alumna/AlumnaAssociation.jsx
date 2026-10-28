@@ -49,8 +49,8 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${cectBg})` }}
       >
-        {/* Blue Gradient Overlay */}
-        <div className="absolute inset-0 bg-blue-900/60 bg-gradient-to-t from-[#003C87] to-[#003C87]/30" />
+        {/* Theme Overlay */}
+        <div className="absolute inset-0 theme-hero-overlay" />
       </div>
 
       <div className="relative z-10 w-full flex flex-col">
@@ -59,7 +59,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
         ═══════════════════════════════════════════════════════ */}
         <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-6 z-10">
           <h1 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight drop-shadow-2xl mb-6 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
-            <span className="text-[#8AD1F7]">Alumni </span>
+            <span style={{ color: 'color-mix(in srgb, var(--theme-text-on-primary, #ffffff) 80%, var(--theme-primary, #15803d))' }}>Alumni </span>
             <span className="text-white">Association</span>
           </h1>
           <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
@@ -71,12 +71,15 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
             1.5. TOGGLE SWITCH
         ═══════════════════════════════════════════════════════ */}
         <div className="w-full relative z-20 px-6 pt-16 pb-8">
-          <div className={`flex bg-[#234371] rounded-full shadow-lg max-w-2xl w-full mx-auto relative z-20 transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <div className={`flex bg-black/40 backdrop-blur-md border border-white/20 rounded-full shadow-lg max-w-2xl w-full mx-auto relative z-20 transition-all duration-1000 delay-500 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             
             {/* Sliding Background */}
             <div 
-              className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-[#00A3FF] to-[#00E5FF] rounded-full transition-transform duration-300 ease-out shadow-md z-0"
-              style={{ transform: `translateX(${activeProgram * 100}%)` }}
+              className="absolute top-0 left-0 w-1/2 h-full rounded-full transition-transform duration-300 ease-out shadow-md z-0"
+              style={{ 
+                transform: `translateX(${activeProgram * 100}%)`,
+                background: 'var(--theme-gradient)'
+              }}
             />
 
             <button
@@ -120,20 +123,20 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
           {/* Bottom Left Corner Wave */}
           <div className="absolute bottom-0 left-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end">
             <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
-              {/* Light Blue Swoosh */}
-              <path fill="#60A5FA" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
-              {/* Dark Blue Swoosh */}
-              <path fill="#005AAA" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
+              {/* Secondary Swoosh */}
+              <path fill="var(--theme-secondary, #60A5FA)" fillOpacity="0.5" d="M0,200 C200,280 300,450 500,500 L0,500 Z" />
+              {/* Primary Swoosh */}
+              <path fill="var(--theme-primary, #005AAA)" fillOpacity="0.8" d="M0,350 C180,390 280,480 450,500 L0,500 Z" />
             </svg>
           </div>
 
           {/* Bottom Right Corner Wave */}
           <div className="absolute bottom-0 right-0 w-[50vw] max-w-[600px] pointer-events-none z-0 flex items-end justify-end">
             <svg viewBox="0 0 500 500" preserveAspectRatio="xMaxYMax slice" className="w-full h-auto opacity-90 drop-shadow-2xl">
-              {/* Light Blue Swoosh */}
-              <path fill="#60A5FA" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
-              {/* Dark Blue Swoosh */}
-              <path fill="#005AAA" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
+              {/* Secondary Swoosh */}
+              <path fill="var(--theme-secondary, #60A5FA)" fillOpacity="0.6" d="M0,500 C150,480 300,300 500,150 L500,500 Z" />
+              {/* Primary Swoosh */}
+              <path fill="var(--theme-primary, #005AAA)" fillOpacity="0.85" d="M150,500 C280,490 380,420 500,300 L500,500 Z" />
             </svg>
           </div>
 
@@ -142,13 +145,13 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
             {/* Titles */}
             <div className="text-center mb-16 max-w-5xl mx-auto font-inter">
               <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="w-16 h-px bg-blue-200"></div>
-                <span className="uppercase text-[#007AD7] font-bold tracking-[0.2em] text-sm">Alumni Stories</span>
-                <div className="w-16 h-px bg-blue-200"></div>
+                <div className="w-16 h-px opacity-40" style={{ background: 'var(--theme-primary)' }}></div>
+                <span className="uppercase font-bold tracking-[0.2em] text-sm" style={{ color: 'var(--theme-primary)' }}>Alumni Stories</span>
+                <div className="w-16 h-px opacity-40" style={{ background: 'var(--theme-primary)' }}></div>
               </div>
               <h2 className="text-3xl md:text-4xl lg:text-[45px] font-playfair font-bold text-[#001D4A] mb-6 leading-[1.2]">
                 Wesleyan Footprints: Stories that Inspire,<br className="hidden md:block" /> 
-                <span className="text-[#007AD7]">Achieve, and Create a Brighter Tomorrow</span>
+                <span style={{ color: 'var(--theme-primary)' }}>Achieve, and Create a Brighter Tomorrow</span>
               </h2>
               <p className="text-gray-500 text-lg sm:text-xl max-w-3xl mx-auto">
                 Discover the journeys, achievements, and lasting impact of our graduates who continue to make a difference in their communities and beyond.
@@ -160,7 +163,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
               {featuredAlumni.slice(0, 3).map((alumnus) => (
                 <div 
                   key={alumnus.id} 
-                  className="w-full max-w-[350px] bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col border border-gray-100 relative group cursor-pointer"
+                  className="w-full max-w-[350px] bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col border border-gray-100 hover:border-slate-300 relative group cursor-pointer transition-all duration-300"
                 >
                   <div className="relative w-full h-72 shrink-0">
                     {alumnus.image && alumnus.image.length > 0 ? (
@@ -190,7 +193,10 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
                     
                     <div className="w-full mt-1">
                       <Link href={`/alumni/featured-alumni/${alumnus.id}?from=association`} className="w-full block">
-                        <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-inter font-semibold text-xs shadow-md cursor-pointer text-center">
+                        <button 
+                          className="w-full py-2.5 rounded-full font-inter font-semibold text-xs shadow-md cursor-pointer text-center hover:opacity-90 transition-opacity"
+                          style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+                        >
                           Read More
                         </button>
                       </Link>
@@ -221,7 +227,7 @@ function DotGrid({ className = "" }) {
   return (
     <div className={`grid grid-cols-8 gap-2 ${className}`}>
       {Array.from({ length: 48 }).map((_, i) => (
-        <span key={i} className="w-1 h-1 rounded-full bg-blue-400 block" />
+        <span key={i} className="w-1 h-1 rounded-full block opacity-60" style={{ background: 'var(--theme-primary)' }} />
       ))}
     </div>
   );

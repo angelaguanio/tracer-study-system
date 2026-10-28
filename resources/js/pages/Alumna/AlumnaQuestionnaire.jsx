@@ -202,11 +202,11 @@ export default function AlumnaQuestionnaire({
     return (
       <div className='flex items-center justify-center w-full px-4'>
         <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-1 bg-white text-gray-800">
-         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-400 px-6 sm:px-8 py-6 text-white space-y-4">
+         <CardHeader className="px-6 sm:px-8 py-6 space-y-4" style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}>
               <div className='space-y-2'>
                 <div className='flex flex-row gap-2'>
                   <SparkleIcon/>
-                  <span className='text-sm'>HELP SHAPE OUR FUTURE</span>
+                  <span className='text-sm font-semibold tracking-wider'>HELP SHAPE OUR FUTURE</span>
                 </div>
 
                 <div>
@@ -222,18 +222,18 @@ export default function AlumnaQuestionnaire({
             </div>
 
             <div className='flex flex-col sm:flex-row gap-4'>
-              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-full sm:w-1/2'>
+              <div className='flex items-center gap-3 p-5 rounded-2xl w-full sm:w-1/2' style={{ background: 'color-mix(in srgb, var(--theme-primary) 12%, white)' }}>
                 <CircleCheck color='green'/>
                 <div className='flex flex-col'>
-                  <p className='text-[15px] text-gray-800'>5-10 minutes</p>
+                  <p className='text-[15px] font-semibold text-gray-800'>5-10 minutes</p>
                   <span className='text-[12px] text-gray-500'>Quick and easy</span>
                 </div>
               </div>
 
-              <div className='flex items-center gap-3 bg-blue-100 p-5 rounded-2xl w-full sm:w-1/2'>
+              <div className='flex items-center gap-3 p-5 rounded-2xl w-full sm:w-1/2' style={{ background: 'color-mix(in srgb, var(--theme-primary) 12%, white)' }}>
                 <CircleCheck color='green'/>
                 <div className='flex flex-col'>
-                  <p className='text-[15px] text-gray-800'>Confidential</p>
+                  <p className='text-[15px] font-semibold text-gray-800'>Confidential</p>
                   <span className='text-[12px] text-gray-500'>Your privacy matters</span>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function AlumnaQuestionnaire({
         <div className='flex flex-wrap justify-center gap-6 w-full'>
           {cectSurveys.map((survey) => (
             <Card key={survey.id} className="flex flex-col w-full sm:w-[380px] overflow-hidden shadow-xl rounded-3xl p-0 gap-2 shrink-0">
-            <CardHeader className='bg-gradient-to-br from-blue-500 to-blue-300 px-5 sm:px-8 py-5 text-white'>
+            <CardHeader className='px-5 sm:px-8 py-5' style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}>
               <div className="flex items-start gap-3 mt-3">
                 <div className="flex-col w-full items-center space-y-2 min-w-0">
                 <div className="bg-white/20 rounded-2xl p-4">
@@ -399,13 +399,13 @@ export default function AlumnaQuestionnaire({
 
       {/* Large Bottom Waves (SVG) */}
       <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[30vh] md:h-[40vh] opacity-30">
-          <path fill="#93C5FD" fillOpacity="1" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[30vh] md:h-[40vh] opacity-25">
+          <path fill="var(--theme-secondary, #93C5FD)" fillOpacity="1" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
         </svg>
       </div>
       <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0 flex items-end">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[25vh] md:h-[35vh] opacity-50">
-           <path fill="#60A5FA" fillOpacity="1" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,138.7C840,128,960,160,1080,186.7C1200,213,1320,235,1380,245.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-[25vh] md:h-[35vh] opacity-40">
+           <path fill="var(--theme-primary, #60A5FA)" fillOpacity="1" d="M0,96L60,122.7C120,149,240,203,360,202.7C480,203,600,149,720,138.7C840,128,960,160,1080,186.7C1200,213,1320,235,1380,245.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
         </svg>
       </div>
 

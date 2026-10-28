@@ -51,9 +51,15 @@ export default function UpdateProfileBanner() {
 
     return (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-500">
-            <div className="bg-white rounded-2xl shadow-2xl border border-blue-100 p-5 w-80 sm:w-96 flex flex-col gap-3 relative overflow-hidden">
+            <div 
+                className="bg-white rounded-2xl shadow-2xl p-5 w-80 sm:w-96 flex flex-col gap-3 relative overflow-hidden border"
+                style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0)' }}
+            >
                 {/* Decorative background blur */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
+                <div 
+                    className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 opacity-20 pointer-events-none" 
+                    style={{ background: 'var(--theme-primary)' }}
+                />
                 
                 <button 
                     onClick={handleDismiss}
@@ -63,7 +69,13 @@ export default function UpdateProfileBanner() {
                 </button>
 
                 <div className="flex items-start gap-4">
-                    <div className="bg-blue-100 text-[#005AAA] p-2.5 rounded-xl shrink-0 mt-0.5">
+                    <div 
+                        className="p-2.5 rounded-xl shrink-0 mt-0.5"
+                        style={{ 
+                            background: 'color-mix(in srgb, var(--theme-primary) 15%, white)',
+                            color: 'var(--theme-primary)' 
+                        }}
+                    >
                         <AlertCircle size={24} />
                     </div>
                     <div>
@@ -83,7 +95,8 @@ export default function UpdateProfileBanner() {
                     </button>
                     <Link 
                         href="/alumni/profile"
-                        className="flex-1 px-4 py-2 text-sm font-bold text-white bg-[#005AAA] hover:bg-[#003C87] rounded-xl text-center transition-colors shadow-md"
+                        className="flex-1 px-4 py-2 text-sm font-bold text-white rounded-xl text-center transition-colors shadow-md hover:opacity-95"
+                        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                     >
                         Update Now
                     </Link>

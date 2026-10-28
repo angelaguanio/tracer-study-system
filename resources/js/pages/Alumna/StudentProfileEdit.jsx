@@ -181,7 +181,13 @@ export default function StudentProfileEdit() {
                         >
                             <ArrowLeft size={18} />
                         </Link>
-                        <div className="p-2 bg-blue-50 rounded-full text-[#009AFB]">
+                        <div 
+                            className="p-2 rounded-full"
+                            style={{ 
+                                background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                color: 'var(--theme-primary)' 
+                            }}
+                        >
                             <User size={22} strokeWidth={2} />
                         </div>
                         <div>
@@ -193,7 +199,8 @@ export default function StudentProfileEdit() {
                         form="profile-form"
                         type="submit"
                         disabled={submitting}
-                        className="flex items-center gap-2 bg-[#009AFB] hover:bg-[#0082D6] text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors h-auto shrink-0"
+                        className="flex items-center gap-2 text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm hover:opacity-90 transition-opacity h-auto shrink-0"
+                        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                     >
                         <Save size={16} />
                         {submitting ? 'Saving...' : 'Save Changes'}

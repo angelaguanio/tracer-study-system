@@ -43,7 +43,13 @@ export default function StudentProfile() {
             {/* Header Area */}
             <div className="flex justify-between items-center pl-2">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 rounded-full text-[#009AFB]">
+                    <div 
+                        className="p-2 rounded-full"
+                        style={{ 
+                            background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                            color: 'var(--theme-primary)' 
+                        }}
+                    >
                         <User size={22} strokeWidth={2} />
                     </div>
                     <div>
@@ -51,7 +57,11 @@ export default function StudentProfile() {
                         <h1 className="text-lg font-bold text-[#1e293b] leading-tight">Personal information</h1>
                     </div>
                 </div>
-                <Link href={route('alumna.profile.edit')} className="flex items-center gap-2 bg-[#009AFB] hover:bg-[#0082D6] text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors">
+                <Link 
+                    href={route('alumna.profile.edit')} 
+                    className="flex items-center gap-2 text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm hover:opacity-90 transition-opacity"
+                    style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+                >
                     <Pencil size={16} />
                     Edit profile
                 </Link>
@@ -60,7 +70,10 @@ export default function StudentProfile() {
             {/* Main Profile Card */}
             <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden mt-2">
                 {/* Top Section */}
-                <div className="p-8 sm:p-10 relative overflow-hidden bg-gradient-to-br from-white to-[#f0f7ff]">
+                <div 
+                    className="p-8 sm:p-10 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(to bottom right, #ffffff, color-mix(in srgb, var(--theme-primary) 8%, white))' }}
+                >
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-6">
                             <div className="h-28 w-28 rounded-full overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] shrink-0 flex items-center justify-center">
@@ -91,7 +104,7 @@ export default function StudentProfile() {
                 <div className="p-8 sm:p-10">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <p className="text-[10px] font-bold text-[#009AFB] uppercase tracking-widest mb-1">PROFILE DETAILS</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-primary)' }}>PROFILE DETAILS</p>
                             <h3 className="text-[19px] font-bold text-[#1e293b]">Your information</h3>
                         </div>
                     </div>

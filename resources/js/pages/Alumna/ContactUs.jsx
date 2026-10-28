@@ -90,8 +90,8 @@ export default function ContactUs() {
       >
         {/* Gradient overlay */}
         <div
-          className="absolute inset-0 z-10 bg-[#001D4A]/30"
-          style={{ background: 'linear-gradient(to bottom, rgba(0, 30, 70, 0.4) 0%, rgba(0, 40, 90, 0.6) 50%, rgba(0, 60, 135, 0.8) 80%, #003C87 100%)' }}
+          className="absolute inset-0 z-10"
+          style={{ background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, color-mix(in srgb, var(--theme-primary, #15803d) 85%, black) 100%)' }}
         />
 
         {/* Text content */}
@@ -102,7 +102,7 @@ export default function ContactUs() {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-2xl mb-4 ">
             Have questions, concerns, or suggestions?
           </h1>
-          <div className={`w-12 h-1 bg-[#00C2FF] mx-auto mb-6 transition-all duration-1000 delay-200 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`} />
+          <div className={`w-12 h-1 mx-auto mb-6 transition-all duration-1000 delay-200 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`} style={{ background: 'var(--theme-primary)' }} />
           <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             We're here to help. Connect with the Alumni Office through any of our available contact channels.
           </p>
@@ -112,14 +112,14 @@ export default function ContactUs() {
       {/* ── GET IN TOUCH ─────────────────────────────────────── */}
       <section 
         className="relative w-full py-24 px-6 sm:px-10 lg:px-20 overflow-hidden"
-        style={{ background: 'linear-gradient(to bottom, #003C87 0%, #00316F 50%, #00224D 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--theme-primary, #15803d) 85%, black) 0%, #0f172a 100%)' }}
       >
         <div className="max-w-7xl mx-auto relative z-10" ref={cardsRef}>
 
           {/* Section header */}
           <div className={`text-center mb-16 transition-all duration-700 transform ${cardsVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 drop-shadow-md">Get in Touch</h2>
-            <div className="w-12 h-1 bg-[#00C2FF] mx-auto mb-6" />
+            <div className="w-12 h-1 mx-auto mb-6" style={{ background: 'var(--theme-primary)' }} />
             <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto font-medium">
               Find our email, phone number, office location, and office hours below.
             </p>

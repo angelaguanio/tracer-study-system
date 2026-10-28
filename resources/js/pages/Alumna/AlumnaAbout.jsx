@@ -116,7 +116,7 @@ export default function AlumnaAbout() {
         <div 
           className="absolute inset-0" 
           style={{
-            background: 'linear-gradient(to bottom, rgba(0, 60, 135, 0) 0%, rgba(0, 60, 135, 0.4) 50%, rgba(0, 60, 135, 0.85) 80%, #003C87 100%)'
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 50%, color-mix(in srgb, var(--theme-primary, #15803d) 85%, black) 100%)'
           }}
         />
         
@@ -136,14 +136,14 @@ export default function AlumnaAbout() {
       {/* ═══════════════════════════════════════════════════════
           2. MISSION & VISION & CORE VALUES WRAPPER
       ═══════════════════════════════════════════════════════ */}
-      <div className="bg-gradient-to-b from-[#003C87] via-[#002B66] to-[#001D4A]">
+      <div style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--theme-primary, #15803d) 85%, black) 0%, #0f172a 100%)' }}>
       <section className="py-16 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col gap-12">
           
           {/* Mission */}
           <div 
             ref={missionRef}
-            className={`flex flex-col md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-lg border border-blue-100 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
+            className={`flex flex-col md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
           >
             {/* Text Side */}
             <div className="flex-1 p-8 md:p-12">
@@ -151,7 +151,7 @@ export default function AlumnaAbout() {
                 <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center text-blue-600">
                   <IconTarget />
                 </div>
-                <h2 className="text-3xl font-bold text-[#003C87]">Mission</h2>
+                <h2 className="text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>Mission</h2>
               </div>
               <ul className="space-y-4">
                 {[
@@ -189,7 +189,7 @@ export default function AlumnaAbout() {
           {/* Vision */}
           <div 
             ref={visionRef}
-            className={`flex flex-col-reverse md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-xl border border-blue-100 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
+            className={`flex flex-col-reverse md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
           >
             {/* Image Side (Angled Cut) */}
             <div 
@@ -199,7 +199,7 @@ export default function AlumnaAbout() {
                 clipPath: 'polygon(0 0, 100% 0, 85% 100%, 0% 100%)' 
               }}
             >
-               <div className="absolute inset-0 bg-[#003C87]/10" />
+               <div className="absolute inset-0 bg-primary/10" />
             </div>
             
             {/* Text Side */}
@@ -208,7 +208,7 @@ export default function AlumnaAbout() {
                 <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center text-blue-600">
                   <IconEye />
                 </div>
-                <h2 className="text-3xl font-bold text-[#003C87]">Vision</h2>
+                <h2 className="text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>Vision</h2>
               </div>
               <blockquote className="relative px-6 py-2">
                 <span className="absolute top-0 left-0 text-5xl text-blue-300 opacity-40 font-serif leading-none">"</span>

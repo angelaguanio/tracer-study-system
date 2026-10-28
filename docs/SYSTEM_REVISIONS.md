@@ -223,7 +223,8 @@ Key transformations:
 - `/analytics/employment-location` (Geographic alumni distribution heatmap)
 - `/analytics/{survey}/download`, `/analytics/{survey}/cect/download`
 - `/inquiries` (Review, status change, and replies)
-- `/settings` (Manage academic departments and degree programs)
+- `/programs` (Manage academic departments and degree programs — Program Management)
+- `/settings` (Website Theme, Color Palettes, Solid/Gradient Mode, Dynamic Font Contrast, and System Name & Logo Customization)
 
 ---
 
@@ -237,4 +238,6 @@ Key transformations:
 - [x] **Image Conversion:** Image uploads generate `.webp` files in the destination directory.
 - [x] **Email Verification:** Unverified alumni accounts are directed to the verify notice page until verification is confirmed.
 - [x] **Approval Workflows:** Coordinator announcements and featured alumni entries remain `Pending` until approved by an administrator.
-- [x] **Academic Structure & Cascading:** Adding a department/program in Admin Settings immediately reflects across Alumni Signup, Coordinator assignments, and directory filters with department-scoped cascading.
+- [x] **Academic Structure & Cascading:** Adding a department/program in Admin Program Management immediately reflects across Alumni Signup, Coordinator assignments, and directory filters with department-scoped cascading.
+- [x] **Website Theme & Branding:** System settings allow full customization of platform name, logo upload (with automatic WebP optimization), 6 curated color presets, solid vs. gradient themes, and dynamic font contrast that propagates system-wide to all user roles (Alumna, Coordinator, and Admin) with zero FOUC.
+

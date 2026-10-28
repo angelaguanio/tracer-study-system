@@ -31,6 +31,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\FeaturedAlumniController;
 use App\Http\Controllers\Admin\AdminSettingsController;
+use App\Http\Controllers\Admin\AdminThemeSettingsController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -336,15 +337,22 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::put('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'update'])->name('alumni-coordinators.update');
         Route::delete('/alumni-coordinators/{alumni_coordinator}', [AdminAlumniCoordinatorController::class, 'destroy'])->name('alumni-coordinators.destroy');
 
-        // Settings (Academic Departments & Programs)
-        Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings.index');
-        Route::post('/settings/departments', [AdminSettingsController::class, 'storeDepartment'])->name('settings.departments.store');
-        Route::put('/settings/departments/{department}', [AdminSettingsController::class, 'updateDepartment'])->name('settings.departments.update');
-        Route::delete('/settings/departments/{department}', [AdminSettingsController::class, 'destroyDepartment'])->name('settings.departments.destroy');
+        // Program Management (Academic Departments & Programs)
+        Route::get('/programs', [AdminSettingsController::class, 'index'])->name('programs.index');
+        Route::get('/settings/academic', [AdminSettingsController::class, 'index'])->name('settings.index'); // legacy alias
+        Route::post('/programs/departments', [AdminSettingsController::class, 'storeDepartment'])->name('settings.departments.store');
+        Route::put('/programs/departments/{department}', [AdminSettingsController::class, 'updateDepartment'])->name('settings.departments.update');
+        Route::delete('/programs/departments/{department}', [AdminSettingsController::class, 'destroyDepartment'])->name('settings.departments.destroy');
 
-        Route::post('/settings/programs', [AdminSettingsController::class, 'storeProgram'])->name('settings.programs.store');
-        Route::put('/settings/programs/{program}', [AdminSettingsController::class, 'updateProgram'])->name('settings.programs.update');
-        Route::delete('/settings/programs/{program}', [AdminSettingsController::class, 'destroyProgram'])->name('settings.programs.destroy');
+        Route::post('/programs/programs', [AdminSettingsController::class, 'storeProgram'])->name('settings.programs.store');
+        Route::put('/programs/programs/{program}', [AdminSettingsController::class, 'updateProgram'])->name('settings.programs.update');
+        Route::delete('/programs/programs/{program}', [AdminSettingsController::class, 'destroyProgram'])->name('settings.programs.destroy');
+
+        // Website Customization & Theme Settings
+        Route::get('/settings', [AdminThemeSettingsController::class, 'index'])->name('theme-settings.index');
+        Route::post('/settings/branding', [AdminThemeSettingsController::class, 'updateBranding'])->name('theme-settings.branding');
+        Route::post('/settings/theme', [AdminThemeSettingsController::class, 'updateTheme'])->name('theme-settings.theme');
+        Route::post('/settings/reset', [AdminThemeSettingsController::class, 'resetDefaults'])->name('theme-settings.reset');
 
         // Employment Location Analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])

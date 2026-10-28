@@ -60,9 +60,12 @@ function AnnouncementCard({ id, date, title, description, image }) {
   const imgSrc = Array.isArray(image) ? image[0] : image;
 
   return (
-    <div className="group bg-white rounded-[2rem] p-5 shadow-lg shadow-blue-900/5 border border-gray-100/60 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-3 flex flex-col h-[430px] w-full max-w-[340px] relative overflow-hidden">      
+    <div className="group bg-white rounded-[2rem] p-5 shadow-lg border border-slate-200/80 hover:border-slate-300 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 flex flex-col h-[430px] w-full max-w-[340px] relative overflow-hidden">      
       {/* Decorative Blur */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-400/5 rounded-full blur-3xl group-hover:bg-blue-400/10 transition-colors duration-500 pointer-events-none z-0" />
+      <div 
+        className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none z-0" 
+        style={{ background: 'var(--theme-primary)' }}
+      />
 
       <div className="overflow-hidden rounded-2xl mb-5 relative z-10 border border-gray-50 shadow-sm">
           {imgSrc ? (
@@ -72,23 +75,26 @@ function AnnouncementCard({ id, date, title, description, image }) {
               alt={title}
             />
           ) : (
-            <div className="w-full h-[180px] bg-gradient-to-br from-blue-50 to-blue-100/50 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-700">
-              <ImageOff size={48} className="text-[#007AD7]/50 drop-shadow-sm" />
+            <div className="w-full h-[180px] bg-slate-50 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-700">
+              <ImageOff size={48} className="text-slate-300 drop-shadow-sm" />
             </div>
           )}
       </div>
 
       <div className="flex-1 flex flex-col relative z-10 px-2">
           <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#007AD7]"></div>
-              <p className="text-[#007AD7] text-[11px] font-bold uppercase tracking-widest">{date}</p>
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--theme-primary)' }}></div>
+              <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--theme-primary)' }}>{date}</p>
           </div>
-          <h3 className="text-xl font-extrabold text-[#001D4A] mb-3 line-clamp-2 leading-tight group-hover:text-[#005AAA] transition-colors">{title}</h3>
+          <h3 className="text-xl font-extrabold text-slate-900 mb-3 line-clamp-2 leading-tight group-hover:text-primary transition-colors">{title}</h3>
           <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">{description}</p>
       </div>
 
       <Link href={`/alumni/announcement/${id}`} className="mt-auto relative z-10 px-2 pb-1">
-        <button className="w-full bg-[#005AAA] text-white py-3.5 rounded-xl font-semibold hover:bg-[#003C87] hover:shadow-lg hover:shadow-blue-900/20 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2">
+        <button 
+          className="w-full py-3.5 rounded-xl font-semibold shadow-md active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2 cursor-pointer"
+          style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+        >
           Read More
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </button>
@@ -100,28 +106,35 @@ function AnnouncementCard({ id, date, title, description, image }) {
 // Feature Card Component
 function FeatureCard({ title, description, icon: Icon, imgSrc }) {
   return (
-    <div className="group relative bg-white rounded-3xl border border-blue-200 group-hover:border-[#007AD7] shadow-xl shadow-blue-900/5 overflow-hidden h-full min-h-[320px] w-full flex flex-col items-center justify-start text-center p-8 pt-10 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-3 z-10">
+    <div className="group relative bg-white rounded-3xl border border-slate-200/80 hover:border-slate-300 shadow-xl overflow-hidden h-full min-h-[320px] w-full flex flex-col items-center justify-start text-center p-8 pt-10 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 z-10">
 
         {/* Decorative Bubble Backgrounds */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-40 h-40 pointer-events-none z-0 flex items-center justify-center">
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-40 h-40 pointer-events-none z-0 flex items-center justify-center opacity-70">
             {/* Top left large bubble */}
-            <div className="absolute -top-2 -left-6 w-24 h-24 bg-gradient-to-br from-blue-200/70 to-blue-100/30 rounded-full blur-[3px] opacity-80 group-hover:scale-110 group-hover:-translate-x-1 transition-transform duration-700" />
+            <div 
+              className="absolute -top-2 -left-6 w-24 h-24 rounded-full blur-[3px] opacity-40 group-hover:scale-110 group-hover:-translate-x-1 transition-transform duration-700" 
+              style={{ background: 'var(--theme-primary)' }}
+            />
             {/* Right medium bubble */}
-            <div className="absolute top-10 -right-6 w-20 h-20 bg-gradient-to-bl from-cyan-200/60 to-blue-100/30 rounded-full blur-[2px] opacity-80 group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-700 delay-75" />
+            <div 
+              className="absolute top-10 -right-6 w-20 h-20 rounded-full blur-[2px] opacity-30 group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-700 delay-75" 
+              style={{ background: 'var(--theme-secondary)' }}
+            />
             {/* Bottom left small bubble */}
-            <div className="absolute bottom-4 left-0 w-12 h-12 bg-gradient-to-tr from-blue-300/50 to-blue-100/30 rounded-full blur-[2px] opacity-90 group-hover:scale-125 transition-transform duration-700 delay-100" />
-            {/* Top right tiny bubble */}
-            <div className="absolute top-0 right-4 w-8 h-8 bg-blue-300/50 rounded-full blur-[1px] opacity-80 group-hover:scale-125 transition-transform duration-700 delay-150" />
+            <div 
+              className="absolute bottom-4 left-0 w-12 h-12 rounded-full blur-[2px] opacity-40 group-hover:scale-125 transition-transform duration-700 delay-100" 
+              style={{ background: 'var(--theme-primary)' }}
+            />
         </div>
 
         {/* Icon (No Container) */}
         <div className="relative shrink-0 z-10 h-40 w-40 flex items-center justify-center mt-4 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
-            {Icon && <Icon size={72} strokeWidth={1.75} className="text-[#005AAA] drop-shadow-md" />}
+            {Icon && <Icon size={72} strokeWidth={1.75} style={{ color: 'var(--theme-primary)' }} className="drop-shadow-md" />}
             {imgSrc && <img src={imgSrc} alt={title} className="w-40 h-40 object-contain drop-shadow-xl" />}
         </div>
         
         <div className="flex flex-col flex-1 justify-start w-full mt-6">
-            <h3 className="relative z-10 text-xl font-extrabold text-[#001D4A] mb-3 group-hover:text-[#005AAA] transition-colors">{title}</h3>
+            <h3 className="relative z-10 text-xl font-extrabold text-slate-900 mb-3 group-hover:text-primary transition-colors">{title}</h3>
             <p className="relative z-10 text-gray-500 text-sm leading-relaxed text-center">{description}</p>
         </div>
     </div>
@@ -166,7 +179,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
           {/* Curved SVG Divider at the bottom */}
           <div className="absolute bottom-0 w-full z-20 pointer-events-none transform translate-y-px">
             <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-[40px] sm:h-[80px] lg:h-[180px]">
-                <path d="M0,0 C300,120 900,120 1200,0 L1200,120 L0,120 Z" fill="#003C87" />
+                <path d="M0,0 C300,120 900,120 1200,0 L1200,120 L0,120 Z" fill="var(--theme-primary, #15803d)" />
             </svg>
           </div>
 
@@ -194,15 +207,15 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
         <section 
             className="w-full px-6 py-16 lg:py-24"
             style={{ 
-                background: 'linear-gradient(to bottom, #003C87 0%, #005AAA 21%, #007AD7 37%, #009AFB 56%, #00B9FF 80%, #00D8EF 100%)' 
+                background: 'var(--theme-gradient, linear-gradient(135deg, #15803d 0%, #166534 100%))' 
             }}
         >
             <div className="max-w-[1400px] mx-auto">
                 <FadeInSection delay={100} className="text-center mb-16 space-y-3">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
+                    <h2 className="text-3xl lg:text-4xl font-bold tracking-tight" style={{ color: 'var(--theme-text-on-primary)' }}>
                         Latest Announcements
                     </h2>
-                    <p className="text-blue-100/90 text-lg">
+                    <p className="text-lg opacity-90" style={{ color: 'var(--theme-text-on-primary)' }}>
                         Stay informed about important announcements, events, and updates from the Office of Alumni and College of Engineering and Computer Technology (CECT).
                     </p>
                 </FadeInSection>
@@ -226,7 +239,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                 ) : (
                     <div className="w-full text-center py-10 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-sm max-w-2xl mx-auto">
                         <p className="text-white text-lg font-medium">There are no official announcements at the moment.</p>
-                        <p className="text-blue-100 mt-2">Please check back later.</p>
+                        <p className="text-white/80 mt-2">Please check back later.</p>
                     </div>
                 )}
                 </FadeInSection>
@@ -236,12 +249,12 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
         {/* FEATURES SECTION (White Background) */}
         <section className="w-full px-6 py-20 lg:py-28 bg-app-bg relative">
             {/* Soft decorative gradient blurs in background (optional, adds modern feel) */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-50 rounded-full blur-3xl opacity-50 translate-y-1/2 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50 -translate-y-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl opacity-50 translate-y-1/2 pointer-events-none" />
 
             <div className="max-w-[1500px] mx-auto relative z-10">
                 <FadeInSection delay={100} className="text-center mb-16 space-y-4">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-[#003C87] tracking-tight">
+                    <h2 className="text-3xl lg:text-4xl font-bold tracking-tight" style={{ color: 'var(--theme-text-primary)' }}>
                         Everything You Need to Stay Connected
                     </h2>
                 </FadeInSection>
@@ -277,12 +290,12 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                 <div 
                     className="rounded-[40px] shadow-2xl overflow-hidden relative flex flex-col md:flex-row items-center justify-between p-10 lg:p-16 gap-10"
                     style={{ 
-                        background: 'linear-gradient(to right, #003C87 0%, #005AAA 35%, #007AD7 71%, #009AFB 100%)' 
+                        background: 'var(--theme-gradient, linear-gradient(135deg, #15803d 0%, #166534 100%))' 
                     }}
                 >
                     {/* Decorative blurred circles inside the banner */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl transform translate-x-1/3 -translate-y-1/3" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/20 rounded-full blur-2xl transform -translate-x-1/3 translate-y-1/3" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-2xl transform -translate-x-1/3 translate-y-1/3" />
 
                     <FadeInSection delay={200} className="flex-shrink-0 relative z-10">
                         {/* 3D Icon */}
@@ -295,17 +308,18 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                     </FadeInSection>
 
                     <FadeInSection delay={400} className="flex-1 text-center md:text-left space-y-5 relative z-10">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
+                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight" style={{ color: 'var(--theme-text-on-primary)' }}>
                             Keep Your Alumni Profile Updated
                         </h2>
-                        <p className="text-blue-100 text-lg max-w-lg">
+                        <p className="text-lg max-w-lg opacity-90" style={{ color: 'var(--theme-text-on-primary)' }}>
                             Keep your information current and stay connected with the CECT Alumni Community.
                         </p>
                         
                         <div className="pt-2">
                             <Link
                                 href="/alumni/profile"
-                                className="inline-flex items-center gap-2 bg-white text-[#005AAA] px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all shadow-xl"
+                                className="inline-flex items-center gap-2 bg-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all shadow-xl"
+                                style={{ color: 'var(--theme-primary)' }}
                             >
                                 Update My Profile
                                 <ArrowRight size={20} />

@@ -26,7 +26,10 @@ import {
 import { cn } from '@/lib/utils'
 
 export default function SidebarCoord({ navItemsCoord = [] }) {
-  const { url } = usePage();
+  const { url, props } = usePage();
+  const systemSettings = props?.system_settings || {};
+  const appLogo = systemSettings.app_logo || logo;
+  const appName = systemSettings.app_name || 'Alumni Connect';
   const path = url.split('?')[0];
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === 'collapsed' && !isMobile;
@@ -74,8 +77,8 @@ export default function SidebarCoord({ navItemsCoord = [] }) {
     <Sidebar collapsible='icon' className='transition-all'>
       {/* header */}
       <SidebarHeader className='flex justify-center items-center py-5 transition-all duration-300'>
-        <img src={logo} className='aspect-square h-25 w-30 transition-all duration-300 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-15' />
-        <h1 className=' truncate group-data-[collapsible=icon]:hidden font-bruno'> Alumni Connect </h1>
+        <img src={appLogo} alt={appName} className='aspect-square h-20 w-auto object-contain transition-all duration-300 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-auto' />
+        <h1 className='text-center px-2 truncate max-w-full group-data-[collapsible=icon]:hidden font-bruno text-sm font-semibold'> {appName} </h1>
       </SidebarHeader>
 
       {/* menu */}

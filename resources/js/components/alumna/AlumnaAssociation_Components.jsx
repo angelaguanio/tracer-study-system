@@ -38,8 +38,8 @@ function GroupCard({ group }) {
       <h3 className="text-white text-base sm:text-lg md:text-xl font-extrabold tracking-widest uppercase text-center mb-4 drop-shadow-lg">
         {group.name}
       </h3>
-      {/* cyan underline accent */}
-      <div className="w-10 h-0.5 bg-[#00C2FF] mx-auto mb-10" />
+      {/* underline accent */}
+      <div className="w-10 h-0.5 mx-auto mb-10" style={{ background: 'var(--theme-primary)' }} />
       <OfficerHierarchyGrid officers={group.officers} />
     </div>
   );
@@ -84,8 +84,6 @@ function OfficerHierarchyGrid({ officers }) {
 
 /* ── officer card with new design ── */
 export function AssociationOfficerCard({ officer, level }) {
-  const badgeColor = "bg-[#1258D6] text-white";
-
   const isPresident = level === "president";
   const isVp = level === "vp";
 
@@ -108,13 +106,16 @@ export function AssociationOfficerCard({ officer, level }) {
   return (
     <div className={`relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center w-full ${cardMaxWidth}`}>
       {/* TOP BADGE */}
-      <div className={`absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-sm ${badgeColor}`}>
+      <div 
+        className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-sm"
+        style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+      >
         {officer.role}
       </div>
 
       {/* AVATAR */}
       <div className={`relative ${avatarSize} mb-5 mt-2`}>
-        <div className="w-full h-full rounded-full overflow-hidden border-2 border-slate-100 shadow-md ring-4 ring-blue-50/80">
+        <div className="w-full h-full rounded-full overflow-hidden border-2 border-slate-100 shadow-md ring-4 ring-primary/20">
           {officer.img ? (
             <img src={officer.img} alt={officer.name} className="w-full h-full object-cover object-top" />
           ) : (
@@ -128,8 +129,11 @@ export function AssociationOfficerCard({ officer, level }) {
         {officer.name}
       </h3>
       
-      {/* YELLOW ACCENT */}
-      <div className="w-10 h-[3px] bg-yellow-400 rounded-full mt-3.5" />
+      {/* ACCENT BAR */}
+      <div 
+        className="w-10 h-[3px] rounded-full mt-3.5" 
+        style={{ background: 'var(--theme-primary)' }}
+      />
     </div>
   );
 }

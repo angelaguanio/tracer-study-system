@@ -42,8 +42,8 @@ export default function AlumnaOffice() {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${officeData.bg})` }}
       >
-        {/* Blue Gradient Overlay */}
-        <div className="absolute inset-0 bg-blue-900/60 bg-gradient-to-t from-[#003C87] to-[#003C87]/30" />
+        {/* Theme Gradient Overlay */}
+        <div className="absolute inset-0 theme-hero-overlay" />
       </div>
 
       {/* ═══════════════════════════════════════════════════════
@@ -53,8 +53,11 @@ export default function AlumnaOffice() {
         <h1 className={`text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-widest uppercase drop-shadow-2xl mb-4 transition-all duration-1000 transform ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <span className="text-white">Alumni Affairs</span>
         </h1>
-        {/* blue underline accent */}
-        <div className={`w-12 h-1 bg-[#00C2FF] mx-auto mb-6 transition-all duration-1000 delay-200 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`} />
+        {/* theme underline accent */}
+        <div 
+          className={`w-12 h-1 mx-auto mb-6 transition-all duration-1000 delay-200 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`} 
+          style={{ background: 'var(--theme-primary)' }}
+        />
         <p className={`text-white/95 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg transition-all duration-1000 delay-300 transform ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           The Office for Alumni Affairs is committed to building strong relationships with our graduates and fostering a lifelong connection with the university.
         </p>
@@ -71,7 +74,7 @@ export default function AlumnaOffice() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-widest uppercase drop-shadow-lg mb-4">
               ALUMNI OFFICE PERSONNEL
             </h2>
-            <div className="w-12 h-1 bg-[#00C2FF] mx-auto mb-4" />
+            <div className="w-12 h-1 mx-auto mb-4" style={{ background: 'var(--theme-primary)' }} />
             <p className="text-white/95 text-base sm:text-lg font-medium max-w-2xl mx-auto drop-shadow-md">
               Dedicated professionals working to strengthen alumni engagement and support the university community.
             </p>
@@ -84,10 +87,13 @@ export default function AlumnaOffice() {
               .map((person, i) => (
                 <div
                   key={`dir-${i}`}
-                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-(--theme-primary)/40 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
                 >
                   {/* TOP BADGE */}
-                  <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#1258D6] text-white">
+                  <div 
+                    className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm"
+                    style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+                  >
                     DIRECTOR
                   </div>
 
@@ -95,7 +101,10 @@ export default function AlumnaOffice() {
                   <div className="relative w-24 h-24 mb-4">
                     <img src={aaoLogo} alt="AAO Logo" className="w-full h-full object-contain drop-shadow-sm" />
                     {/* Star badge for Director */}
-                    <div className="absolute bottom-0 right-0 bg-[#1258D6] text-white p-1.5 rounded-full border-2 border-white">
+                    <div 
+                      className="absolute bottom-0 right-0 p-1.5 rounded-full border-2 border-white shadow-sm"
+                      style={{ background: 'var(--theme-primary)', color: 'var(--theme-text-on-primary)' }}
+                    >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -108,13 +117,14 @@ export default function AlumnaOffice() {
                   </h3>
                   <p className="text-gray-500 text-xs sm:text-sm mt-1">{person.role}</p>
 
-                  {/* YELLOW ACCENT */}
-                  <div className="w-10 h-[2px] bg-yellow-400 rounded-full my-4" />
+                  {/* ACCENT */}
+                  <div className="w-10 h-[2px] rounded-full my-4" style={{ background: 'var(--theme-primary)' }} />
 
                   {/* EMAIL */}
                   <a
                     href={`mailto:${person.email}`}
-                    className="flex items-center gap-1.5 text-[#1258D6] font-medium text-xs sm:text-sm hover:underline"
+                    className="flex items-center gap-1.5 font-medium text-xs sm:text-sm hover:underline"
+                    style={{ color: 'var(--theme-primary)' }}
                   >
                     <IconMail />
                     {person.email}
@@ -130,7 +140,7 @@ export default function AlumnaOffice() {
               .map((person, i) => (
                 <div
                   key={`staff-${i}`}
-                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
+                  className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-(--theme-primary)/40 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]"
                 >
                   {/* TOP BADGE */}
                   <div className="absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#FFC107] text-[#001D4A]">
@@ -148,13 +158,14 @@ export default function AlumnaOffice() {
                   </h3>
                   <p className="text-gray-500 text-xs sm:text-sm mt-1">{person.role}</p>
 
-                  {/* YELLOW ACCENT */}
-                  <div className="w-10 h-[2px] bg-yellow-400 rounded-full my-4" />
+                  {/* ACCENT */}
+                  <div className="w-10 h-[2px] rounded-full my-4" style={{ background: 'var(--theme-primary)' }} />
 
                   {/* EMAIL */}
                   <a
                     href={`mailto:${person.email}`}
-                    className="flex items-center gap-1.5 text-[#1258D6] font-medium text-xs sm:text-sm hover:underline"
+                    className="flex items-center gap-1.5 font-medium text-xs sm:text-sm hover:underline"
+                    style={{ color: 'var(--theme-primary)' }}
                   >
                     <IconMail />
                     {person.email}
