@@ -628,7 +628,7 @@ export default function AlumnaSignup() {
     }
 
     setProcessing(true);
-    router.post('/alumna/signup', formData, {
+    router.post('/alumni/signup', formData, {
       forceFormData: true,
       preserveScroll: true,
       onSuccess: () => {

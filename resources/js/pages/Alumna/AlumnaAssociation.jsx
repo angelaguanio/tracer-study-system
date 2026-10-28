@@ -189,7 +189,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
                     />
                     
                     <div className="w-full mt-1">
-                      <Link href={`/alumna/featured-alumni/${alumnus.id}?from=association`} className="w-full block">
+                      <Link href={`/alumni/featured-alumni/${alumnus.id}?from=association`} className="w-full block">
                         <button className="w-full bg-blue-btn text-white hover:bg-gray-800 transition-colors py-2.5 rounded-full font-inter font-semibold text-xs shadow-md cursor-pointer text-center">
                           Read More
                         </button>
@@ -203,7 +203,7 @@ export default function AlumnaAssociation({ featuredAlumni = [] }) {
             {/* See More Link */}
             {featuredAlumni.length > 3 && (
               <div className="mt-3">
-                <Link href="/alumna/featured-alumni" className="text-slate-600 hover:text-slate-900 text-sm font-inter font-semibold underline underline-offset-4 transition-colors">
+                <Link href="/alumni/featured-alumni" className="text-slate-600 hover:text-slate-900 text-sm font-inter font-semibold underline underline-offset-4 transition-colors">
                   See More
                 </Link>
               </div>

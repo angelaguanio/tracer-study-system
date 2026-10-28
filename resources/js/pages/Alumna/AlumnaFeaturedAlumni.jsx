@@ -96,7 +96,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                 <div
                   key={alumnus.id}
                   style={{ animationDelay: `${index * 100}ms` }}
-                  onClick={() => router.get(`/alumna/featured-alumni/${alumnus.id}`)}
+                  onClick={() => router.get(`/alumni/featured-alumni/${alumnus.id}`)}
                   className="bg-white rounded-2xl shadow-md border border-gray-100/60 overflow-hidden flex flex-col w-full max-w-[350px] transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group cursor-pointer animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both relative"
                 >
                   {/* IMAGE with gradient blend */}
@@ -127,7 +127,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
 
                     <div className="w-full mt-1">
                       <Link 
-                        href={`/alumna/featured-alumni/${alumnus.id}`}
+                        href={`/alumni/featured-alumni/${alumnus.id}`}
                         onClick={(e) => e.stopPropagation()}
                         className="w-full block"
                       >
@@ -152,7 +152,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage > 1) {
-                          router.get('/alumna/featured-alumni', { page: currentPage - 1 }, { preserveState: true, preserveScroll: true });
+                          router.get('/alumni/featured-alumni', { page: currentPage - 1 }, { preserveState: true, preserveScroll: true });
                         }
                       }}
                       className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
@@ -167,7 +167,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                         onClick={(e) => {
                           e.preventDefault();
                           if (currentPage !== page) {
-                            router.get('/alumna/featured-alumni', { page }, { preserveState: true, preserveScroll: true });
+                            router.get('/alumni/featured-alumni', { page }, { preserveState: true, preserveScroll: true });
                           }
                         }}
                       >
@@ -182,7 +182,7 @@ export default function AlumnaFeaturedAlumni({ featuredAlumni }) {
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage < lastPage) {
-                          router.get('/alumna/featured-alumni', { page: currentPage + 1 }, { preserveState: true, preserveScroll: true });
+                          router.get('/alumni/featured-alumni', { page: currentPage + 1 }, { preserveState: true, preserveScroll: true });
                         }
                       }}
                       className={currentPage === lastPage ? "pointer-events-none opacity-50" : "cursor-pointer"}

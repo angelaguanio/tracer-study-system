@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent} from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
-import { useForm, Link } from '@inertiajs/react'
+import { useForm, Link, Head } from '@inertiajs/react'
 import { UserRound, Lock, ArrowLeft, Loader2, WifiOff } from 'lucide-react';
 import axios from 'axios';
 
@@ -39,6 +39,7 @@ export default function AdminLogin({sessionExpired,}) {
 
 return (
   <AuthLayout>
+    <Head title="Admin Login" />
     {/* expired session */}
     {sessionExpired && (
         <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -54,7 +55,7 @@ return (
     )}
     <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
       <CardHeader className="relative flex flex-col items-center justify-center">         
-        <Wup />
+        <Wup label="Admin Login" />
       </CardHeader>
 
       <CardContent className="px-6">

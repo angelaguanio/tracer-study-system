@@ -8,20 +8,22 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Search, Sparkles, CornerDownLeft, MessageSquareQuote } from 'lucide-react';
-import { INQUIRY_SUGGESTIONS, formatSuggestion } from '@/data/inquirySuggestions';
+import { getInquirySuggestions, formatSuggestion } from '@/data/inquirySuggestions';
 
-export default function QuickRepliesModal({ open, onOpenChange, alumniName, onSelectSuggestion }) {
+export default function QuickRepliesModal({ open, onOpenChange, alumniName, userRole = 'admin', onSelectSuggestion }) {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
 
+    const suggestions = useMemo(() => getInquirySuggestions(userRole), [userRole]);
+
     const categories = useMemo(() => {
-        const unique = Array.from(new Set(INQUIRY_SUGGESTIONS.map(s => s.category)));
+        const unique = Array.from(new Set(suggestions.map(s => s.category)));
         return ['All', ...unique];
-    }, []);
+    }, [suggestions]);
 
     const filteredSuggestions = useMemo(() => {
         const q = search.trim().toLowerCase();
-        return INQUIRY_SUGGESTIONS.filter(item => {
+        return suggestions.filter(item => {
             const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
             if (!matchesCategory) return false;
             if (!q) return true;
@@ -32,7 +34,7 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, onSe
 
             return matchesTitle || matchesTemplate || matchesKeywords;
         });
-    }, [search, selectedCategory]);
+    }, [search, selectedCategory, suggestions]);
 
     const handleSelect = (template) => {
         const text = formatSuggestion(template, { alumniName });
@@ -70,13 +72,20 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, onSe
                 </div>
 
                 {/* Category Pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto py-1 inquiry-scrollbar">
+                <div 
+                    onWheel={(e) => {
+                        if (e.deltaY !== 0) {
+                            e.currentTarget.scrollLeft += e.deltaY;
+                        }
+                    }}
+                    className="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden flex-nowrap py-1.5 inquiry-scrollbar scroll-smooth"
+                >
                     {categories.map((cat) => (
                         <button
                             key={cat}
                             type="button"
                             onClick={() => setSelectedCategory(cat)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
                                 selectedCategory === cat
                                     ? 'bg-[#0B2545] text-white shadow-sm'
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -121,9 +130,9 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, onSe
                                     </div>
 
                                     {/* Preview Box */}
-                                    <pre className="text-[11px] text-slate-600 font-sans whitespace-pre-wrap line-clamp-4 bg-white p-2.5 rounded-lg border border-slate-100 select-text">
-                                        {formattedPreview}
-                                    </pre>
+                                    <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2 bg-white p-2.5 rounded-lg border border-slate-100 select-text break-words">
+                                        {formattedPreview.replace(/\s+/g, ' ').trim()}
+                                    </p>
                                 </div>
                             );
                         })

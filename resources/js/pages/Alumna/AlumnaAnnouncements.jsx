@@ -130,7 +130,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                       {ann.details}
                     </p>
 
-                    <Link href={`/alumna/announcement/${ann.id}`} className="mt-auto">
+                    <Link href={`/alumni/announcement/${ann.id}`} className="mt-auto">
                       <button className="w-full cursor-pointer bg-white text-blue-600 border border-blue-200 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-50 hover:border-blue-300 transition-all">
                         Read more
                       </button>
@@ -151,7 +151,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage > 1) {
-                          router.get('/alumna/announcements', { page: currentPage - 1 }, { preserveState: true, preserveScroll: true });
+                          router.get('/alumni/announcements', { page: currentPage - 1 }, { preserveState: true, preserveScroll: true });
                         }
                       }}
                       className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
@@ -166,7 +166,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                         onClick={(e) => {
                           e.preventDefault();
                           if (currentPage !== page) {
-                            router.get('/alumna/announcements', { page }, { preserveState: true, preserveScroll: true });
+                            router.get('/alumni/announcements', { page }, { preserveState: true, preserveScroll: true });
                           }
                         }}
                       >
@@ -181,7 +181,7 @@ export default function AlumnaAnnouncements({ announcements }) {
                       onClick={(e) => {
                         e.preventDefault();
                         if (currentPage < lastPage) {
-                          router.get('/alumna/announcements', { page: currentPage + 1 }, { preserveState: true, preserveScroll: true });
+                          router.get('/alumni/announcements', { page: currentPage + 1 }, { preserveState: true, preserveScroll: true });
                         }
                       }}
                       className={currentPage === lastPage ? "pointer-events-none opacity-50" : "cursor-pointer"}

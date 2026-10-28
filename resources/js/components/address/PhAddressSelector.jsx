@@ -17,7 +17,7 @@ export default function PhAddressSelector({
     
   const getContainerClass = (hasError) => {
     if (variant === 'profile') {
-      return `flex items-center w-full border ${hasError ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-1.5 text-[14px] text-gray-900 focus-within:ring-1 focus-within:ring-[#008542] focus-within:border-[#008542] transition shadow-sm bg-white`;
+      return `flex items-center w-full border ${hasError ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-1.5 text-[14px] text-gray-900 focus-within:ring-1 focus-within:ring-[#009AFB] focus-within:border-[#009AFB] transition shadow-sm bg-white`;
     }
     return `flex items-center gap-3 rounded-lg border bg-white px-4 py-2.5 transition-colors ${hasError ? 'border-red-400' : 'border-gray-400 focus-within:border-blue-500'}`;
   };

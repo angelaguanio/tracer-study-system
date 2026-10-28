@@ -14,6 +14,128 @@ class SurveyAnalyticsController extends Controller
 {
     use AuthorizesRequests;
 
+    public function tracerStudyIndex(Request $request)
+    {
+        $this->authorize('viewAnalytics', Survey::class);
+
+        $base = Survey::withCount('sections')
+            ->where('type', 'Tracer Study')
+            ->has('responses');
+
+        $surveys = (clone $base)
+            ->whereNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'page')
+            ->through(fn ($s) => [
+                'id'             => $s->id,
+                'title'          => $s->title,
+                'status'         => $s->status,
+                'sections_count' => $s->sections_count,
+                'type'           => $s->type,
+                'archived_at'    => $s->archived_at,
+            ])
+            ->withQueryString();
+
+        $archivedSurveys = (clone $base)
+            ->whereNotNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'archived_page')
+            ->through(fn ($s) => [
+                'id'             => $s->id,
+                'title'          => $s->title,
+                'status'         => $s->status,
+                'sections_count' => $s->sections_count,
+                'type'           => $s->type,
+                'archived_at'    => $s->archived_at,
+            ])
+            ->withQueryString();
+
+        $latestActiveTracerId = Survey::tracerStudy()
+            ->where('status', 'active')
+            ->whereNull('archived_at')
+            ->latest()
+            ->value('id');
+
+        return Inertia::render('Admin/AnalyticsIndex', [
+            'surveys'         => $surveys,
+            'archivedSurveys' => $archivedSurveys,
+            'type'            => 'tracer',
+            'latestTracerId'  => $latestActiveTracerId,
+        ]);
+    }
+
+    public function alumniFormsIndex(Request $request)
+    {
+        $this->authorize('viewAnalytics', Survey::class);
+
+        $base = Survey::withCount('sections')
+            ->where('type', 'Alumni Forms')
+            ->has('responses');
+
+        $surveys = (clone $base)
+            ->whereNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'page')
+            ->through(fn ($s) => [
+                'id'             => $s->id,
+                'title'          => $s->title,
+                'status'         => $s->status,
+                'sections_count' => $s->sections_count,
+                'type'           => $s->type,
+                'archived_at'    => $s->archived_at,
+            ])
+            ->withQueryString();
+
+        $archivedSurveys = (clone $base)
+            ->whereNotNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'archived_page')
+            ->through(fn ($s) => [
+                'id'             => $s->id,
+                'title'          => $s->title,
+                'status'         => $s->status,
+                'sections_count' => $s->sections_count,
+                'type'           => $s->type,
+                'archived_at'    => $s->archived_at,
+            ])
+            ->withQueryString();
+
+        return Inertia::render('Admin/AnalyticsIndex', [
+            'surveys'         => $surveys,
+            'archivedSurveys' => $archivedSurveys,
+            'type'            => 'alumni-forms',
+        ]);
+    }
+
+    public function coordinatorIndex(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || !$user->isCoordinator()) {
+            abort(403, 'Only coordinators can access this analytics page.');
+        }
+
+        $base = Survey::withCount(['sections', 'responses'])
+            ->where('created_by', $user->id)
+            ->whereHas('responses');
+
+        $surveys = (clone $base)
+            ->whereNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'page')
+            ->withQueryString();
+
+        $archivedSurveys = (clone $base)
+            ->whereNotNull('archived_at')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'archived_page')
+            ->withQueryString();
+
+        return Inertia::render('Coordinator/CoordinatorAnalyticsIndex', [
+            'surveys'         => $surveys,
+            'archivedSurveys' => $archivedSurveys,
+        ]);
+    }
+
     public function latestTracerStudyAnalytics()
     {
         $this->authorize('viewAnalytics', Survey::class);
@@ -541,6 +663,74 @@ class SurveyAnalyticsController extends Controller
             'cityDistribution' => $cityDistribution,
             'detailedData'     => $detailedData,
         ]);
+    }
+
+    public function downloadEmploymentLocationCsv(Request $request)
+    {
+        $this->authorize('viewAnalytics', Survey::class);
+
+        $employmentData = User::where('user_role', 'alumna')
+            ->has('employment')
+            ->with(['employment', 'profile'])
+            ->get();
+
+        $cityFilter = $request->query('city');
+
+        $filename = 'employment_location_report_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($employmentData, $cityFilter) {
+            $file = fopen('php://output', 'w');
+            // Add UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($file, ['Employment Location Report']);
+            fputcsv($file, ['Generated On', date('Y-m-d H:i:s')]);
+            if ($cityFilter && $cityFilter !== 'all') {
+                fputcsv($file, ['Filter (City)', $cityFilter]);
+            }
+            fputcsv($file, []);
+
+            fputcsv($file, ['Name', 'Program', 'Year Graduated', 'Home City', 'Company Name', 'Workplace City']);
+
+            foreach ($employmentData as $user) {
+                $rawCompany = $user->employment->company_address ?? '';
+                $companyCity = $rawCompany ? $this->extractCity($rawCompany) : 'Unknown';
+                if ($companyCity === 'Unknown' && $rawCompany) {
+                    $companyCity = ucwords($rawCompany);
+                }
+
+                if ($cityFilter && $cityFilter !== 'all' && strcasecmp($companyCity, $cityFilter) !== 0) {
+                    continue;
+                }
+
+                $homeAddress = $user->profile?->current_address ?? $user->profile?->permanent_address ?? '';
+                $homeCity = $homeAddress ? $this->extractCity($homeAddress) : 'Unknown';
+                if ($homeCity === 'Unknown' && $homeAddress) {
+                    $homeCity = ucwords($homeAddress);
+                }
+
+                $gradYear = ($user->start_year && $user->end_year)
+                    ? "{$user->start_year}-{$user->end_year}"
+                    : '';
+
+                fputcsv($file, [
+                    $user->first_name . ' ' . $user->last_name,
+                    $user->courses ?? '',
+                    $gradYear,
+                    $homeCity,
+                    $user->employment->company_name ?? '',
+                    $companyCity,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**

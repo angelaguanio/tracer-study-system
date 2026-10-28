@@ -16,7 +16,7 @@ const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "3rd 
 
 function SectionCard({ title, children }) {
     return (
-        <div className="bg-white border rounded-lg p-5 shadow-sm flex flex-col gap-4">
+        <div className="pdf-section bg-white border rounded-lg p-5 shadow-sm flex flex-col gap-4">
             <h2 className="text-base font-semibold text-gray-700 border-b pb-2">{title}</h2>
             {children}
         </div>
@@ -58,46 +58,92 @@ export default function CectSurveyAnalytics({
                 import('jspdf'),
             ]);
 
-            const dataUrl = await toPng(reportRef.current, {
-                quality: 1,
-                pixelRatio: 2,
-                backgroundColor: '#f0faff',
-                cacheBust: true,
-            });
-
-            const img = new Image();
-            img.src = dataUrl;
-            await new Promise((res) => { img.onload = res; });
-
-            // Landscape A4: 277mm usable width (vs 190mm portrait) — larger, more readable
             const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const pageW  = pdf.internal.pageSize.getWidth();
             const pageH  = pdf.internal.pageSize.getHeight();
-            const margin = 10;
+            const margin = 12;
             const usableW = pageW - margin * 2;
             const usableH = pageH - margin * 2;
 
-            const mmPerPx   = usableW / img.width;
-            const pxPerPage = Math.floor(usableH / mmPerPx);
+            let currentY = margin;
 
-            let srcY    = 0;
-            let pageNum = 0;
+            // Collect all top-level report sections
+            const sections = Array.from(reportRef.current.querySelectorAll('.pdf-section'));
 
-            while (srcY < img.height) {
-                if (pageNum > 0) pdf.addPage();
+            for (const section of sections) {
+                const dataUrl = await toPng(section, {
+                    quality: 1,
+                    pixelRatio: 2,
+                    backgroundColor: '#ffffff',
+                    cacheBust: true,
+                    filter: (node) => !node?.classList?.contains('no-pdf'),
+                });
 
-                const sliceH = Math.min(pxPerPage, img.height - srcY);
-                const slice  = document.createElement('canvas');
-                slice.width  = img.width;
-                slice.height = sliceH;
-                const ctx = slice.getContext('2d');
-                ctx.fillStyle = '#f0faff';
-                ctx.fillRect(0, 0, slice.width, slice.height);
-                ctx.drawImage(img, 0, srcY, img.width, sliceH, 0, 0, img.width, sliceH);
+                const img = new Image();
+                img.src = dataUrl;
+                await new Promise((res) => { img.onload = res; });
 
-                pdf.addImage(slice.toDataURL('image/png'), 'PNG', margin, margin, usableW, sliceH * mmPerPx);
-                srcY    += pxPerPage;
-                pageNum += 1;
+                const blockH = (img.height * usableW) / img.width;
+
+                // Check if card fits on current page
+                if (currentY + blockH > pageH - margin) {
+                    if (currentY > margin) {
+                        pdf.addPage();
+                        currentY = margin;
+                    }
+                }
+
+                if (blockH <= usableH) {
+                    pdf.addImage(dataUrl, 'PNG', margin, currentY, usableW, blockH);
+                    currentY += blockH + 6;
+                } else {
+                    let srcY = 0;
+                    while (srcY < img.height) {
+                        if (currentY > margin && srcY > 0) {
+                            pdf.addPage();
+                            currentY = margin;
+                        }
+                        const availableH = (pageH - margin) - currentY;
+                        const sliceH_mm = Math.min(availableH, (img.height - srcY) * (usableW / img.width));
+                        const sliceH_px = Math.floor(sliceH_mm / (usableW / img.width));
+
+                        const sliceCanvas = document.createElement('canvas');
+                        sliceCanvas.width = img.width;
+                        sliceCanvas.height = sliceH_px;
+                        const ctx = sliceCanvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                        ctx.drawImage(img, 0, srcY, img.width, sliceH_px, 0, 0, img.width, sliceH_px);
+
+                        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, currentY, usableW, sliceH_mm);
+                        srcY += sliceH_px;
+                        currentY += sliceH_mm + 6;
+
+                        if (currentY >= pageH - margin && srcY < img.height) {
+                            pdf.addPage();
+                            currentY = margin;
+                        }
+                    }
+                }
+            }
+
+            // Add page numbers & footer to every page
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setFont(undefined, 'normal');
+                pdf.setTextColor(156, 163, 175);
+                pdf.text(
+                    "Wesleyan University - Philippines | Alumni Forms Analytics",
+                    margin,
+                    pageH - 4
+                );
+                pdf.text(
+                    `Page ${i} of ${totalPages}`,
+                    pageW - margin - 18,
+                    pageH - 4
+                );
             }
 
             const filterTag = localFilters.year_graduated ? `_${localFilters.year_graduated}` : '';
@@ -144,10 +190,10 @@ export default function CectSurveyAnalytics({
         <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-6" ref={reportRef}>
 
            {/* Header + inline filters */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="pdf-section flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white border rounded-lg p-5 shadow-sm">
                 
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("coordinator.analytics")}>
+                    <Link href={route("coordinator.analytics")} className="no-pdf">
                         <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer shrink-0">
                             <ArrowLeft size={18} />
                         </button>
@@ -158,24 +204,23 @@ export default function CectSurveyAnalytics({
                             {survey.title} — Analytics
                         </h1>
 
-                        <p className="text-sm text-gray-500">
-                            Total respondents:{" "}
-                            <span className="font-semibold text-gray-800">
-                                {totalRespondents}
-                            </span>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            Total respondents: <span className="font-semibold text-gray-800">{totalRespondents}</span>
+                            {localFilters.year_graduated && <span> · Year: {localFilters.year_graduated}</span>}
+                            {localFilters.semester && <span> · Semester: {localFilters.semester}</span>}
                         </p>
                     </div>
                 </div>
 
                 {/* Filters + Download grouped on the right */}
-                <div className="flex flex-wrap items-end gap-2 sm:shrink-0">
+                <div className="flex flex-wrap items-end gap-2 sm:shrink-0 no-pdf">
                     <div className="flex flex-col gap-1">
                         <Label className="text-xs text-gray-500">Year Graduated</Label>
                         <Select
                             value={localFilters.year_graduated || "All Years"}
                             onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
                         >
-                            <SelectTrigger className="h-8 text-sm w-36 bg-white"><SelectValue /></SelectTrigger>
+                            <SelectTrigger className="h-8 text-sm w-36 bg-white cursor-pointer"><SelectValue /></SelectTrigger>
                             <SelectContent className="max-h-48 overflow-y-auto">
                                 {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
                             </SelectContent>
@@ -187,7 +232,7 @@ export default function CectSurveyAnalytics({
                             value={localFilters.semester || "All Semesters"}
                             onValueChange={(v) => applyFilters({ semester: v === "All Semesters" ? "" : v })}
                         >
-                            <SelectTrigger className="h-8 text-sm w-36 bg-white"><SelectValue /></SelectTrigger>
+                            <SelectTrigger className="h-8 text-sm w-36 bg-white cursor-pointer"><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 {SEMESTER_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                             </SelectContent>
@@ -196,7 +241,7 @@ export default function CectSurveyAnalytics({
                     <button
                         onClick={handleDownload}
                         disabled={downloading}
-                        className="h-8 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="h-8 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shrink-0 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer shadow-sm"
                     >
                         {downloading
                             ? <><Loader2 size={16} className="animate-spin" /> Generating PDF...</>
@@ -211,7 +256,8 @@ export default function CectSurveyAnalytics({
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {/* Overview stat cards */}
+                    <div className="pdf-section grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <StatCard label="Total Respondents" value={totalRespondents} />
                         <StatCard label="Sections" value={sections.length} />
                         <StatCard label="Questions with Data" value={analytics.length + textAnalysis.length} />

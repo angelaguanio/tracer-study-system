@@ -87,7 +87,7 @@ function AnnouncementCard({ id, date, title, description, image }) {
           <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">{description}</p>
       </div>
 
-      <Link href={`/alumna/announcement/${id}`} className="mt-auto relative z-10 px-2 pb-1">
+      <Link href={`/alumni/announcement/${id}`} className="mt-auto relative z-10 px-2 pb-1">
         <button className="w-full bg-[#005AAA] text-white py-3.5 rounded-xl font-semibold hover:bg-[#003C87] hover:shadow-lg hover:shadow-blue-900/20 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2">
           Read More
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -304,7 +304,7 @@ export default function AlumnaHome({ announcements: initialAnnouncements }) {
                         
                         <div className="pt-2">
                             <Link
-                                href="/alumna/profile"
+                                href="/alumni/profile"
                                 className="inline-flex items-center gap-2 bg-white text-[#005AAA] px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transition-all shadow-xl"
                             >
                                 Update My Profile

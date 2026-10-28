@@ -69,8 +69,12 @@ Route::get('/', function () {
 });
 
 
-//============= ALUMNA ROUTES =======================
-Route::prefix('alumna')->name('alumna.')->group(function () {
+// Redirect legacy /alumna/* URLs to /alumni/*
+Route::redirect('/alumna', '/alumni/home', 301);
+Route::redirect('/alumna/{any}', '/alumni/{any}', 301)->where('any', '.*');
+
+//============= ALUMNI ROUTES =======================
+Route::prefix('alumni')->name('alumna.')->group(function () {
 
     Route::middleware('guest')->group(function () {
         Route::get('/signup', [AlumnaAuthController::class, 'roles'])->name('signup');
@@ -101,7 +105,7 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
         Route::get('/forgot-password', function () {
             return \Inertia\Inertia::render('Auth/ForgotPassword', [
                 'backRoute' => 'alumna.login',
-                'submitUrl' => '/alumna/forgot-password',
+                'submitUrl' => '/alumni/forgot-password',
             ]);
         })->name('forgot-password');
         Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
@@ -110,7 +114,8 @@ Route::prefix('alumna')->name('alumna.')->group(function () {
     });
 
     Route::middleware(['auth', 'tracer.completed'])->group(function () {
-        Route::get('/dashboard', AlumnaHomeController::class)->name('home');
+        Route::get('/home', AlumnaHomeController::class)->name('home');
+        Route::get('/dashboard', fn() => redirect()->route('alumna.home'));
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
         Route::get('/questionnaire/start-survey', [QuestionnaireController::class, 'btnStartSurvey'])->name('start-survey');
         Route::post('/survey', [QuestionnaireController::class, 'store'])->name('survey.store');
@@ -333,56 +338,16 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         // Employment Location Analytics
         Route::get('/analytics/employment-location', [SurveyAnalyticsController::class, 'employmentLocationAnalytics'])
             ->name('analytics.employment-location');
+        Route::get('/analytics/employment-location/download', [SurveyAnalyticsController::class, 'downloadEmploymentLocationCsv'])
+            ->name('analytics.employment-location.download');
 
         // Tracer Study list (reuses AnalyticsIndex)
-        Route::get('/analytics/tracer-study', function (\Illuminate\Http\Request $request) {
-            if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
-            $surveys = \App\Models\Survey::withCount('sections')
-                ->where('type', 'Tracer Study')
-                ->whereNull('archived_at')
-                ->has('responses')
-                ->orderBy('created_at', 'desc')
-                ->paginate(5)
-                ->through(fn ($s) => [
-                    'id'              => $s->id,
-                    'title'           => $s->title,
-                    'status'          => $s->status,
-                    'sections_count'  => $s->sections_count,
-                    'type'            => $s->type,
-                ])
-                ->withQueryString();
-
-            $latestActiveTracerId = \App\Models\Survey::tracerStudy()
-                ->where('status', 'active')
-                ->latest()
-                ->value('id');
-
-            return Inertia::render('Admin/AnalyticsIndex', [
-                'surveys' => $surveys,
-                'type' => 'tracer',
-                'latestTracerId' => $latestActiveTracerId
-            ]);
-        })->name('analytics.tracer');
+        Route::get('/analytics/tracer-study', [SurveyAnalyticsController::class, 'tracerStudyIndex'])
+            ->name('analytics.tracer');
 
         // Alumni Forms list (reuses AnalyticsIndex)
-        Route::get('/analytics/alumni-forms', function (\Illuminate\Http\Request $request) {
-            if (!auth()->user()->isAdmin()) abort(403, 'Only admins can access survey analytics.');
-            $surveys = \App\Models\Survey::withCount('sections')
-                ->where('type', 'Alumni Forms')
-                ->whereNull('archived_at')
-                ->has('responses')
-                ->orderBy('created_at', 'desc')
-                ->paginate(5)
-                ->through(fn ($s) => [
-                    'id'              => $s->id,
-                    'title'           => $s->title,
-                    'status'          => $s->status,
-                    'sections_count'  => $s->sections_count,
-                    'type'            => $s->type,
-                ])
-                ->withQueryString();
-            return Inertia::render('Admin/AnalyticsIndex', ['surveys' => $surveys, 'type' => 'alumni-forms']);
-        })->name('analytics.alumni-forms');
+        Route::get('/analytics/alumni-forms', [SurveyAnalyticsController::class, 'alumniFormsIndex'])
+            ->name('analytics.alumni-forms');
 
         Route::get('/analytics/{survey}', [SurveyAnalyticsController::class, 'show'])->name('analytics.show');
         Route::get('/analytics/{survey}/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('analytics.download');
@@ -447,19 +412,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::post('/alumni/email/bulk', [CoordinatorAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
         // Coordinator Analytics Index
-        Route::get('/analytics', function () {
-            $user = auth()->user();
-            $surveys = \App\Models\Survey::withCount(['sections', 'responses'])
-                ->where('created_by', $user->id)
-                ->whereNull('archived_at')
-                ->whereHas('responses')
-                ->orderBy('created_at', 'desc')
-                ->paginate(5)
-                ->withQueryString();
-            return \Inertia\Inertia::render('Coordinator/CoordinatorAnalyticsIndex', [
-                'surveys' => $surveys,
-            ]);
-        })->name('analytics');
+        Route::get('/analytics', [SurveyAnalyticsController::class, 'coordinatorIndex'])
+            ->name('analytics');
         
         Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])
             ->name('analytics.cect-show');

@@ -33,7 +33,22 @@ Present any of the following: Graduation Fee Official Receipt, Alumni ID, Transc
 - One (1) photocopy of your valid ID or Alumni ID.
 - One (1) photocopy of the representative's valid ID.
 
-Please visit our office during regular office hours. Thank you!`
+Please visit our office during regular office hours. Thank you!`,
+        coordinatorTemplate: `Hello {alumni_name},
+
+Good day! Here are the requirements for claiming your Graduation Picture:
+
+• For Personal Claiming:
+Present any of the following at the Alumni Affairs Office: Graduation Fee Official Receipt, Alumni ID, Transcript of Records (TOR), Diploma, or any valid government/school ID.
+*(Note: The original copy of the graduation fee receipt is required if you are also applying for an Alumni ID).*
+
+• If Claiming Thru an Authorized Representative:
+- Signed Authorization Letter (must state your full name, degree/course, year, and semester graduated).
+- Photocopy of your TOR or Diploma.
+- One (1) photocopy of your valid ID or Alumni ID.
+- One (1) photocopy of the representative's valid ID.
+
+Please visit the Alumni Affairs Office during regular office hours to claim your picture. Feel free to let me know if you need any assistance from our department. Thank you!`
     },
     {
         id: 'yearbook',
@@ -63,7 +78,21 @@ Present any of the following: Graduation Fee Official Receipt, Alumni ID, Diplom
 - One (1) photocopy of your valid ID or Alumni ID.
 - One (1) photocopy of the representative's valid ID.
 
-You may claim this at our office during regular working hours. Thank you!`
+You may claim this at our office during regular working hours. Thank you!`,
+        coordinatorTemplate: `Hello {alumni_name},
+
+Good day! Here are the requirements for claiming your Yearbook:
+
+• For Personal Claiming:
+Present any of the following at the Alumni Affairs Office: Graduation Fee Official Receipt, Alumni ID, Diploma, or any valid ID.
+
+• If Claiming Thru an Authorized Representative:
+- Signed Authorization Letter (must include your degree/course, year, and semester graduated).
+- Photocopy of your TOR or Diploma.
+- One (1) photocopy of your valid ID or Alumni ID.
+- One (1) photocopy of the representative's valid ID.
+
+You may claim your yearbook at the Alumni Affairs Office during regular working hours. Feel free to reach out if you have any questions. Thank you!`
     },
     {
         id: 'clearance-tor-waiver',
@@ -95,31 +124,20 @@ To process your waiver, we will verify that:
 1. Your Graduation Fee has been settled.
 2. You have answered and submitted the Graduate Tracer Study survey.
 
-Once you have completed your Tracer Study survey through this portal, kindly notify us or visit the office so we can proceed with signing your clearance. Thank you!`
-    },
-    {
-        id: 'alumni-plus-card',
-        category: 'Alumni Plus Card',
-        title: 'Alumni Plus Card Application & Info',
-        alumniPrompt: 'How do I apply for an Alumni Plus Card?',
-        defaultInquiryMessage: 'Good day! I would like to inquire about the Alumni Plus Card, its benefits, and how I can apply for one. Thank you!',
-        keywords: [
-            'alumni plus card',
-            'plus card',
-            'alumni plus',
-            'apply plus card',
-            'kuha ng alumni plus',
-            'alumni plus application'
-        ],
-        template: `Hello {alumni_name},
+Once you have completed your Tracer Study survey through this portal, kindly notify us or visit the office so we can proceed with signing your clearance. Thank you!`,
+        coordinatorTemplate: `Hello {alumni_name},
 
-Good day! Thank you for inquiring about the Alumni Plus Card.
+Good day! Regarding clearance signatures for Transcript of Records (TOR) and Waivers, please note the following guidelines:
 
-To assist you properly, could you please confirm your Year of Graduation and the Academic Program/Degree you completed?
+• For Transcript of Records (TOR - Graduates/Alumni):
+Before clearance for your TOR request can be signed and endorsed, we verify that you have an updated profile and have completed the Graduate Tracer Study survey.
 
-Because the Alumni Plus Card encompasses various benefits and specific processing steps depending on your batch, we also encourage visiting our Alumni Affairs Office in person. Our staff will be glad to explain the complete requirements, benefits, and step-by-step procedures to you directly.
+• For Graduation Clearance / Waiver (Graduating Students):
+To process and endorse your waiver, we verify that:
+1. Your Graduation Fee has been settled.
+2. You have answered and submitted the Graduate Tracer Study survey on this portal.
 
-Feel free to reply here if you have any immediate questions. Thank you!`
+Once you have completed your Tracer Study survey, kindly reply here or visit our department so we can verify your submission and proceed with signing your clearance. Thank you!`
     },
     {
         id: 'alumni-id',
@@ -148,9 +166,42 @@ Please present the original copy of your Graduation Fee Official Receipt at the 
 - The graduation fee receipt serves as official proof of your graduation.
 - The Alumni ID is already included and covered as part of your graduation fee package.
 
-Once you present your receipt, our office will verify your record and proceed with issuing your Alumni ID. Please visit us during regular office hours. Thank you!`
+Once you present your receipt, our office will verify your record and proceed with issuing your Alumni ID. Please visit us during regular office hours. Thank you!`,
+        coordinatorTemplate: `Hello {alumni_name},
+
+Good day! Regarding your inquiry about the Alumni ID, please take note of the following guidelines:
+
+• Requirement to Present:
+Please present the original copy of your Graduation Fee Official Receipt at the Alumni Affairs Office.
+
+• Important Notes:
+- The graduation fee receipt serves as official proof that your Alumni ID was included as part of your graduation fee package.
+- The Alumni Affairs Office will verify your record and issue your official Alumni ID upon presenting your receipt.
+
+Please visit the Alumni Affairs Office during regular office hours to secure your ID. Let me know if you need any assistance regarding your records. Thank you!`
     }
 ];
+
+/**
+ * Get the appropriate template for a given role ('admin' or 'coordinator')
+ */
+export function getSuggestionTemplate(item, role = 'admin') {
+    if (!item) return '';
+    if (role === 'coordinator' && item.coordinatorTemplate) {
+        return item.coordinatorTemplate;
+    }
+    return item.template || '';
+}
+
+/**
+ * Get all suggestions formatted for a given role
+ */
+export function getInquirySuggestions(role = 'admin') {
+    return INQUIRY_SUGGESTIONS.map(item => ({
+        ...item,
+        template: getSuggestionTemplate(item, role)
+    }));
+}
 
 /**
  * Replace placeholders like {alumni_name} in template

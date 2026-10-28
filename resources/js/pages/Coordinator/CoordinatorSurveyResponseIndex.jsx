@@ -65,8 +65,8 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [], archivedS
 
       {/* HEADER */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold text-gray-900">Survey Responses</h2>
-        <p className="text-sm text-gray-500">Review survey submissions</p>
+        <h2 className="text-2xl font-bold text-gray-900">Survey Responses</h2>
+        <p className="text-lg text-gray-500">Review survey submissions</p>
       </div>
 
       <div className="flex items-center justify-between">

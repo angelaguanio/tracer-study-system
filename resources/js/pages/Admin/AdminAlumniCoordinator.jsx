@@ -63,6 +63,16 @@ export default function AdminAlumniCoordinator({ coordinators }) {
     return (
         <div className="w-full h-full flex flex-col gap-4 p-4 md:p-6 overflow-hidden">
 
+            {/* Page Header */}
+            <div className="flex flex-col gap-1 shrink-0">
+                <h1 className="text-2xl md:text-2xl font-bold text-gray-800 tracking-tight">
+                    Alumni Coordinators
+                </h1>
+                <p className="text-lg text-gray-500">
+                    Add, update, and manage coordinator accounts for the CECT department.
+                </p>
+            </div>
+
             <AdminAlumniCoordinatorFilter
                 search={search}
                 setSearch={setSearch}

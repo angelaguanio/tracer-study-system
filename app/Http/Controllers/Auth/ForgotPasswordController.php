@@ -56,7 +56,7 @@ class ForgotPasswordController extends Controller
 
             'submitUrl' => $isAdmin
                 ? '/admin/forgot-password'
-                : '/alumna/forgot-password',
+                : '/alumni/forgot-password',
         ]);
     }
 }

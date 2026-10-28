@@ -13,6 +13,8 @@ import echo from "@/echo";
 export default function AlumnaQuestionnaire({ 
   tracerStudySurvey, 
   tracerStudyCompleted, 
+  showCompletionMessage = true,
+  completionExpiresAt = null,
   cectSurveys,
   hasTracerStudy 
 }) {
@@ -28,11 +30,40 @@ export default function AlumnaQuestionnaire({
   const [renderKey, setRenderKey] = useState(0);
   const [countdown, setCountdown] = useState(5);
 
+  const [isCompletionExpired, setIsCompletionExpired] = useState(() => {
+    if (!tracerStudyCompleted) return false;
+    if (justCompleted && completedSurveyType !== 'cect') return false;
+    if (completionExpiresAt) {
+      return new Date(completionExpiresAt).getTime() <= Date.now();
+    }
+    return !showCompletionMessage;
+  });
+
+  useEffect(() => {
+    if (!tracerStudyCompleted || !completionExpiresAt || isCompletionExpired) return;
+
+    const remainingMs = new Date(completionExpiresAt).getTime() - Date.now();
+    if (remainingMs <= 0) {
+      if (!justCompleted) {
+        setIsCompletionExpired(true);
+      }
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (!justCompleted) {
+        setIsCompletionExpired(true);
+      }
+    }, remainingMs);
+
+    return () => clearTimeout(timer);
+  }, [tracerStudyCompleted, completionExpiresAt, isCompletionExpired, justCompleted]);
+
   // Realtime: reload when a survey is updated
   useEffect(() => {
     const channel = echo.channel('surveys');
     channel.listen('.survey.updated', () => {
-      router.reload({ only: ['tracerStudySurvey', 'cectSurveys', 'hasTracerStudy'] });
+      router.reload({ only: ['tracerStudySurvey', 'cectSurveys', 'hasTracerStudy', 'tracerStudyCompleted', 'showCompletionMessage', 'completionExpiresAt'] });
     });
     return () => {
       echo.leaveChannel('surveys');
@@ -64,11 +95,42 @@ export default function AlumnaQuestionnaire({
     }
   }, [justCompleted, completedSurveyType]);
 
-  // Just finished this session → toast fires above; fall through to normal tab render
+  const renderNoActiveTracerStudy = () => (
+    <div className='flex items-center justify-center w-full py-10'>
+      <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
+        <CardHeader className="bg-gradient-to-r from-slate-500 to-slate-400 p-8 text-white space-y-4">
+          <div className='space-y-4'>
+            <div className='flex flex-row gap-2'>
+              <ClipboardX size={18} />
+              <span className='text-sm font-semibold tracking-wider'>TRACER STUDY</span>
+            </div>
+            <div>
+              <h1 className='text-2xl sm:text-3xl font-bold'>No Active Tracer Study</h1>
+              <p className='text-slate-100 text-sm mt-1'>Check back later for the tracer study survey.</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
+          <ClipboardX size={64} className='text-slate-300' />
+          <div className='space-y-2'>
+            <p className='text-lg font-medium text-gray-700'>There is no active tracer study survey at the moment.</p>
+            <p className='text-sm text-gray-500'>
+              The alumni affairs office will notify you when the tracer study becomes available.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   const renderTracerStudyTab = () => {
     // Tracer study already completed
     if (tracerStudyCompleted) {
+      // If 24h completion window is up and not just submitted in this session:
+      if (isCompletionExpired && !justCompleted) {
+        return renderNoActiveTracerStudy();
+      }
+
       return (
         <div className="flex items-center justify-center w-full py-10 px-4">
           <div className="relative bg-white w-full max-w-[520px] overflow-hidden shadow-md rounded-3xl border border-gray-100 flex flex-col items-center text-center pt-12 pb-12 px-6 sm:px-10">
@@ -132,33 +194,7 @@ export default function AlumnaQuestionnaire({
 
     // No tracer study available
     if (!hasTracerStudy) {
-      return (
-        <div className='flex items-center justify-center w-full py-10'>
-          <Card className="w-full max-w-xl overflow-hidden shadow-2xl rounded-3xl p-0 gap-2">
-            <CardHeader className="bg-gradient-to-r from-slate-500 to-slate-400 p-8 text-white space-y-4">
-              <div className='space-y-4'>
-                <div className='flex flex-row gap-2'>
-                  <ClipboardX size={18} />
-                  <span className='text-sm'>TRACER STUDY</span>
-                </div>
-                <div>
-                  <h1 className='text-2xl sm:text-3xl'>No Active Tracer Study</h1>
-                  <p>Check back later for the tracer study survey.</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-col px-10 py-8 gap-5 items-center text-center">
-              <ClipboardX size={64} className='text-slate-300' />
-              <div className='space-y-2'>
-                <p className='text-lg font-medium text-gray-700'>There is no active tracer study survey at the moment.</p>
-                <p className='text-sm text-gray-500'>
-                  The alumni affairs office will notify you when the tracer study becomes available.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
+      return renderNoActiveTracerStudy();
     }
 
     // Show tracer study survey
@@ -330,7 +366,7 @@ export default function AlumnaQuestionnaire({
                 ) : (
                   <Button 
                     className="bg-blue-btn hover:bg-bluehover-btn text-white w-full"
-                    onClick={() => router.get(`/alumna/surveys/${survey.id}`)}
+                    onClick={() => router.get(`/alumni/surveys/${survey.id}`)}
                   >
                     <FileText size={16} className="mr-2" />
                     View & Respond

@@ -128,12 +128,17 @@ export default function AlumnaInquiryList({
                                     }`}>
                                         {data.subject}
                                     </h3>
-                                    <span className='text-[10px] text-slate-400 shrink-0 font-medium'>
-                                        {data.formatted_date}
+                                    <span className='text-[10px] text-slate-500 shrink-0 font-medium'>
+                                        {data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        }) : data.formatted_date}
                                     </span>
                                 </div>
 
-                                <p className='text-xs text-slate-500 line-clamp-2 leading-relaxed mb-2 font-normal'>
+                                <p className='text-xs text-slate-700 line-clamp-2 leading-relaxed mb-2 font-normal'>
                                     {data.message}
                                 </p>
 

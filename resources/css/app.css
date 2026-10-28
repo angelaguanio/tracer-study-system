@@ -358,6 +358,7 @@
 /* Custom scrollbar for inquiry list */
 .inquiry-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 4px;
 }
 
 .inquiry-scrollbar::-webkit-scrollbar-track {

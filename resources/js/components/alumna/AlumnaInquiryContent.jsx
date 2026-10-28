@@ -121,6 +121,16 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
     );
     const isResolved = liveStatus === 'resolved';
 
+    const formatDateTime = (dateStr) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     return (
         <main className='relative flex flex-col w-full h-full p-5 gap-3 bg-white/40 backdrop-blur-sm rounded-r-3xl overflow-hidden'>
             {/* Background CECT seal watermark */}
@@ -138,7 +148,7 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                     <div className="min-w-0">
                         <h1 className="text-lg font-bold text-[#0B2545] truncate">{inquiry.subject}</h1>
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
-                            <span>{inquiry.formatted_date}</span>
+                            <span>{formatDateTime(inquiry.created_at) || inquiry.formatted_date}</span>
                             <span>•</span>
                             <span className="font-medium text-[#009AFB]">
                                 {inquiry.department ? `Department: ${inquiry.department}` : 'Recipient: Alumni Office'}
@@ -154,8 +164,8 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                 <div className='flex gap-3 flex-row-reverse'>
                     <AvatarBlock user={inquiry.alumni} />
                     <div className='flex flex-col gap-1 max-w-[78%] items-end'>
-                        <span className='text-[11px] text-slate-400 font-medium px-1'>
-                            You · {inquiry.formatted_date}
+                        <span className='text-[11px] text-slate-500 font-medium px-1'>
+                            You · {formatDateTime(inquiry.created_at) || inquiry.formatted_date}
                         </span>
                         <div
                             className='bg-[#009AFB] text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md shadow-[#009AFB]/10 border border-[#009AFB]'
@@ -174,13 +184,10 @@ export default function AlumnaInquiryContent({ inquiry, onBack }) {
                         <div key={reply.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                             <AvatarBlock user={reply.sender} />
                             <div className={`flex flex-col gap-1 max-w-[78%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                <span className='text-[11px] text-slate-400 font-medium px-1'>
+                                <span className='text-[11px] text-slate-500 font-medium px-1'>
                                     {isMe ? 'You' : `${reply.sender?.first_name} ${reply.sender?.last_name}`}
                                     {' · '}
-                                    {new Date(reply.created_at).toLocaleDateString('en-US', {
-                                        month: 'short', day: 'numeric',
-                                        hour: '2-digit', minute: '2-digit',
-                                    })}
+                                    {formatDateTime(reply.created_at)}
                                 </span>
                                 <div
                                     className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${

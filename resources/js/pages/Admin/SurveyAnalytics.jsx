@@ -35,10 +35,10 @@ function StatCard({ label, value, sub }) {
 
 function SectionCard({ title, children, action }) {
     return (
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col gap-4 overflow-hidden w-full">
+        <div className="pdf-section bg-white border rounded-xl p-5 shadow-sm flex flex-col gap-4 overflow-hidden w-full">
             <div className="flex items-center justify-between border-b pb-3">
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{title}</h2>
-                {action}
+                {action && <div className="no-pdf">{action}</div>}
             </div>
             {children}
         </div>
@@ -96,51 +96,109 @@ export default function SurveyAnalytics({
     const [showPerQuestion, setShowPerQuestion] = useState(false);
     const reportRef = useRef(null);
 
-    /* ── PDF download ── */
+    /* ── PDF download (Section-aware, never cuts charts in half) ── */
     const handleDownload = async () => {
         if (!reportRef.current || downloading) return;
         setDownloading(true);
+        const prevShow = showPerQuestion;
+        setShowPerQuestion(true);
         try {
             const [{ toPng }, { default: jsPDF }] = await Promise.all([
                 import('html-to-image'),
                 import('jspdf'),
             ]);
 
-            const dataUrl = await toPng(reportRef.current, {
-                quality: 1,
-                pixelRatio: 2,
-                backgroundColor: '#f0faff',
-                cacheBust: true,
-            });
-
-            const img = new Image();
-            img.src = dataUrl;
-            await new Promise((res) => { img.onload = res; });
+            // Give React time to render all expanded questions and Recharts to render the charts
+            await new Promise((res) => setTimeout(res, 800));
 
             const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             const pageW  = pdf.internal.pageSize.getWidth();
             const pageH  = pdf.internal.pageSize.getHeight();
-            const margin = 10;
+            const margin = 12;
             const usableW = pageW - margin * 2;
             const usableH = pageH - margin * 2;
 
-            const mmPerPx   = usableW / img.width;
-            const pxPerPage = Math.floor(usableH / mmPerPx);
+            let currentY = margin;
 
-            let srcY = 0, pageNum = 0;
-            while (srcY < img.height) {
-                if (pageNum > 0) pdf.addPage();
-                const sliceH = Math.min(pxPerPage, img.height - srcY);
-                const slice  = document.createElement('canvas');
-                slice.width  = img.width;
-                slice.height = sliceH;
-                const ctx = slice.getContext('2d');
-                ctx.fillStyle = '#f0faff';
-                ctx.fillRect(0, 0, slice.width, slice.height);
-                ctx.drawImage(img, 0, srcY, img.width, sliceH, 0, 0, img.width, sliceH);
-                pdf.addImage(slice.toDataURL('image/png'), 'PNG', margin, margin, usableW, sliceH * mmPerPx);
-                srcY += pxPerPage;
-                pageNum++;
+            // Collect all top-level report sections
+            const sections = Array.from(reportRef.current.querySelectorAll('.pdf-section'));
+
+            for (const section of sections) {
+                const dataUrl = await toPng(section, {
+                    quality: 1,
+                    pixelRatio: 2,
+                    backgroundColor: '#ffffff',
+                    cacheBust: true,
+                    filter: (node) => !node?.classList?.contains('no-pdf'),
+                });
+
+                const img = new Image();
+                img.src = dataUrl;
+                await new Promise((res) => { img.onload = res; });
+
+                const blockH = (img.height * usableW) / img.width;
+
+                // Check if card fits on current page
+                if (currentY + blockH > pageH - margin) {
+                    if (currentY > margin) {
+                        pdf.addPage();
+                        currentY = margin;
+                    }
+                }
+
+                // If block fits on the page (almost all cards fit!)
+                if (blockH <= usableH) {
+                    pdf.addImage(dataUrl, 'PNG', margin, currentY, usableW, blockH);
+                    currentY += blockH + 6;
+                } else {
+                    // Slices only exceptionally oversized blocks
+                    let srcY = 0;
+                    while (srcY < img.height) {
+                        if (currentY > margin && srcY > 0) {
+                            pdf.addPage();
+                            currentY = margin;
+                        }
+                        const availableH = (pageH - margin) - currentY;
+                        const sliceH_mm = Math.min(availableH, (img.height - srcY) * (usableW / img.width));
+                        const sliceH_px = Math.floor(sliceH_mm / (usableW / img.width));
+
+                        const sliceCanvas = document.createElement('canvas');
+                        sliceCanvas.width = img.width;
+                        sliceCanvas.height = sliceH_px;
+                        const ctx = sliceCanvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                        ctx.drawImage(img, 0, srcY, img.width, sliceH_px, 0, 0, img.width, sliceH_px);
+
+                        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, currentY, usableW, sliceH_mm);
+                        srcY += sliceH_px;
+                        currentY += sliceH_mm + 6;
+
+                        if (currentY >= pageH - margin && srcY < img.height) {
+                            pdf.addPage();
+                            currentY = margin;
+                        }
+                    }
+                }
+            }
+
+            // Add page numbers & footer to every page
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setFont(undefined, 'normal');
+                pdf.setTextColor(156, 163, 175);
+                pdf.text(
+                    "Wesleyan University - Philippines | Tracer Study Analytics",
+                    margin,
+                    pageH - 4
+                );
+                pdf.text(
+                    `Page ${i} of ${totalPages}`,
+                    pageW - margin - 18,
+                    pageH - 4
+                );
             }
 
             const filterTag = localFilters.year_graduated ? `_${localFilters.year_graduated}` : '';
@@ -148,6 +206,7 @@ export default function SurveyAnalytics({
         } catch (err) {
             console.error('PDF generation failed:', err);
         } finally {
+            setShowPerQuestion(prevShow);
             setDownloading(false);
         }
     };
@@ -189,9 +248,9 @@ export default function SurveyAnalytics({
         <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-5" ref={reportRef}>
 
             {/* ── Header + inline filters ── */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="pdf-section flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white border rounded-xl p-5 shadow-sm">
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("admin.analytics.tracer")}>
+                    <Link href={route("admin.analytics.tracer")} className="no-pdf">
                         <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-800 p-0 hover:bg-transparent">
                             <ArrowLeft size={16} />
                         </Button>
@@ -200,15 +259,16 @@ export default function SurveyAnalytics({
                         <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 break-words">
                             {survey.title} — Analytics
                         </h1>
-                        <p className="text-sm text-gray-500">
-                            Total respondents:{" "}
-                            <span className="font-semibold text-gray-800">{totalRespondents}</span>
+                        <p className="text-sm text-gray-500 mt-0.5">
+                            Total respondents: <span className="font-semibold text-gray-800">{totalRespondents}</span>
+                            {localFilters.year_graduated && <span> · Year: {localFilters.year_graduated}</span>}
+                            {localFilters.semester && <span> · Semester: {localFilters.semester}</span>}
                         </p>
                     </div>
                 </div>
 
                 {/* Filters + Download grouped on the right */}
-                <div className="flex flex-wrap items-end gap-2 sm:shrink-0">
+                <div className="flex flex-wrap items-end gap-2 sm:shrink-0 no-pdf">
                     <div className="flex flex-col gap-1">
                         <Label className="text-xs text-gray-500">Year Graduated</Label>
                         <Select
@@ -250,7 +310,7 @@ export default function SurveyAnalytics({
             ) : (
                 <>
                 {/* ── 1. Overview ── */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="pdf-section grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <StatCard label="Total Respondents" value={totalRespondents} />
                     <StatCard label="Employment Rate"   value={`${employment.rate ?? 0}%`} sub={`${employment.employed ?? 0} employed`} />
                     <StatCard label="Degrees Represented" value={Object.keys(descriptive.degree_distribution || {}).length} />
@@ -439,8 +499,8 @@ export default function SurveyAnalytics({
                                     )}
                                     {t.sample_answers.length > 0 && (
                                         <div className="flex flex-col gap-1 mt-1">
-                                            {t.sample_answers.slice(0, 2).map((a, i) => (
-                                                <p key={i} className="text-xs text-gray-600 italic border-l-2 border-blue-200 pl-2 truncate">"{a}"</p>
+                                            {(downloading ? t.sample_answers : t.sample_answers.slice(0, 4)).map((a, i) => (
+                                                <p key={i} className="text-xs text-gray-600 italic border-l-2 border-blue-200 pl-2">"{a}"</p>
                                             ))}
                                         </div>
                                     )}
@@ -450,29 +510,58 @@ export default function SurveyAnalytics({
                     </SectionCard>
                 )}
 
-                {/* ── 7. Per-Question Charts (collapsible) ── */}
+                {/* ── 7. Per-Question Charts (collapsible on screen, fully rendered for PDF export) ── */}
                 {analytics.length > 0 && (
-                    <SectionCard
-                        title="Per-Question Breakdown"
-                        action={
-                            <button
-                                onClick={() => setShowPerQuestion(v => !v)}
-                                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                            >
-                                {showPerQuestion ? <><ChevronUp size={14} /> Hide</> : <><ChevronDown size={14} /> Show all {analytics.length} questions</>}
-                            </button>
-                        }
-                    >
-                        {showPerQuestion ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {analytics.map((q) => <AnalyticsChart key={q.question_id} label={q.label} data={q.data} questionType={q.question_type} />)}
+                    <div className="flex flex-col gap-4">
+                        <div className="pdf-section bg-white border rounded-xl p-4 shadow-sm flex items-center justify-between">
+                            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                Per-Question Breakdown ({analytics.length} questions)
+                            </h2>
+                            <div className="no-pdf">
+                                <button
+                                    onClick={() => setShowPerQuestion(v => !v)}
+                                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors cursor-pointer"
+                                >
+                                    {showPerQuestion ? <><ChevronUp size={14} /> Hide</> : <><ChevronDown size={14} /> Show all {analytics.length} questions</>}
+                                </button>
                             </div>
+                        </div>
+
+                        {(showPerQuestion || downloading) ? (
+                            Array.from({ length: Math.ceil(analytics.length / 2) }).map((_, rowIndex) => {
+                                const pair = analytics.slice(rowIndex * 2, rowIndex * 2 + 2);
+                                return (
+                                    <div key={rowIndex} className="pdf-section grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {pair.map((q) => (
+                                            <div key={q.question_id}>
+                                                <AnalyticsChart label={q.label} data={q.data} questionType={q.question_type} />
+                                                {q.question_type === "number" && q.stats && (
+                                                    <div className="flex gap-3 mt-1 text-xs text-gray-500 px-1">
+                                                        <span>Min: <strong>{q.stats.min}</strong></span>
+                                                        <span>Max: <strong>{q.stats.max}</strong></span>
+                                                        <span>Avg: <strong>{q.stats.average}</strong></span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })
                         ) : (
-                            <p className="text-xs text-gray-400 text-center py-4">
-                                Click <span className="font-medium text-blue-500">Show all {analytics.length} questions</span> to view individual question charts.
-                            </p>
+                            <div className="bg-white border rounded-xl p-6 text-center text-gray-400 shadow-sm no-pdf">
+                                <p className="text-xs">
+                                    Click{" "}
+                                    <button
+                                        onClick={() => setShowPerQuestion(true)}
+                                        className="font-medium text-blue-500 hover:underline cursor-pointer"
+                                    >
+                                        Show all {analytics.length} questions
+                                    </button>{" "}
+                                    to view individual question charts.
+                                </p>
+                            </div>
                         )}
-                    </SectionCard>
+                    </div>
                 )}
                 </>
             )}

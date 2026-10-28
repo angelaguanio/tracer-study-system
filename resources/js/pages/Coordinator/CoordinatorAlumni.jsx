@@ -188,8 +188,11 @@ const sendNextBatch = async (offset) => {
 
   return (
     <div className="w-full h-full p-4 flex flex-col overflow-hidden">
-      <div className="flex px-2 md:px-4 mb-4 shrink-0">
+      <div className="flex flex-col gap-1 px-2 md:px-4 mb-4 shrink-0">
         <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Alumni Directory</h1>
+        <p className="text-lg text-gray-500">
+          View graduate profiles, track employment progress, and send email reminders for tracer study participation.
+        </p>
       </div>
       
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 min-h-0 overflow-hidden p-4 md:p-6 relative">

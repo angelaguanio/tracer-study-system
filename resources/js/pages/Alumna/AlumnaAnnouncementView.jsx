@@ -68,7 +68,7 @@ export default function AlumnaAnnouncementView({ announcement }) {
         
         {/* BACK BUTTON */}
         <Link
-          href="/alumna/announcements"
+          href="/alumni/announcements"
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors px-3 py-2 rounded-lg mb-6 -ml-3"
         >
           <ArrowLeft size={16} /> Back to Announcements

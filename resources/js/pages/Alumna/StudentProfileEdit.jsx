@@ -17,7 +17,7 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 
-const inputClass = "w-full border border-gray-200 rounded-md px-4 py-3 text-[14px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#008542] focus:border-[#008542] transition shadow-sm bg-white";
+const inputClass = "w-full border border-gray-200 rounded-md px-4 py-3 text-[14px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#009AFB] focus:border-[#009AFB] transition shadow-sm bg-white";
 const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2";
 
 const PERSONAL_FIELDS = [
@@ -181,7 +181,7 @@ export default function StudentProfileEdit() {
                         >
                             <ArrowLeft size={18} />
                         </Link>
-                        <div className="p-2 bg-green-50 rounded-full text-[#008542]">
+                        <div className="p-2 bg-blue-50 rounded-full text-[#009AFB]">
                             <User size={22} strokeWidth={2} />
                         </div>
                         <div>
@@ -193,7 +193,7 @@ export default function StudentProfileEdit() {
                         form="profile-form"
                         type="submit"
                         disabled={submitting}
-                        className="flex items-center gap-2 bg-[#008542] hover:bg-green-800 text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors h-auto shrink-0"
+                        className="flex items-center gap-2 bg-[#009AFB] hover:bg-[#0082D6] text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors h-auto shrink-0"
                     >
                         <Save size={16} />
                         {submitting ? 'Saving...' : 'Save Changes'}
@@ -205,7 +205,7 @@ export default function StudentProfileEdit() {
                     <div className="flex justify-center mb-6">
                         <div className="flex flex-col items-center">
                             <div className="relative group">
-                                <div className="h-28 w-28 rounded-3xl overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] flex items-center justify-center">
+                                <div className="h-28 w-28 rounded-full overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] flex items-center justify-center">
                                     {avatarPreview ? (
                                         <img
                                             src={avatarPreview}
@@ -230,7 +230,7 @@ export default function StudentProfileEdit() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all"
+                                    className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all"
                                 >
                                     <ImageIcon size={18} className="text-gray-600" />
                                 </button>
@@ -239,7 +239,7 @@ export default function StudentProfileEdit() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="mt-4 text-[13px] font-medium text-gray-500 hover:text-[#008542] transition-colors hover:cursor-pointer hover:underline"
+                                className="mt-4 text-[13px] font-medium text-gray-500 hover:text-[#009AFB] transition-colors hover:cursor-pointer hover:underline"
                             >
                                 Change Profile Picture
                             </button>
@@ -263,7 +263,7 @@ export default function StudentProfileEdit() {
                                             setResidency('Philippines'); 
                                             setData(p => ({...p, country: 'Philippines', street_address: '', region: '', province: '', city: '', barangay: ''}));
                                         }} 
-                                        className="w-4 h-4 accent-[#008542]" 
+                                        className="w-4 h-4 accent-[#009AFB]" 
                                     />
                                     Philippines
                                 </label>
@@ -276,7 +276,7 @@ export default function StudentProfileEdit() {
                                             setResidency('International'); 
                                             setData(p => ({...p, country: '', street_address: '', region: '', province: '', city: '', barangay: ''}));
                                         }} 
-                                        className="w-4 h-4 accent-[#008542]" 
+                                        className="w-4 h-4 accent-[#009AFB]" 
                                     />
                                     Outside the Philippines
                                 </label>
@@ -307,7 +307,7 @@ export default function StudentProfileEdit() {
                     <div className="pt-6 mt-2 border-t border-gray-100">
                         <div className="w-full">
                             <Label className={labelClass}>Contact Number <span className="text-red-500">*</span></Label>
-                            <div className={`flex items-center w-full border ${errors.contact_number ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-3 bg-white transition shadow-sm focus-within:border-[#008542] focus-within:ring-1 focus-within:ring-[#008542]`}>
+                            <div className={`flex items-center w-full border ${errors.contact_number ? 'border-red-400' : 'border-gray-200'} rounded-md px-4 py-3 bg-white transition shadow-sm focus-within:border-[#009AFB] focus-within:ring-1 focus-within:ring-[#009AFB]`}>
                                 <PhoneInput
                                     international
                                     defaultCountry="PH"

@@ -12,11 +12,11 @@ export default function AlumnaFeaturedAlumniView({ featuredAlumnus }) {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('from') === 'association') {
-        router.get('/alumna/association');
+        router.get('/alumni/association');
         return;
       }
     }
-    router.get('/alumna/featured-alumni');
+    router.get('/alumni/featured-alumni');
   };
 
   let parsedImage = featuredAlumnus?.image;

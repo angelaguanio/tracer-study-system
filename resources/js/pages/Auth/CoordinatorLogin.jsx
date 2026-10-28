@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
-import { useForm } from '@inertiajs/react'
+import { useForm, Head } from '@inertiajs/react'
 import { UserRound, Lock, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
 
@@ -79,9 +79,10 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
   if (forceChangePassword) {
     return (
       <AuthLayout>
+        <Head title="Coordinator - Set New Password" />
         <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
           <CardHeader className="flex flex-col items-center justify-center gap-2">
-            <Wup />
+            <Wup label="Coordinator Portal" />
           </CardHeader>
 
           <CardContent className="px-6 space-y-4">
@@ -146,6 +147,7 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
   // ─── LOGIN VIEW (DEFAULT) ───────────────────────────────────────────────
   return (
     <AuthLayout>
+      <Head title="Coordinator Login" />
       {/* expired session */}
     {sessionExpired && (
         <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -161,7 +163,7 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
     )}
       <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
         <CardHeader className="relative flex flex-col items-center justify-center">
-          <Wup />
+          <Wup label="Coordinator Login" />
         </CardHeader>
 
         <CardContent className="px-6">

@@ -30,7 +30,7 @@ export default function AlumnaInquiries({ inquiries, filters, openId, userEmail,
     useEffect(() => {
         if (!initialized) return;
         const delayDebounceFn = setTimeout(() => {
-            router.get('/alumna/inquiries', {
+            router.get('/alumni/inquiries', {
                 search: search || null,
                 sort: sort !== 'newest' ? sort : null,
                 recipient: recipient || null,

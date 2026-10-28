@@ -22,7 +22,7 @@ const mainNav = [
     name: "Main", 
     icon: Home,
     subItems: [
-      { id: "dashboard", name: "Dashboard", href: route('alumna.home') },
+      { id: "home", name: "Home", href: route('alumna.home') },
       { id: "profile", name: "Alumni Profile", href: route('alumna.profile') },
     ]
   },
@@ -87,7 +87,9 @@ export default function NavbarAlumni({ children }) {
       affairs: false
   })
   
-  const isTransparentHeader = currentPath === '/alumna/dashboard' || currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact'
+  const isTransparentHeader = 
+    currentPath === '/alumni/dashboard' || currentPath === '/alumni/home' || currentPath === '/alumni/about' || currentPath === '/alumni/association' || currentPath === '/alumni/office' || currentPath === '/alumni/contact' ||
+    currentPath === '/alumna/dashboard' || currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact';
 
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -118,10 +120,13 @@ export default function NavbarAlumni({ children }) {
                 ? 'bg-white/0 backdrop-blur-none'
                 : 'bg-white/70 backdrop-blur-md'
         }`} />
-        <div className='flex items-center space-x-3 relative'>
+        <Link 
+          href={isTracerLocked ? '#' : route('alumna.home')} 
+          className={`flex items-center space-x-3 relative ${isTracerLocked ? 'cursor-default' : 'cursor-pointer hover:opacity-90 transition-opacity'}`}
+        >
           <img src={logo} className='h-12 md:h-14' alt="Alumni Connect logo" />
           <p className="font-bruno lg:text-lg text-base">Alumni Connect</p>
-        </div>
+        </Link>
 
         {/* Right side: Bell and Hamburger (Visible on all screen sizes) */}
         <div className="flex items-center gap-3 relative z-10">
@@ -249,7 +254,12 @@ export default function NavbarAlumni({ children }) {
                     )
                 }
 
-                const isActive = currentPath === item.href
+                let itemPath = item.href;
+                try {
+                    const u = new URL(item.href, window.location.origin);
+                    itemPath = u.pathname;
+                } catch (e) {}
+                const isActive = currentPath === itemPath || currentPath === item.href;
                 return (
                 <Link
                     key={item.id}
@@ -282,7 +292,13 @@ export default function NavbarAlumni({ children }) {
             )}
             <div className="px-2">
             {filteredAccountBtns.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
+                let itemPath = item.href;
+                try {
+                    const u = new URL(item.href, window.location.origin);
+                    itemPath = u.pathname;
+                } catch (e) {}
+                const isActive = currentPath === itemPath || currentPath === item.href;
                 return (
                 <Link
                     key={item.id}
@@ -290,9 +306,13 @@ export default function NavbarAlumni({ children }) {
                     method={item.method || 'get'}
                     as={item.as || 'a'}
                     onClick={() => setMobileOpen(false)}
-                    className="flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition border-l-[4px] border-transparent font-medium"
+                    className={`flex w-full items-center gap-3 px-3 py-3 mx-1 rounded-md transition border-l-[4px] font-medium ${
+                    isActive
+                        ? 'border-blue-600 bg-blue-100 text-blue-800 font-semibold'
+                        : 'border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
                 >
-                    <Icon className="h-[22px] w-[22px] text-gray-500" />
+                    <Icon className={`h-[22px] w-[22px] ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
                     <span className="text-base">{item.name}</span>
                 </Link>
                 )

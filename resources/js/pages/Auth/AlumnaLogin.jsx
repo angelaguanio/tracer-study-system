@@ -7,7 +7,7 @@ import { useForm } from '@inertiajs/react';
 import TextLink from '../../components/text-link';
 import AuthLayout from "@/layouts/auth-layout";
 import { UserRound, Lock, Loader2, ArrowLeft } from 'lucide-react';
-import { Link } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import axios from 'axios';
 
 
@@ -50,6 +50,7 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
 
   return (
     <>
+    <Head title="Alumni Login" />
     {/* expired session */}
     {sessionExpired && (
         <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
@@ -67,7 +68,7 @@ export default function AlumnaLogin({ status, sessionExpired, }) {
   <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
     
     <CardHeader className="relative flex flex-col items-center justify-center">
-      <Wup />
+      <Wup label="Alumni Login" />
     </CardHeader>
 
     <CardContent>

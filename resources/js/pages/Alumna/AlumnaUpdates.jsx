@@ -58,7 +58,7 @@ export default function AlumnaUpdates({ employment, history }) {
                             Alumni <span className="text-blue-600">Updates</span>
                         </h1>
                         
-                        <p className="text-lg text-gray-500 max-w-2xl">
+                        <p className="text-lg text-gray-500 max-w-full">
                             A quick update helps your alumni community celebrate your wins, discover your expertise, and open doors to what's next.
                         </p>
                     </div>

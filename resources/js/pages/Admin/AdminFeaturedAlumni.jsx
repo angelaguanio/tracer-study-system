@@ -1,6 +1,6 @@
 import AdminLayout from "@/layouts/admin-layout";
 import AdminFeaturedAlumniCard from "@/components/admin/AdminFeaturedAlumniCard";
-import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { Plus, Search, ChevronDown, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -52,7 +52,7 @@ export default function AdminFeaturedAlumni({ featuredAlumni }) {
       <div className=" rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="bg-blue-100 p-5 rounded-full">
-            <Megaphone size={25} className="text-blue-700"/>
+            <Star size={25} className="text-blue-700"/>
           </div>
           <p className="text-lg text-gray-600">
             Showcase and manage featured alumni and their accomplishments.

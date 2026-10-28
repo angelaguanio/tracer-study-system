@@ -82,7 +82,7 @@ export default function UpdateProfileBanner() {
                         Remind me later
                     </button>
                     <Link 
-                        href="/alumna/profile"
+                        href="/alumni/profile"
                         className="flex-1 px-4 py-2 text-sm font-bold text-white bg-[#005AAA] hover:bg-[#003C87] rounded-xl text-center transition-colors shadow-md"
                     >
                         Update Now

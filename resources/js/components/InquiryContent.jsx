@@ -9,7 +9,7 @@ import echo from '@/echo';
 import inquireImg from '@/assets/inquire.svg';
 import cectLogo from '@/assets/wup_cect.webp';
 import QuickRepliesModal from './QuickRepliesModal';
-import { getBestMatchingSuggestion, formatSuggestion } from '@/data/inquirySuggestions';
+import { getBestMatchingSuggestion, formatSuggestion, getSuggestionTemplate } from '@/data/inquirySuggestions';
 
 export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, userRole = 'admin', onBack }) {
     const [replyText, setReplyText] = useState('');
@@ -183,6 +183,16 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
         (a, b) => new Date(a.created_at) - new Date(b.created_at)
     );
 
+    const formatDateTime = (dateStr) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     return (
         <main className='relative flex flex-col flex-1 h-full min-w-0 p-5 gap-3 bg-white/40 backdrop-blur-sm rounded-r-2xl overflow-hidden'>
             {/* Background CECT seal watermark */}
@@ -212,7 +222,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                             <span className="truncate">{inquiry.alumni.email}</span>
                             <span>•</span>
-                            <span className="shrink-0">{inquiry.formatted_date}</span>
+                            <span className="shrink-0">{formatDateTime(inquiry.created_at) || inquiry.formatted_date}</span>
                         </div>
                     </div>
                 </div>
@@ -247,12 +257,12 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                 <div className='flex gap-3'>
                     <AvatarBlock user={inquiry.alumni} />
                     <div className='flex flex-col gap-1 max-w-[78%] items-start'>
-                        <span className='text-[11px] text-slate-400 font-medium px-1'>
-                            {inquiry.alumni.first_name} · {inquiry.formatted_date}
+                        <span className='text-[11px] text-slate-500 font-medium px-1'>
+                            {inquiry.alumni.first_name} · {formatDateTime(inquiry.created_at) || inquiry.formatted_date}
                         </span>
                         <div className='bg-white text-slate-800 rounded-2xl rounded-tl-none px-4 py-3 border border-slate-200/80 shadow-sm'>
                             <p className='text-sm font-bold text-[#0B2545] mb-1 border-b border-slate-100 pb-1'>{inquiry.subject}</p>
-                            <p className='text-sm leading-relaxed' style={{ wordBreak: 'break-word' }}>
+                            <p className='text-sm leading-relaxed text-slate-700' style={{ wordBreak: 'break-word' }}>
                                 {inquiry.message}
                             </p>
                         </div>
@@ -267,7 +277,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                             <AvatarBlock user={reply.sender} />
                             <div className={`flex flex-col gap-1 max-w-[78%] ${isStaff ? 'items-end' : 'items-start'}`}>
                                 <span className='text-[11px] text-slate-400 font-medium px-1'>
-                                    {reply.sender.first_name} · {new Date(reply.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    {reply.sender.first_name} · {formatDateTime(reply.created_at)}
                                 </span>
                                 <div
                                     className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
@@ -304,7 +314,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                                     </h4>
                                 </div>
                                 <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
-                                    {formatSuggestion(suggestedResponse.template, { alumniName: inquiry.alumni?.first_name })}
+                                    {formatSuggestion(getSuggestionTemplate(suggestedResponse, userRole), { alumniName: inquiry.alumni?.first_name }).replace(/\s+/g, ' ').trim()}
                                 </p>
                             </div>
                         </div>
@@ -313,7 +323,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                             <Button
                                 type="button"
                                 size="sm"
-                                onClick={() => handleApplySuggestion(formatSuggestion(suggestedResponse.template, { alumniName: inquiry.alumni?.first_name }))}
+                                onClick={() => handleApplySuggestion(formatSuggestion(getSuggestionTemplate(suggestedResponse, userRole), { alumniName: inquiry.alumni?.first_name }))}
                                 className="h-7 px-2.5 rounded-lg text-xs bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-xs font-medium gap-1"
                             >
                                 <Sparkles className="h-3 w-3" />
@@ -378,6 +388,7 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                 open={isQuickRepliesOpen}
                 onOpenChange={setIsQuickRepliesOpen}
                 alumniName={inquiry.alumni?.first_name}
+                userRole={userRole}
                 onSelectSuggestion={handleApplySuggestion}
             />
         </main>

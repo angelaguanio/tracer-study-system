@@ -148,7 +148,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                                 <h3 className='text-xs font-bold text-[#0B2545] truncate'>
                                     {data.alumni.first_name} {data.alumni.last_name}
                                 </h3>
-                                <p className='text-[11px] text-slate-400 truncate font-medium mt-0.5'>
+                                <p className='text-[11px] text-slate-500 truncate font-medium mt-0.5'>
                                     {data.alumni.email}
                                 </p>
                             </div>
@@ -165,7 +165,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                             }`}>
                                 {data.subject}
                             </h4>
-                            <p className='text-xs text-slate-500 line-clamp-2 leading-relaxed font-normal'>
+                            <p className='text-xs text-slate-700 line-clamp-2 leading-relaxed font-normal'>
                                 {data.message}
                             </p>
                         </div>

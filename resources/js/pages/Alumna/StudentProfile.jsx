@@ -38,12 +38,12 @@ export default function StudentProfile() {
 
     return (
         <div className="w-full max-w-[900px] mx-auto px-4 py-8 flex flex-col gap-6">
-            {flash?.success && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg">{flash.success}</div>}
+            {flash?.success && <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm px-4 py-3 rounded-lg">{flash.success}</div>}
 
             {/* Header Area */}
             <div className="flex justify-between items-center pl-2">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-50 rounded-full text-[#008542]">
+                    <div className="p-2 bg-blue-50 rounded-full text-[#009AFB]">
                         <User size={22} strokeWidth={2} />
                     </div>
                     <div>
@@ -51,7 +51,7 @@ export default function StudentProfile() {
                         <h1 className="text-lg font-bold text-[#1e293b] leading-tight">Personal information</h1>
                     </div>
                 </div>
-                <Link href={route('alumna.profile.edit')} className="flex items-center gap-2 bg-[#008542] hover:bg-green-800 text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors">
+                <Link href={route('alumna.profile.edit')} className="flex items-center gap-2 bg-[#009AFB] hover:bg-[#0082D6] text-white text-[13px] font-bold px-5 py-2.5 rounded-full shadow-sm transition-colors">
                     <Pencil size={16} />
                     Edit profile
                 </Link>
@@ -60,10 +60,10 @@ export default function StudentProfile() {
             {/* Main Profile Card */}
             <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden mt-2">
                 {/* Top Section */}
-                <div className="p-8 sm:p-10 relative overflow-hidden bg-gradient-to-br from-white to-[#f4fbf7]">
+                <div className="p-8 sm:p-10 relative overflow-hidden bg-gradient-to-br from-white to-[#f0f7ff]">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-6">
-                            <div className="h-28 w-28 rounded-3xl overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] shrink-0 flex items-center justify-center">
+                            <div className="h-28 w-28 rounded-full overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] shrink-0 flex items-center justify-center">
                                 {profile?.profile_picture ? (
                                     <img
                                         src={profile.profile_picture}
@@ -91,7 +91,7 @@ export default function StudentProfile() {
                 <div className="p-8 sm:p-10">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <p className="text-[10px] font-bold text-[#008542] uppercase tracking-widest mb-1">PROFILE DETAILS</p>
+                            <p className="text-[10px] font-bold text-[#009AFB] uppercase tracking-widest mb-1">PROFILE DETAILS</p>
                             <h3 className="text-[19px] font-bold text-[#1e293b]">Your information</h3>
                         </div>
                     </div>

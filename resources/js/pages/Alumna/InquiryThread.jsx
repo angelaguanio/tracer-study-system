@@ -91,7 +91,7 @@ export default function InquiryThread({ inquiry }) {
 
                 <div className="flex flex-col gap-1 max-w-[90%] sm:max-w-[80%]">
                     <span className="text-xs text-gray-400">
-                        You · {inquiry.formatted_date}
+                        You · {inquiry.created_at ? new Date(inquiry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : inquiry.formatted_date}
                     </span>
 
                     <div

@@ -1,5 +1,6 @@
+import React, { useState } from "react";
 import { router } from "@inertiajs/react";
-import { BarChart2, MapPin } from "lucide-react";
+import { BarChart2, Archive } from "lucide-react";
 import AdminLayout from "@/layouts/admin-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +15,12 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
-    const currentList = surveys.data ?? [];
+export default function AnalyticsIndex({ surveys = { data: [] }, archivedSurveys = { data: [] }, type, latestTracerId }) {
+    const [tab, setTab] = useState("active");
+    const currentData = tab === "active" ? surveys : archivedSurveys;
+    const currentList = currentData?.data ?? [];
+    const isArchivedTab = tab === "archived";
+    const pageParam = tab === "active" ? "page" : "archived_page";
 
     const pageTitle = type === 'tracer' ? 'Tracer Study Analytics' : 
                       type === 'alumni-forms' ? 'Alumni Forms Analytics' : 'Analytics';
@@ -26,16 +31,69 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
         return "admin.analytics.tracer";
     };
 
+    const goToPage = (page) => {
+        router.get(
+            route(getRouteName(type)),
+            {
+                [pageParam]: page,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            }
+        );
+    };
+
     return (
         <div className="w-full max-w-full px-4 py-6 flex flex-col gap-4 self-start">
             <h1 className="text-xl font-bold text-gray-800">{pageTitle}</h1>
 
+            {/* Tab filter */}
+            <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-1 w-fit shadow-sm">
+                <button
+                    onClick={() => setTab("active")}
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        tab === "active"
+                            ? "bg-[#008236] text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-800"
+                    }`}
+                >
+                    Active
+                    {(surveys?.total ?? 0) > 0 && (
+                        <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${tab === "active" ? "bg-white/20" : "bg-gray-100"}`}>
+                            {surveys.total}
+                        </span>
+                    )}
+                </button>
+                <button
+                    onClick={() => setTab("archived")}
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                        tab === "archived"
+                            ? "bg-amber-500 text-white shadow-sm"
+                            : "text-gray-500 hover:text-gray-800"
+                    }`}
+                >
+                    <Archive size={13} />
+                    Archived
+                    {(archivedSurveys?.total ?? 0) > 0 && (
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === "archived" ? "bg-white/20" : "bg-gray-100"}`}>
+                            {archivedSurveys.total}
+                        </span>
+                    )}
+                </button>
+            </div>
+
             <div className="pt-2">
-                <p className="text-md text-gray-500 mt-2 mb-2 pl-2">Available Surveys</p>
+                <p className="text-md text-gray-500 mt-2 mb-2 pl-2">
+                    {isArchivedTab ? "Archived Surveys with Responses" : "Available Surveys"}
+                </p>
             </div>
 
             {currentList.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-10">No surveys available.</p>
+                <div className="bg-white border rounded-lg p-10 text-center text-gray-400 shadow-sm">
+                    {isArchivedTab ? "No archived surveys available." : "No active surveys available."}
+                </div>
             ) : (
                 currentList.map((survey) => (
                     <Card key={survey.id} className="bg-white border shadow-sm">
@@ -43,10 +101,16 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
                                     <h2 className="font-semibold text-gray-800">{survey.title}</h2>
-                                    {type === 'tracer' && survey.id === latestTracerId && (
-                                        <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
-                                            Currently Active
-                                        </Badge>
+                                    {isArchivedTab ? (
+                                        <span className="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700 font-medium">
+                                            Archived
+                                        </span>
+                                    ) : (
+                                        type === 'tracer' && survey.id === latestTracerId && (
+                                            <Badge className="bg-blue-100 text-blue-700 border-blue-300 text-xs">
+                                                Currently Active
+                                            </Badge>
+                                        )
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -73,33 +137,21 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                 ))
             )}
 
-            {surveys.last_page > 1 && (
+            {(currentData?.last_page ?? 1) > 1 && (
                 <div className="flex justify-start items-center mt-6">
                     <Pagination className="justify-start">
                         <PaginationContent>
-
                             <PaginationItem>
                                 <PaginationPrevious
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault();
-
-                                        if (surveys.current_page > 1) {
-                                            router.get(
-                                                route(getRouteName(type)),
-                                                {
-                                                    page: surveys.current_page - 1,
-                                                },
-                                                {
-                                                    preserveState: true,
-                                                    preserveScroll: true,
-                                                    replace: true,
-                                                }
-                                            );
+                                        if (currentData.current_page > 1) {
+                                            goToPage(currentData.current_page - 1);
                                         }
                                     }}
                                     className={`h-9 transition-colors ${
-                                        surveys.current_page === 1
+                                        currentData.current_page === 1
                                             ? "pointer-events-none opacity-40"
                                             : "cursor-pointer hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
                                     }`}
@@ -107,47 +159,34 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                             </PaginationItem>
 
                             {Array.from(
-                                { length: surveys.last_page },
+                                { length: currentData.last_page },
                                 (_, i) => i + 1
                             )
                                 .filter((page) => {
-                                    const current = surveys.current_page;
-
+                                    const current = currentData.current_page;
                                     return (
                                         page === 1 ||
-                                        page === surveys.last_page ||
-                                        (page >= current - 1 &&
-                                            page <= current + 1)
+                                        page === currentData.last_page ||
+                                        (page >= current - 1 && page <= current + 1)
                                     );
                                 })
                                 .map((page, index, arr) => {
                                     const prevPage = arr[index - 1];
-
                                     return (
                                         <PaginationItem key={page}>
-                                            {prevPage &&
-                                                page - prevPage > 1 && (
-                                                    <PaginationEllipsis />
-                                                )}
+                                            {prevPage && page - prevPage > 1 && (
+                                                <PaginationEllipsis />
+                                            )}
 
                                             <PaginationLink
                                                 href="#"
-                                                isActive={surveys.current_page === page}
+                                                isActive={currentData.current_page === page}
                                                 onClick={(e) => {
                                                     e.preventDefault();
-
-                                                    router.get(
-                                                        route(getRouteName(type)),
-                                                        { page },
-                                                        {
-                                                            preserveState: true,
-                                                            preserveScroll: true,
-                                                            replace: true,
-                                                        }
-                                                    );
+                                                    goToPage(page);
                                                 }}
                                                 className={`h-9 w-9 p-0 transition-colors ${
-                                                    surveys.current_page === page
+                                                    currentData.current_page === page
                                                         ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white"
                                                         : "hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
                                                 }`}
@@ -163,32 +202,17 @@ export default function AnalyticsIndex({ surveys, type, latestTracerId }) {
                                     href="#"
                                     onClick={(e) => {
                                         e.preventDefault();
-
-                                        if (
-                                            surveys.current_page <
-                                            surveys.last_page
-                                        ) {
-                                            router.get(
-                                                route(getRouteName(type)),
-                                                {
-                                                    page: surveys.current_page + 1,
-                                                },
-                                                {
-                                                    preserveState: true,
-                                                    preserveScroll: true,
-                                                    replace: true,
-                                                }
-                                            );
+                                        if (currentData.current_page < currentData.last_page) {
+                                            goToPage(currentData.current_page + 1);
                                         }
                                     }}
                                     className={`h-9 transition-colors ${
-                                        surveys.current_page === surveys.last_page
+                                        currentData.current_page === currentData.last_page
                                             ? "pointer-events-none opacity-40"
                                             : "cursor-pointer hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300"
                                     }`}
                                 />
                             </PaginationItem>
-
                         </PaginationContent>
                     </Pagination>
                 </div>

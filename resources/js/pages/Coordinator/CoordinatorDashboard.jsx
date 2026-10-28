@@ -48,7 +48,7 @@ export default function CoordinatorDashboard({
             Welcome, {auth.user.first_name}!
           </h1>
           <p className="text-muted-foreground text-lg">
-            Manage your activities, track alumni, and monitor announcements
+            Manage alumni records, coordinate activities, and monitor survey responses
           </p>
         </div>
 

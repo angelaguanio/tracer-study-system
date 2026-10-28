@@ -55,7 +55,7 @@ function OfficerHierarchyGrid({ officers }) {
   });
 
   return (
-    <div className="flex flex-col items-center gap-y-4 sm:gap-y-12 w-full pt-4">
+    <div className="flex flex-col items-center gap-y-8 sm:gap-y-12 w-full pt-4">
       {/* Level 1: President */}
       {president && (
         <div className="flex justify-center w-full">
@@ -72,7 +72,7 @@ function OfficerHierarchyGrid({ officers }) {
 
       {/* Level 3: Others */}
       {others && others.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-8 w-full mt-2 sm:mt-0">
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-10 w-full mt-2 sm:mt-0">
           {others.map((officer, i) => (
             <AssociationOfficerCard key={i} officer={officer} level="staff" />
           ))}
@@ -86,18 +86,37 @@ function OfficerHierarchyGrid({ officers }) {
 export function AssociationOfficerCard({ officer, level }) {
   const badgeColor = "bg-[#1258D6] text-white";
 
+  const isPresident = level === "president";
+  const isVp = level === "vp";
+
+  const cardMaxWidth = isPresident
+    ? "max-w-[330px] sm:max-w-[360px] px-6 py-9"
+    : isVp
+    ? "max-w-[310px] sm:max-w-[330px] px-6 py-8"
+    : "max-w-[290px] sm:max-w-[310px] px-6 py-8";
+
+  const avatarSize = isPresident
+    ? "w-36 h-36 sm:w-44 sm:h-44"
+    : isVp
+    ? "w-32 h-32 sm:w-40 sm:h-40"
+    : "w-32 h-32 sm:w-36 sm:h-36";
+
+  const titleSize = isPresident
+    ? "text-base sm:text-lg md:text-xl font-bold"
+    : "text-sm sm:text-base md:text-lg font-bold";
+
   return (
-    <div className="relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center px-6 py-8 w-full max-w-[280px]">
+    <div className={`relative bg-white rounded-3xl border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out flex flex-col items-center text-center w-full ${cardMaxWidth}`}>
       {/* TOP BADGE */}
-      <div className={`absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${badgeColor}`}>
+      <div className={`absolute top-0 -translate-y-1/2 px-6 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-sm ${badgeColor}`}>
         {officer.role}
       </div>
 
       {/* AVATAR */}
-      <div className="relative w-20 h-20 mb-4">
-        <div className="w-full h-full rounded-full overflow-hidden border border-gray-100">
+      <div className={`relative ${avatarSize} mb-5 mt-2`}>
+        <div className="w-full h-full rounded-full overflow-hidden border-2 border-slate-100 shadow-md ring-4 ring-blue-50/80">
           {officer.img ? (
-            <img src={officer.img} alt={officer.name} className="w-full h-full object-cover" />
+            <img src={officer.img} alt={officer.name} className="w-full h-full object-cover object-top" />
           ) : (
             <AvatarGeneric />
           )}
@@ -105,12 +124,12 @@ export function AssociationOfficerCard({ officer, level }) {
       </div>
 
       {/* TEXT */}
-      <h3 className="text-[#001D4A] font-bold text-sm sm:text-base leading-snug">
+      <h3 className={`text-[#001D4A] leading-snug px-2 ${titleSize}`}>
         {officer.name}
       </h3>
       
       {/* YELLOW ACCENT */}
-      <div className="w-8 h-[2px] bg-yellow-400 rounded-full mt-3" />
+      <div className="w-10 h-[3px] bg-yellow-400 rounded-full mt-3.5" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 import AdminLayout from "@/layouts/admin-layout";
 import MetricCard from '@/components/dashboard/MetricCard';
 import ChartWidget from '@/components/dashboard/ChartWidget';
@@ -22,16 +23,19 @@ export default function AdminDashboard({
 }) 
 
 {
+  const { auth } = usePage().props;
+  const adminFirstName = auth?.user?.first_name || 'Admin';
+
   return (
     <div className="flex w-screen min-h-screen">
       <div className="w-full space-y-8 p-8">
         {/* Header Section */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold tracking-tight text-blue-800 font-inter">
-            Welcome, Admin!
+            Welcome, {adminFirstName}!
           </h1>
           <p className="text-muted-foreground text-lg">
-            Monitor system health, track activity, and manage your alumni network
+            Manage alumni records, monitor activities, and oversee your alumni network
           </p>
         </div>
 

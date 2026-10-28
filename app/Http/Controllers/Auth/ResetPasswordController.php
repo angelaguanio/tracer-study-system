@@ -20,7 +20,7 @@ class ResetPasswordController extends Controller
             : 'alumna.login',
         'submitUrl' => $request->routeIs('admin.password.reset')
             ? '/admin/reset-password'
-            : '/alumna/reset-password',
+            : '/alumni/reset-password',
     ]);
 }
 
