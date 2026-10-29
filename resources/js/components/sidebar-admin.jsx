@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -24,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import CopySystemLinkButton from './CopySystemLinkButton'
 
 export default function SidebarAdmin({ navItems = [] }) {
   const { url, props } = usePage();
@@ -191,6 +193,10 @@ export default function SidebarAdmin({ navItems = [] }) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <CopySystemLinkButton />
+      </SidebarFooter>
     </Sidebar>
   );
 }
