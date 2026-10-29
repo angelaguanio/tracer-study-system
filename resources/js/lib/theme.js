@@ -16,6 +16,7 @@ export function applySystemTheme(settings) {
     : primary;
   const fontOnPrimary = settings.font_color_on_primary || '#ffffff';
   const textPrimary = settings.text_color_primary || primary;
+  const appBg = `color-mix(in srgb, ${primary} 4.5%, #ffffff)`;
 
   // Set CSS Variables on :root
   root.style.setProperty('--theme-primary', primary);
@@ -23,7 +24,10 @@ export function applySystemTheme(settings) {
   root.style.setProperty('--theme-gradient', gradient);
   root.style.setProperty('--theme-text-on-primary', fontOnPrimary);
   root.style.setProperty('--theme-text-primary', textPrimary);
+  root.style.setProperty('--theme-app-bg', appBg);
 
+  root.style.setProperty('--color-app-bg', appBg);
+  root.style.setProperty('--background', appBg);
   root.style.setProperty('--color-blue-btn', primary);
   root.style.setProperty('--color-bluehover-btn', secondary);
   root.style.setProperty('--color-navbar', gradient);
@@ -49,33 +53,51 @@ export function applySystemTheme(settings) {
       color: ${fontOnPrimary} !important;
     }
 
+    body {
+      background-color: ${appBg} !important;
+    }
+
+    .bg-app-bg {
+      background-color: ${appBg} !important;
+    }
+
     /* Primary Buttons & Actions */
+    .bg-blue-500,
     .bg-blue-600,
+    button.bg-blue-500,
     button.bg-blue-600,
+    a.bg-blue-500,
     a.bg-blue-600,
     .bg-blue-btn,
     .bg-\\[\\#005AAA\\],
     .bg-\\[\\#007AD7\\],
     .bg-\\[\\#009AFB\\],
-    .bg-\\[\\#1258D6\\] {
+    .bg-\\[\\#70CAFF\\],
+    .bg-\\[\\#1258D6\\],
+    .bg-\\[\\#1A56DB\\],
+    .bg-\\[\\#2859C5\\] {
       background-color: ${primary} !important;
       color: ${fontOnPrimary} !important;
       border-color: ${primary} !important;
     }
 
     .bg-blue-600:hover,
+    .bg-blue-500:hover,
     .hover\\:bg-blue-700:hover,
+    .hover\\:bg-blue-600:hover,
     button.bg-blue-600:hover,
     a.bg-blue-600:hover,
     .hover\\:bg-bluehover-btn:hover,
     .hover\\:bg-\\[\\#003C87\\]:hover,
     .hover\\:bg-\\[\\#005AAA\\]:hover,
-    .hover\\:bg-\\[\\#0082D6\\]:hover {
+    .hover\\:bg-\\[\\#0082D6\\]:hover,
+    .hover\\:bg-\\[\\#1648C0\\]:hover {
       background-color: ${secondary} !important;
       border-color: ${secondary} !important;
     }
 
     /* Headings, Icons, & Accent Text */
+    .text-blue-500,
     .text-blue-600,
     .focus\\:text-blue-600:focus,
     .hover\\:text-blue-600:hover,
@@ -84,6 +106,7 @@ export function applySystemTheme(settings) {
     .text-\\[\\#007AD7\\],
     .text-\\[\\#009AFB\\],
     .text-\\[\\#1258D6\\],
+    .text-\\[\\#2859C5\\],
     .group:hover .group-hover\\:text-\\[\\#005AAA\\] {
       color: ${primary} !important;
     }
@@ -93,9 +116,16 @@ export function applySystemTheme(settings) {
     }
 
     /* Card Borders & Focus Rings */
+    .border-blue-400,
+    .border-blue-500,
     .border-blue-600,
+    .border-sky-300,
+    .border-sky-400,
     .border-\\[\\#007AD7\\],
-    .border-\\[\\#009AFB\\] {
+    .border-\\[\\#009AFB\\],
+    .border-\\[\\#9ECEFF\\],
+    .focus\\:border-blue-500:focus,
+    .focus-within\\:border-blue-500:focus-within {
       border-color: ${primary} !important;
     }
 
@@ -103,17 +133,21 @@ export function applySystemTheme(settings) {
     .border-blue-200\\/80,
     .border-blue-100,
     .border-blue-100\\/50,
-    .hover\\:border-blue-300:hover {
-      border-color: color-mix(in srgb, ${primary} 25%, #e2e8f0) !important;
+    .border-sky-200,
+    .hover\\:border-blue-300:hover,
+    .hover\\:border-blue-400:hover {
+      border-color: color-mix(in srgb, ${primary} 28%, #e2e8f0) !important;
     }
 
     .bg-blue-50,
     .bg-blue-50\\/80,
     .bg-blue-100,
     .bg-blue-100\\/50,
+    .bg-sky-50,
+    .bg-sky-100,
     .hover\\:bg-blue-50:hover,
     .focus\\:bg-blue-50:focus {
-      background-color: color-mix(in srgb, ${primary} 10%, white) !important;
+      background-color: color-mix(in srgb, ${primary} 12%, white) !important;
     }
 
     /* Headings, Text & Dots */

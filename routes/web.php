@@ -79,24 +79,32 @@ Route::redirect('/alumna/{any}', '/alumni/{any}', 301)->where('any', '.*');
 Route::prefix('alumni')->name('alumna.')->group(function () {
 
     Route::middleware('guest')->group(function () {
-        Route::get('/signup', [AlumnaAuthController::class, 'roles'])->name('signup');
-        Route::post('/signup', [AlumnaAuthController::class, 'signupAlumna']);
+        Route::get('/signup', fn() => redirect()->route('alumna.login'))->name('signup');
+        Route::post('/signup', fn() => redirect()->route('alumna.login'));
         Route::get('/login', [AlumnaAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AlumnaAuthController::class, 'loginAlumna']);
+
+        // Student identity verification & credential setup
+        Route::post('/verify-identity', [AlumnaAuthController::class, 'verifyIdentity'])->name('verify-identity');
+        Route::post('/setup-credentials', [AlumnaAuthController::class, 'setupCredentials'])->name('setup-credentials');
 
         // Show "Verify Your Email or Phone" page
         Route::get('/verify-notice', function (Request $request) {
             $user = \App\Models\User::where('email', $request->query('email'))->first();
             return Inertia::render('Auth/VerifyEmail', [
                 'type'  => $request->query('type'),
+                'from'  => $request->query('from'),
                 'email' => $request->query('email'),
-                'sent'  => $request->query('sent'),
+                'sent'  => (bool) $request->query('sent'),
                 'contactNumber' => $user ? $user->contact_number : null,
             ]);
         })->name('verification.notice');
 
         // User clicks the email link
         Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware('signed:relative')->name('verification.verify');
+
+        // Real-time verification status check for cross-device synchronization
+        Route::get('/check-verification-status', [AlumnaAuthController::class, 'checkVerificationStatus'])->name('verification.check');
 
         // Resend verification email
         Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
@@ -116,6 +124,10 @@ Route::prefix('alumni')->name('alumna.')->group(function () {
     });
 
     Route::middleware(['auth', 'tracer.completed'])->group(function () {
+        // Profile setup / onboarding
+        Route::get('/profile-setup', [AlumnaAuthController::class, 'showOnboarding'])->name('onboarding');
+        Route::post('/profile-setup', [AlumnaAuthController::class, 'completeOnboarding'])->name('onboarding.submit');
+
         Route::get('/home', AlumnaHomeController::class)->name('home');
         Route::get('/dashboard', fn() => redirect()->route('alumna.home'));
         Route::get('/questionnaire', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire');
@@ -368,6 +380,10 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::get('/analytics/alumni-forms', [SurveyAnalyticsController::class, 'alumniFormsIndex'])
             ->name('analytics.alumni-forms');
 
+        // Backward compatibility alias for general analytics
+        Route::get('/analytics/general', [SurveyAnalyticsController::class, 'alumniFormsIndex'])
+            ->name('analytics.general');
+
         Route::get('/analytics/{survey}', [SurveyAnalyticsController::class, 'show'])->name('analytics.show');
         Route::get('/analytics/{survey}/download', [SurveyAnalyticsController::class, 'downloadAnalytics'])->name('analytics.download');
         Route::get('/analytics/{survey}/cect', [\App\Http\Controllers\CectSurveyAnalyticsController::class, 'show'])->name('analytics.cect-show');
@@ -429,6 +445,8 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         //send email
         Route::post('/alumni/{id}/email', [CoordinatorAlumniController::class, 'sendEmail'])->name('alumni.email.send');
         Route::post('/alumni/email/bulk', [CoordinatorAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
+        Route::post('/alumni/import-csv', [CoordinatorAlumniController::class, 'importCsv'])->name('alumni.import-csv');
+        Route::get('/alumni/sample-csv', [CoordinatorAlumniController::class, 'downloadSampleCsv'])->name('alumni.sample-csv');
 
         // Coordinator Analytics Index
         Route::get('/analytics', [SurveyAnalyticsController::class, 'coordinatorIndex'])

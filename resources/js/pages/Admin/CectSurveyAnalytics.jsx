@@ -189,6 +189,10 @@ export default function CectSurveyAnalytics({
             ? { semester: localFilters.semester } : {}),
     });
 
+    const backRoute = survey?.type === 'Tracer Study'
+        ? route("admin.analytics.tracer")
+        : route("admin.analytics.alumni-forms");
+
     return (
         <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-6" ref={reportRef}>
 
@@ -196,7 +200,7 @@ export default function CectSurveyAnalytics({
             <div className="pdf-section flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white border rounded-lg p-5 shadow-sm">
                 
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("admin.analytics.general")} className="no-pdf">
+                    <Link href={backRoute} className="no-pdf">
                         <button className="p-2 rounded hover:bg-gray-200 text-gray-600 cursor-pointer shrink-0">
                             <ArrowLeft size={18} />
                         </button>

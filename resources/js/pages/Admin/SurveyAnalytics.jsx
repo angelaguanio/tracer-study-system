@@ -244,13 +244,17 @@ export default function SurveyAnalytics({
             : `${yearData[0].name.split('-')[0]} – ${yearData[yearData.length - 1].name.split('-')[1] || yearData[yearData.length - 1].name}`
         : "—";
 
+    const backRoute = survey?.type === 'Tracer Study'
+        ? route("admin.analytics.tracer")
+        : route("admin.analytics.alumni-forms");
+
     return (
         <div className="min-h-screen w-full bg-app-bg p-4 sm:p-6 flex flex-col gap-5" ref={reportRef}>
 
             {/* ── Header + inline filters ── */}
             <div className="pdf-section flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white border rounded-xl p-5 shadow-sm">
                 <div className="flex items-start gap-3 min-w-0">
-                    <Link href={route("admin.analytics.tracer")} className="no-pdf">
+                    <Link href={backRoute} className="no-pdf">
                         <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-800 p-0 hover:bg-transparent">
                             <ArrowLeft size={16} />
                         </Button>

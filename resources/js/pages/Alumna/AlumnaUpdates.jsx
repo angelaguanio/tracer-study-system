@@ -64,7 +64,7 @@ export default function AlumnaUpdates({ employment, history }) {
                     </div>
 
                     {/* Current Employment Card */}
-                    <div className="bg-white rounded-[32px] p-6 sm:p-10 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-100/60">
+                    <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-200/90">
                         <form onSubmit={submit}>
                             <div className="flex items-start justify-between mb-8">
                                 <div className="flex items-center gap-4">
@@ -284,7 +284,7 @@ export default function AlumnaUpdates({ employment, history }) {
                     </div>
 
                     {/* Employment History */}
-                    <div className="bg-white rounded-[32px] p-6 sm:p-10 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-100/60 mt-10">
+                    <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-200/90 mt-10">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
                             <div>
                                 <div className="flex items-center gap-4">
@@ -299,15 +299,21 @@ export default function AlumnaUpdates({ employment, history }) {
                                 const isCurrent = index === 0 && employment?.currently_employed === 'Yes' && item.is_present;
 
                                 return (
-                                    <div key={item.id} className="border border-gray-100 rounded-3xl p-6 hover:border-gray-300 transition-colors relative flex flex-col h-full bg-white shadow-sm hover:shadow-md duration-300 group">
+                                    <div key={item.id} className="border border-slate-200/90 rounded-2xl p-6 hover:border-slate-300 transition-all relative flex flex-col h-full bg-slate-50/50 hover:bg-white shadow-xs hover:shadow-md duration-300 group">
                                         <div className="flex justify-between items-start mb-5 flex-grow gap-4">
                                             <div>
                                                 <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.company_name || (item.currently_employed === 'No' ? 'Unemployed' : 'Employed')}</h3>
                                                 {item.position && <p className="text-[15px] font-medium mt-1" style={{ color: 'var(--theme-primary)' }}>{item.position}</p>}
                                             </div>
                                             {isCurrent ? (
-                                                <div className="flex items-center gap-1.5 bg-[#E6F9F0] text-[#00A35C] px-3 py-1.5 rounded-full text-xs font-bold shrink-0">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#00A35C]"></div>
+                                                <div 
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shrink-0 shadow-2xs"
+                                                    style={{ 
+                                                        background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                                        color: 'var(--theme-primary)' 
+                                                    }}
+                                                >
+                                                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--theme-primary)' }}></div>
                                                     Current
                                                 </div>
                                             ) : (

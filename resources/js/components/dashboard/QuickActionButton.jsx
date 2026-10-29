@@ -13,18 +13,27 @@ import { Link } from '@inertiajs/react';
  * @param {string} variant - Button variant: 'primary' | 'secondary' | 'default' | 'outline'
  */
 export default function QuickActionButton({ label, href, icon: Icon, variant = 'default' }) {
-  // Map variant to theme colors
-  const variantClasses = {
-    default: 'bg-blue-500 hover:bg-blue-700 text-white',
-    outline: 'border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950',
-    secondary: 'bg-slate-200 hover:bg-slate-300 text-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-100',
-  };
+  const isDefault = variant === 'default';
+  const isOutline = variant === 'outline';
 
   return (
     <Button 
       asChild 
-      variant={variant}
-      className={`w-full h-12 ${variantClasses[variant] || variantClasses.default}`}
+      variant={isDefault ? 'default' : isOutline ? 'outline' : variant}
+      className={`w-full h-12 transition-all font-semibold ${
+        isDefault 
+          ? 'shadow-sm hover:opacity-90' 
+          : isOutline 
+            ? 'border-2 hover:bg-slate-50' 
+            : 'bg-slate-200 hover:bg-slate-300 text-slate-900'
+      }`}
+      style={
+        isDefault
+          ? { background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)', borderColor: 'var(--theme-primary)' }
+          : isOutline
+            ? { borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)' }
+            : {}
+      }
     >
       <Link href={href}>
         {Icon && <Icon className="mr-2 h-4 w-4" />}

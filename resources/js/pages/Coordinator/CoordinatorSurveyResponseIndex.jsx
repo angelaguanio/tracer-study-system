@@ -175,7 +175,8 @@ export default function CoordinatorSurveyResponseIndex({ surveys = [], archivedS
               </div>
               <button
                 onClick={() => router.get(`/coordinator/survey-response/${survey.id}`)}
-                className="w-full sm:w-auto border border-blue-400 hover:bg-blue-50 cursor-pointer text-blue-600 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                className="w-full sm:w-auto border cursor-pointer px-4 py-2 rounded-md text-sm font-semibold transition-all hover:opacity-85 shadow-2xs"
+                style={{ borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)', background: 'color-mix(in srgb, var(--theme-primary) 6%, transparent)' }}
               >
                 View Survey Response
               </button>

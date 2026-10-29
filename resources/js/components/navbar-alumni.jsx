@@ -115,33 +115,44 @@ export default function NavbarAlumni({ children }) {
       <header className={`flex justify-between items-center px-5 md:px-6 py-4 md:py-5 z-50 transition-all duration-500 ease-in-out ${
         isTransparentHeader && !isScrolled
           ? 'fixed top-0 w-full shadow-none border-b border-transparent text-white'
-          : `${isTransparentHeader ? 'fixed' : 'sticky'} top-0 w-full shadow-sm border-b border-gray-100/50 text-navbar-text`
+          : `${isTransparentHeader ? 'fixed' : 'sticky'} top-0 w-full shadow-xs border-b border-slate-200/80`
       }`}>
         <div className={`absolute inset-0 -z-10 transition-all duration-500 ease-in-out ${
             isTransparentHeader && !isScrolled
                 ? 'bg-white/0 backdrop-blur-none'
-                : 'bg-white/70 backdrop-blur-md'
+                : 'bg-white/90 backdrop-blur-md'
         }`} />
         <Link 
           href={isTracerLocked ? '#' : route('alumna.home')} 
           className={`flex items-center space-x-3 relative ${isTracerLocked ? 'cursor-default' : 'cursor-pointer hover:opacity-90 transition-opacity'}`}
+          style={isTransparentHeader && !isScrolled ? {} : { color: 'var(--theme-primary)' }}
         >
           <img src={appLogo} className='h-12 md:h-14 object-contain' alt={`${appName} logo`} />
-          <p className="font-bruno lg:text-lg text-base">{appName}</p>
+          <p className="font-bruno lg:text-lg text-base font-bold tracking-wide">{appName}</p>
         </Link>
 
         {/* Right side: Bell and Hamburger (Visible on all screen sizes) */}
         <div className="flex items-center gap-3 relative z-10">
           {!isTracerLocked && (
             <NotificationBell 
-              className={`transition-colors duration-500 ${isTransparentHeader && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`} 
+              className={`transition-colors duration-500 ${
+                isTransparentHeader && !isScrolled 
+                  ? 'text-white hover:bg-white/20' 
+                  : 'hover:bg-slate-100/80'
+              }`} 
+              style={isTransparentHeader && !isScrolled ? {} : { color: 'var(--theme-primary)' }}
               notifications={notifications} 
               iconSize={26}
             />
           )}
           <button
             onClick={() => setMobileOpen(true)}
-            className={`p-2 cursor-pointer transition-colors duration-500 rounded-full ${isTransparentHeader && !isScrolled ? 'text-white hover:bg-white/20' : 'text-navbar-text hover:bg-gray-200'}`}
+            className={`p-2 cursor-pointer transition-colors duration-500 rounded-full ${
+              isTransparentHeader && !isScrolled 
+                ? 'text-white hover:bg-white/20' 
+                : 'hover:bg-slate-100/80'
+            }`}
+            style={isTransparentHeader && !isScrolled ? {} : { color: 'var(--theme-primary)' }}
             aria-label="Open menu"
           >
             <Menu size={30} />

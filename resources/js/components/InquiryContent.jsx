@@ -148,7 +148,10 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                        className="w-full h-full object-cover"
                    />
                 ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-[#0B2545] to-[#009AFB] flex items-center justify-center text-white font-bold">
+                    <div 
+                        className="h-full w-full flex items-center justify-center text-white font-bold"
+                        style={{ background: 'var(--theme-gradient)' }}
+                    >
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
                     </div>
                 )}
@@ -280,12 +283,12 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                                     {reply.sender.first_name} · {formatDateTime(reply.created_at)}
                                 </span>
                                 <div
-                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
+                                    className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line shadow-xs ${
                                         isStaff
-                                            ? 'bg-[#009AFB] text-white rounded-tr-none shadow-md shadow-[#009AFB]/10 border border-[#009AFB]'
-                                            : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-sm'
+                                            ? 'text-white rounded-tr-none'
+                                            : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/80 shadow-xs'
                                     }`}
-                                    style={{ wordBreak: 'break-word' }}
+                                    style={isStaff ? { background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)', wordBreak: 'break-word' } : { wordBreak: 'break-word' }}
                                 >
                                     {reply.message}
                                 </div>
@@ -298,18 +301,36 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
 
             {/* Smart Contextual Suggestion Banner */}
             {suggestedResponse && dismissedSuggestionId !== suggestedResponse.id && (
-                <div className="relative z-10 p-3 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50/95 via-white/95 to-sky-50/90 shadow-sm backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2">
+                <div 
+                    className="relative z-10 p-3 rounded-2xl border shadow-xs backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2"
+                    style={{ 
+                        background: 'linear-gradient(to right, color-mix(in srgb, var(--theme-primary) 8%, white), white, color-mix(in srgb, var(--theme-primary) 6%, white))',
+                        borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0)'
+                    }}
+                >
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-2.5 min-w-0">
-                            <div className="h-7 w-7 rounded-lg bg-[#009AFB]/15 text-[#009AFB] flex items-center justify-center shrink-0 mt-0.5">
+                            <div 
+                                className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-2xs"
+                                style={{ 
+                                    background: 'color-mix(in srgb, var(--theme-primary) 15%, white)', 
+                                    color: 'var(--theme-primary)' 
+                                }}
+                            >
                                 <Sparkles className="h-4 w-4" />
                             </div>
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-[10px] font-bold tracking-wider uppercase text-[#009AFB] bg-sky-100 px-2 py-0.5 rounded-full">
+                                    <span 
+                                        className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full"
+                                        style={{ 
+                                            background: 'color-mix(in srgb, var(--theme-primary) 15%, white)', 
+                                            color: 'var(--theme-primary)' 
+                                        }}
+                                    >
                                         Suggested Response
                                     </span>
-                                    <h4 className="text-xs font-bold text-[#0B2545] truncate">
+                                    <h4 className="text-xs font-bold text-slate-900 truncate">
                                         {suggestedResponse.title}
                                     </h4>
                                 </div>
@@ -324,7 +345,8 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                                 type="button"
                                 size="sm"
                                 onClick={() => handleApplySuggestion(formatSuggestion(getSuggestionTemplate(suggestedResponse, userRole), { alumniName: inquiry.alumni?.first_name }))}
-                                className="h-7 px-2.5 rounded-lg text-xs bg-[#009AFB] hover:bg-[#0082D6] text-white shadow-xs font-medium gap-1"
+                                className="h-7 px-2.5 rounded-lg text-xs text-white shadow-xs font-medium gap-1 hover:opacity-90"
+                                style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                             >
                                 <Sparkles className="h-3 w-3" />
                                 Insert
@@ -348,7 +370,8 @@ export default function InquiryContent({ inquiry, onUpdateStatus, onReplyAdded, 
                     <button
                         type="button"
                         onClick={() => setIsQuickRepliesOpen(true)}
-                        className="flex items-center gap-1.5 text-xs font-semibold text-[#009AFB] hover:text-[#0082D6] px-2 py-1 rounded-lg hover:bg-sky-50 transition"
+                        className="flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-lg transition hover:opacity-80"
+                        style={{ color: 'var(--theme-primary)' }}
                     >
                         <MessageSquareQuote className="h-3.5 w-3.5" />
                         <span>Quick Replies / FAQs</span>

@@ -60,7 +60,10 @@ export default function CoordinatorSurveyResponseTable({
       
       {/* ================= DESKTOP VIEW ================= */}
       <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
-        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
+        <div 
+          className="w-full h-12 flex items-center text-center font-semibold text-sm select-none border-b border-gray-100 pr-[17px]"
+          style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+        >
           <div className="w-[40%] text-center">Alumni</div>
           <div className="w-[20%] text-center">Course</div>
           <div className="w-[20%] text-center">Year</div>
@@ -74,7 +77,10 @@ export default function CoordinatorSurveyResponseTable({
                 <div key={res.id} className="h-[64px] border-b border-gray-100 hover:bg-gray-50 flex items-center w-full text-center">
                   <div className="w-[40%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
-                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                      <div 
+                        className="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100"
+                        style={{ background: 'var(--theme-gradient)' }}
+                      >
                         {res.avatar || res.profile_picture ? (
                           <img src={res.avatar || res.profile_picture} alt={res.name} className="w-full h-full object-cover" />
                         ) : (
@@ -112,7 +118,10 @@ export default function CoordinatorSurveyResponseTable({
             <div key={`mobile-${res.id}`} className="bg-white rounded-xl shadow p-4 border border-gray-100 flex flex-col gap-3">
               <div className="flex items-center justify-between border-b border-gray-50 pb-2 gap-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                  <div 
+                    className="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100"
+                    style={{ background: 'var(--theme-gradient)' }}
+                  >
                     {res.avatar || res.profile_picture ? (
                        <img src={res.avatar || res.profile_picture} alt={res.name} className="w-full h-full object-cover" />
                     ) : (
@@ -155,7 +164,24 @@ export default function CoordinatorSurveyResponseTable({
             item === "..." ? (
               <span key={i} className="w-9 h-9 flex items-center justify-center text-gray-400">...</span>
             ) : (
-              <button key={item} onClick={() => goToPage(item)} className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm cursor-pointer ${currentPage === item ? "bg-blue-500 text-white border-blue-500" : "bg-white text-gray-700"}`}>
+              <button 
+                key={item} 
+                onClick={() => goToPage(item)} 
+                className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm cursor-pointer ${
+                  currentPage === item 
+                    ? "text-white" 
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+                style={
+                  currentPage === item
+                    ? {
+                        background: 'var(--theme-gradient)',
+                        color: 'var(--theme-text-on-primary)',
+                        borderColor: 'var(--theme-primary)',
+                      }
+                    : {}
+                }
+              >
                 {item}
               </button>
             )

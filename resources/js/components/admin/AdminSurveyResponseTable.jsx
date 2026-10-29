@@ -69,7 +69,10 @@ export default function AdminSurveyResponseTable({
       <div className="hidden md:flex rounded-xl shadow bg-white border border-gray-100 overflow-hidden flex-col w-full flex-1 min-h-0">
 
         {/* HEADER */}
-        <div className="w-full bg-[#70CAFF] h-12 flex items-center text-center text-gray-800 font-semibold text-sm select-none border-b border-gray-100 pr-[17px]">
+        <div 
+          className="w-full h-12 flex items-center text-center font-semibold text-sm select-none border-b border-gray-100 pr-[17px]"
+          style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
+        >
           <div className="w-[40%] text-center">Alumni</div>
           <div className="w-[20%] text-center">Course</div>
           <div className="w-[20%] text-center">Year</div>
@@ -90,7 +93,10 @@ export default function AdminSurveyResponseTable({
                   <div className="w-[40%] flex items-center justify-center">
                     <div className="relative w-full flex items-center px-4">
                       {/* Mananatili sa kaliwang bahagi ang avatar gaya ng dati */}
-                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                      <div 
+                        className="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100"
+                        style={{ background: 'var(--theme-gradient)' }}
+                      >
                         {res.avatar ? (
                           <img
                             src={res.avatar}
@@ -165,7 +171,10 @@ export default function AdminSurveyResponseTable({
               {/* SECTION 1: Avatar at Name (Dito sila magkatabi na may gap-3) */}
               <div className="flex items-center justify-between border-b border-gray-50 pb-2 gap-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100">
+                  <div 
+                    className="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-semibold shrink-0 overflow-hidden border border-gray-100"
+                    style={{ background: 'var(--theme-gradient)' }}
+                  >
                     {res.avatar ? (
                       <img
                         src={res.avatar}
@@ -237,9 +246,18 @@ export default function AdminSurveyResponseTable({
                 onClick={() => goToPage(item)}
                 className={`w-9 h-9 flex items-center justify-center border rounded-lg text-sm cursor-pointer ${
                   currentPage === item
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white text-gray-700"
+                    ? "text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
                 }`}
+                style={
+                  currentPage === item
+                    ? {
+                        background: 'var(--theme-gradient)',
+                        color: 'var(--theme-text-on-primary)',
+                        borderColor: 'var(--theme-primary)',
+                      }
+                    : {}
+                }
               >
                 {item}
               </button>

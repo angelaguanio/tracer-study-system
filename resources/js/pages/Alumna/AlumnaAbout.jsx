@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AlumnaLayout from "@/layouts/alumna-layout";
 import cectBuilding from "@/assets/cect_building.webp";
 import graduationBg from "@/assets/grad_pic.webp";
@@ -59,6 +59,9 @@ const coreValues = [
 ];
 
 export default function AlumnaAbout() {
+  const { system_settings } = usePage().props;
+  const appName = system_settings?.app_name || 'ALUMNI CONNECT';
+
   const heroRef = useRef(null);
   const missionRef = useRef(null);
   const visionRef = useRef(null);
@@ -124,8 +127,8 @@ export default function AlumnaAbout() {
           ref={heroRef}
           className={`relative z-10 w-full max-w-5xl px-6 text-center mt-20 transition-all duration-1000 transform ${heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
         >
-          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-bold mb-4 drop-shadow-2xl leading-tight md:whitespace-nowrap tracking-wide text-shadow">
-            ALUMNI CONNECT
+          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-bold mb-4 drop-shadow-2xl leading-tight md:whitespace-nowrap tracking-wide text-shadow uppercase">
+            {appName}
           </h1>
           <p className="text-white/95 text-base md:text-lg lg:text-xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
             Strengthening connections between the College of Engineering and Computer Technology graduates and the institution.
@@ -143,15 +146,21 @@ export default function AlumnaAbout() {
           {/* Mission */}
           <div 
             ref={missionRef}
-            className={`flex flex-col md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
+            className={`flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 transition-all duration-1000 transform ${missionVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}
           >
             {/* Text Side */}
             <div className="flex-1 p-8 md:p-12">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center text-blue-600">
+                <div 
+                  className="w-14 h-14 rounded-2xl shadow-xs flex items-center justify-center shrink-0"
+                  style={{ 
+                    background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                    color: 'var(--theme-primary)' 
+                  }}
+                >
                   <IconTarget />
                 </div>
-                <h2 className="text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>Mission</h2>
+                <h2 className="text-3xl font-extrabold text-slate-900">Mission</h2>
               </div>
               <ul className="space-y-4">
                 {[
@@ -162,10 +171,16 @@ export default function AlumnaAbout() {
                   "To be at the forefront in conducting innovative research relevant to nation-building.",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <div className="mt-1 w-5 h-5 rounded-full bg-white border border-blue-200 shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                    <div 
+                      className="mt-1 w-5 h-5 rounded-full shadow-xs flex items-center justify-center shrink-0"
+                      style={{ 
+                        background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                        color: 'var(--theme-primary)' 
+                      }}
+                    >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
                     </div>
-                    <span className="text-[#4A6482] text-sm leading-relaxed">{item}</span>
+                    <span className="text-slate-700 text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -189,7 +204,7 @@ export default function AlumnaAbout() {
           {/* Vision */}
           <div 
             ref={visionRef}
-            className={`flex flex-col-reverse md:flex-row bg-app-bg rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
+            className={`flex flex-col-reverse md:flex-row bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 transition-all duration-1000 transform ${visionVisible ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}
           >
             {/* Image Side (Angled Cut) */}
             <div 
@@ -205,18 +220,34 @@ export default function AlumnaAbout() {
             {/* Text Side */}
             <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center text-blue-600">
+                <div 
+                  className="w-14 h-14 rounded-2xl shadow-xs flex items-center justify-center shrink-0"
+                  style={{ 
+                    background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                    color: 'var(--theme-primary)' 
+                  }}
+                >
                   <IconEye />
                 </div>
-                <h2 className="text-3xl font-bold" style={{ color: 'var(--theme-primary)' }}>Vision</h2>
+                <h2 className="text-3xl font-extrabold text-slate-900">Vision</h2>
               </div>
               <blockquote className="relative px-6 py-2">
-                <span className="absolute top-0 left-0 text-5xl text-blue-300 opacity-40 font-serif leading-none">"</span>
-                <p className="text-[#4A6482] text-xl leading-relaxed italic relative z-10 px-4 font-medium">
+                <span 
+                  className="absolute top-0 left-0 text-5xl font-serif leading-none select-none opacity-40"
+                  style={{ color: 'var(--theme-primary)' }}
+                >
+                  "
+                </span>
+                <p className="text-slate-800 text-xl leading-relaxed italic relative z-10 px-4 font-medium">
                   Wesleyan University-Philippines is a globally competitive institution that embodies Wesleyan
                   spirituality in providing transformative education.
                 </p>
-                <span className="absolute bottom-[-20px] right-0 text-5xl text-blue-300 opacity-40 font-serif leading-none">"</span>
+                <span 
+                  className="absolute bottom-[-20px] right-0 text-5xl font-serif leading-none select-none opacity-40"
+                  style={{ color: 'var(--theme-primary)' }}
+                >
+                  "
+                </span>
               </blockquote>
             </div>
             
@@ -241,7 +272,10 @@ export default function AlumnaAbout() {
             ref={coreValuesRef}
             className={`text-center mb-10 transition-all duration-1000 transform ${coreValuesVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}
           >
-            <p className="text-blue-200 text-xs font-bold tracking-widest uppercase mb-1 drop-shadow-sm">
+            <p 
+              className="text-xs font-bold tracking-widest uppercase mb-1 drop-shadow-sm"
+              style={{ color: 'color-mix(in srgb, var(--theme-primary) 40%, white)' }}
+            >
               What We Stand For
             </p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white drop-shadow-md">Core Values</h2>
@@ -252,15 +286,23 @@ export default function AlumnaAbout() {
               <div
               key={en}
               className={`group relative flex flex-col items-center text-center text-white gap-2
-                bg-white/10 rounded-xl p-5 hover:bg-white/20 transition-all duration-700 transform ${coreValuesVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
+                bg-white/10 rounded-2xl p-6 hover:bg-white/20 transition-all duration-700 transform ${coreValuesVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
                 w-full shadow-lg backdrop-blur-sm overflow-hidden`}
               style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-[0_0_15px_rgba(96,165,250,0.8)]" />
-                <span className="text-4xl p-6 rounded-full bg-white/20 shadow-inner">{emoji}</span>
+                <div 
+                  className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[var(--theme-primary)] to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" 
+                  style={{ filter: 'drop-shadow(0 0 8px var(--theme-primary))' }}
+                />
+                <span 
+                  className="text-4xl p-6 rounded-2xl shadow-inner mb-2"
+                  style={{ background: 'color-mix(in srgb, var(--theme-primary) 25%, rgba(255,255,255,0.15))' }}
+                >
+                  {emoji}
+                </span>
                 <h4 className='font-extrabold text-lg sm:text-base lg:text-lg tracking-wide leading-tight'>{en}</h4>
                 <p className="text-sm lg:text-[15px] opacity-90">({fil})</p>
-                <p className="text-xs sm:text-sm lg:text-[14px] leading-relaxed opacity-95">{desc}</p>
+                <p className="text-xs sm:text-sm lg:text-[14px] leading-relaxed opacity-95 text-white/90">{desc}</p>
               </div>
             ))}
           </div>

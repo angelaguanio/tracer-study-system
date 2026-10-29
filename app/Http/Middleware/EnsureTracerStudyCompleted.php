@@ -38,7 +38,9 @@ class EnsureTracerStudyCompleted
                         'alumna.surveys.show', 
                         'alumna.surveys.submit', 
                         'alumna.surveys.draft',
-                        'alumna.logout'
+                        'alumna.logout',
+                        'alumna.onboarding',
+                        'alumna.onboarding.submit',
                     ];
 
                     $currentRoute = $request->route() ? $request->route()->getName() : '';

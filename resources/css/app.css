@@ -72,7 +72,7 @@
     --color-navbar: oklch(0.7733 0.124 244.97);
     --color-navbar-text: oklch(0.2428 0.0912 258.33);
 
-    --color-app-bg: oklch(0.9791 0.0125 228.92);
+    --color-app-bg: var(--theme-app-bg, oklch(0.9791 0.0125 228.92));
     --color-survey-bg: oklch(0.9651 0.0165 259.42);
 
     --font-inter: "Inter", sans-serif;

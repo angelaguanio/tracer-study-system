@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 
 class VerifyEmailController extends Controller
@@ -32,7 +33,10 @@ class VerifyEmailController extends Controller
             event(new Verified($user));
         }
 
-        return redirect()->route('alumna.login')
-            ->with('status', 'Email verified successfully! You may now log in.');
+        // Log the user in directly to eliminate unnecessary login redirect
+        Auth::login($user);
+
+        return redirect()->route('alumna.onboarding')
+            ->with('status', 'Email verified successfully! Please complete your alumni profile.');
     }
 }

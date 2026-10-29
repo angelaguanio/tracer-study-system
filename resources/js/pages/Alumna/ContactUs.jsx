@@ -110,17 +110,17 @@ export default function ContactUs() {
       </section>
 
       {/* ── GET IN TOUCH ─────────────────────────────────────── */}
-      <section 
-        className="relative w-full py-24 px-6 sm:px-10 lg:px-20 overflow-hidden"
-        style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--theme-primary, #15803d) 85%, black) 0%, #0f172a 100%)' }}
-      >
+      <section className="relative w-full py-20 px-6 sm:px-10 lg:px-20 bg-app-bg">
         <div className="max-w-7xl mx-auto relative z-10" ref={cardsRef}>
 
           {/* Section header */}
           <div className={`text-center mb-16 transition-all duration-700 transform ${cardsVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 drop-shadow-md">Get in Touch</h2>
-            <div className="w-12 h-1 mx-auto mb-6" style={{ background: 'var(--theme-primary)' }} />
-            <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto font-medium">
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--theme-primary)' }}>
+              COMMUNICATION CHANNELS
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4">Get in Touch</h2>
+            <div className="w-16 h-1 mx-auto rounded-full mb-6" style={{ background: 'var(--theme-primary)' }} />
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto font-medium">
               Find our email, phone number, office location, and office hours below.
             </p>
           </div>
@@ -132,28 +132,35 @@ export default function ContactUs() {
               return (
                 <div
                   key={item.id}
-                  className={`flex flex-col items-center text-center p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl hover:-translate-y-3 hover:bg-white/20 hover:shadow-2xl hover:border-white/40 cursor-pointer transition-all duration-500 transform ${cardsVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-                  style={{ transitionDelay: `${index * 150}ms` }}
+                  className={`flex flex-col items-center text-center p-8 rounded-3xl bg-white border border-slate-200/90 shadow-md hover:-translate-y-2 hover:shadow-xl hover:border-slate-300 transition-all duration-300 transform ${cardsVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+                  style={{ transitionDelay: `${index * 120}ms` }}
                 >
                   {/* Icon circle */}
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-6 text-white shadow-inner">
-                    <Icon className="w-7 h-7" />
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xs"
+                    style={{ 
+                      background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                      color: 'var(--theme-primary)' 
+                    }}
+                  >
+                    <Icon className="w-7 h-7" strokeWidth={2} />
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
 
                   {item.isLink ? (
                     <a
                       href={item.href}
-                      className="text-[#8AD1F7] font-medium text-sm hover:text-white hover:underline leading-snug mb-2"
+                      className="font-semibold text-sm hover:underline leading-snug mb-2 transition-colors break-all"
+                      style={{ color: 'var(--theme-primary)' }}
                     >
                       {item.content}
                     </a>
                   ) : (
-                    <p className="text-[#8AD1F7] font-medium text-sm leading-snug mb-2">{item.content}</p>
+                    <p className="font-semibold text-sm leading-snug mb-2 text-slate-800">{item.content}</p>
                   )}
 
-                  <p className="text-white/70 text-xs leading-relaxed">{item.description}</p>
+                  <p className="text-slate-500 text-xs leading-relaxed mt-auto pt-2">{item.description}</p>
                 </div>
               );
             })}
@@ -162,21 +169,24 @@ export default function ContactUs() {
       </section>
 
       {/* ── CTA BANNER ───────────────────────────────────────── */}
-      <section className="bg-app-bg py-24 px-6 sm:px-10">
+      <section className="bg-app-bg pb-24 px-6 sm:px-10">
         <div className="max-w-5xl mx-auto" ref={ctaRef}>
-          <div className="bg-white rounded-[40px] shadow-2xl border border-blue-50 p-10 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-200/90 p-10 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
             
             <div 
               className={`flex-1 max-w-xl transition-all duration-1000 transform ${ctaVisible ? 'translate-x-0 opacity-100' : '-translate-x-12 opacity-0'}`}
             >
-              <h2 className="text-[#305C8C] text-xl md:text-2xl lg:text-3xl font-bold mb-6">Need to Submit an Inquiry?</h2>
-              <p className="text-[#4A6482] text-sm md:text-base leading-relaxed mb-8 font-medium">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 text-slate-900">
+                Need to Submit an Inquiry?
+              </h2>
+              <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 font-medium">
                 Submit an inquiry through the portal and track our responses in one place. Our personnel will respond as soon as possible during office hours.
               </p>
               <div className="mt-2 flex justify-start">
                 <Link
                   href={route('alumna.inquiries.index')}
-                  className="inline-flex items-center gap-2 bg-[#1A56DB] hover:bg-[#1648C0] text-white text-sm font-semibold px-8 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="inline-flex items-center gap-2 text-white text-sm font-semibold px-8 py-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:opacity-95 hover:-translate-y-0.5"
+                  style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                 >
                   Go to My Inquiries
                   <ChevronRight className="w-5 h-5" />

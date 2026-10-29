@@ -59,8 +59,11 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
         <div className='flex flex-col gap-2 w-full pt-2'>
             <div className='flex justify-between items-center px-6 pt-5'>
                 <div className='flex items-center gap-2.5'>
-                    <h2 className='text-xl font-bold text-[#0B2545] tracking-tight'>Inquiries</h2>
-                    <Badge className='bg-[#0B2545] text-white text-xs px-2.5 py-0.5 rounded-full font-semibold shadow-sm'>
+                    <h2 className='text-xl font-bold text-slate-900 tracking-tight'>Inquiries</h2>
+                    <Badge 
+                        className='text-xs px-2.5 py-0.5 rounded-full font-semibold shadow-xs'
+                        style={{ background: 'var(--theme-primary)', color: 'var(--theme-text-on-primary)' }}
+                    >
                         {inquiries.total}
                     </Badge>
                 </div>
@@ -71,7 +74,7 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                     <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400' />
                     <Input 
                         placeholder='Search inquiries...' 
-                        className='bg-white/80 border-slate-200 text-slate-800 placeholder:text-slate-400 pl-9.5 w-full rounded-xl focus-visible:ring-[#009AFB] focus-visible:border-[#009AFB] shadow-inner text-sm' 
+                        className='bg-white/80 border-slate-200 text-slate-800 placeholder:text-slate-400 pl-9.5 w-full rounded-xl focus-visible:ring-[var(--theme-primary)]/20 focus-visible:border-[var(--theme-primary)] shadow-inner text-sm' 
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -82,8 +85,9 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                             variant="outline"
                             size="icon"
                             className={`shrink-0 bg-white/80 border-slate-200 rounded-xl shadow-sm hover:bg-white text-slate-700 ${
-                                hasActiveFilters ? 'ring-2 ring-[#009AFB] border-transparent text-[#009AFB]' : ''
+                                hasActiveFilters ? 'ring-2 border-transparent' : ''
                             }`}
+                            style={hasActiveFilters ? { borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)' } : {}}
                         >
                             <ListFilter className="h-4 w-4" />
                         </Button>
@@ -125,9 +129,10 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                         key={data.id} 
                         className={`group cursor-pointer flex flex-col p-3.5 rounded-2xl transition-all duration-200 border ${
                             isActive 
-                                ? 'bg-white border-[#9ECEFF] shadow-md ring-1 ring-[#009AFB]/30 translate-x-1'
-                                : 'bg-white/60 hover:bg-white/90 border-slate-200/70 shadow-sm hover:shadow'
+                                ? 'bg-white shadow-md ring-2 translate-x-1'
+                                : 'bg-white/60 hover:bg-white/90 border-slate-200/70 shadow-xs hover:shadow-sm'
                         }`}
+                        style={isActive ? { borderColor: 'var(--theme-primary)', '--tw-ring-color': 'color-mix(in srgb, var(--theme-primary) 35%, transparent)' } : {}}
                         onClick={() => onSelect(data)} 
                     >
                         <div className='flex gap-3 items-center min-w-0 mb-1'>
@@ -139,13 +144,16 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                                        className="w-full h-full object-cover"
                                    />
                                 ) : (
-                                    <div className="h-full w-full bg-gradient-to-br from-[#0B2545] to-[#009AFB] flex items-center justify-center text-white text-xs font-bold">
+                                    <div 
+                                        className="h-full w-full flex items-center justify-center text-white text-xs font-bold"
+                                        style={{ background: 'var(--theme-gradient)' }}
+                                    >
                                         {data.alumni.first_name[0]}{data.alumni.last_name[0]}
                                     </div>
                                 )}
                             </Avatar>
                             <div className='flex flex-col min-w-0 flex-1 leading-tight'>
-                                <h3 className='text-xs font-bold text-[#0B2545] truncate'>
+                                <h3 className='text-xs font-bold text-slate-900 truncate'>
                                     {data.alumni.first_name} {data.alumni.last_name}
                                 </h3>
                                 <p className='text-[11px] text-slate-500 truncate font-medium mt-0.5'>
@@ -160,9 +168,10 @@ export default function InquiryList({inquiries, selectedId, onSelect, statusFilt
                         </div>
 
                         <div className='flex flex-col gap-1 pt-1.5 border-t border-slate-100/80'>
-                            <h4 className={`text-xs font-bold truncate transition-colors ${
-                                isActive ? 'text-[#009AFB]' : 'text-[#0B2545] group-hover:text-[#009AFB]'
-                            }`}>
+                            <h4 
+                                className="text-xs font-bold truncate transition-colors"
+                                style={isActive ? { color: 'var(--theme-primary)' } : { color: '#1e293b' }}
+                            >
                                 {data.subject}
                             </h4>
                             <p className='text-xs text-slate-700 line-clamp-2 leading-relaxed font-normal'>

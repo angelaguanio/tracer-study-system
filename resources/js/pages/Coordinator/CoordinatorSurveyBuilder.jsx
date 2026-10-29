@@ -249,7 +249,13 @@ export default function CoordinatorSurveyBuilder({ survey, has_responses = false
                 <div className="sm:w-64 flex flex-col gap-2">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-semibold text-gray-600">Sections</span>
-                        <Button size="sm" variant="outline" className="h-7 text-xs border-[#9ECEFF] text-[#2859C5]" onClick={() => setSectionModal({ open: true, section: null })}>
+                        <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="h-7 text-xs font-semibold hover:opacity-85" 
+                            style={{ borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)' }}
+                            onClick={() => setSectionModal({ open: true, section: null })}
+                        >
                             <Plus size={12} /> Add
                         </Button>
                     </div>

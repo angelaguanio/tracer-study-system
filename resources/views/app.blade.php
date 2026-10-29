@@ -30,8 +30,11 @@
             --theme-gradient: {{ $isGradient ? "linear-gradient(135deg, {$primaryColor}, {$secondaryColor})" : $primaryColor }};
             --theme-text-on-primary: {{ $fontOnPrimary }};
             --theme-text-primary: {{ $textPrimary }};
+            --theme-app-bg: color-mix(in srgb, {{ $primaryColor }} 4.5%, #ffffff);
 
             /* Direct mapped overrides for buttons, navbars, sidebars, badges */
+            --color-app-bg: var(--theme-app-bg);
+            --background: var(--theme-app-bg);
             --color-blue-btn: {{ $primaryColor }};
             --color-bluehover-btn: {{ $secondaryColor }};
             --color-navbar: {{ $isGradient ? "linear-gradient(135deg, {$primaryColor}, {$secondaryColor})" : $primaryColor }};
@@ -43,6 +46,12 @@
         }
 
         /* Global Theme Helper Utilities */
+        body {
+            background-color: var(--theme-app-bg) !important;
+        }
+        .bg-app-bg {
+            background-color: var(--theme-app-bg) !important;
+        }
         .theme-bg-primary {
             background: var(--theme-gradient) !important;
             color: var(--theme-text-on-primary) !important;
@@ -70,32 +79,42 @@
         }
 
         /* Primary Buttons & Actions */
+        .bg-blue-500,
         .bg-blue-600,
+        button.bg-blue-500,
         button.bg-blue-600,
+        a.bg-blue-500,
         a.bg-blue-600,
         .bg-blue-btn,
         .bg-\[\#005AAA\],
         .bg-\[\#007AD7\],
         .bg-\[\#009AFB\],
-        .bg-\[\#1258D6\] {
+        .bg-\[\#70CAFF\],
+        .bg-\[\#1258D6\],
+        .bg-\[\#1A56DB\],
+        .bg-\[\#2859C5\] {
             background-color: var(--theme-primary) !important;
             color: var(--theme-text-on-primary) !important;
             border-color: var(--theme-primary) !important;
         }
 
         .bg-blue-600:hover,
+        .bg-blue-500:hover,
         .hover\:bg-blue-700:hover,
+        .hover\:bg-blue-600:hover,
         button.bg-blue-600:hover,
         a.bg-blue-600:hover,
         .hover\:bg-bluehover-btn:hover,
         .hover\:bg-\[\#003C87\]:hover,
         .hover\:bg-\[\#005AAA\]:hover,
-        .hover\:bg-\[\#0082D6\]:hover {
+        .hover\:bg-\[\#0082D6\]:hover,
+        .hover\:bg-\[\#1648C0\]:hover {
             background-color: var(--theme-secondary) !important;
             border-color: var(--theme-secondary) !important;
         }
 
         /* Headings, Icons, & Accent Text */
+        .text-blue-500,
         .text-blue-600,
         .focus\:text-blue-600:focus,
         .hover\:text-blue-600:hover,
@@ -104,6 +123,7 @@
         .text-\[\#007AD7\],
         .text-\[\#009AFB\],
         .text-\[\#1258D6\],
+        .text-\[\#2859C5\],
         .group:hover .group-hover\:text-\[\#005AAA\] {
             color: var(--theme-primary) !important;
         }
@@ -113,9 +133,16 @@
         }
 
         /* Card Borders & Focus Rings */
+        .border-blue-400,
+        .border-blue-500,
         .border-blue-600,
+        .border-sky-300,
+        .border-sky-400,
         .border-\[\#007AD7\],
-        .border-\[\#009AFB\] {
+        .border-\[\#009AFB\],
+        .border-\[\#9ECEFF\],
+        .focus\:border-blue-500:focus,
+        .focus-within\:border-blue-500:focus-within {
             border-color: var(--theme-primary) !important;
         }
 
@@ -123,17 +150,21 @@
         .border-blue-200\/80,
         .border-blue-100,
         .border-blue-100\/50,
-        .hover\:border-blue-300:hover {
-            border-color: color-mix(in srgb, var(--theme-primary) 25%, #e2e8f0) !important;
+        .border-sky-200,
+        .hover\:border-blue-300:hover,
+        .hover\:border-blue-400:hover {
+            border-color: color-mix(in srgb, var(--theme-primary) 28%, #e2e8f0) !important;
         }
 
         .bg-blue-50,
         .bg-blue-50\/80,
         .bg-blue-100,
         .bg-blue-100\/50,
+        .bg-sky-50,
+        .bg-sky-100,
         .hover\:bg-blue-50:hover,
         .focus\:bg-blue-50:focus {
-            background-color: color-mix(in srgb, var(--theme-primary) 10%, white) !important;
+            background-color: color-mix(in srgb, var(--theme-primary) 12%, white) !important;
         }
 
         /* Headings, Text & Dots */

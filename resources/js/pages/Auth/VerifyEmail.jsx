@@ -1,8 +1,8 @@
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import AuthLayout from '@/layouts/auth-layout';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MailCheck, CheckCircle, Loader2 } from 'lucide-react';
+import { MailCheck, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { useState, useEffect } from "react";
 
@@ -13,28 +13,27 @@ export default function VerifyEmail() {
     const email = props.email;
 
     const storageKey = fromSignup
-    ? "verify-email-signup-expiry"
-    : "verify-email-login-expiry";
+        ? "verify-email-signup-expiry"
+        : "verify-email-login-expiry";
 
     const [processing, setProcessing] = useState(false);
     const [cooldown, setCooldown] = useState(0);
-    const [emailSent, setEmailSent] = useState(false);
+    const [emailSent, setEmailSent] = useState(props.sent || false);
+    const [isVerified, setIsVerified] = useState(false);
 
     useEffect(() => {
         const csrfToken = document.head.querySelector('meta[name="csrf-token"]');
-    
         if (csrfToken) {
             axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content;
         }
     }, []);
 
+    // Handle cooldown expiration from localStorage
     useEffect(() => {
         const expiry = localStorage.getItem(storageKey);
-    
         if (!expiry) return;
-    
+
         const remaining = Math.ceil((Number(expiry) - Date.now()) / 1000);
-    
         if (remaining > 0) {
             setCooldown(remaining);
             setEmailSent(true);
@@ -43,34 +42,69 @@ export default function VerifyEmail() {
         }
     }, [storageKey]);
 
+    // Cooldown countdown timer
     useEffect(() => {
         if (cooldown <= 0) {
             localStorage.removeItem(storageKey);
             return;
         }
-    
+
         const timer = setTimeout(() => {
             setCooldown(cooldown - 1);
         }, 1000);
-    
+
         return () => clearTimeout(timer);
     }, [cooldown, storageKey]);
+
+    // Cross-device automatic verification polling
+    // When the user clicks the link on their phone, this device detects it and auto-advances
+    useEffect(() => {
+        if (!email || isVerified) return;
+
+        let isSubscribed = true;
+
+        const checkVerification = async () => {
+            try {
+                const res = await axios.get(route('alumna.verification.check'), {
+                    params: { email }
+                });
+
+                if (res.data?.verified && isSubscribed) {
+                    setIsVerified(true);
+                    // Automatically forward to Profile Setup
+                    if (res.data.redirect) {
+                        window.location.href = res.data.redirect;
+                    }
+                }
+            } catch (err) {
+                // Ignore transient network errors during background check
+            }
+        };
+
+        // Poll every 2.5 seconds
+        const intervalId = setInterval(checkVerification, 2500);
+
+        // Immediate first check
+        checkVerification();
+
+        return () => {
+            isSubscribed = false;
+            clearInterval(intervalId);
+        };
+    }, [email, isVerified]);
 
     const resendEmail = async () => {
         try {
             setProcessing(true);
-    
+
             await axios.post(route("alumna.verification.send"), {
                 email,
             });
-    
+
             setEmailSent(true);
             const expiry = Date.now() + 60000;
-
             localStorage.setItem(storageKey, expiry);
-            
             setCooldown(60);
-            setEmailSent(true);
         } catch (error) {
             console.error(error);
         } finally {
@@ -79,106 +113,79 @@ export default function VerifyEmail() {
     };
 
     return (
-        <Card className="w-full max-w-md sm:max-w-lg px-6 py-8 rounded-2xl bg-white shadow-lg">
-
-            <CardHeader className="flex flex-col items-center gap-4">
-
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                    <MailCheck className="h-8 w-8 text-blue-600" />
+        <Card className="w-full max-w-md sm:max-w-lg px-6 py-7 rounded-2xl bg-white shadow-xl">
+            <CardHeader className="flex flex-col items-center gap-3 p-0 mb-4">
+                <div className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
+                    isVerified ? 'bg-emerald-100 text-emerald-600' : 'bg-emerald-50 text-emerald-600'
+                }`}>
+                    {isVerified ? (
+                        <CheckCircle2 className="h-7 w-7" />
+                    ) : (
+                        <MailCheck className="h-7 w-7" />
+                    )}
                 </div>
 
                 <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                    {fromSignup ? "Verify Your Email" : "Email Verification Required"}
-                </h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                        {isVerified ? "Email Verified!" : "Verify Your Email"}
+                    </h2>
 
-                {fromSignup ? (
-                    <>
-                        <p className="mt-2 text-gray-600">
-                            Your account has been created successfully.
+                    {isVerified ? (
+                        <p className="mt-1.5 text-sm text-emerald-800 font-medium flex items-center justify-center gap-1.5">
+                            <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
+                            Advancing to Profile Setup...
                         </p>
-
-                        <p className="mt-2 text-sm text-gray-500">
-                            Click the button below to send a verification email to <strong>{email}</strong> before logging in.
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <p className="mt-2 text-gray-600">
-                            Your email address has not been verified yet.
-                        </p>
-
-                        <p className="mt-2 text-sm text-gray-500">
-                            Click the button below to send a verification email to <strong>{email}</strong>.
-                        </p>
-                    </>
-                )}
+                    ) : (
+                        <>
+                            <p className="mt-1 text-sm text-gray-700 font-medium">
+                                Your login credentials have been saved.
+                            </p>
+                            <p className="mt-1 text-xs text-gray-500 leading-relaxed px-2">
+                                We've sent a verification link to <strong className="text-gray-900">{email}</strong>. Open the link on your phone or in your inbox to proceed.
+                            </p>
+                        </>
+                    )}
                 </div>
 
-                {emailSent && (
-                    <div className="w-full rounded-lg border border-green-300 bg-green-50 p-4 flex gap-3">
-
-                        <CheckCircle className="text-green-600 mt-1 h-5 w-5 flex-shrink-0" />
-
+                {/* Cross-device live auto-detection notice */}
+                {!isVerified && (
+                    <div className="w-full rounded-xl border border-emerald-200 bg-emerald-50/70 p-3 flex items-start gap-2.5 text-xs text-emerald-900 mt-1">
+                        <span className="relative flex h-2.5 w-2.5 mt-1 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+                        </span>
                         <div>
-                            <h3 className="font-semibold text-green-800">
-                                Verification Email Sent
-                            </h3>
-
-                            <p className="text-green-700 text-sm mt-1">
-                                A verification email has been sent to <strong>{email}</strong>.
-                                Please check your Inbox and Spam folder.
-                                The verification link expires in 60 minutes.
-                            </p>    
-
-                            {cooldown > 0 ? (
-                                <p className="text-xs text-green-600 mt-2">
-                                    You can request another email in <strong>{cooldown}s</strong>.
-                                </p>
-                            ) : (
-                                <p className="text-xs text-green-600 mt-2">
-                                    Didn't receive it? You may resend the verification email now.
-                                </p>
-                            )}
+                            <p className="font-semibold text-emerald-950">Waiting for email verification...</p>
+                            <p className="text-emerald-800 text-[11px] mt-0.5 leading-snug">
+                                If you click the link on your phone, this screen will automatically reflect it and take you directly to <strong>Step 3: Profile Setup</strong>.
+                            </p>
                         </div>
-
                     </div>
                 )}
-
             </CardHeader>
 
-            <CardContent className="space-y-4">
-
-            <Button
-                onClick={resendEmail}
-                disabled={processing || cooldown > 0}
-                variant="blue"
-                size="login2"
-                className="w-full"
-            >
-                {processing ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                    </>
-                ) : cooldown > 0 ? (
-                    `Send Again (${cooldown}s)`
-                ) : emailSent ? (
-                    "Send Another Verification Email"
-                ) : (
-                    "Send Verification Email"
+            <CardContent className="space-y-3 p-0">
+                {!isVerified && (
+                    <Button
+                        onClick={resendEmail}
+                        disabled={processing || cooldown > 0}
+                        variant="blue"
+                        size="login2"
+                        className="w-full h-11 text-sm font-semibold"
+                    >
+                        {processing ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Sending...</span>
+                            </div>
+                        ) : cooldown > 0 ? (
+                            `Resend Email (${cooldown}s)`
+                        ) : (
+                            "Resend Verification Email"
+                        )}
+                    </Button>
                 )}
-            </Button>
-
-            <Link
-                href={route('alumna.login')}
-                className="w-full block text-center text-sm text-gray-600 hover:underline"
-            >
-                Back to Login
-            </Link>
-
             </CardContent>
-
         </Card>
     );
 }

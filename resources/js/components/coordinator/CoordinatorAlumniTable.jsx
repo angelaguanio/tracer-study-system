@@ -161,9 +161,16 @@ export default function CoordinatorAlumniTable({
                           getInitials(item.name)
                         )}
                       </div>
-                      <span className="font-medium text-gray-800 truncate">
-                        {item.name ?? "Unknown"}
-                      </span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium text-gray-800 truncate">
+                          {item.name ?? "Unknown"}
+                        </span>
+                        {item.student_id && (
+                          <span className="text-[11px] text-gray-400 font-normal">
+                            ID: {item.student_id}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
 
@@ -267,9 +274,16 @@ export default function CoordinatorAlumniTable({
                       getInitials(item.name)
                     )}
                   </div>
-                  <p className="font-bold text-gray-900 text-sm truncate">
-                    {item.name ?? "Unknown"}
-                  </p>
+                  <div className="flex flex-col min-w-0">
+                    <p className="font-bold text-gray-900 text-sm truncate">
+                      {item.name ?? "Unknown"}
+                    </p>
+                    {item.student_id && (
+                      <span className="text-[11px] text-gray-400 font-normal">
+                        ID: {item.student_id}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

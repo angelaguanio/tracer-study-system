@@ -47,10 +47,16 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, user
             <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-6 rounded-2xl bg-white shadow-2xl border border-slate-200">
                 <DialogHeader className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-sky-100 text-[#009AFB] flex items-center justify-center">
+                        <div 
+                            className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 shadow-xs"
+                            style={{ 
+                                background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                color: 'var(--theme-primary)' 
+                            }}
+                        >
                             <MessageSquareQuote className="h-4 w-4" />
                         </div>
-                        <DialogTitle className="text-lg font-bold text-[#0B2545]">
+                        <DialogTitle className="text-lg font-bold text-slate-900">
                             Quick Replies & Predetermined Responses
                         </DialogTitle>
                     </div>
@@ -67,7 +73,7 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, user
                         placeholder="Search answers, keywords, or topics..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#009AFB]/30 focus:border-[#009AFB] transition"
+                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]/20 focus:border-[var(--theme-primary)] transition"
                     />
                 </div>
 
@@ -80,20 +86,24 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, user
                     }}
                     className="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden flex-nowrap py-1.5 inquiry-scrollbar scroll-smooth"
                 >
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            type="button"
-                            onClick={() => setSelectedCategory(cat)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
-                                selectedCategory === cat
-                                    ? 'bg-[#0B2545] text-white shadow-sm'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                            }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                    {categories.map((cat) => {
+                        const isSelected = selectedCategory === cat;
+                        return (
+                            <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 transition-colors ${
+                                    isSelected
+                                        ? 'shadow-xs font-semibold'
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                                style={isSelected ? { background: 'var(--theme-primary)', color: 'var(--theme-text-on-primary)' } : {}}
+                            >
+                                {cat}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* List of responses */}
@@ -108,21 +118,28 @@ export default function QuickRepliesModal({ open, onOpenChange, alumniName, user
                             return (
                                 <div
                                     key={item.id}
-                                    className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50/50 hover:bg-white hover:border-[#009AFB]/50 hover:shadow-sm transition-all group flex flex-col gap-2"
+                                    className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50/50 hover:bg-white hover:border-slate-300 hover:shadow-xs transition-all group flex flex-col gap-2"
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full bg-sky-100 text-[#009AFB]">
+                                            <span 
+                                                className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full"
+                                                style={{ 
+                                                    background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                                                    color: 'var(--theme-primary)' 
+                                                }}
+                                            >
                                                 {item.category}
                                             </span>
-                                            <h4 className="text-xs font-bold text-[#0B2545]">
+                                            <h4 className="text-xs font-bold text-slate-900">
                                                 {item.title}
                                             </h4>
                                         </div>
                                         <Button
                                             size="sm"
                                             onClick={() => handleSelect(item.template)}
-                                            className="h-7 px-2.5 rounded-lg text-[11px] bg-[#009AFB] hover:bg-[#0082D6] text-white font-medium gap-1 shadow-sm"
+                                            className="h-7 px-2.5 rounded-lg text-[11px] text-white font-medium gap-1 shadow-xs hover:opacity-90"
+                                            style={{ background: 'var(--theme-gradient)', color: 'var(--theme-text-on-primary)' }}
                                         >
                                             <CornerDownLeft className="h-3 w-3" />
                                             Use Reply

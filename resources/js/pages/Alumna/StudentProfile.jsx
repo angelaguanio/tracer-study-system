@@ -9,13 +9,19 @@ function InfoCard({ icon: Icon, label, value, className = "" }) {
         displayVal = displayVal.full_address || displayVal.name || '—';
     }
     return (
-        <div className={`flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white ${className}`}>
-            <div className="text-gray-400 mt-0.5 rounded-full border border-gray-100 p-2.5">
-                <Icon size={18} strokeWidth={1.5} />
+        <div className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-200/80 bg-slate-50/70 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all ${className}`}>
+            <div 
+                className="mt-0.5 rounded-xl p-2.5 shrink-0 shadow-xs"
+                style={{ 
+                    background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', 
+                    color: 'var(--theme-primary)' 
+                }}
+            >
+                <Icon size={18} strokeWidth={2} />
             </div>
-            <div className="flex flex-col text-left justify-center pt-0.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{label}</span>
-                <span className="text-[14px] font-bold text-[#1e293b]">{displayVal || '—'}</span>
+            <div className="flex flex-col text-left justify-center pt-0.5 min-w-0">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</span>
+                <span className="text-[14px] font-bold text-slate-800 break-words">{displayVal || '—'}</span>
             </div>
         </div>
     );
@@ -68,15 +74,15 @@ export default function StudentProfile() {
             </div>
 
             {/* Main Profile Card */}
-            <div className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden mt-2">
+            <div className="bg-white rounded-3xl shadow-lg border border-slate-200/90 overflow-hidden mt-2">
                 {/* Top Section */}
                 <div 
-                    className="p-8 sm:p-10 relative overflow-hidden"
-                    style={{ background: 'linear-gradient(to bottom right, #ffffff, color-mix(in srgb, var(--theme-primary) 8%, white))' }}
+                    className="p-8 sm:p-10 relative overflow-hidden border-b border-slate-200/70"
+                    style={{ background: 'linear-gradient(to bottom right, #ffffff, color-mix(in srgb, var(--theme-primary) 10%, white))' }}
                 >
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-6">
-                            <div className="h-28 w-28 rounded-full overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] shrink-0 flex items-center justify-center">
+                            <div className="h-28 w-28 rounded-full overflow-hidden shadow-md border-[4px] border-white bg-[#1e293b] shrink-0 flex items-center justify-center">
                                 {profile?.profile_picture ? (
                                     <img
                                         src={profile.profile_picture}
@@ -90,22 +96,19 @@ export default function StudentProfile() {
                                 )}
                             </div>
                             <div className="flex flex-col justify-center">
-                                <span className="text-[13px] font-medium text-gray-400 mb-0.5">Welcome back</span>
-                                <h2 className="text-2xl sm:text-[28px] font-bold text-[#1e293b]">{fullName}</h2>
+                                <span className="text-[13px] font-medium text-slate-500 mb-0.5">Welcome back</span>
+                                <h2 className="text-2xl sm:text-[28px] font-bold text-slate-900">{fullName}</h2>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Divider */}
-                <div className="h-px bg-gray-100 w-full" />
 
                 {/* Info Section */}
                 <div className="p-8 sm:p-10">
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-primary)' }}>PROFILE DETAILS</p>
-                            <h3 className="text-[19px] font-bold text-[#1e293b]">Your information</h3>
+                            <h3 className="text-[19px] font-bold text-slate-900">Your information</h3>
                         </div>
                     </div>
 

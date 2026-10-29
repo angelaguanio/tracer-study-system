@@ -17,8 +17,8 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 
-const inputClass = "w-full border border-gray-200 rounded-md px-4 py-3 text-[14px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#009AFB] focus:border-[#009AFB] transition shadow-sm bg-white";
-const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2";
+const inputClass = "w-full border border-slate-200 rounded-xl px-4 py-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)] focus:border-[var(--theme-primary)] transition shadow-xs bg-white";
+const labelClass = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2";
 
 const PERSONAL_FIELDS = [
     { name: 'last_name', label: 'Last Name', type: 'text', required: true },
@@ -208,11 +208,11 @@ export default function StudentProfileEdit() {
                 </div>
 
                 {/* Main Card */}
-                <section className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-8 sm:p-10 flex flex-col gap-6">
+                <section className="bg-white rounded-3xl shadow-lg border border-slate-200/90 p-8 sm:p-10 flex flex-col gap-6">
                     <div className="flex justify-center mb-6">
                         <div className="flex flex-col items-center">
                             <div className="relative group">
-                                <div className="h-28 w-28 rounded-full overflow-hidden shadow-sm border-[4px] border-white bg-[#1e293b] flex items-center justify-center">
+                                <div className="h-28 w-28 rounded-full overflow-hidden shadow-md border-[4px] border-white bg-[#1e293b] flex items-center justify-center">
                                     {avatarPreview ? (
                                         <img
                                             src={avatarPreview}
@@ -237,16 +237,17 @@ export default function StudentProfileEdit() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all"
+                                    className="absolute bottom-0 right-0 bg-white p-2.5 rounded-full shadow-md border border-slate-200 hover:bg-slate-50 hover:shadow-lg transition-all"
                                 >
-                                    <ImageIcon size={18} className="text-gray-600" />
+                                    <ImageIcon size={18} className="text-slate-600" />
                                 </button>
                             </div>
 
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="mt-4 text-[13px] font-medium text-gray-500 hover:text-[#009AFB] transition-colors hover:cursor-pointer hover:underline"
+                                className="mt-4 text-[13px] font-semibold transition-opacity hover:opacity-80 hover:cursor-pointer hover:underline"
+                                style={{ color: 'var(--theme-primary)' }}
                             >
                                 Change Profile Picture
                             </button>

@@ -5,10 +5,11 @@ import { Button } from '../../components/ui/button';
 import Wup from '../../components/wup'
 import TextInput from '../../components/text-input'
 import { useForm, Head } from '@inertiajs/react'
-import { UserRound, Lock, ShieldCheck } from 'lucide-react';
+import { UserRound, Lock, ShieldCheck, AlertCircle, X } from 'lucide-react';
 import axios from 'axios';
 
 export default function CoordinatorLogin({ forceChangePassword = false, sessionExpired, }) {
+  const [showSessionExpired, setShowSessionExpired] = useState(Boolean(sessionExpired));
 
   // LOGIN FORM
   const { data, setData, post, processing, errors } = useForm({
@@ -148,18 +149,27 @@ export default function CoordinatorLogin({ forceChangePassword = false, sessionE
   return (
     <AuthLayout>
       <Head title="Coordinator Login" />
-      {/* expired session */}
-    {sessionExpired && (
-        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <h3 className="font-semibold text-blue-800">
-                Session Expired
-            </h3>
-
-            <p className="mt-1 text-sm text-blue-700">
-                Your session expired due to inactivity.
-                Please log in again.
+      {/* expired session - fixed overlay so form never shifts */}
+    {showSessionExpired && (
+      <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md pointer-events-none">
+        <div className="pointer-events-auto flex items-start gap-3 rounded-xl border border-blue-200 bg-white/95 backdrop-blur-md p-4 shadow-xl ring-1 ring-black/5">
+          <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-blue-900 text-sm">Session Expired</h3>
+            <p className="mt-0.5 text-xs text-blue-700 leading-relaxed">
+              Your session expired due to inactivity. Please log in again.
             </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSessionExpired(false)}
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors shrink-0"
+            aria-label="Dismiss warning"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
+      </div>
     )}
       <Card className="w-full max-w-md sm:max-w-lg px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 max-h-[90vh] rounded-2xl bg-white shadow-lg">
         <CardHeader className="relative flex flex-col items-center justify-center">

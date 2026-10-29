@@ -140,40 +140,51 @@ export default function AdminThemeSettings({ settings = {} }) {
 
   // Select a preset
   const handleSelectPreset = (preset) => {
-    themeForm.setData({
+    const updated = {
       theme_preset: preset.id,
       theme_style: themeForm.data.theme_style,
       primary_color: preset.primary,
       secondary_color: preset.secondary,
       font_color_on_primary: preset.fontOnPrimary,
       text_color_primary: preset.textPrimary,
-    });
+    };
+    themeForm.setData(updated);
+    applySystemTheme(updated);
   };
 
   // Switch style between solid and gradient
   const handleStyleChange = (style) => {
+    const updated = {
+      ...themeForm.data,
+      theme_style: style,
+    };
     themeForm.setData('theme_style', style);
+    applySystemTheme(updated);
   };
 
   // Handle custom primary color change
   const handlePrimaryColorChange = (color) => {
     const autoContrast = getContrastTextColor(color);
-    themeForm.setData({
+    const updated = {
       ...themeForm.data,
       theme_preset: 'custom',
       primary_color: color,
       text_color_primary: color,
       font_color_on_primary: autoContrast,
-    });
+    };
+    themeForm.setData(updated);
+    applySystemTheme(updated);
   };
 
   // Handle custom secondary color change
   const handleSecondaryColorChange = (color) => {
-    themeForm.setData({
+    const updated = {
       ...themeForm.data,
       theme_preset: 'custom',
       secondary_color: color,
-    });
+    };
+    themeForm.setData(updated);
+    applySystemTheme(updated);
   };
 
   // Submit Theme
@@ -576,7 +587,10 @@ export default function AdminThemeSettings({ settings = {} }) {
                 </p>
 
                 {/* Mock UI Sandbox */}
-                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-inner bg-slate-50/70 p-4 space-y-4">
+                <div 
+                  className="border border-slate-200 rounded-xl overflow-hidden shadow-inner p-4 space-y-4 transition-colors duration-300"
+                  style={{ background: `color-mix(in srgb, ${themeForm.data.primary_color} 4.5%, #ffffff)` }}
+                >
                   {/* Mock Navbar */}
                   <div
                     className="rounded-lg px-4 py-3 flex items-center justify-between shadow-xs transition-all duration-300"

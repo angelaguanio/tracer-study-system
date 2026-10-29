@@ -175,7 +175,8 @@ export default function AdminSurveyResponseIndex({ surveys = [], archivedSurveys
               </div>
               <button
                 onClick={() => router.get(`/${import.meta.env.VITE_ADMIN_PORTAL_PREFIX}/survey-response/${survey.id}`)}
-                className="w-full text-center md:w-auto border border-blue-400 hover:bg-blue-300/70 cursor-pointer text-blue-600 px-3 py-2.5 md:py-1.5 rounded-md text-xs font-medium transition-colors"
+                className="w-full text-center md:w-auto border cursor-pointer px-3 py-2.5 md:py-1.5 rounded-md text-xs font-semibold transition-all hover:opacity-85 shadow-2xs"
+                style={{ borderColor: 'var(--theme-primary)', color: 'var(--theme-primary)', background: 'color-mix(in srgb, var(--theme-primary) 6%, transparent)' }}
               >
                 View Survey Response
               </button>

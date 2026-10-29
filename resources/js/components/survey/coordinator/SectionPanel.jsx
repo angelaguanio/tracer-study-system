@@ -15,8 +15,9 @@ export default function SectionPanel({ section, surveyId, isFirst, isLast, isAct
     return (
         <div
             className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border cursor-pointer transition ${
-                isActive ? "bg-sky-100 border-sky-300" : "bg-white border-gray-200 hover:bg-[#f0faff]"
+                isActive ? "shadow-2xs font-medium" : "bg-white border-gray-200 hover:bg-slate-50"
             }`}
+            style={isActive ? { background: 'color-mix(in srgb, var(--theme-primary) 12%, white)', borderColor: 'var(--theme-primary)' } : {}}
             onClick={onClick}
         >
             <div className="flex flex-col flex-1 min-w-0">
@@ -28,7 +29,15 @@ export default function SectionPanel({ section, surveyId, isFirst, isLast, isAct
             <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                 <Button size="icon" variant="ghost" className="h-7 w-7" disabled={isFirst} onClick={() => onReorder(section.id, "up")}><ChevronUp size={14} /></Button>
                 <Button size="icon" variant="ghost" className="h-7 w-7" disabled={isLast} onClick={() => onReorder(section.id, "down")}><ChevronDown size={14} /></Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-[#2859C5]" onClick={() => onEdit(section)}><Pencil size={14} /></Button>
+                <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-7 w-7 hover:opacity-80" 
+                    style={{ color: 'var(--theme-primary)' }}
+                    onClick={() => onEdit(section)}
+                >
+                    <Pencil size={14} />
+                </Button>
                 {hasResponses ? (
                     <Button size="icon" variant="ghost" className="h-7 w-7 text-gray-300 cursor-not-allowed" disabled title="Cannot delete: responses already exist"><Trash2 size={14} /></Button>
                 ) : (
