@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\VerifyEmailNotification;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -85,6 +86,42 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getNameAttribute() {
         return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * Treat "*" and "N/A" placeholders (used in CSV imports) as blank.
+     */
+    protected static function blankIfPlaceholder($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        return ($value === '' || in_array(strtolower($value), ['*', 'n/a'], true)) ? null : $value;
+    }
+
+    /**
+     * Middle name: placeholders are stored and displayed as blank.
+     */
+    protected function middleName(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => static::blankIfPlaceholder($value),
+            set: fn ($value) => static::blankIfPlaceholder($value),
+        );
+    }
+
+    /**
+     * Suffix: placeholders are stored and displayed as blank.
+     */
+    protected function suffix(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => static::blankIfPlaceholder($value),
+            set: fn ($value) => static::blankIfPlaceholder($value),
+        );
     }
 
     /**

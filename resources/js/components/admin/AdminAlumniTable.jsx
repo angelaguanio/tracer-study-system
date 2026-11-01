@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, Eye, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Mail, Pencil, Archive, RotateCcw, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,11 @@ export default function AdminAlumniTable({
   onToggleAll,
   allSelected = false,
   onSendEmail,
+  onEdit,
+  onArchive,
+  onRestore,
+  onDelete,
+  isArchivedView = false,
 }) {
   const currentPage = alumni?.current_page ?? 1;
   const lastPage = alumni?.last_page ?? 1;
@@ -188,23 +193,76 @@ export default function AdminAlumniTable({
                   </TableCell>
 
                   <TableCell className="w-[23%] text-center">
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center gap-1"
+                        className="h-8 px-2.5 border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center gap-1 text-xs"
                         onClick={() => router.visit(route("admin.alumni.show", item.id))}
+                        title="View Profile"
                       >
-                        <Eye size={14} /> View
+                        <Eye size={13} /> View
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-green-500 text-green-600 hover:bg-green-50 flex items-center gap-1"
-                        onClick={() => onSendEmail({ id: item.id, name: item.name, email: item.email })}
-                      >
-                        <Mail size={14} /> Send Email
-                      </Button>
+
+                      {!isArchivedView && onEdit && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-2.5 border-amber-500 text-amber-600 hover:bg-amber-50 flex items-center gap-1 text-xs"
+                          onClick={() => onEdit(item)}
+                          title="Edit Information"
+                        >
+                          <Pencil size={13} /> Edit
+                        </Button>
+                      )}
+
+                      {!isArchivedView && onSendEmail && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-2.5 border-green-500 text-green-600 hover:bg-green-50 flex items-center gap-1 text-xs"
+                          onClick={() => onSendEmail({ id: item.id, name: item.name, email: item.email })}
+                          title="Send Email"
+                        >
+                          <Mail size={13} /> Email
+                        </Button>
+                      )}
+
+                      {!isArchivedView && onArchive && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-2 border-gray-300 text-gray-600 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 flex items-center gap-1 text-xs"
+                          onClick={() => onArchive(item)}
+                          title="Archive Record"
+                        >
+                          <Archive size={13} />
+                        </Button>
+                      )}
+
+                      {isArchivedView && onRestore && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-2.5 border-emerald-500 text-emerald-600 hover:bg-emerald-50 flex items-center gap-1 text-xs"
+                          onClick={() => onRestore(item)}
+                          title="Restore Record"
+                        >
+                          <RotateCcw size={13} /> Restore
+                        </Button>
+                      )}
+
+                      {isArchivedView && onDelete && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-2.5 border-red-500 text-red-600 hover:bg-red-50 flex items-center gap-1 text-xs"
+                          onClick={() => onDelete(item)}
+                          title="Delete Permanently"
+                        >
+                          <Trash2 size={13} /> Delete
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -304,23 +362,71 @@ export default function AdminAlumniTable({
             </div>
 
             {/* Bottom Row: Actions Buttons */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-gray-100 flex-wrap">
               <Button
                 size="sm"
                 variant="outline"
-                className="flex-1 sm:flex-none h-8 px-3 text-xs border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center justify-center gap-1"
+                className="h-8 px-2.5 text-xs border-blue-500 text-blue-600 hover:bg-blue-50 flex items-center justify-center gap-1"
                 onClick={() => router.visit(route("admin.alumni.show", item.id))}
               >
                 <Eye size={12} /> View
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1 sm:flex-none h-8 px-3 text-xs border-green-500 text-green-600 hover:bg-green-50 flex items-center justify-center gap-1"
-                onClick={() => onSendEmail({ id: item.id, name: item.name, email: item.email })}
-              >
-                <Mail size={12} /> Send Email
-              </Button>
+
+              {!isArchivedView && onEdit && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 px-2.5 text-xs border-amber-500 text-amber-600 hover:bg-amber-50 flex items-center justify-center gap-1"
+                  onClick={() => onEdit(item)}
+                >
+                  <Pencil size={12} /> Edit
+                </Button>
+              )}
+
+              {!isArchivedView && onSendEmail && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 px-2.5 text-xs border-green-500 text-green-600 hover:bg-green-50 flex items-center justify-center gap-1"
+                  onClick={() => onSendEmail({ id: item.id, name: item.name, email: item.email })}
+                >
+                  <Mail size={12} /> Email
+                </Button>
+              )}
+
+              {!isArchivedView && onArchive && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 px-2 text-xs border-gray-300 text-gray-600 hover:bg-amber-50 hover:text-amber-700 flex items-center justify-center gap-1"
+                  onClick={() => onArchive(item)}
+                  title="Archive"
+                >
+                  <Archive size={12} />
+                </Button>
+              )}
+
+              {isArchivedView && onRestore && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 px-2.5 text-xs border-emerald-500 text-emerald-600 hover:bg-emerald-50 flex items-center justify-center gap-1"
+                  onClick={() => onRestore(item)}
+                >
+                  <RotateCcw size={12} /> Restore
+                </Button>
+              )}
+
+              {isArchivedView && onDelete && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 px-2.5 text-xs border-red-500 text-red-600 hover:bg-red-50 flex items-center justify-center gap-1"
+                  onClick={() => onDelete(item)}
+                >
+                  <Trash2 size={12} /> Delete
+                </Button>
+              )}
             </div>
           </div>
         ))}

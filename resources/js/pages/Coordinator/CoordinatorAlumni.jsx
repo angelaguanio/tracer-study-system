@@ -5,7 +5,9 @@ import CoordinatorAlumniFilters from "@/components/coordinator/CoordinatorAlumni
 import CoordinatorAlumniTable from "@/components/coordinator/CoordinatorAlumniTable";
 import axios from "axios";
 import { toast } from "sonner";
-import { Mail, Upload, FileSpreadsheet, Download, AlertCircle, CheckCircle2, Loader2, X } from "lucide-react";
+import { Mail, Upload, FileSpreadsheet, Download, AlertCircle, CheckCircle2, Loader2, X, Archive, Users } from "lucide-react";
+import EditAlumniModal from "@/components/alumni/EditAlumniModal";
+import ArchiveAlumniDialog from "@/components/alumni/ArchiveAlumniDialog";
 import {
 Dialog,
 DialogContent,
@@ -19,20 +21,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-export default function CoordinatorAlumni({ alumni, filters }) {
+export default function CoordinatorAlumni({ alumni, filters, counts = { active: 0, archived: 0 } }) {
   const { flash } = usePage().props;
 
+  const [status, setStatus] = useState(filters.status || "active");
   const [search, setSearch] = useState(filters.search || "");
   const [year, setYear] = useState(filters.year || "all");
   const [course, setCourse] = useState(filters.course || "all");
   const [employment, setEmployment] = useState(filters.employment || "all");
   const isFirstRender = useRef(true);
 
+  // ── Edit & Archive Dialog States ─────────────────────────
+  const [editModalOpen, setEditModalOpen]       = useState(false);
+  const [editingAlumnus, setEditingAlumnus]     = useState(null);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [targetAlumnus, setTargetAlumnus]       = useState(null);
+  const [dialogAction, setDialogAction]         = useState("archive"); // 'archive' | 'restore' | 'delete'
+
     // ── Bulk selection ────────────────────────────────────────
     const [selectedIds, setSelectedIds] = useState([]);
 
     // ── Bulk email modal ──────────────────────────────────────
     const [bulkModalOpen, setBulkModalOpen] = useState(false);
+    const [bulkSendMode, setBulkSendMode]   = useState("selected"); // 'selected' | 'all'
     const [bulkSubject, setBulkSubject]     = useState("");
     const [bulkMessage, setBulkMessage]     = useState("");
     const [bulkSending, setBulkSending]     = useState(false);
@@ -98,6 +109,9 @@ export default function CoordinatorAlumni({ alumni, filters }) {
         router.reload({ only: ["alumni"] });
       } catch (error) {
         console.error("CSV import error:", error);
+        if (error.response?.data?.rejected) {
+          setImportResult(error.response.data);
+        }
         let errMsg = error.response?.data?.message || error.response?.data?.error || "Failed to import CSV file.";
 
         // Sanitize raw SQL dumps or database exceptions into clean messages
@@ -127,9 +141,9 @@ export default function CoordinatorAlumni({ alumni, filters }) {
 
     const downloadOfficialTemplate = () => {
       const csvContent =
-        "lastname,firstname,middlename,student id,department,program,school year,semester\n" +
-        "Dela Cruz,Juan,Santos,22-3333-444,CECT,BSIT,2025-2026,1st Semester\n" +
-        "Reyes,Maria,Santos,22-4444-555,CECT,BSCS,2025-2026,2nd Semester\n";
+        "lastname,firstname,middlename,suffix,student id,department,program,school year,semester\n" +
+        "Dela Cruz,Juan,Santos,Jr.,22-3333-444,CECT,BSIT,2025-2026,1st Semester\n" +
+        "Reyes,Maria,N/A,*,22-4444-555,CECT,BSCS,2025-2026,2nd Semester\n";
 
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -145,9 +159,38 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   const applyFilters = (params = {}) => {
     router.get(
       window.location.pathname, 
-      { search, year, course, employment, page: 1, ...params }, 
+      { status, search, year, course, employment, page: 1, ...params }, 
       { preserveState: true, replace: true }
     );
+  };
+
+  const handleTabChange = (newStatus) => {
+    setStatus(newStatus);
+    applyFilters({ status: newStatus });
+  };
+
+  // ── Modal Trigger Handlers ────────────────────────────────
+  const handleOpenEdit = (alumnus) => {
+    setEditingAlumnus(alumnus);
+    setEditModalOpen(true);
+  };
+
+  const handleOpenArchive = (alumnus) => {
+    setTargetAlumnus(alumnus);
+    setDialogAction("archive");
+    setArchiveDialogOpen(true);
+  };
+
+  const handleOpenRestore = (alumnus) => {
+    setTargetAlumnus(alumnus);
+    setDialogAction("restore");
+    setArchiveDialogOpen(true);
+  };
+
+  const handleOpenDelete = (alumnus) => {
+    setTargetAlumnus(alumnus);
+    setDialogAction("delete");
+    setArchiveDialogOpen(true);
   };
 
   const handleView = (id) => {
@@ -220,7 +263,6 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   };
 
   const handleSendBulk = () => {
-  
     if (!bulkSubject.trim() || !bulkMessage.trim()) {
         toast.error("Subject and message are required.");
         return;
@@ -228,29 +270,33 @@ export default function CoordinatorAlumni({ alumni, filters }) {
   
     setBulkSending(true);
   
+    const isAll = bulkSendMode === "all";
     setBulkProgress({
         processed: 0,
-        total: selectedIds.length,
+        total: isAll ? (counts.active ?? 0) : selectedIds.length,
     });
   
-    sendNextBatch(0);
+    sendNextBatch(0, isAll);
   };
 
-  
 //====================================================
 
-const sendNextBatch = async (offset) => {
+const sendNextBatch = async (offset, isAll = false) => {
   try {
-      const { data } = await axios.post(
-          route("coordinator.alumni.email.bulk"),
-          {
-              subject: bulkSubject,
-              message: bulkMessage,
-              user_ids: selectedIds,
-              offset,
-              batch_size: 10,
-          }
-      );
+      const payload = {
+          subject: bulkSubject,
+          message: bulkMessage,
+          offset,
+          batch_size: 10,
+      };
+
+      if (isAll) {
+          payload.send_all = true;
+      } else {
+          payload.user_ids = selectedIds;
+      }
+
+      const { data } = await axios.post(route("coordinator.alumni.email.bulk"), payload);
 
       setBulkProgress({
           processed: data.processed,
@@ -259,7 +305,7 @@ const sendNextBatch = async (offset) => {
 
       if (!data.finished) {
           setTimeout(() => {
-              sendNextBatch(data.next_offset);
+              sendNextBatch(data.next_offset, isAll);
           }, 500);
 
           return;
@@ -290,7 +336,98 @@ const sendNextBatch = async (offset) => {
       </div>
       
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 min-h-0 overflow-hidden p-4 md:p-6 relative">
-        {/* TOP BAR: Filters & Bulk Action */}
+        {/* Status Tabs & Controls Bar */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleTabChange("active")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                status === "active"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Active Alumni</span>
+              <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                status === "active" ? "bg-white/20 text-white" : "bg-gray-200 text-gray-700"
+              }`}>
+                {counts.active ?? 0}
+              </span>
+            </button>
+
+            <button
+              onClick={() => handleTabChange("archived")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                status === "archived"
+                  ? "bg-amber-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Archive className="w-4 h-4" />
+              <span>Archived</span>
+              <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                status === "archived" ? "bg-white/20 text-white" : "bg-gray-200 text-gray-700"
+              }`}>
+                {counts.archived ?? 0}
+              </span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            {selectedIds.length > 0 && (
+              <span className="text-sm text-gray-500">
+                {selectedIds.length} alumni selected
+              </span>
+            )}
+
+            {status === "active" && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    resetImportState();
+                    setImportModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 rounded-full px-4 py-2 text-xs sm:text-sm cursor-pointer shadow-sm transition-all"
+                >
+                  <Upload className="w-4 h-4 text-emerald-600" />
+                  Import CSV
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    setBulkSendMode("all");
+                    setBulkModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-4 py-2 text-xs sm:text-sm font-semibold shadow-sm transition-all"
+                >
+                  <Mail className="w-4 h-4" />
+                  Email All Alumni ({counts.active ?? 0})
+                </Button>
+
+                <Button
+                  disabled={selectedIds.length === 0}
+                  onClick={() => {
+                    setBulkSendMode("selected");
+                    setBulkModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-xs sm:text-sm disabled:opacity-40 transition-all"
+                >
+                  <Mail className="w-4 h-4" />
+                  Send to Selected
+                  {selectedIds.length > 0 && (
+                    <span className="ml-1 bg-white text-blue-600 rounded-full px-2 py-0.5 text-xs font-semibold">
+                      {selectedIds.length}
+                    </span>
+                  )}
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Filters */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
           <CoordinatorAlumniFilters 
             search={search} setSearch={setSearch} 
@@ -298,40 +435,6 @@ const sendNextBatch = async (offset) => {
             course={course} setCourse={(v) => {setCourse(v); applyFilters({course: v})}}
             employment={employment} setEmployment={(v) => {setEmployment(v); applyFilters({employment: v})}}
           />
-
-          <div className="flex items-center gap-3 shrink-0">
-            {selectedIds.length > 0 && (
-              <span className="text-sm text-gray-500">
-                {selectedIds.length} alumni selected
-              </span>
-            )}
-
-            <Button
-              variant="outline"
-              onClick={() => {
-                resetImportState();
-                setImportModalOpen(true);
-              }}
-              className="flex items-center gap-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 rounded-full px-4 py-2 text-sm cursor-pointer shadow-sm transition-all"
-            >
-              <Upload className="w-4 h-4 text-emerald-600" />
-              Import CSV
-            </Button>
-
-            <Button
-              disabled={selectedIds.length === 0}
-              onClick={() => setBulkModalOpen(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 text-sm disabled:opacity-40"
-            >
-              <Mail className="w-4 h-4" />
-              Send Bulk Email
-              {selectedIds.length > 0 && (
-                <span className="ml-1 bg-white text-blue-600 rounded-full px-2 py-0.5 text-xs font-semibold">
-                  {selectedIds.length}
-                </span>
-              )}
-            </Button>
-          </div>
         </div>
 
         <div className="flex-1 min-h-0 flex flex-col mt-4">
@@ -342,9 +445,41 @@ const sendNextBatch = async (offset) => {
             onToggleAll={toggleAll}
             allSelected={allSelected}
             onSendEmail={openIndivModal}
+            onEdit={handleOpenEdit}
+            onArchive={handleOpenArchive}
+            onRestore={handleOpenRestore}
+            onDelete={handleOpenDelete}
+            isArchivedView={status === "archived"}
           />
         </div>
       </div>
+
+      {/* ── EDIT ALUMNI MODAL ── */}
+      <EditAlumniModal
+        isOpen={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false);
+          setEditingAlumnus(null);
+        }}
+        alumnus={editingAlumnus}
+        submitRouteName="coordinator.alumni.update"
+      />
+
+      {/* ── ARCHIVE / RESTORE / DELETE DIALOG ── */}
+      <ArchiveAlumniDialog
+        isOpen={archiveDialogOpen}
+        onClose={() => {
+          setArchiveDialogOpen(false);
+          setTargetAlumnus(null);
+        }}
+        alumnus={targetAlumnus}
+        actionType={dialogAction}
+        routes={{
+          archive: "coordinator.alumni.archive",
+          restore: "coordinator.alumni.restore",
+          destroy: "coordinator.alumni.destroy",
+        }}
+      />
       
       {/* ── INDIVIDUAL EMAIL MODAL ── */}
         <Dialog open={indivModalOpen} onOpenChange={setIndivModalOpen}>
@@ -412,15 +547,43 @@ const sendNextBatch = async (offset) => {
           <Dialog open={bulkModalOpen} onOpenChange={setBulkModalOpen}>
             <DialogContent className="lg:max-w-lg max-w-sm">
               <DialogHeader>
-                <DialogTitle className="text-blue-800">
-                  Send Bulk Email
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({selectedIds.length} recipients)
+                <DialogTitle className="text-blue-800 flex items-center justify-between">
+                  <span>Send Bulk Email</span>
+                  <span className="text-xs font-normal px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    {bulkSendMode === "all"
+                      ? `All active alumni (${counts.active ?? 0})`
+                      : `${selectedIds.length} selected`}
                   </span>
                 </DialogTitle>
               </DialogHeader>
 
               <div className="flex flex-col gap-4 py-2">
+                {/* Mode Selector */}
+                <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200 text-xs font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setBulkSendMode("all")}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
+                      bulkSendMode === "all"
+                        ? "bg-white text-emerald-700 font-bold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    All Alumni ({counts.active ?? 0})
+                  </button>
+                  <button
+                    type="button"
+                    disabled={selectedIds.length === 0}
+                    onClick={() => setBulkSendMode("selected")}
+                    className={`flex-1 py-1.5 rounded-lg transition-all disabled:opacity-40 ${
+                      bulkSendMode === "selected"
+                        ? "bg-white text-blue-700 font-bold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    Selected Only ({selectedIds.length})
+                  </button>
+                </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="bulk-subject">Subject</Label>
                   <Input
@@ -507,6 +670,13 @@ const sendNextBatch = async (offset) => {
                     Please download the official CSV template above. <strong className="font-semibold text-amber-950">Do not alter, rename, add, or delete any of the column headers</strong>. The template headers are strictly required by the system, and your file import will not work if any header is modified or removed.
                   </p>
 
+                  <div className="bg-amber-100/80 border border-amber-300 rounded-xl p-3 text-xs sm:text-sm text-amber-950 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="font-semibold text-amber-950">Important Note:</strong> All fields are required. If a student does not have a <strong>middle name</strong> or <strong>suffix</strong>, please enter an asterisk (<code className="px-1.5 py-0.5 rounded bg-amber-200/80 font-mono font-bold">*</code>) or <code className="px-1.5 py-0.5 rounded bg-amber-200/80 font-mono font-bold">N/A</code> in those column fields. It will automatically appear as blank on the website.
+                    </div>
+                  </div>
+
                   <p className="text-[11px] sm:text-xs text-amber-850/80 italic">
                     Note: If an existing student with the same Student ID is found in the database, their record will automatically be updated with the latest information.
                   </p>
@@ -567,7 +737,23 @@ const sendNextBatch = async (offset) => {
                 </div>
 
                 {/* Results summary (after upload) */}
-                {importResult && (
+                {importResult && importResult.rejected && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50/70 p-4 sm:p-5 text-xs sm:text-sm space-y-2.5">
+                    <div className="flex items-start gap-2 text-red-800 font-bold text-sm sm:text-base">
+                      <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                      <span>{importResult.message}</span>
+                    </div>
+                    {importResult.errors?.length > 0 && (
+                      <div className="pt-2.5 border-t border-red-200 space-y-1 max-h-40 overflow-y-auto">
+                        {importResult.errors.map((err, i) => (
+                          <div key={i} className="text-xs text-red-800">• {err}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {importResult && !importResult.rejected && (
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5 text-xs sm:text-sm space-y-2.5">
                     <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm sm:text-base">
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />

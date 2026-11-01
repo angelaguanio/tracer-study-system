@@ -292,20 +292,15 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
         Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni-directory', [AdminAlumniController::class, 'index'])->name('alumni-directory.index');
         Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
+        Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])->name('admin.alumni.show');
+        Route::put('/alumni/{id}', [AdminAlumniController::class, 'update'])->name('alumni.update');
+        Route::patch('/alumni/{id}/archive', [AdminAlumniController::class, 'archive'])->name('alumni.archive');
+        Route::patch('/alumni/{id}/restore', [AdminAlumniController::class, 'restore'])->name('alumni.restore');
+        Route::delete('/alumni/{id}', [AdminAlumniController::class, 'destroy'])->name('alumni.destroy');
 
-        Route::get('/admin/alumni/{id}/profile', [AdminAlumniController::class, 'show'])
-            ->name('admin.alumni.show');
-
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])
-            ->name('alumni.show');
-
-         //Send email (individual — handled via modal, route kept for controller compatibility)
-        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])
-            ->name('alumni.email.send');
-
-        // Bulk email (selected IDs or all alumni)
-        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])
-            ->name('alumni.email.bulk');
+        // Email routes
+        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
+        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
 
         //AdminSurveyResponse
         Route::get('/survey-response', [AdminOfSurveyResponseController::class, 'index'])
@@ -326,17 +321,7 @@ Route::prefix($adminPrefix)->name('admin.')->group(function () {
             ->name('survey-response.destroy');
 
  
-        // Alumni
-        Route::get('/alumni', [AdminAlumniController::class, 'index'])->name('alumni.index');
-        Route::get('/alumni/{id}', [AdminAlumniController::class, 'show'])->name('alumni.show');
-
-        // Individual email (modal-based, no GET form page needed)
-        Route::post('/alumni/{id}/email', [AdminAlumniController::class, 'sendEmail'])->name('alumni.email.send');
-
-        // Bulk email
-        Route::post('/alumni/email/bulk', [AdminAlumniController::class, 'sendBulkEmail'])->name('alumni.email.bulk');
-  
-        //Inquiries
+        // Inquiries
         Route::get('/inquiries', [InquiriesController::class, 'adminIndex'])->name('inquiries.index');
         Route::get('/inquiries/{id}/replies',[InquiriesController::class, 'staffReplies'])->name('inquiries.replies');
         Route::patch('/inquiries/{id}', [InquiriesController::class, 'update'])->name('inquiries.update');
@@ -440,6 +425,10 @@ Route::prefix('coordinator')->name('coordinator.')->group(function () {
         Route::get('/alumni', [CoordinatorAlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni-directory', [CoordinatorAlumniController::class, 'index'])->name('alumni-directory.index');
         Route::get('/alumni/{id}', [CoordinatorAlumniController::class, 'show'])->name('alumni.show');
+        Route::put('/alumni/{id}', [CoordinatorAlumniController::class, 'update'])->name('alumni.update');
+        Route::patch('/alumni/{id}/archive', [CoordinatorAlumniController::class, 'archive'])->name('alumni.archive');
+        Route::patch('/alumni/{id}/restore', [CoordinatorAlumniController::class, 'restore'])->name('alumni.restore');
+        Route::delete('/alumni/{id}', [CoordinatorAlumniController::class, 'destroy'])->name('alumni.destroy');
         Route::match(['get', 'post'], '/logout', [CoordinatorAuthController::class, 'logoutCoordinator'])->name('logout');
 
         //send email
