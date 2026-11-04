@@ -136,10 +136,11 @@ router.on('navigate', () => {
 
 import GlobalPreloader from './components/GlobalPreloader';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Alumni Connect';
-
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => {
+        const currentAppName = window.__SYSTEM_SETTINGS__?.app_name || import.meta.env.VITE_APP_NAME || 'Alumni Connect';
+        return title ? `${title} - ${currentAppName}` : currentAppName;
+    },
     resolve: (name) => resolvePageComponent(`./pages/${name}.jsx`, import.meta.glob('./pages/**/*.jsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);

@@ -6,14 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-
     @php
         $sysSettings = \App\Models\SystemSetting::getAll();
+        $appName = $sysSettings['app_name'] ?? config('app.name', 'Alumni Connect');
+        $appLogo = !empty($sysSettings['app_logo']) ? $sysSettings['app_logo'] : '/favicon.ico';
         $primaryColor = $sysSettings['primary_color'] ?? '#2563eb';
         $secondaryColor = $sysSettings['secondary_color'] ?? '#1d4ed8';
         $isGradient = ($sysSettings['theme_style'] ?? 'solid') === 'gradient';
@@ -21,7 +17,14 @@
         $textPrimary = $sysSettings['text_color_primary'] ?? '#0f172a';
     @endphp
 
-    <title inertia>{{ $sysSettings['app_name'] ?? config('app.name', 'Alumni Connect') }}</title>
+    <link rel="icon" href="{{ $appLogo }}" sizes="any">
+    @if (empty($sysSettings['app_logo']))
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    @endif
+    <link rel="apple-touch-icon" href="{{ $appLogo }}">
+
+    <title inertia>{{ $appName }}</title>
 
     <style id="system-theme-variables">
         :root {
@@ -228,6 +231,8 @@
             <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_bg_clean.webp') }}">
         @elseif ($page['component'] === 'Alumna/ContactUs')
             <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/contact_us_new.webp') }}">
+        @elseif ($page['component'] === 'Alumna/AlumnaBenefits')
+            <link rel="preload" as="image" href="{{ Vite::asset('resources/js/assets/cect_home_new.webp') }}">
         @endif
     @endif
 

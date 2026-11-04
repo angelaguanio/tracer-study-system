@@ -18,6 +18,39 @@ export function applySystemTheme(settings) {
   const textPrimary = settings.text_color_primary || primary;
   const appBg = `color-mix(in srgb, ${primary} 4.5%, #ffffff)`;
 
+  // Cache globally for Inertia Head title generation
+  window.__SYSTEM_SETTINGS__ = {
+    ...(window.__SYSTEM_SETTINGS__ || {}),
+    ...settings,
+  };
+
+  // ── Dynamic Browser Tab Favicon Update ─────────────────────
+  if (typeof document !== 'undefined') {
+    const faviconHref = settings.app_logo || '/favicon.ico';
+    const iconLinks = document.querySelectorAll("link[rel*='icon'], link[rel='apple-touch-icon']");
+    if (iconLinks.length > 0) {
+      iconLinks.forEach(link => {
+        link.href = faviconHref;
+      });
+    } else {
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.href = faviconHref;
+      document.head.appendChild(link);
+    }
+
+    // ── Dynamic Browser Tab Title Update ───────────────────────
+    if (settings.app_name) {
+      if (document.title.includes(' - ')) {
+        const parts = document.title.split(' - ');
+        parts[parts.length - 1] = settings.app_name;
+        document.title = parts.join(' - ');
+      } else if (!document.title || document.title === 'Alumni Connect' || document.title === 'GATE') {
+        document.title = settings.app_name;
+      }
+    }
+  }
+
   // Set CSS Variables on :root
   root.style.setProperty('--theme-primary', primary);
   root.style.setProperty('--theme-secondary', secondary);

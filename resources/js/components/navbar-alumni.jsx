@@ -43,6 +43,7 @@ const mainNav = [
     subItems: [
       { id: "announcements", name: "Announcements", href: route('alumna.announcements') },
       { id: "updates", name: "Alumni Updates", href: route('alumna.updates') },
+      { id: "benefits", name: "Alumni Benefits", href: route('alumna.benefits') },
       { id: "about", name: "About", href: route('alumna.about') },
       { id: "contact", name: "Contact Us", href: route('alumna.contact') },
     ]
@@ -90,8 +91,8 @@ export default function NavbarAlumni({ children }) {
   })
   
   const isTransparentHeader = 
-    currentPath === '/alumni/dashboard' || currentPath === '/alumni/home' || currentPath === '/alumni/about' || currentPath === '/alumni/association' || currentPath === '/alumni/office' || currentPath === '/alumni/contact' ||
-    currentPath === '/alumna/dashboard' || currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact';
+    currentPath === '/alumni/dashboard' || currentPath === '/alumni/home' || currentPath === '/alumni/about' || currentPath === '/alumni/association' || currentPath === '/alumni/office' || currentPath === '/alumni/contact' || currentPath === '/alumni/benefits' ||
+    currentPath === '/alumna/dashboard' || currentPath === '/alumna/home' || currentPath === '/alumna/about' || currentPath === '/alumna/association' || currentPath === '/alumna/office' || currentPath === '/alumna/contact' || currentPath === '/alumna/benefits';
 
   const [isScrolled, setIsScrolled] = useState(false)
 

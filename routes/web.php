@@ -169,6 +169,7 @@ Route::prefix('alumni')->name('alumna.')->group(function () {
         })->name('association');
         Route::get('/office', fn() => Inertia::render('Alumna/AlumnaOffice'))->name('office');
         Route::get('/about', fn() => Inertia::render('Alumna/AlumnaAbout'))->name('about');
+        Route::get('/benefits', fn() => Inertia::render('Alumna/AlumnaBenefits'))->name('benefits');
 
         //contact us page
         Route::get('/contact', [InquiriesController::class, 'alumniIndex'])->name('contact');
