@@ -63,7 +63,10 @@ class CectSurveyAnalyticsController extends Controller
             $validYears[] = "{$y}-" . ($y + 1);
         }
         $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
-        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', 'Summer/Midyear', 'Summer']);
+        $semesterMatch = in_array($semester, ['Summer/Midyear', 'Summer'])
+            ? ['Summer/Midyear', 'Summer', 'Midyear']
+            : [$semester];
 
         // ── Base respondent IDs (with optional filters) ──────────────────
         $respondentQuery = Response::where('survey_id', $survey->id)
@@ -73,7 +76,7 @@ class CectSurveyAnalyticsController extends Controller
                 $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
             })))
             ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('semester', $semester)
+                $u->whereIn('semester', $semesterMatch)
             ));
 
         $respondentIds    = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
@@ -222,7 +225,10 @@ class CectSurveyAnalyticsController extends Controller
             $validYears[] = "{$y}-" . ($y + 1);
         }
         $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
-        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', 'Summer/Midyear', 'Summer']);
+        $semesterMatch = in_array($semester, ['Summer/Midyear', 'Summer'])
+            ? ['Summer/Midyear', 'Summer', 'Midyear']
+            : [$semester];
 
         $survey->load(['sections.questions']);
 
@@ -233,7 +239,7 @@ class CectSurveyAnalyticsController extends Controller
                 $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
             })))
             ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('semester', $semester)
+                $u->whereIn('semester', $semesterMatch)
             ))
             ->distinct('user_id')->pluck('user_id');
 

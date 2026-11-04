@@ -13,13 +13,13 @@ import {
     PieChart, Pie,
 } from "recharts";
 
-const latestYear = new Date().getFullYear() - 1;
-const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
+const latestYear = new Date().getFullYear();
+const DEFAULT_YEAR_OPTIONS = Array.from({ length: latestYear - 1990 + 1 }, (_, i) => {
     const s = latestYear - i;
     return `${s}-${s + 1}`;
-})];
+});
 
-const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "3rd Semester", "Summer"];
+const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "Summer/Midyear"];
 const COLORS = ["#2859C5", "#008236", "#E70813", "#f59e0b", "#8b5cf6", "#06b6d4", "#ec4899"];
 
 /* ── Small reusable pieces ── */
@@ -92,9 +92,11 @@ export default function SurveyAnalytics({
     trendByYear = [],
     textAnalysis = [],
     filters = {},
+    yearOptions = [],
 }) {
+    const availableYears = yearOptions.length > 0 ? yearOptions : DEFAULT_YEAR_OPTIONS;
     const [localFilters, setLocalFilters] = useState({
-        year_graduated: filters.yearGraduated || "",
+        year_graduated: filters.yearGraduated || availableYears[0] || "",
         semester: filters.semester || "",
     });
     const [downloading, setDownloading] = useState(false);
@@ -223,7 +225,7 @@ export default function SurveyAnalytics({
         const next = { ...localFilters, ...updated };
         setLocalFilters(next);
         const params = Object.fromEntries(
-            Object.entries(next).filter(([, v]) => v && v !== "All Years" && v !== "All Semesters")
+            Object.entries(next).filter(([, v]) => v && v !== "All Semesters")
         );
         router.get(route("admin.analytics.show", survey.id), params, { preserveState: true, replace: true });
     };
@@ -284,12 +286,12 @@ export default function SurveyAnalytics({
                     <div className="flex flex-col gap-1">
                         <Label className="text-xs text-gray-500">Year Graduated</Label>
                         <Select
-                            value={localFilters.year_graduated || "All Years"}
-                            onValueChange={(v) => applyFilters({ year_graduated: v === "All Years" ? "" : v })}
+                            value={localFilters.year_graduated || availableYears[0]}
+                            onValueChange={(v) => applyFilters({ year_graduated: v })}
                         >
                             <SelectTrigger className="h-8 text-sm w-36 bg-white cursor-pointer"><SelectValue /></SelectTrigger>
                             <SelectContent className="max-h-48 overflow-y-auto">
-                                {YEAR_OPTIONS.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                                {availableYears.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
@@ -321,19 +323,19 @@ export default function SurveyAnalytics({
                 <div className="bg-white border rounded-xl p-10 text-center text-gray-400 shadow-sm">No response data available.</div>
             ) : (
                 <>
-                {/* ── Minimum Response Rule Notice Banner ── */}
+                {/* ── Low Response Rule Notice Banner ── */}
                 {((thresholdRules.suppressed_courses?.length > 0) || (thresholdRules.flagged_courses?.length > 0) || thresholdRules.overall_suppressed || thresholdRules.overall_flagged) && (
                     <div className="pdf-section bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col gap-1">
                         <div className="flex flex-wrap items-center gap-2">
                             <Badge className="bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold">
-                                Minimum Response Rule Active
+                                Low Response Notice Active
                             </Badge>
                             <span className="text-xs text-amber-800 font-medium">
-                                Hidden when under {thresholdRules.min_suppress ?? 5} responses · Low-response notice when under {thresholdRules.min_flag ?? 10} responses
+                                All data shown · Low-response caution note when under {thresholdRules.min_flag ?? 10} responses
                             </span>
                         </div>
                         <p className="text-xs text-amber-700">
-                            To keep averages accurate and protect alumni privacy, summary scores and averages are hidden for groups with fewer than {thresholdRules.min_suppress ?? 5} responses. Groups with {thresholdRules.min_suppress ?? 5} to {(thresholdRules.min_flag ?? 10) - 1} responses include a low-response notice.
+                            All summary scores, percentages, and averages are displayed even when responses are below {thresholdRules.min_suppress ?? 5}. However, groups with fewer than {thresholdRules.min_flag ?? 10} responses include a low-response note indicating that the results may not yet be as accurate or representative.
                         </p>
                     </div>
                 )}
@@ -347,13 +349,13 @@ export default function SurveyAnalytics({
                     />
                     <StatCard
                         label="Employment Rate"
-                        value={thresholdRules.overall_suppressed ? "Not Enough Responses" : `${employment.rate ?? 0}%`}
-                        sub={thresholdRules.overall_suppressed ? `Needs at least ${thresholdRules.min_suppress ?? 5} responses` : `${employment.employed ?? 0} employed${thresholdRules.overall_flagged ? " · Low response count" : ""}`}
+                        value={`${employment.rate ?? 0}%`}
+                        sub={`${employment.employed ?? 0} employed${(thresholdRules.overall_suppressed || thresholdRules.overall_flagged) ? " · Low responses (may be less accurate)" : ""}`}
                     />
                     <StatCard
                         label="Job-Course Relevance"
-                        value={jobRelevance.suppressed ? "Not Enough Responses" : `${jobRelevance.relevant_rate ?? 0}%`}
-                        sub={jobRelevance.suppressed ? `Needs at least ${thresholdRules.min_suppress ?? 5} employed responses` : `${jobRelevance.relevant_count ?? 0} of ${jobRelevance.evaluated_count ?? 0} in course-related jobs`}
+                        value={`${jobRelevance.relevant_rate ?? 0}%`}
+                        sub={`${jobRelevance.relevant_count ?? 0} of ${jobRelevance.evaluated_count ?? 0} in course-related jobs${(jobRelevance.suppressed || jobRelevance.flagged) ? " · Low responses (may be less accurate)" : ""}`}
                     />
                     <StatCard label="Year Range" value={yearLabel} />
                 </div>
@@ -446,11 +448,11 @@ export default function SurveyAnalytics({
                                             <td className="py-2.5 px-3 text-center">
                                                 {row.suppressed ? (
                                                     <Badge className="bg-red-50 text-red-700 border border-red-200 text-[11px]">
-                                                        No Responses (Under {thresholdRules.min_suppress ?? 5})
+                                                        Low Responses (Under {thresholdRules.min_suppress ?? 5} · may be less accurate)
                                                     </Badge>
                                                 ) : row.flagged ? (
                                                     <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-[11px]">
-                                                        Few Responses ({row.answered} responses)
+                                                        Few Responses ({row.answered} responses · may be less accurate)
                                                     </Badge>
                                                 ) : (
                                                     <Badge className="bg-green-50 text-green-700 border border-green-200 text-[11px]">
@@ -501,19 +503,11 @@ export default function SurveyAnalytics({
                                 <StatCard label="Unemployed" value={employment.unemployed ?? 0} />
                                 {employment.salary && (
                                     <div className="col-span-2">
-                                        {employment.salary.suppressed ? (
-                                            <StatCard
-                                                label="Avg Salary"
-                                                value="Not Enough Data"
-                                                sub={`Hidden because fewer than ${thresholdRules.min_suppress ?? 5} alumni shared salary info (${employment.salary.count} received)`}
-                                            />
-                                        ) : (
-                                            <StatCard
-                                                label="Avg Salary"
-                                                value={`₱${employment.salary.average?.toLocaleString()}`}
-                                                sub={`Min ₱${employment.salary.min?.toLocaleString()} · Max ₱${employment.salary.max?.toLocaleString()}${employment.salary.flagged ? ` · Based on ${employment.salary.count} responses` : ""}`}
-                                            />
-                                        )}
+                                        <StatCard
+                                            label="Avg Salary"
+                                            value={`₱${employment.salary.average?.toLocaleString()}`}
+                                            sub={`Min ₱${employment.salary.min?.toLocaleString()} · Max ₱${employment.salary.max?.toLocaleString()}${(employment.salary.suppressed || employment.salary.flagged) ? ` · Low responses (${employment.salary.count} received, may be less accurate)` : ""}`}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -670,10 +664,8 @@ export default function SurveyAnalytics({
                                             label="Evaluated Employed Alumni"
                                             value={evalTotal}
                                             sub={
-                                                evalTotal < (thresholdRules.min_suppress ?? 5)
-                                                    ? `Needs at least ${thresholdRules.min_suppress ?? 5} responses for reliable course percentages`
-                                                    : evalTotal < (thresholdRules.min_flag ?? 10)
-                                                    ? `Based on ${evalTotal} employed responses (low response count)`
+                                                evalTotal < (thresholdRules.min_flag ?? 10)
+                                                    ? `Based on ${evalTotal} employed ${evalTotal === 1 ? "response" : "responses"} · Low responses (may be less accurate)`
                                                     : "Employed respondents with reported job title and industry"
                                             }
                                         />
@@ -783,10 +775,11 @@ export default function SurveyAnalytics({
                                                         <td className="py-2 px-3 text-right tabular-nums font-medium text-green-700">{c.relevant_count ?? 0}</td>
                                                         <td className="py-2 px-3 text-right tabular-nums font-medium text-red-600">{c.not_relevant_count ?? 0}</td>
                                                         <td className="py-2 px-3 text-right tabular-nums font-semibold text-gray-800">
-                                                            {c.suppressed ? (
-                                                                <span className="text-red-600 italic font-normal">Needs at least {thresholdRules.min_suppress ?? 5} responses</span>
-                                                            ) : (
-                                                                <span>{c.relevant_rate}%{c.flagged ? " (Low responses)" : ""}</span>
+                                                            <span>{c.relevant_rate ?? 0}%</span>
+                                                            {(c.suppressed || c.flagged) && (
+                                                                <span className="text-amber-600 italic font-normal ml-1">
+                                                                    (Low responses — may be less accurate)
+                                                                </span>
                                                             )}
                                                         </td>
                                                     </tr>

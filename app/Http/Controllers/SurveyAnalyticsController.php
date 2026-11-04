@@ -160,13 +160,48 @@ class SurveyAnalyticsController extends Controller
         $yearGraduated = $request->query('year_graduated');
         $semester      = $request->query('semester');
 
-        $latestYear = (int) date('Y') - 1;
+        // Build valid graduation years dynamically (include up to current year + 1, plus any existing alumni batches)
+        $maxStartYear = max(
+            (int) date('Y'),
+            (int) (User::where('user_role', 'alumna')->max('start_year') ?: date('Y') - 1)
+        );
         $validYears = [];
-        for ($y = $latestYear; $y >= 1990; $y--) {
+        for ($y = $maxStartYear; $y >= 1990; $y--) {
             $validYears[] = "{$y}-" . ($y + 1);
         }
+
+        // Default to the latest graduation batch so each batch's target & sample size are kept strictly separate
+        if (!$yearGraduated || !in_array($yearGraduated, $validYears)) {
+            $latestRespondentBatch = User::whereIn(
+                    'id',
+                    Response::where('survey_id', $survey->id)->distinct('user_id')->pluck('user_id')
+                )
+                ->whereNotNull('start_year')
+                ->whereNotNull('end_year')
+                ->orderByDesc('start_year')
+                ->first();
+
+            $latestPopBatch = User::where('user_role', 'alumna')
+                ->where('status', 'active')
+                ->whereNotNull('start_year')
+                ->whereNotNull('end_year')
+                ->orderByDesc('start_year')
+                ->first();
+
+            if ($latestRespondentBatch) {
+                $yearGraduated = "{$latestRespondentBatch->start_year}-{$latestRespondentBatch->end_year}";
+            } elseif ($latestPopBatch) {
+                $yearGraduated = "{$latestPopBatch->start_year}-{$latestPopBatch->end_year}";
+            } else {
+                $yearGraduated = $validYears[0];
+            }
+        }
+
         $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
-        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', 'Summer/Midyear', 'Summer']);
+        $semesterMatch = in_array($semester, ['Summer/Midyear', 'Summer'])
+            ? ['Summer/Midyear', 'Summer', 'Midyear']
+            : [$semester];
 
         $survey->load([
             'sections' => fn($q) => $q->orderBy('display_order')->with([
@@ -181,7 +216,7 @@ class SurveyAnalyticsController extends Controller
                 $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
             })))
             ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('semester', $semester)
+                $u->whereIn('semester', $semesterMatch)
             ));
 
         $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
@@ -197,7 +232,7 @@ class SurveyAnalyticsController extends Controller
                 [$startY, $endY] = explode('-', $yearGraduated);
                 $q->where('start_year', (int) $startY)->where('end_year', (int) $endY);
             })
-            ->when($applySemester, fn($q) => $q->where('semester', $semester))
+            ->when($applySemester, fn($q) => $q->whereIn('semester', $semesterMatch))
             ->get();
 
         $totalPopulation = $populationUsers->count();
@@ -217,7 +252,7 @@ class SurveyAnalyticsController extends Controller
             ->sortKeys()
             ->toArray();
 
-        // --- 1A. Per-Course Sample-Size Target (Slovin's Formula, e = 0.05) & Progress ---
+        // --- 1A. Per-Course Sample-Size Target (Cochran's Formula with FPC, or Census if N <= 30) & Progress ---
         $baseCourses = ['BSIT', 'BSCS', 'BSCpE', 'BSEcE'];
         $allCourses = collect($baseCourses)
             ->merge($populationUsers->pluck('courses')->filter())
@@ -235,11 +270,23 @@ class SurveyAnalyticsController extends Controller
                 continue;
             }
 
-            // Slovin's finite population sample size target: n = ceil(N / (1 + N * e^2)), e = 0.05
-            $marginOfError = 0.05;
-            $targetSample  = $popCount > 0
-                ? (int) ceil($popCount / (1 + ($popCount * ($marginOfError ** 2))))
-                : $respCount;
+            // Cochran's Formula with finite population correction:
+            // n = (N * Z^2 * p * (1 - p)) / (e^2 * (N - 1) + Z^2 * p * (1 - p))
+            // Where Z = 1.96, p = 0.50, e = 0.05.
+            // If population N <= 30, do not calculate sample size; use the full population (census).
+            if ($popCount <= 0) {
+                $targetSample = $respCount;
+            } elseif ($popCount <= 30) {
+                $targetSample = $popCount;
+            } else {
+                $z = 1.96;
+                $p = 0.50;
+                $e = 0.05;
+                $z2pq = ($z ** 2) * $p * (1 - $p);
+                $targetSample = (int) ceil(
+                    ($popCount * $z2pq) / (($e ** 2) * ($popCount - 1) + $z2pq)
+                );
+            }
 
             $progressPct  = $targetSample > 0 ? round(($respCount / $targetSample) * 100, 1) : 0;
             $responseRate = $popCount > 0 ? round(($respCount / $popCount) * 100, 1) : 0;
@@ -371,12 +418,12 @@ class SurveyAnalyticsController extends Controller
 
         $salaryCount = $salaryAnswers->count();
         $salaryStats = $salaryCount > 0 ? [
-            'min'        => $salaryCount >= $minSuppress ? $salaryAnswers->min() : null,
-            'max'        => $salaryCount >= $minSuppress ? $salaryAnswers->max() : null,
-            'average'    => $salaryCount >= $minSuppress ? round($salaryAnswers->avg(), 2) : null,
+            'min'        => $salaryAnswers->min(),
+            'max'        => $salaryAnswers->max(),
+            'average'    => round($salaryAnswers->avg(), 2),
             'count'      => $salaryCount,
             'suppressed' => $salaryCount < $minSuppress,
-            'flagged'    => $salaryCount >= $minSuppress && $salaryCount < $minFlag,
+            'flagged'    => $salaryCount < $minFlag,
         ] : null;
 
         // Industry/company type (exclude placeholders like *, N/A, None)
@@ -791,11 +838,11 @@ class SurveyAnalyticsController extends Controller
                 'evaluated'          => $cCount,
                 'relevant_count'     => $cRelevant,
                 'not_relevant_count' => $cNotRelevant,
-                'relevant_rate'      => $cCount >= $minSuppress ? $cRelRate : null,
+                'relevant_rate'      => $cRelRate,
                 'related_label'      => $cfg['related_label'],
                 'not_related_label'  => $cfg['not_related_label'],
                 'suppressed'         => $cCount < $minSuppress,
-                'flagged'            => $cCount >= $minSuppress && $cCount < $minFlag,
+                'flagged'            => $cCount < $minFlag,
             ];
         }
 
@@ -803,10 +850,10 @@ class SurveyAnalyticsController extends Controller
             'evaluated_count'    => $evalCount,
             'relevant_count'     => $relevantCount,
             'not_relevant_count' => $notRelevantCount,
-            'relevant_rate'      => $evalCount >= $minSuppress && $evalCount > 0 ? round(($relevantCount / $evalCount) * 100, 1) : null,
-            'not_relevant_rate'  => $evalCount >= $minSuppress && $evalCount > 0 ? round(($notRelevantCount / $evalCount) * 100, 1) : null,
+            'relevant_rate'      => $evalCount > 0 ? round(($relevantCount / $evalCount) * 100, 1) : 0,
+            'not_relevant_rate'  => $evalCount > 0 ? round(($notRelevantCount / $evalCount) * 100, 1) : 0,
             'suppressed'         => $evalCount < $minSuppress,
-            'flagged'            => $evalCount >= $minSuppress && $evalCount < $minFlag,
+            'flagged'            => $evalCount < $minFlag,
             'method_summary'     => 'Based on whether the graduate’s job title and industry match their respective degree program.',
             'relevant_jobs'      => $relevantJobsList,
             'not_relevant_jobs'  => $notRelevantJobsList,
@@ -931,6 +978,7 @@ class SurveyAnalyticsController extends Controller
             'trendByYear'          => $trendByYear,
             'textAnalysis'         => $textAnalysis,
             'filters'              => compact('yearGraduated', 'semester'),
+            'yearOptions'          => $validYears,
         ]);
     }
 
@@ -1165,13 +1213,48 @@ class SurveyAnalyticsController extends Controller
         $yearGraduated = $request->query('year_graduated');
         $semester      = $request->query('semester');
 
-        $latestYear = (int) date('Y') - 1;
+        // Build valid graduation years dynamically (include up to current year + 1, plus any existing alumni batches)
+        $maxStartYear = max(
+            (int) date('Y'),
+            (int) (User::where('user_role', 'alumna')->max('start_year') ?: date('Y') - 1)
+        );
         $validYears = [];
-        for ($y = $latestYear; $y >= 1990; $y--) {
+        for ($y = $maxStartYear; $y >= 1990; $y--) {
             $validYears[] = "{$y}-" . ($y + 1);
         }
+
+        // Default to the latest graduation batch so each batch's target & sample size are kept strictly separate
+        if (!$yearGraduated || !in_array($yearGraduated, $validYears)) {
+            $latestRespondentBatch = User::whereIn(
+                    'id',
+                    Response::where('survey_id', $survey->id)->distinct('user_id')->pluck('user_id')
+                )
+                ->whereNotNull('start_year')
+                ->whereNotNull('end_year')
+                ->orderByDesc('start_year')
+                ->first();
+
+            $latestPopBatch = User::where('user_role', 'alumna')
+                ->where('status', 'active')
+                ->whereNotNull('start_year')
+                ->whereNotNull('end_year')
+                ->orderByDesc('start_year')
+                ->first();
+
+            if ($latestRespondentBatch) {
+                $yearGraduated = "{$latestRespondentBatch->start_year}-{$latestRespondentBatch->end_year}";
+            } elseif ($latestPopBatch) {
+                $yearGraduated = "{$latestPopBatch->start_year}-{$latestPopBatch->end_year}";
+            } else {
+                $yearGraduated = $validYears[0];
+            }
+        }
+
         $applyYear     = $yearGraduated && in_array($yearGraduated, $validYears);
-        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', '3rd Semester', 'Summer']);
+        $applySemester = $semester && in_array($semester, ['1st Semester', '2nd Semester', 'Summer/Midyear', 'Summer']);
+        $semesterMatch = in_array($semester, ['Summer/Midyear', 'Summer'])
+            ? ['Summer/Midyear', 'Summer', 'Midyear']
+            : [$semester];
 
         $survey->load([
             'sections' => fn($q) => $q->orderBy('display_order')->with([
@@ -1185,7 +1268,7 @@ class SurveyAnalyticsController extends Controller
                 $u2->where('start_year', (int)$startY)->where('end_year', (int)$endY);
             })))
             ->when($applySemester, fn($q) => $q->whereHas('user', fn($u) =>
-                $u->where('semester', $semester)
+                $u->whereIn('semester', $semesterMatch)
             ));
 
         $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');

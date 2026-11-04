@@ -12,7 +12,7 @@ const YEAR_OPTIONS = ["All Years", ...Array.from({ length: latestYear - 1990 + 1
     const s = latestYear - i;
     return `${s}-${s + 1}`;
 })];
-const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "3rd Semester", "Summer"];
+const SEMESTER_OPTIONS = ["All Semesters", "1st Semester", "2nd Semester", "Summer/Midyear"];
 
 /* ── shared sub-components ─────────────────────────────────── */
 function SectionCard({ title, children }) {
