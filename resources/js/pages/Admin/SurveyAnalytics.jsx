@@ -65,11 +65,12 @@ function DistributionBar({ label, value, total, color = "#2859C5" }) {
 const renderDonutLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
     if (percent < 0.05) return null;
     const RADIAN = Math.PI / 180;
-    const r = innerRadius + (outerRadius - innerRadius) * 0.55;
-    const x = cx + r * Math.cos(-midAngle * RADIAN);
-    const y = cy + r * Math.sin(-midAngle * RADIAN);
+    const effectiveAngle = percent >= 0.995 ? 90 : midAngle;
+    const r = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + r * Math.cos(-effectiveAngle * RADIAN);
+    const y = cy + r * Math.sin(-effectiveAngle * RADIAN);
     return (
-        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight={700}>
+        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={percent >= 0.995 ? 11 : 13} fontWeight={700}>
             {`${Math.round(percent * 100)}%`}
         </text>
     );
@@ -82,6 +83,10 @@ export default function SurveyAnalytics({
     totalRespondents = 0,
     sectionSummary = [],
     descriptive = {},
+    sampleTargets = [],
+    populationComparison = {},
+    jobRelevance = {},
+    thresholdRules = { min_suppress: 5, min_flag: 10 },
     employment = {},
     likertGroups = [],
     trendByYear = [],
@@ -94,6 +99,9 @@ export default function SurveyAnalytics({
     });
     const [downloading, setDownloading] = useState(false);
     const [showPerQuestion, setShowPerQuestion] = useState(false);
+    const [relevanceCourseFilter, setRelevanceCourseFilter] = useState(
+        () => jobRelevance?.by_course?.find(c => (c.evaluated ?? 0) > 0)?.course || jobRelevance?.by_course?.[0]?.course || "ALL"
+    );
     const reportRef = useRef(null);
 
     /* ── PDF download (Section-aware, never cuts charts in half) ── */
@@ -313,13 +321,150 @@ export default function SurveyAnalytics({
                 <div className="bg-white border rounded-xl p-10 text-center text-gray-400 shadow-sm">No response data available.</div>
             ) : (
                 <>
+                {/* ── Minimum Response Rule Notice Banner ── */}
+                {((thresholdRules.suppressed_courses?.length > 0) || (thresholdRules.flagged_courses?.length > 0) || thresholdRules.overall_suppressed || thresholdRules.overall_flagged) && (
+                    <div className="pdf-section bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col gap-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Badge className="bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold">
+                                Minimum Response Rule Active
+                            </Badge>
+                            <span className="text-xs text-amber-800 font-medium">
+                                Hidden when under {thresholdRules.min_suppress ?? 5} responses · Low-response notice when under {thresholdRules.min_flag ?? 10} responses
+                            </span>
+                        </div>
+                        <p className="text-xs text-amber-700">
+                            To keep averages accurate and protect alumni privacy, summary scores and averages are hidden for groups with fewer than {thresholdRules.min_suppress ?? 5} responses. Groups with {thresholdRules.min_suppress ?? 5} to {(thresholdRules.min_flag ?? 10) - 1} responses include a low-response notice.
+                        </p>
+                    </div>
+                )}
+
                 {/* ── 1. Overview ── */}
                 <div className="pdf-section grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <StatCard label="Total Respondents" value={totalRespondents} />
-                    <StatCard label="Employment Rate"   value={`${employment.rate ?? 0}%`} sub={`${employment.employed ?? 0} employed`} />
-                    <StatCard label="Degrees Represented" value={Object.keys(descriptive.degree_distribution || {}).length} />
+                    <StatCard
+                        label="Total Respondents"
+                        value={totalRespondents}
+                        sub={populationComparison.total_alumni ? `of ${populationComparison.total_alumni} in alumni list (${populationComparison.overall_turnout ?? 0}%)` : undefined}
+                    />
+                    <StatCard
+                        label="Employment Rate"
+                        value={thresholdRules.overall_suppressed ? "Not Enough Responses" : `${employment.rate ?? 0}%`}
+                        sub={thresholdRules.overall_suppressed ? `Needs at least ${thresholdRules.min_suppress ?? 5} responses` : `${employment.employed ?? 0} employed${thresholdRules.overall_flagged ? " · Low response count" : ""}`}
+                    />
+                    <StatCard
+                        label="Job-Course Relevance"
+                        value={jobRelevance.suppressed ? "Not Enough Responses" : `${jobRelevance.relevant_rate ?? 0}%`}
+                        sub={jobRelevance.suppressed ? `Needs at least ${thresholdRules.min_suppress ?? 5} employed responses` : `${jobRelevance.relevant_count ?? 0} of ${jobRelevance.evaluated_count ?? 0} in course-related jobs`}
+                    />
                     <StatCard label="Year Range" value={yearLabel} />
                 </div>
+
+                {/* ── 1A. Per-Course Sample-Size Target & Progress Indicator ── */}
+                {sampleTargets.length > 0 && (
+                    <SectionCard title="Per-Course Response Target & Progress">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {sampleTargets.map((item) => {
+                                const cappedPct = Math.min(100, Math.round(item.progress_pct ?? 0));
+                                const statusBadge = item.status === "met"
+                                    ? { label: "Target Reached", cls: "bg-green-100 text-green-700 border-green-300" }
+                                    : item.status === "suppressed"
+                                    ? { label: `Low Responses (Under ${thresholdRules.min_suppress ?? 5})`, cls: "bg-red-100 text-red-700 border-red-300" }
+                                    : item.status === "flagged"
+                                    ? { label: "Insufficient Responses", cls: "bg-amber-100 text-amber-700 border-amber-300" }
+                                    : { label: "In Progress", cls: "bg-blue-100 text-blue-700 border-blue-300" };
+
+                                const barColor = item.status === "met"
+                                    ? "#008236"
+                                    : item.status === "suppressed"
+                                    ? "#E70813"
+                                    : item.status === "flagged"
+                                    ? "#f59e0b"
+                                    : "#2859C5";
+
+                                return (
+                                    <div key={item.course} className="border rounded-xl p-4 bg-gray-50 flex flex-col gap-2">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div>
+                                                <span className="text-sm font-bold text-gray-800">{item.course}</span>
+                                                <span className="text-xs text-gray-500 ml-2">Total Alumni: {item.population}</span>
+                                            </div>
+                                            <Badge className={`text-xs border ${statusBadge.cls}`}>
+                                                {statusBadge.label}
+                                            </Badge>
+                                        </div>
+
+                                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                            <div
+                                                className="h-3 rounded-full transition-all"
+                                                style={{ width: `${cappedPct}%`, backgroundColor: barColor }}
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center justify-between text-xs text-gray-600">
+                                            <span>
+                                                Answered: <strong className="text-gray-800">{item.respondents}</strong> / Target: <strong className="text-gray-800">{item.target}</strong>
+                                            </span>
+                                            <span className="font-semibold text-gray-800 tabular-nums">
+                                                {item.progress_pct}% of target ({item.response_rate}% of course list)
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </SectionCard>
+                )}
+
+                {/* ── 1B. Respondent vs. Registered Alumni Population Comparison Report ── */}
+                {populationComparison.by_course?.length > 0 && (
+                    <SectionCard title="Respondent vs. Registered Alumni Comparison">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
+                            <StatCard label="Total in Alumni List" value={populationComparison.total_alumni ?? 0} sub="Registered active alumni" />
+                            <StatCard label="Answered Tracer Survey" value={populationComparison.total_answered ?? 0} sub={`${populationComparison.overall_turnout ?? 0}% completion rate`} />
+                            <StatCard label="Not Yet Answered" value={populationComparison.total_not_answered ?? 0} sub={`${Math.max(0, 100 - (populationComparison.overall_turnout ?? 0)).toFixed(1)}% pending`} />
+                        </div>
+
+                        <div className="overflow-x-auto border rounded-xl">
+                            <table className="w-full text-xs text-left">
+                                <thead className="bg-gray-100 text-gray-600 uppercase border-b">
+                                    <tr>
+                                        <th className="py-2.5 px-3 font-semibold">Course / Program</th>
+                                        <th className="py-2.5 px-3 font-semibold text-right">In Alumni List</th>
+                                        <th className="py-2.5 px-3 font-semibold text-right">Answered Survey</th>
+                                        <th className="py-2.5 px-3 font-semibold text-right">Not Answered</th>
+                                        <th className="py-2.5 px-3 font-semibold text-right">Participation Rate</th>
+                                        <th className="py-2.5 px-3 font-semibold text-center">Response Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y bg-white">
+                                    {populationComparison.by_course.map((row) => (
+                                        <tr key={row.course} className="hover:bg-gray-50">
+                                            <td className="py-2.5 px-3 font-semibold text-gray-800">{row.course}</td>
+                                            <td className="py-2.5 px-3 text-right tabular-nums text-gray-700">{row.total_alumni}</td>
+                                            <td className="py-2.5 px-3 text-right tabular-nums font-medium text-green-700">{row.answered}</td>
+                                            <td className="py-2.5 px-3 text-right tabular-nums text-gray-500">{row.not_answered}</td>
+                                            <td className="py-2.5 px-3 text-right tabular-nums font-semibold text-gray-800">{row.turnout_pct}%</td>
+                                            <td className="py-2.5 px-3 text-center">
+                                                {row.suppressed ? (
+                                                    <Badge className="bg-red-50 text-red-700 border border-red-200 text-[11px]">
+                                                        No Responses (Under {thresholdRules.min_suppress ?? 5})
+                                                    </Badge>
+                                                ) : row.flagged ? (
+                                                    <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-[11px]">
+                                                        Few Responses ({row.answered} responses)
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge className="bg-green-50 text-green-700 border border-green-200 text-[11px]">
+                                                        Sufficient Responses ({row.answered} responses)
+                                                    </Badge>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </SectionCard>
+                )}
 
                 {/* ── 2. Employment Overview ── */}
                 <SectionCard title="Employment Overview">
@@ -356,11 +501,19 @@ export default function SurveyAnalytics({
                                 <StatCard label="Unemployed" value={employment.unemployed ?? 0} />
                                 {employment.salary && (
                                     <div className="col-span-2">
-                                        <StatCard
-                                            label="Avg Salary"
-                                            value={`₱${employment.salary.average?.toLocaleString()}`}
-                                            sub={`Min ₱${employment.salary.min?.toLocaleString()} · Max ₱${employment.salary.max?.toLocaleString()}`}
-                                        />
+                                        {employment.salary.suppressed ? (
+                                            <StatCard
+                                                label="Avg Salary"
+                                                value="Not Enough Data"
+                                                sub={`Hidden because fewer than ${thresholdRules.min_suppress ?? 5} alumni shared salary info (${employment.salary.count} received)`}
+                                            />
+                                        ) : (
+                                            <StatCard
+                                                label="Avg Salary"
+                                                value={`₱${employment.salary.average?.toLocaleString()}`}
+                                                sub={`Min ₱${employment.salary.min?.toLocaleString()} · Max ₱${employment.salary.max?.toLocaleString()}${employment.salary.flagged ? ` · Based on ${employment.salary.count} responses` : ""}`}
+                                            />
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -377,6 +530,275 @@ export default function SurveyAnalytics({
                         </div>
                     )}
                 </SectionCard>
+
+                {/* ── 2B. Job-to-Course Relevance Analysis ── */}
+                {jobRelevance.evaluated_count > 0 && (() => {
+                    const COURSE_LABEL_MAP = {
+                        BSIT:  { related: "IT Related",  notRelated: "Not IT Related" },
+                        BSCpE: { related: "CpE Related", notRelated: "Not CpE Related" },
+                        BSEcE: { related: "EcE Related", notRelated: "Not EcE Related" },
+                        BSCS:  { related: "CS Related",  notRelated: "Not CS Related" },
+                    };
+
+                    const coursesWithData = (jobRelevance.by_course || []).filter(c => (c.evaluated ?? 0) > 0);
+                    const singleActiveCourse = relevanceCourseFilter === "ALL" && coursesWithData.length === 1
+                        ? coursesWithData[0].course
+                        : (relevanceCourseFilter !== "ALL" ? relevanceCourseFilter : null);
+
+                    const selectedCourseObj = relevanceCourseFilter !== "ALL"
+                        ? (jobRelevance.by_course || []).find(c => c.course === relevanceCourseFilter)
+                        : null;
+
+                    const mappedLabels = singleActiveCourse ? COURSE_LABEL_MAP[singleActiveCourse] : null;
+                    const relatedLabel = mappedLabels?.related
+                        || selectedCourseObj?.related_label
+                        || "Course Related";
+                    const notRelatedLabel = mappedLabels?.notRelated
+                        || selectedCourseObj?.not_related_label
+                        || "Not Course Related";
+
+                    const relCount = selectedCourseObj
+                        ? (selectedCourseObj.relevant_count ?? 0)
+                        : (jobRelevance.relevant_count ?? 0);
+                    const notRelCount = selectedCourseObj
+                        ? (selectedCourseObj.not_relevant_count ?? 0)
+                        : (jobRelevance.not_relevant_count ?? 0);
+                    const evalTotal = selectedCourseObj
+                        ? (selectedCourseObj.evaluated ?? 0)
+                        : (jobRelevance.evaluated_count ?? 0);
+                    const relRate = evalTotal > 0 ? Math.round((relCount / evalTotal) * 1000) / 10 : 0;
+
+                    const relDonutData = [
+                        { name: relatedLabel,    value: relCount,    color: "#008236" },
+                        { name: notRelatedLabel, value: notRelCount, color: "#E70813" },
+                    ].filter(d => d.value > 0);
+
+                    const relLegendPayload = [
+                        { value: relatedLabel,    type: "circle", id: "related",     color: "#008236" },
+                        { value: notRelatedLabel, type: "circle", id: "not-related", color: "#E70813" },
+                    ];
+
+                    const filteredRelevantJobs = (jobRelevance.relevant_jobs || []).filter(
+                        j => relevanceCourseFilter === "ALL" || j.course === relevanceCourseFilter
+                    );
+                    const filteredNotRelevantJobs = (jobRelevance.not_relevant_jobs || []).filter(
+                        j => relevanceCourseFilter === "ALL" || j.course === relevanceCourseFilter
+                    );
+
+                    return (
+                        <SectionCard
+                            title="Job-to-Course Relevance Analysis"
+                            action={
+                                (jobRelevance.by_course?.length ?? 0) > 1 && (
+                                    <div className="flex flex-wrap gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setRelevanceCourseFilter("ALL")}
+                                            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                                                relevanceCourseFilter === "ALL"
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            All Courses
+                                        </button>
+                                        {jobRelevance.by_course.map((c) => (
+                                            <button
+                                                key={c.course}
+                                                type="button"
+                                                onClick={() => setRelevanceCourseFilter(c.course)}
+                                                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                                                    relevanceCourseFilter === c.course
+                                                        ? "bg-blue-600 text-white"
+                                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                                }`}
+                                            >
+                                                {c.course}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )
+                            }
+                        >
+                            <p className="text-xs text-gray-500 -mt-1">
+                                <strong>How Relevance is Determined:</strong> {jobRelevance.method_summary}
+                            </p>
+
+                            {/* Donut Chart + Stat Cards (matching Employment Overview layout) */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                                {relDonutData.length > 0 ? (
+                                    <div className="flex flex-col items-center">
+                                        <ResponsiveContainer width="100%" height={220}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={relDonutData}
+                                                    dataKey="value"
+                                                    nameKey="name"
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={60}
+                                                    outerRadius={90}
+                                                    labelLine={false}
+                                                    label={renderDonutLabel}
+                                                >
+                                                    {relDonutData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                                                </Pie>
+                                                <Tooltip formatter={(v) => [`${v} employed alumni`]} />
+                                                <Legend payload={relLegendPayload} iconType="circle" iconSize={10} wrapperStyle={{ fontSize: 12 }} />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                ) : (
+                                    <div className="text-center text-xs text-gray-400 py-8">
+                                        No employed responses for the selected course.
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <StatCard
+                                        label={relatedLabel}
+                                        value={relCount}
+                                        sub={`${relRate}% of evaluated employed alumni`}
+                                    />
+                                    <StatCard
+                                        label={notRelatedLabel}
+                                        value={notRelCount}
+                                        sub={`${evalTotal > 0 ? Math.max(0, (100 - relRate)).toFixed(1).replace(/\.0$/, '') : 0}% of evaluated employed alumni`}
+                                    />
+                                    <div className="col-span-2">
+                                        <StatCard
+                                            label="Evaluated Employed Alumni"
+                                            value={evalTotal}
+                                            sub={
+                                                evalTotal < (thresholdRules.min_suppress ?? 5)
+                                                    ? `Needs at least ${thresholdRules.min_suppress ?? 5} responses for reliable course percentages`
+                                                    : evalTotal < (thresholdRules.min_flag ?? 10)
+                                                    ? `Based on ${evalTotal} employed responses (low response count)`
+                                                    : "Employed respondents with reported job title and industry"
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Relevant vs. Non-Relevant Jobs Lists */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                                {/* Relevant Jobs */}
+                                <div className="border border-green-200 bg-green-50/40 rounded-xl p-4 flex flex-col gap-2.5">
+                                    <div className="flex items-center justify-between border-b border-green-200 pb-2">
+                                        <span className="text-xs font-bold text-green-800 uppercase tracking-wide">
+                                            Relevant Jobs ({relatedLabel})
+                                        </span>
+                                        <Badge className="bg-green-100 text-green-800 border border-green-300 text-xs">
+                                            {relCount} {relCount === 1 ? "alumnus" : "alumni"}
+                                        </Badge>
+                                    </div>
+
+                                    {filteredRelevantJobs.length === 0 ? (
+                                        <p className="text-xs text-gray-400 italic py-2">No matching relevant jobs recorded yet.</p>
+                                    ) : (
+                                        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                                            {filteredRelevantJobs.map((job, idx) => (
+                                                <div key={idx} className="bg-white border border-green-100 rounded-lg p-2.5 flex items-start justify-between gap-2 shadow-xs">
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-semibold text-gray-800">{job.position}</p>
+                                                        <p className="text-[11px] text-gray-500 truncate">{job.industry}</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 shrink-0">
+                                                        <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px]">
+                                                            {job.course}
+                                                        </Badge>
+                                                        <Badge className="bg-green-50 text-green-700 border border-green-200 text-[10px]">
+                                                            {job.label} · {job.count}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Non-Relevant Jobs */}
+                                <div className="border border-red-200 bg-red-50/40 rounded-xl p-4 flex flex-col gap-2.5">
+                                    <div className="flex items-center justify-between border-b border-red-200 pb-2">
+                                        <span className="text-xs font-bold text-red-800 uppercase tracking-wide">
+                                            Non-Relevant Jobs ({notRelatedLabel})
+                                        </span>
+                                        <Badge className="bg-red-100 text-red-800 border border-red-300 text-xs">
+                                            {notRelCount} {notRelCount === 1 ? "alumnus" : "alumni"}
+                                        </Badge>
+                                    </div>
+
+                                    {filteredNotRelevantJobs.length === 0 ? (
+                                        <p className="text-xs text-gray-400 italic py-2">No non-relevant jobs recorded.</p>
+                                    ) : (
+                                        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                                            {filteredNotRelevantJobs.map((job, idx) => (
+                                                <div key={idx} className="bg-white border border-red-100 rounded-lg p-2.5 flex items-start justify-between gap-2 shadow-xs">
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-semibold text-gray-800">{job.position}</p>
+                                                        <p className="text-[11px] text-gray-500 truncate">{job.industry}</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 shrink-0">
+                                                        <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px]">
+                                                            {job.course}
+                                                        </Badge>
+                                                        <Badge className="bg-red-50 text-red-700 border border-red-200 text-[10px]">
+                                                            {job.label} · {job.count}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Per-Course Relevance Table */}
+                            {jobRelevance.by_course?.length > 0 && (
+                                <div className="mt-2">
+                                    <p className="text-xs font-semibold text-gray-500 mb-2">Relevance Breakdown by Course</p>
+                                    <div className="overflow-x-auto border rounded-xl">
+                                        <table className="w-full text-xs text-left">
+                                            <thead className="bg-gray-100 text-gray-600 uppercase border-b">
+                                                <tr>
+                                                    <th className="py-2 px-3 font-semibold">Course</th>
+                                                    <th className="py-2 px-3 font-semibold">Classification Labels</th>
+                                                    <th className="py-2 px-3 font-semibold text-right">Employed Responses</th>
+                                                    <th className="py-2 px-3 font-semibold text-right">Relevant</th>
+                                                    <th className="py-2 px-3 font-semibold text-right">Not Relevant</th>
+                                                    <th className="py-2 px-3 font-semibold text-right">Relevant %</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y bg-white">
+                                                {jobRelevance.by_course.map((c) => (
+                                                    <tr key={c.course} className="hover:bg-gray-50">
+                                                        <td className="py-2 px-3 font-semibold text-gray-800">{c.course}</td>
+                                                        <td className="py-2 px-3 text-gray-600">
+                                                            <span className="text-green-700 font-medium">{c.related_label}</span>
+                                                            {" / "}
+                                                            <span className="text-red-600 font-medium">{c.not_related_label}</span>
+                                                        </td>
+                                                        <td className="py-2 px-3 text-right tabular-nums text-gray-600">{c.evaluated}</td>
+                                                        <td className="py-2 px-3 text-right tabular-nums font-medium text-green-700">{c.relevant_count ?? 0}</td>
+                                                        <td className="py-2 px-3 text-right tabular-nums font-medium text-red-600">{c.not_relevant_count ?? 0}</td>
+                                                        <td className="py-2 px-3 text-right tabular-nums font-semibold text-gray-800">
+                                                            {c.suppressed ? (
+                                                                <span className="text-red-600 italic font-normal">Needs at least {thresholdRules.min_suppress ?? 5} responses</span>
+                                                            ) : (
+                                                                <span>{c.relevant_rate}%{c.flagged ? " (Low responses)" : ""}</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+                        </SectionCard>
+                    );
+                })()}
 
                 {/* ── 3. Respondent Distribution ── */}
                 <SectionCard title="Respondent Distribution">

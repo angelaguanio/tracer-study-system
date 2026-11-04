@@ -187,8 +187,24 @@ class SurveyAnalyticsController extends Controller
         $respondentIds = (clone $respondentQuery)->distinct('user_id')->pluck('user_id');
         $totalRespondents = $respondentIds->count();
 
-        // --- 1. Descriptive Statistics ---
-        $respondents = User::whereIn('id', $respondentIds)->get();
+        // --- 1. Descriptive Statistics & Alumni Population ---
+        $respondents = User::whereIn('id', $respondentIds)->with('employment')->get();
+
+        // Total registered alumni in the alumni list (filtered by year/semester if selected)
+        $populationUsers = User::where('user_role', 'alumna')
+            ->where('status', 'active')
+            ->when($applyYear, function ($q) use ($yearGraduated) {
+                [$startY, $endY] = explode('-', $yearGraduated);
+                $q->where('start_year', (int) $startY)->where('end_year', (int) $endY);
+            })
+            ->when($applySemester, fn($q) => $q->where('semester', $semester))
+            ->get();
+
+        $totalPopulation = $populationUsers->count();
+
+        // Threshold rules for statistical reliability & privacy protection
+        $minSuppress = 5;  // Suppress point estimates when subgroup n < 5
+        $minFlag     = 10; // Flag estimates as low-sample caution when 5 <= n < 10
 
         $degreeDistribution = $respondents->groupBy('courses')
             ->map(fn($g) => $g->count())->sortDesc()->toArray();
@@ -200,6 +216,101 @@ class SurveyAnalyticsController extends Controller
             ->countBy()
             ->sortKeys()
             ->toArray();
+
+        // --- 1A. Per-Course Sample-Size Target (Slovin's Formula, e = 0.05) & Progress ---
+        $baseCourses = ['BSIT', 'BSCS', 'BSCpE', 'BSEcE'];
+        $allCourses = collect($baseCourses)
+            ->merge($populationUsers->pluck('courses')->filter())
+            ->merge($respondents->pluck('courses')->filter())
+            ->unique()
+            ->values();
+
+        $sampleTargets = [];
+        $populationByCourse = [];
+        foreach ($allCourses as $courseCode) {
+            $popCount  = $populationUsers->where('courses', $courseCode)->count();
+            $respCount = $respondents->where('courses', $courseCode)->count();
+
+            if ($popCount === 0 && $respCount === 0) {
+                continue;
+            }
+
+            // Slovin's finite population sample size target: n = ceil(N / (1 + N * e^2)), e = 0.05
+            $marginOfError = 0.05;
+            $targetSample  = $popCount > 0
+                ? (int) ceil($popCount / (1 + ($popCount * ($marginOfError ** 2))))
+                : $respCount;
+
+            $progressPct  = $targetSample > 0 ? round(($respCount / $targetSample) * 100, 1) : 0;
+            $responseRate = $popCount > 0 ? round(($respCount / $popCount) * 100, 1) : 0;
+            $notAnswered  = max(0, $popCount - $respCount);
+            $isSuppressed = $respCount < $minSuppress;
+            $isFlagged    = !$isSuppressed && ($respCount < $minFlag || ($targetSample >= $minSuppress && $progressPct < 50));
+
+            $status = 'in_progress';
+            if ($targetSample > 0 && $respCount >= $targetSample) {
+                $status = 'met';
+            } elseif ($isSuppressed) {
+                $status = 'suppressed';
+            } elseif ($isFlagged) {
+                $status = 'flagged';
+            }
+
+            $sampleTargets[] = [
+                'course'        => $courseCode,
+                'population'    => $popCount,
+                'target'        => $targetSample,
+                'respondents'   => $respCount,
+                'progress_pct'  => $progressPct,
+                'response_rate' => $responseRate,
+                'suppressed'    => $isSuppressed,
+                'flagged'       => $isFlagged,
+                'status'        => $status,
+            ];
+
+            $populationByCourse[] = [
+                'course'       => $courseCode,
+                'total_alumni' => $popCount,
+                'answered'     => $respCount,
+                'not_answered' => $notAnswered,
+                'turnout_pct'  => $responseRate,
+                'suppressed'   => $isSuppressed,
+                'flagged'      => $isFlagged,
+            ];
+        }
+
+        // --- 1B. Respondent vs. Registered Alumni Population Comparison Report ---
+        $popYears = $populationUsers->map(fn($u) => $u->start_year && $u->end_year ? "{$u->start_year}-{$u->end_year}" : null)
+            ->merge($respondents->map(fn($u) => $u->start_year && $u->end_year ? "{$u->start_year}-{$u->end_year}" : null))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        $populationByYear = [];
+        foreach ($popYears as $yr) {
+            [$sy, $ey] = explode('-', $yr);
+            $popYrCount  = $populationUsers->filter(fn($u) => (string) $u->start_year === $sy && (string) $u->end_year === $ey)->count();
+            $respYrCount = $respondents->filter(fn($u) => (string) $u->start_year === $sy && (string) $u->end_year === $ey)->count();
+            $populationByYear[] = [
+                'year'         => $yr,
+                'total_alumni' => $popYrCount,
+                'answered'     => $respYrCount,
+                'not_answered' => max(0, $popYrCount - $respYrCount),
+                'turnout_pct'  => $popYrCount > 0 ? round(($respYrCount / $popYrCount) * 100, 1) : 0,
+                'suppressed'   => $respYrCount < $minSuppress,
+                'flagged'      => $respYrCount >= $minSuppress && $respYrCount < $minFlag,
+            ];
+        }
+
+        $populationComparison = [
+            'total_alumni'       => $totalPopulation,
+            'total_answered'     => $totalRespondents,
+            'total_not_answered' => max(0, $totalPopulation - $totalRespondents),
+            'overall_turnout'    => $totalPopulation > 0 ? round(($totalRespondents / $totalPopulation) * 100, 1) : 0,
+            'by_course'          => $populationByCourse,
+            'by_year'            => $populationByYear,
+        ];
 
         // --- Helper: get answers for a question label keyword ---
         $getAnswersForQuestion = function(string $keyword) use ($survey, $respondentIds) {
@@ -258,18 +369,22 @@ class SurveyAnalyticsController extends Controller
             ->filter()
             ->values();
 
-        $salaryStats = $salaryAnswers->count() > 0 ? [
-            'min'     => $salaryAnswers->min(),
-            'max'     => $salaryAnswers->max(),
-            'average' => round($salaryAnswers->avg(), 2),
-            'count'   => $salaryAnswers->count(),
+        $salaryCount = $salaryAnswers->count();
+        $salaryStats = $salaryCount > 0 ? [
+            'min'        => $salaryCount >= $minSuppress ? $salaryAnswers->min() : null,
+            'max'        => $salaryCount >= $minSuppress ? $salaryAnswers->max() : null,
+            'average'    => $salaryCount >= $minSuppress ? round($salaryAnswers->avg(), 2) : null,
+            'count'      => $salaryCount,
+            'suppressed' => $salaryCount < $minSuppress,
+            'flagged'    => $salaryCount >= $minSuppress && $salaryCount < $minFlag,
         ] : null;
 
-        // Industry/company type
+        // Industry/company type (exclude placeholders like *, N/A, None)
         $industryAnswers = Response::where('survey_id', $survey->id)
             ->whereIn('user_id', $respondentIds)
-            ->whereHas('question', fn($q) => $q->where('label', 'like', '%industry%')->orWhere('label', 'like', '%company%'))
-            ->pluck('answer_value');
+            ->whereHas('question', fn($q) => $q->where('label', 'like', '%industry%')->orWhere('label', 'like', '%current employment%'))
+            ->pluck('answer_value')
+            ->filter(fn($v) => !in_array(strtolower(trim((string) $v)), ['', '*', 'n/a', 'na', 'none', '-', 'unemployed']));
 
         $industryBreakdown = $industryAnswers->countBy()->sortDesc()->toArray();
 
@@ -425,11 +540,14 @@ class SurveyAnalyticsController extends Controller
                     if (str_contains($ans, $kw)) { $empCount++; break; }
                 }
             }
+            $uCount = $users->count();
             $degreeVsEmployment[] = [
                 'degree'          => $degree ?: 'Unknown',
-                'total'           => $users->count(),
+                'total'           => $uCount,
                 'employed'        => $empCount,
-                'employment_rate' => $users->count() > 0 ? round(($empCount / $users->count()) * 100, 1) : 0,
+                'employment_rate' => $uCount > 0 ? round(($empCount / $uCount) * 100, 1) : 0,
+                'suppressed'      => $uCount < $minSuppress,
+                'flagged'         => $uCount >= $minSuppress && $uCount < $minFlag,
             ];
         }
 
@@ -480,14 +598,229 @@ class SurveyAnalyticsController extends Controller
                 }
             }
 
+            $yrCount = $yrUserIds->count();
             $trendByYear[] = [
                 'year'            => $yr,
-                'total'           => $yrUserIds->count(),
+                'total'           => $yrCount,
                 'employed'        => $yrEmpCount,
-                'employment_rate' => $yrUserIds->count() > 0 ? round(($yrEmpCount / $yrUserIds->count()) * 100, 1) : 0,
+                'employment_rate' => $yrCount > 0 ? round(($yrEmpCount / $yrCount) * 100, 1) : 0,
                 'section_scores'  => $yrSectionScores,
+                'suppressed'      => $yrCount < $minSuppress,
+                'flagged'         => $yrCount >= $minSuppress && $yrCount < $minFlag,
             ];
         }
+
+        // --- 6. Job-to-Course Relevance Capture & Scoring ---
+        // Evaluates ONLY whether the graduate's job title and industry match their respective degree program
+        $positionAnswers = Response::where('survey_id', $survey->id)
+            ->whereIn('user_id', $respondentIds)
+            ->whereHas('question', fn($q) => $q->where('label', 'like', '%position%')->orWhere('label', 'like', '%job title%'))
+            ->pluck('answer_value', 'user_id');
+
+        $companyNameAnswers = Response::where('survey_id', $survey->id)
+            ->whereIn('user_id', $respondentIds)
+            ->whereHas('question', fn($q) => $q->where('label', 'like', '%current employment%')->orWhere('label', 'like', '%name of company%'))
+            ->pluck('answer_value', 'user_id');
+
+        $companyNatureAnswers = Response::where('survey_id', $survey->id)
+            ->whereIn('user_id', $respondentIds)
+            ->whereHas('question', fn($q) => $q->where('label', 'like', '%nature of company%')->orWhere('label', 'like', '%industry%'))
+            ->pluck('answer_value', 'user_id');
+
+        // Course-specific keywords and labels
+        $courseDomainConfig = [
+            'BSIT' => [
+                'related_label'     => 'IT Related',
+                'not_related_label' => 'Not IT Related',
+                'keywords'          => [
+                    'software', 'developer', 'programmer', 'web', 'system', 'network', 'data', 'database',
+                    'it ', 'it-', 'information technology', 'technical support', 'tech support', 'helpdesk',
+                    'cyber', 'security', 'cloud', 'qa', 'quality assurance', 'tester', 'ui', 'ux', 'designer',
+                    'frontend', 'backend', 'fullstack', 'devops', 'analyst', 'computer', 'multimedia', 'ict',
+                    'application', 'erp', 'sap', 'digital', 'technology', 'tech', 'instructor', 'professor',
+                ],
+            ],
+            'BSCS' => [
+                'related_label'     => 'CS Related',
+                'not_related_label' => 'Not CS Related',
+                'keywords'          => [
+                    'software', 'developer', 'programmer', 'web', 'system', 'network', 'data', 'database',
+                    'it ', 'information technology', 'computer science', 'technical support', 'tech support',
+                    'cyber', 'security', 'cloud', 'qa', 'quality assurance', 'ai', 'machine learning',
+                    'frontend', 'backend', 'fullstack', 'devops', 'analyst', 'computer', 'research', 'algorithm',
+                    'application', 'technology', 'tech', 'instructor', 'professor',
+                ],
+            ],
+            'BSCpE' => [
+                'related_label'     => 'CpE Related',
+                'not_related_label' => 'Not CpE Related',
+                'keywords'          => [
+                    'computer', 'engineer', 'engineering', 'hardware', 'embedded', 'firmware', 'robotics',
+                    'iot', 'microcontroller', 'circuit', 'semiconductor', 'automation', 'network', 'system',
+                    'software', 'developer', 'programmer', 'it ', 'information technology', 'technical support',
+                    'tech support', 'data', 'cloud', 'cyber', 'qa', 'quality assurance', 'analyst', 'telecom',
+                    'electronics', 'technology', 'tech', 'cad', 'r&d', 'instructor', 'professor',
+                ],
+            ],
+            'BSEcE' => [
+                'related_label'     => 'EcE Related',
+                'not_related_label' => 'Not EcE Related',
+                'keywords'          => [
+                    'electronics', 'electronic', 'ece', 'telecom', 'telecommunications', 'broadcast', 'rf',
+                    'radio', 'signal', 'network', 'semiconductor', 'hardware', 'circuit', 'instrumentation',
+                    'automation', 'control', 'embedded', 'engineer', 'engineering', 'technical', 'technician',
+                    'maintenance', 'power', 'manufacturing', 'system', 'it ', 'software', 'technology', 'tech',
+                    'instructor', 'professor',
+                ],
+            ],
+        ];
+
+        $defaultDomainConfig = [
+            'related_label'     => 'Course Related',
+            'not_related_label' => 'Not Course Related',
+            'keywords'          => [
+                'software', 'developer', 'programmer', 'engineer', 'it ', 'information technology',
+                'system', 'network', 'data', 'web', 'cyber', 'cloud', 'database', 'support',
+                'technical', 'computer', 'electronics', 'telecom', 'hardware', 'qa', 'quality assurance',
+                'analyst', 'devops', 'ui', 'ux', 'designer', 'frontend', 'backend', 'fullstack',
+                'technology', 'tech', 'ict', 'instructor', 'professor',
+            ],
+        ];
+
+        $cleanField = function (?string $val): string {
+            $trimmed = trim((string) $val);
+            return in_array(strtolower($trimmed), ['', '*', 'n/a', 'na', 'none', '-', 'unemployed']) ? '' : $trimmed;
+        };
+
+        $relevantCount    = 0;
+        $notRelevantCount = 0;
+        $courseRelevanceMap = [];
+        $relevantJobsAgg    = [];
+        $notRelevantJobsAgg = [];
+
+        foreach ($respondents as $u) {
+            $empAns = strtolower(trim($employmentAnswers[$u->id] ?? ($u->employment?->currently_employed ?? '')));
+            $isEmp  = false;
+            foreach ($employedKeywords as $kw) {
+                if (str_contains($empAns, $kw)) { $isEmp = true; break; }
+            }
+            if (!$isEmp) {
+                continue;
+            }
+
+            $courseCode = $u->courses ?: 'Unknown';
+            $cfg = $courseDomainConfig[$courseCode] ?? $defaultDomainConfig;
+
+            $posRaw     = $cleanField($positionAnswers[$u->id] ?? '') ?: $cleanField($u->employment?->position ?? '');
+            $natureRaw  = $cleanField($companyNatureAnswers[$u->id] ?? '');
+            $compRaw    = $cleanField($companyNameAnswers[$u->id] ?? '') ?: $cleanField($u->employment?->company_name ?? '');
+
+            $industryOrCompany = $natureRaw ?: $compRaw;
+            $combinedLower = strtolower(trim($posRaw . ' ' . $natureRaw . ' ' . $compRaw));
+
+            if ($combinedLower === '') {
+                continue;
+            }
+
+            $isRelevant = false;
+            foreach ($cfg['keywords'] as $kw) {
+                if (str_contains($combinedLower, $kw)) {
+                    $isRelevant = true;
+                    break;
+                }
+            }
+
+            if ($isRelevant) {
+                $relevantCount++;
+            } else {
+                $notRelevantCount++;
+            }
+
+            $displayPosition = $posRaw ?: 'Unspecified Role';
+            $displayIndustry = $industryOrCompany ?: 'Unspecified Industry';
+            $jobKey = strtolower($courseCode . '|' . $displayPosition . '|' . $displayIndustry);
+
+            $jobEntry = [
+                'position' => $displayPosition,
+                'industry' => $displayIndustry,
+                'company'  => $compRaw ?: $displayIndustry,
+                'course'   => $courseCode,
+                'label'    => $isRelevant ? $cfg['related_label'] : $cfg['not_related_label'],
+                'count'    => 1,
+            ];
+
+            if ($isRelevant) {
+                if (isset($relevantJobsAgg[$jobKey])) {
+                    $relevantJobsAgg[$jobKey]['count']++;
+                } else {
+                    $relevantJobsAgg[$jobKey] = $jobEntry;
+                }
+            } else {
+                if (isset($notRelevantJobsAgg[$jobKey])) {
+                    $notRelevantJobsAgg[$jobKey]['count']++;
+                } else {
+                    $notRelevantJobsAgg[$jobKey] = $jobEntry;
+                }
+            }
+
+            $courseRelevanceMap[$courseCode][] = [
+                'relevant' => $isRelevant,
+            ];
+        }
+
+        $evalCount = $relevantCount + $notRelevantCount;
+        $relevantJobsList    = array_values($relevantJobsAgg);
+        $notRelevantJobsList = array_values($notRelevantJobsAgg);
+        usort($relevantJobsList, fn($a, $b) => $b['count'] <=> $a['count']);
+        usort($notRelevantJobsList, fn($a, $b) => $b['count'] <=> $a['count']);
+
+        $relevanceByCourse = [];
+        foreach ($allCourses as $courseCode) {
+            $items  = $courseRelevanceMap[$courseCode] ?? [];
+            $cCount = count($items);
+            if ($cCount === 0 && $respondents->where('courses', $courseCode)->count() === 0) {
+                continue;
+            }
+            $cfg = $courseDomainConfig[$courseCode] ?? $defaultDomainConfig;
+            $cRelevant    = count(array_filter($items, fn($i) => $i['relevant']));
+            $cNotRelevant = $cCount - $cRelevant;
+            $cRelRate     = $cCount > 0 ? round(($cRelevant / $cCount) * 100, 1) : 0;
+
+            $relevanceByCourse[] = [
+                'course'             => $courseCode,
+                'evaluated'          => $cCount,
+                'relevant_count'     => $cRelevant,
+                'not_relevant_count' => $cNotRelevant,
+                'relevant_rate'      => $cCount >= $minSuppress ? $cRelRate : null,
+                'related_label'      => $cfg['related_label'],
+                'not_related_label'  => $cfg['not_related_label'],
+                'suppressed'         => $cCount < $minSuppress,
+                'flagged'            => $cCount >= $minSuppress && $cCount < $minFlag,
+            ];
+        }
+
+        $jobRelevance = [
+            'evaluated_count'    => $evalCount,
+            'relevant_count'     => $relevantCount,
+            'not_relevant_count' => $notRelevantCount,
+            'relevant_rate'      => $evalCount >= $minSuppress && $evalCount > 0 ? round(($relevantCount / $evalCount) * 100, 1) : null,
+            'not_relevant_rate'  => $evalCount >= $minSuppress && $evalCount > 0 ? round(($notRelevantCount / $evalCount) * 100, 1) : null,
+            'suppressed'         => $evalCount < $minSuppress,
+            'flagged'            => $evalCount >= $minSuppress && $evalCount < $minFlag,
+            'method_summary'     => 'Based on whether the graduate’s job title and industry match their respective degree program.',
+            'relevant_jobs'      => $relevantJobsList,
+            'not_relevant_jobs'  => $notRelevantJobsList,
+            'by_course'          => $relevanceByCourse,
+        ];
+
+        $thresholdRules = [
+            'min_suppress'       => $minSuppress,
+            'min_flag'           => $minFlag,
+            'overall_suppressed' => $totalRespondents < $minSuppress,
+            'overall_flagged'    => $totalRespondents >= $minSuppress && $totalRespondents < $minFlag,
+            'suppressed_courses' => collect($sampleTargets)->where('suppressed', true)->pluck('course')->values()->all(),
+            'flagged_courses'    => collect($sampleTargets)->where('flagged', true)->pluck('course')->values()->all(),
+        ];
 
         // --- 7. Text Response Analysis ---
         $textAnalysis = [];
@@ -568,16 +901,20 @@ class SurveyAnalyticsController extends Controller
         })->values()->all();
 
         return Inertia::render('Admin/SurveyAnalytics', [
-            'survey'              => $survey,
-            'sections'            => $survey->sections,
-            'analytics'           => array_values($questionsMap),
-            'totalRespondents'    => $totalRespondents,
-            'sectionSummary'      => $sectionSummary,
-            'descriptive'         => [
+            'survey'               => $survey,
+            'sections'             => $survey->sections,
+            'analytics'            => array_values($questionsMap),
+            'totalRespondents'     => $totalRespondents,
+            'sectionSummary'       => $sectionSummary,
+            'descriptive'          => [
                 'degree_distribution' => $degreeDistribution,
                 'year_distribution'   => $yearDistribution,
             ],
-            'employment'          => [
+            'sampleTargets'        => $sampleTargets,
+            'populationComparison' => $populationComparison,
+            'jobRelevance'         => $jobRelevance,
+            'thresholdRules'       => $thresholdRules,
+            'employment'           => [
                 'rate'        => $employmentRate,
                 'employed'    => $employedCount,
                 'unemployed'  => $unemployedCount,
@@ -585,15 +922,15 @@ class SurveyAnalyticsController extends Controller
                 'salary'      => $salaryStats,
                 'industry'    => $industryBreakdown,
             ],
-            'likertGroups'        => $likertGroups,
-            'crossAnalysis'       => [
+            'likertGroups'         => $likertGroups,
+            'crossAnalysis'        => [
                 'section_vs_employment' => $sectionVsEmployment,
                 'section_vs_salary'     => $sectionVsSalary,
                 'degree_vs_employment'  => $degreeVsEmployment,
             ],
-            'trendByYear'         => $trendByYear,
-            'textAnalysis'        => $textAnalysis,
-            'filters'             => compact('yearGraduated', 'semester'),
+            'trendByYear'          => $trendByYear,
+            'textAnalysis'         => $textAnalysis,
+            'filters'              => compact('yearGraduated', 'semester'),
         ]);
     }
 
